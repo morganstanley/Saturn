@@ -4,17 +4,17 @@ Created-By: 1.8.0_45-b14 (Oracle Corporation)
 Built-By: renaudg
 Main-Class: 
 Specification-Title: qaTools saturn
-Specification-Version: 2016.9.9
+Specification-Version: 2017.4.5
 Specification-Vendor: Morgan Stanley and Co. Incorporated
 Implementation-Title: qaTools_saturn_oss
-Implementation-Version: 2016.9.9
+Implementation-Version: 2017.4.5
 Implementation-Vendor: Morgan Stanley and Co. Incorporated
 Implementation-Vendor-Id: com.msdw
 
 Name: MSDE
 Meta: qaTools
 Project: saturn
-Release: 2016.9.9
-TimeStamp: Friday September 09 2016 @ 13:52:38 GMT+0000
+Release: 2017.4.5
+TimeStamp: Wednesday April 05 2017 @ 17:54:19 GMT+0000
 Build-Class-Path: 
 

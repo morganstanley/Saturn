@@ -4,7 +4,7 @@ Created-By: 1.8.0_45-b14 (Oracle Corporation)
 Bundle-ManifestVersion: 2
 Bundle-Name: com.ms.qaTools.saturn.kronus
 Bundle-Vendor: QAPM QATools
-Bundle-Version: 2016.9.9.20160909_085240
+Bundle-Version: 2017.4.5.20170405_125424
 Bundle-SymbolicName: com.ms.qaTools.saturn.kronus; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext;visibility:=reexport,org.eclipse.xte
