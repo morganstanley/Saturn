@@ -1,0 +1,7 @@
+package com.ms.qaTools.kronus.rfb.compileerror.PositionalParameterAfterKeywordParameter
+
+type Int
+
+def F(x: Int = 1, y: Int): Int = {return x + y}
+
+val CALL_F = F(x = 42, 0)

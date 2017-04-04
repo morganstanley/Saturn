@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="rmiConnectionResource" nsURI="http://www.ms.com/2011/Saturn/Resources/RmiConnection"
+    nsPrefix="rmiConnectionResource">
+  <eAnnotations source="http://www.ms.com/2011/tdo-qa-tools/rcs">
+    <details key="author" value="$Author$"/>
+    <details key="change" value="$Change$"/>
+    <details key="file" value="$File$"/>
+    <details key="id" value="$Id$"/>
+    <details key="revision" value="$Revision$"/>
+    <details key="timestamp" value="$DateTime$"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="rmiResource" eSuperTypes="types.ecore#//NamedResourceDefinition">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="RmiConnection"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="host" lowerBound="1" eType="ecore:EClass values.ecore#//ComplexValue"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="Host"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="port" lowerBound="1" eType="ecore:EClass values.ecore#//ComplexValue"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="Port"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+</ecore:EPackage>

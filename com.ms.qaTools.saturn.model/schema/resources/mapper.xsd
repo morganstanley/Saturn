@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:mapperResource="http://www.ms.com/2013/Saturn/Resources/Mapper"
+           xmlns:procedureCall="http://www.ms.com/2009/Saturn/Modules/ProcedureCall"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"           
+           
+           ecore:nsPrefix="mapperResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.mapperResource"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2013/Saturn/Resources/Mapper"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/ProcedureCall" schemaLocation="../modules/procedureCall.xsd"/>
+
+  <xs:complexType name="CustomResource">
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element name="Code" type="value:complexValue" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>  
+  </xs:complexType>
+
+  <xs:complexType name="GeneratorResource">
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element name="InputResource"    type="type:NamedResourceDefinition" />
+          <xs:element name="TemplateResource" type="type:NamedResourceDefinition" /> 	
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="ExtractorResource">
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element name="InputResource" type="type:NamedResourceDefinition" />
+          <xs:element name="Configuration" type="type:NamedResourceDefinition" /> 	
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+
+  <xs:complexType name="AbstractManipulatorOperation" abstract="true" />
+
+  <xs:complexType name="ManipulatorResource">
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element name="InputResource" type="type:NamedResourceDefinition" />
+          <xs:element name="Operations" type="mapperResource:AbstractManipulatorOperation" minOccurs="0" maxOccurs="unbounded" /> 	
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="ValidatorResource">
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element name="LeftResource"  type="type:NamedResourceDefinition" />
+          <xs:element name="RightResource" type="type:NamedResourceDefinition" />
+          <xs:element name="Configuration" type="type:NamedResourceDefinition" /> 	
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="ConverterResource">
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element name="InputResource"    type="type:NamedResourceDefinition" />
+        </xs:sequence>
+        <xs:attribute name="method" type="xs:token" />
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="MappedResource">
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element name="InputResources" type="type:NamedResourceDefinition"   minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="Arguments"      type="procedureCall:AbstractArgument" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="method" type="xs:token" />
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>  
+
+<!--
+  <xs:complexType name="XmlGeneratorResource">
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition">
+        <xs:sequence>
+          <xs:element name="TemplateResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="OutputResource"   type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" /> 	
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="XmlExtractorResource">
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition">
+        <xs:sequence>
+          <xs:element name="ConfigResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="OutputResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />   
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="JsonGeneratorResource">
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition">
+        <xs:sequence>
+          <xs:element name="TemplateResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="OutputResource"   type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />   
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="JsonExtractorResource">
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition">
+        <xs:sequence>
+          <xs:element name="ConfigResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="OutputResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />   
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+      <xs:complexType name="FixGeneratorResource">
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition">
+        <xs:sequence>
+          <xs:element name="TemplateResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="OutputResource"   type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />   
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="FixExtractorResource">
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition">
+        <xs:sequence>
+          <xs:element name="ConfigResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="OutputResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />   
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="ProtoBuffGeneratorResource">
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition">
+        <xs:sequence>
+          <xs:element name="TemplateResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="OutputResource"   type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />   
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="ProtoBuffExtractorResource">
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition">
+        <xs:sequence>
+          <xs:element name="ConfigResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="OutputResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />   
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>
+-->  
+</xs:schema> 

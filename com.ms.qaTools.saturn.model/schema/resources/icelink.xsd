@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:icelink="http://www.ms.com/2006/Saturn/Resources/IceLink"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="icelinkResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.icelinkResource"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+                                 
+           targetNamespace="http://www.ms.com/2011/Saturn/Resources/IceLink"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+
+    <xs:complexType name="IceLink" ecore:name="IceLinkResource" >	
+      <xs:complexContent>	
+	    <xs:extension base="type:NamedResourceDefinition">
+	      <xs:sequence>
+		    <xs:element name="rmiResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+		    <xs:element name="Host" type="value:complexValue" />  
+		    <xs:element name="UserName" type="value:complexValue" />  
+			<xs:element name="Password" type="value:complexValue" minOccurs="0" maxOccurs="1" />  
+          </xs:sequence>  
+        </xs:extension>  
+      </xs:complexContent>  
+    </xs:complexType>  
+</xs:schema>

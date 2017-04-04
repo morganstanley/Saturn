@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:singularity="http://www.ms.com/2009/Saturn/Modules/Singularity"
+           xmlns:exception="http://www.ms.com/2009/Saturn/Exception"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="singularityModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.singularityModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2009/Saturn/Modules/Singularity"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Exception" schemaLocation="../saturnException.xsd"/>
+    
+  <xs:complexType name="AbstractOperation" abstract="true" ecore:name="AbstractOperation" >
+    <xs:attribute name="enabled" type="xs:boolean" default="true" />
+  </xs:complexType>
+  
+  <xs:complexType name="AbstractExtractAction" abstract="true" ecore:name="AbstractExtractAction" >
+   <xs:sequence>
+    <xs:element ref="exception:Exception" minOccurs="0"  />
+    <xs:element name="ID"     type="value:complexValue"  minOccurs="0"  />
+    <xs:element name="Output" type="type:ResourceDefinition" minOccurs="0"  />
+   </xs:sequence>
+   <xs:attribute name="enabled"          type="xs:boolean" default="true"  />
+   <xs:attribute name="removeDuplicates" type="xs:boolean" default="true"  />
+  </xs:complexType>
+  
+  <xs:complexType name="TestSuiteExtractOperation" ecore:name="TestSuiteExtractOperation" >
+    <xs:complexContent>
+      <xs:extension base="singularity:AbstractExtractAction"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="TestCaseExtractOperation" ecore:name="TestCaseExtractOperation" >
+    <xs:complexContent>
+      <xs:extension base="singularity:AbstractExtractAction"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="SearchExtractOperation" ecore:name="SearchExtractOperation" >
+    <xs:complexContent>
+      <xs:extension base="singularity:AbstractExtractAction"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="ExtractOperation" ecore:name="ExtractOperation" >
+    <xs:complexContent>
+      <xs:extension base="singularity:AbstractOperation">
+        <xs:sequence>
+        <xs:element name="Actions"  type="singularity:AbstractExtractAction" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Configuration" ecore:name="SingularityConfiguration">
+    <xs:complexType ecore:name="SingularityConfiguration" >
+      <xs:sequence>
+        <xs:element name="Operations"  type="singularity:AbstractOperation" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:dataCompare="http://www.ms.com/2006/Saturn/Modules/DataCompare"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           xmlns:exception="http://www.ms.com/2009/Saturn/Exception"           
+           
+           xmlns:fileResource="http://www.ms.com/2006/Saturn/Resources/Files"
+           xmlns:directoryResource="http://www.ms.com/2006/Saturn/Resources/Directory"
+           xmlns:referenceResource="http://www.ms.com/2006/Saturn/Resources/Reference"           
+           
+           ecore:nsPrefix="dataCompareModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.datacompareModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+                      
+           targetNamespace="http://www.ms.com/2006/Saturn/Modules/DataCompare"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Exception" schemaLocation="../saturnException.xsd"/>
+  
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Files" schemaLocation="../resources/file.xsd" />  
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Directory" schemaLocation="../resources/directory.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Reference" schemaLocation="../resources/reference.xsd" />  
+  
+  <xs:element name="Configuration" ecore:name="DataCompareConfiguration">
+    <xs:complexType ecore:name="DataCompareConfiguration">
+      <xs:sequence>
+        <xs:element name="DataSources" minOccurs="0" maxOccurs="1"  >
+          <xs:complexType ecore:name="DataSourceDefinition">
+            <xs:sequence>
+              <xs:element name="Left" minOccurs="0" type="type:ResourceDefinition"/>
+              <xs:element name="Right" minOccurs="0" type="type:ResourceDefinition"/>
+              <xs:element name="Columns" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType ecore:name="MappedColumn">
+                  <xs:complexContent>
+                    <xs:extension base="type:Column">
+                      <xs:sequence />
+                      <xs:attribute name="mappingColumn" type="xs:token"/>
+                      <xs:attribute name="threshold" type="xs:token"/>
+                      <xs:attribute name="enabled" type="xs:boolean" default="true" />
+                      <xs:attribute name="ignoreNull" type="xs:boolean" default="false" />
+                    </xs:extension>
+                  </xs:complexContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="sortDatasets" type="dataCompare:SortType" use="optional" default="BOTH" />
+            <xs:attribute name="partialCompare" type="xs:boolean" use="optional" default="false" />
+            <xs:attribute name="maxRows" type="xs:integer" use="optional" default="0" />
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Output" minOccurs="0" maxOccurs="1">
+          <xs:complexType ecore:name="Output">
+              <xs:sequence>
+                <xs:element name="Resource" minOccurs="0" type="type:NamedResourceDefinition"/>
+                <xs:element name="Pages" minOccurs="0" maxOccurs="1">
+                  <xs:complexType ecore:name="Pages">
+                    <xs:sequence>
+                      <xs:element name="Summary" type="dataCompare:Page" minOccurs="0" maxOccurs="1"/>
+                      <xs:element name="Different" type="dataCompare:Page" minOccurs="0" maxOccurs="1"/>
+                      <xs:element name="Explained" type="dataCompare:Page" minOccurs="0" maxOccurs="1"/>
+                      <xs:element name="InLeftOnly" type="dataCompare:Page" minOccurs="0" maxOccurs="1"/>
+                      <xs:element name="InRightOnly" type="dataCompare:Page" minOccurs="0" maxOccurs="1" />
+                      <xs:element name="Identical" type="dataCompare:Page" minOccurs="0" maxOccurs="1"/>
+                      <xs:element name="Left" type="dataCompare:Page" minOccurs="0" maxOccurs="1"/>
+                      <xs:element name="Right" type="dataCompare:Page" minOccurs="0" maxOccurs="1"/>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="DiffSetExplainer" type="dataCompare:AbstractDiffSetExplainer" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attribute name="ignoreInLeftOnlyColumns"  type="xs:boolean" default="false" />
+      <xs:attribute name="ignoreInRightOnlyColumns" type="xs:boolean" default="true" />
+      <xs:attribute name="failOnValidation" type="xs:boolean" default="true" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:complexType name="Page" ecore:name="Page">
+    <xs:sequence/>
+    <xs:attribute name="name"   type="xs:token"        />
+    <xs:attribute name="omit"   type="xs:boolean" default="false"  />
+    <xs:attribute name="sparse" type="xs:boolean" default="false"  />
+  </xs:complexType>
+  
+  <xs:complexType name="AbstractDiffSetExplainer">
+  	<xs:sequence/>
+  </xs:complexType>
+  
+  <xs:complexType name="PerlDiffSetExplainer" >
+    <xs:complexContent>
+      <xs:extension base="dataCompare:AbstractDiffSetExplainer">
+        <xs:sequence>
+          <xs:element name="InitCode"    minOccurs="0" maxOccurs="1" type="value:complexValue" />
+          <xs:element name="DiffCode"    minOccurs="1" maxOccurs="1" type="value:complexValue" />
+          <xs:element name="DestroyCode" minOccurs="0" maxOccurs="1" type="value:complexValue" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:simpleType name="SortType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="LEFT" />
+      <xs:enumeration value="RIGHT" />
+      <xs:enumeration value="BOTH" />
+      <xs:enumeration value="NONE" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>

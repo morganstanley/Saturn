@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+  <contextName>qaTools/saturn</contextName>
+  <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+  
+  <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%msg%n</pattern>
+    </encoder>
+    <target>System.err</target>
+  </appender>
+  
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <append>false</append>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>TRACE</level>
+    </filter>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+        <layout class="com.ms.qaTools.saturn.runtime.LoggingFileLayout" />
+    </encoder>
+  </appender>
+  
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%msg%n</pattern>
+    </encoder>
+    <target>System.out</target>
+  </appender>
+  
+  <logger name ="com.mongodb">
+  	<level value="error"/>
+  </logger>
+
+  <root>
+    <level value="ERROR" />
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+  </root>
+  
+</configuration>

@@ -1,0 +1,23 @@
+package com.ms.qaTools.kronus.rfb.PRELUDE
+
+type Any
+type Array[A]
+type Boolean
+type Byte
+type Double
+type Int
+type Iterator[A]
+type KronusFunction1[-T1, +R] = Function1[Context[T1], Context[R]]
+type Long
+type Option[A]
+type String
+type Unit
+
+def AFTER[A](pre: Any, body: => A): A = generate("for") {pre.flatMap(_ => body)}
+
+def ASSERT(pred: Boolean): Unit = generate("yield") {assert(pred)}
+def EQUAL[A](x: A, y: A): Boolean = generate("yield") {x == y}
+def EQUAL_DOUBLE(x: Double, y: Double): Boolean = generate("yield") {math.abs(x - y) < 1e-6}
+def ASSERT_EQUAL[A](x: A, y: A): Unit = {return ASSERT(pred = EQUAL(x = x, y = y))}
+def ASSERT_EQUAL_DOUBLE(x: Double, y: Double): Unit = {return ASSERT(EQUAL_DOUBLE(x, y))}
+def FAIL(): Unit = generate("yield") {sys.error("this should not run")}

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:saturnReport="http://www.ms.com/2009/Saturn/SaturnReport"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="saturnReport" 
+           ecore:package="com.ms.qaTools.saturn.annotations.saturnReport"
+
+           xmlns:perl="http://www.ms.com/2006/pdsttools/xsd2perl"
+           perl:nsPrefix="saturnReport"
+           perl:package="SaturnReport"
+           
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"         
+           
+           elementFormDefault="qualified" 
+           targetNamespace="http://www.ms.com/2009/Saturn/SaturnReport">
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd" />
+
+  <xs:complexType name="SaturnReportConfiguration" ecore:name="SaturnReportConfiguration">
+    <xs:annotation id="saturn-eclipse-meta-info">
+      <xs:appinfo source="caption">Saturn Report Annotation</xs:appinfo>
+      <xs:appinfo source="description"></xs:appinfo>
+    </xs:annotation>
+  
+    <xs:complexContent>
+      <xs:extension base="type:AbstractAnnotation">
+        <xs:sequence>
+          <xs:element name="Name"            minOccurs="0" maxOccurs="1" type="value:complexValue" />
+          <xs:element name="RepetitionName"  minOccurs="0" maxOccurs="1" type="value:complexValue" />
+          <xs:element name="Title"           minOccurs="0" maxOccurs="1" type="value:complexValue" />
+          <xs:element name="RepetitionTitle" minOccurs="0" maxOccurs="1" type="value:complexValue" />
+          <!-- deprecated -->
+          <xs:element name="Description"     minOccurs="0" maxOccurs="1" type="value:complexValue" />
+        </xs:sequence>
+        <xs:attribute name="enabled" type="xs:boolean" default="true" />
+        <xs:attribute name="isScenario" type="xs:boolean" default="false" />
+        <xs:attribute name="showIterationNo" type="xs:boolean" default="true" />
+        <xs:attribute name="onStatus" type="saturnReport:ResultStatus" default="ANY" />
+        <xs:attribute name="ignored" type="xs:boolean" default="false" />
+        
+        <!-- If element is repeating, this hides the group header -->
+        <xs:attribute name="hideHeader" type="xs:boolean" default="false" />
+        <!-- If element is repeating, this hides all the iterations (header+content) same as having hideRepeatingHeader=true && hideRepeatingContent=true-->
+        <xs:attribute name="hideContent" type="xs:boolean" default="false" />
+        
+        <!-- Hide the header for an iteration in a repeating element -->
+        <xs:attribute name="hideRepeatingHeader" type="xs:boolean" default="false" />
+        <!-- Hide the content for each iteration in a repeating element -->
+        <xs:attribute name="hideRepeatingContent" type="xs:boolean" default="false" />
+        
+        <xs:attribute name="expandOnPass" type="xs:boolean" default="false" />
+        <xs:attribute name="expandOnStatus" type="saturnReport:ResultStatus" default="FAIL" />      
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="ResultStatus">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="PASS"/>
+      <xs:enumeration value="FAIL"/>
+      <xs:enumeration value="ANY"/>
+      <xs:enumeration value=""/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

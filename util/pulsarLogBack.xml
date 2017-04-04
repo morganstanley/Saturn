@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+  <contextName>pulsar</contextName>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} %-5level :::: %logger{36}  %msg%n </pattern>
+    </encoder>
+    <target>System.out</target>
+  </appender>
+  <logger name="org.springframework">
+    <level value="ERROR" />
+  </logger>
+  <logger name="com.sun">
+    <level value="ERROR" />
+  </logger>
+  <logger name="javax.xml">
+    <level value="ERROR" />
+  </logger>
+  <logger name="javax">
+    <level value="ERROR" />
+  </logger>
+  <logger name="org.bson">
+    <level value="ERROR" />
+  </logger>
+  <logger name="org.apache">
+    <level value="ERROR" />
+  </logger>
+  <root>
+    <level value="ALL" />
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

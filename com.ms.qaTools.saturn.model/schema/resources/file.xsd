@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:fileResource="http://www.ms.com/2006/Saturn/Resources/Files"           
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="fileResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.fileResource"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+                                 
+           targetNamespace="http://www.ms.com/2006/Saturn/Resources/Files"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+
+  <xs:complexType name="DeviceFile" >
+    <xs:complexContent>
+      <xs:extension base="type:DeviceResourceDefinition">
+        <xs:sequence>
+          <xs:element name="FileName" type="value:complexValue"  /> 	
+        </xs:sequence>
+        <xs:attribute name="append"   type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="canRead"  type="xs:boolean" use="optional" default="true" />
+        <xs:attribute name="canWrite" type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="exists"   type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="create"   type="xs:boolean" use="optional" default="true" />
+        <xs:attribute name="filter"   type="xs:token"   use="optional" default="*" />            
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>  
+
+  <xs:complexType name="StandardIO" >
+    <xs:complexContent>	
+      <xs:extension base="type:DeviceResourceDefinition">
+        <xs:attribute name ="useStdErr" type="xs:boolean" use="optional" default="false" />        
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ExcelWorkBook" >
+    <xs:complexContent>	
+      <xs:extension base="fileResource:DeviceFile">
+        <xs:attribute name ="version" type="fileResource:ExcelVersions" default="BIN-2003" />        
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:simpleType name="ExcelVersions">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="BIN-2003" />
+      <xs:enumeration value="XML-2007" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="OOCalcWorkBook" >
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DeviceFile"/>
+    </xs:complexContent>  
+  </xs:complexType>
+  
+  <xs:complexType name="DataSetFile" >
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition">
+        <xs:attribute name="firstRow" type="xs:integer" default="0" />
+      </xs:extension>
+    </xs:complexContent>  </xs:complexType>  
+  
+  <xs:complexType name="CSVFile" >
+    <xs:complexContent>	
+      <xs:extension base="fileResource:DataSetFile" />      
+    </xs:complexContent>  
+    
+  </xs:complexType>
+
+  <xs:complexType name="FixedWidthFile" >
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DataSetFile" > 
+        <xs:sequence>
+           <xs:element name="ConfigFile" type="type:NamedResourceDefinition"  />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>  
+  </xs:complexType>
+
+  <xs:complexType name="CustomFile">
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DataSetFile">
+        <xs:sequence>
+          <xs:element name="NullMarker"    type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="RowSeparator"  type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="CellSeparator" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="QuoteCharacter" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="EscapeCharacter" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="hasNulls" type="xs:boolean" default="false" />
+      </xs:extension>      
+    </xs:complexContent>  
+  </xs:complexType>
+
+  <xs:complexType name="XMLNamespaceDefinition">
+    <xs:sequence>
+      <xs:element name="Prefix" type="value:complexValue" minOccurs="1" maxOccurs="1" />
+      <xs:element name="URI"    type="value:complexValue" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="XMLNamespaceDefinitions">
+    <xs:complexContent> 
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element name="NamespaceDefinitions" type="fileResource:XMLNamespaceDefinition" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="XMLFile" >
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DataSetFile">
+        <xs:sequence>
+          <xs:element name="NamespaceDefinitions" type="fileResource:XMLNamespaceDefinitions" minOccurs="0" maxOccurs="1" />
+          <xs:element name="XPath" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>  
+  </xs:complexType>
+
+  <xs:complexType name="LineFile">
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DataSetFile" >
+        <xs:attribute name="trim" type="xs:boolean" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SlurpFile">
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DataSetFile" />      
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DataFile" >
+    <xs:complexContent>	
+      <xs:extension base="fileResource:DataSetFile" />
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="ExcelWorkSheet" >
+    <xs:complexContent>	
+      <xs:extension base="fileResource:DataSetFile">
+        <xs:sequence>
+          <xs:element name="WorkSheet" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="NullMarker" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="hasNulls" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>  
+  </xs:complexType>
+  
+  <xs:complexType name="JsonFile" >
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DataSetFile" />
+    </xs:complexContent>  
+  </xs:complexType>
+  
+  <xs:complexType name="PropertiesFile" >
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DataSetFile" />
+    </xs:complexContent>  
+  </xs:complexType>    
+  
+  <xs:complexType name="OOCalcWorkSheet" >
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DataSetFile">
+        <xs:sequence>
+          <xs:element name="WorkSheet" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="NullMarker" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="hasNulls" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>  
+  </xs:complexType>
+
+  <xs:complexType name="GoogleProtoBufFile" >
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DataSetFile">
+        <xs:sequence>
+          <xs:element name="Classname" type="value:complexValue" minOccurs="1" maxOccurs="1" />
+          <xs:element name="JarLocation" type="value:complexValue" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute type="xs:boolean" name="readEncoded" default="false" />
+        <xs:attribute type="xs:boolean" name="readDelimited" default="true" />
+      </xs:extension>
+    </xs:complexContent>  
+  </xs:complexType>
+  
+  <xs:complexType name="FIXFile" >
+    <xs:complexContent> 
+      <xs:extension base="fileResource:DataSetFile">
+        <xs:sequence>
+          <xs:element name="Separator" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="Dictionary" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/>          
+        </xs:sequence>
+        <xs:attribute name="doValidation" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>  
+  </xs:complexType>
+
+  <xs:complexType name="BinaryFile" >
+    <xs:complexContent>
+      <xs:extension base="fileResource:DataSetFile">
+        <xs:attribute name="chunkSize" type="xs:integer" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema> 

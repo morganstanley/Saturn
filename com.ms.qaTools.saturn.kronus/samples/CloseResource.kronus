@@ -1,0 +1,102 @@
+package com.ms.qaTools.kronus.rfb.CloseResource
+
+include com.ms.qaTools.kronus.rfb.PRELUDE
+
+type VerifiableCloseable
+type InheritedCloseable
+type ProxyCloseable
+type TeeCloseable
+
+def #Closeable(dependsOn: String)
+
+#Closeable()
+def NEW_RESOURCE(): VerifiableCloseable = generate("yield") {
+  new VerifiableCloseable(__callerScope.get)
+}
+
+#Closeable(dependsOn = "self")
+def NEW_PROXY_RESOURCE(self: VerifiableCloseable): ProxyCloseable = generate("yield") {
+  new ProxyCloseable(__callerScope.get, self)
+}
+
+#Closeable(dependsOn = "origin")
+def NEW_TEE_RESOURCE(origin: VerifiableCloseable): TeeCloseable = generate("yield") {
+  new TeeCloseable(__callerScope.get, origin)
+}
+
+def NEW_RESOURCE_KRONUS(): VerifiableCloseable = {return NEW_RESOURCE()}
+
+def PASS_THROUGH(x: VerifiableCloseable): VerifiableCloseable = {return x}
+def USE(x: VerifiableCloseable): Unit = generate("yield") {}
+
+def INSIDE_FUNCTION(): Int = {
+  val A = NEW_RESOURCE()
+  return 42
+}
+
+def CLOSED(x: VerifiableCloseable): Boolean = generate("yield") {x.closed}
+def PARENT(x: InheritedCloseable): VerifiableCloseable = generate("yield") {x.parent}
+
+val A = {
+  val SIMPLE = NEW_RESOURCE()
+  val NOT_TRACKED = generate("yield") {
+    new java.io.Closeable {
+      def close() = sys.error("should not be closed")
+    }
+  }
+  val KRONUS_CODE = {return NEW_RESOURCE()}
+  val FUNCTION_CALL = NEW_RESOURCE_KRONUS()
+  val ASSIGNMENTS = {
+    val A = NEW_RESOURCE()
+    val B = A
+    val C = B
+    val D = NEW_TEE_RESOURCE(A)
+    return B
+  }
+  val NESTED = {
+    return {
+      val A = NEW_RESOURCE()
+      val B = NEW_RESOURCE()
+      return NEW_RESOURCE()
+    }
+  }
+  val COMPOSED = ASSERT(!CLOSED(NEW_TEE_RESOURCE(NEW_RESOURCE())))
+  val INSIDE = INSIDE_FUNCTION()
+  val PROXY = {
+    val A = {
+      val A = NEW_RESOURCE()
+      val B = NEW_PROXY_RESOURCE(A)
+      return B
+    }
+    return ASSERT(!CLOSED(PARENT(A)))
+  }
+  val TEE = {
+    val A = NEW_RESOURCE()
+    val B = {
+      val C = NEW_TEE_RESOURCE(A)
+    }
+    return ASSERT(!CLOSED(A))
+  }
+  val JUST_USE = {
+    val A = NEW_RESOURCE()
+    return USE(A)
+  }
+  val PASS_THRU = PASS_THROUGH(NEW_RESOURCE())
+  val EXCEPTION = {
+    val BAD = {
+      val A = NEW_RESOURCE()
+      val B = FAIL()
+    }
+    return 42
+  }
+  val VALIDATE_ALIVE = {
+  	val A = ASSERT(!CLOSED(SIMPLE))
+  	val B = ASSERT(!CLOSED(KRONUS_CODE))
+  	val C = ASSERT(!CLOSED(FUNCTION_CALL))
+  	val D = ASSERT(!CLOSED(ASSIGNMENTS))
+  	val E = ASSERT(!CLOSED(PASS_THRU))
+  	val F = ASSERT(!CLOSED(NESTED))
+  }
+}
+
+val VERIFY_ALL_CLOSED = AFTER(A, generate("yield") {VerifiableCloseable.Registry.global.verifyAllClosed()})

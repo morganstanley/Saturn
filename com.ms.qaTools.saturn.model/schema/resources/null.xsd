@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:nullResource="http://www.ms.com/2006/Saturn/Resources/Null"           
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="nullResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.nullResource"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+                                 
+           targetNamespace="http://www.ms.com/2006/Saturn/Resources/Null"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+
+  <xs:complexType name="NullDevice" >
+    <xs:complexContent>
+      <xs:extension base="type:DeviceResourceDefinition" />
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>

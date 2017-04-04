@@ -1,0 +1,14 @@
+package com.ms.qaTools.kronus.rfb.imports
+//////////////////////////////////////////////  Import
+//
+
+import scala.util._
+import java.util._
+import com.ms.qaTools.compare.Comparator
+import com.ms.qaTools.io.FileIO
+
+val FIO = generate("yield") {val F0 = new FileIO("filepath")}
+
+
+val MyIntImp1 = 99
+

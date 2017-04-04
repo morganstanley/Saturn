@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!DOCTYPE database SYSTEM "http://db.apache.org/torque/dtd/database.dtd">
+
+<!--
+
+CREATE TABLE IF NOT EXISTS T_RUNS(ID VARCHAR(256) PRIMARY KEY)
+CREATE TABLE IF NOT EXISTS T_CHECKPOINTS(NAME VARCHAR(256), RUN_ID VARCHAR(1024), FOREIGN KEY (RUN_ID) REFERENCES T_RUNS(ID), PRIMARY KEY (NAME, RUN_ID))
+CREATE TABLE IF NOT EXISTS T_LISTENERS(NAME VARCHAR(256), CHECKPOINT_NAME VARCHAR(256), RUN_ID VARCHAR(1024), FOREIGN KEY (CHECKPOINT_NAME) REFERENCES T_CHECKPOINTS(NAME), FOREIGN KEY (RUN_ID) REFERENCES T_RUNS(ID), PRIMARY KEY (NAME,CHECKPOINT_ID,RUN_ID))
+CREATE TABLE IF NOT EXISTS T_LISTENERS_STATUS(NAME VARCHAR(256), STATUS VARCHAR(16), REASON TEXT, TIMESTAMP DATETIME, CHECKPOINT_ID INTEGER, RUN_ID VARCHAR(1024), FOREIGN KEY (NAME) REFERENCES T_LISTENERS(NAME),FOREIGN KEY (RUN_ID) REFERENCES T_RUNS(ID), FOREIGN KEY (CHECKPOINT_ID) REFERENCES T_CHECKPOINTS(ID))
+CREATE TABLE IF NOT EXISTS T_MESSAGES(ID INTEGER NOT NULL, MESSAGE_KEYID VARCHAR(1024) NOT NULL, LISTENER_NAME VARCHAR(64) NOT NULL, TIMESTAMP DATETIME, REPRESENTATION CLOB(262144), RUN_ID VARCHAR(1024), FOREIGN KEY (LISTENER_ID) REFERENCES T_LISTENERS(ID), FOREIGN KEY (RUN_ID) REFERENCES T_RUNS(ID), PRIMARY KEY (ID,LISTENER_ID,RUN_ID))  
+CREATE INDEX IF NOT EXISTS T_MESSAGES_INDEX ON T_MESSAGES(MESSAGE_KEYID)
+CREATE TABLE IF NOT EXISTS T_ATTRIBUTES(FIELD VARCHAR(128) NOT NULL, VARCHAR_VALUE VARCHAR(512), CLOB_VALUE CLOB(262144), KEY INTEGER, MESSAGE_ID INTEGER NOT NULL, TIMESTAMP TIMESTAMP, RUN_ID VARCHAR(256) NOT NULL, FOREIGN KEY (MESSAGE_ID) REFERENCES T_MESSAGES(ID), FOREIGN KEY (RUN_ID) REFERENCES T_RUNS(ID))  
+CREATE INDEX T_ATTRIBUTES_INDEX ON T_ATTRIBUTES(FIELD,VARCHAR_VALUE)
+-->
+
+<database name="comet">
+  
+  <table name="T_RUNS">
+    <column name="ID" type="VARCHAR" size="255" primaryKey="true" required="true" />
+  </table>
+  
+  <table name="T_CHECKPOINTS">
+    <column name="ID"     type="INTEGER"             required="true" primaryKey="true" autoIncrement="true"/>
+    <column name="NAME"   type="VARCHAR" size="255" required="true"/>
+    <column name="RUN_ID" type="VARCHAR" size="255" required="true"/>
+    <foreign-key foreignTable="T_RUNS">
+      <reference local="RUN_ID" foreign="ID"/>
+    </foreign-key>
+  </table>
+  
+  <table name="T_RESOURCES">
+    <column name="ID"            type="INTEGER"             required="true" primaryKey="true" autoIncrement="true"/>
+    <column name="NAME"          type="VARCHAR" size="255" required="true"/>
+    <column name="CHECKPOINT_ID" type="BIGINT"             required="true" />
+    <column name="RUN_ID"        type="VARCHAR" size="255" required="true"/>
+        
+    <foreign-key foreignTable="T_RUNS">
+      <reference local="RUN_ID" foreign="ID"/>
+    </foreign-key>
+    <foreign-key foreignTable="T_CHECKPOINTS">
+      <reference local="CHECKPOINT_ID" foreign="ID"/>
+    </foreign-key>
+  </table>  
+  
+  <!-- 
+  <table name="T_RESOURCES_STATUS">
+    <column name="ID"            type="BIGINT"  required="true"                />
+    <column name="NAME"          type="VARCHAR"                 size="255"     />
+    <column name="STATUS"        type="VARCHAR"                 size="16"      />
+    <column name="REASON"        type="CLOB"                    size="33554432"/>
+    <column name="TIMESTAMP"     type="VARCHAR"                 size="64"      />
+    <column name="CHECKPOINT_ID" type="BIGINT"                                 />
+    <column name="RUN_ID"        type="VARCHAR" required="true" size="255"     />
+        
+    <foreign-key foreignTable="T_RUNS">
+      <reference local="RUN_ID" foreign="ID"/>
+    </foreign-key>
+    <foreign-key foreignTable="T_CHECKPOINTS">
+      <reference local="CHECKPOINT_ID" foreign="ID"/>
+    </foreign-key>
+    <foreign-key foreignTable="T_RESOURCES">
+      <reference local="ID" foreign="ID"/>
+    </foreign-key>
+  </table> 
+   -->
+  
+  <table name="T_MESSAGES">
+    <column name="ID"             type="INTEGER"  required="true" primaryKey="true" autoIncrement="true"/>
+    <column name="RUN_ID"         type="VARCHAR" required="true" size="255"    />
+    <column name="RESOURCE_ID"    type="BIGINT"  required="true"               />
+    <column name="MESSAGE_KEY_ID" type="VARCHAR" required="true" size="1024"   />
+    <column name="TIMESTAMP"      type="TIMESTAMP"                             />
+    <column name="REPRESENTATION" type="CLOB"                    size="262144" />
+
+     <foreign-key foreignTable="T_RESOURCES">
+      <reference local="RESOURCE_ID" foreign="ID"/>
+    </foreign-key>
+    <foreign-key foreignTable="T_RUNS">
+      <reference local="RUN_ID" foreign="ID"/>
+    </foreign-key>
+  </table>
+
+  <table name="T_ATTRIBUTES">
+    <column name="FIELD" type="VARCHAR" size="128" required="true" primaryKey="true"/>
+    <column name="V_VALUE" type="VARCHAR" size="1024" /> <!-- varchar value -->
+    <column name="C_VALUE" type="CLOB" size="262144" />  <!-- clob value -->  
+    <column name="KEY" type="INTEGER" size="128" />
+    <column name="MESSAGE_ID" type="BIGINT" required="true" primaryKey="true"/>
+    <column name="RESOURCE_ID" type="BIGINT" required="true" primaryKey="true"/>
+    <column name="RUN_ID" type="VARCHAR" size="256" required="true" primaryKey="true"/>
+    <column name="TIMESTAMP" type="TIMESTAMP" />
+    
+     <foreign-key foreignTable="T_MESSAGES">
+      <reference local="MESSAGE_ID" foreign="ID"/>
+    </foreign-key>
+    <foreign-key foreignTable="T_RESOURCES">
+      <reference local="RESOURCE_ID" foreign="ID"/>
+    </foreign-key>
+    <foreign-key foreignTable="T_RUNS">
+      <reference local="RUN_ID" foreign="ID"/>
+    </foreign-key>
+
+	<!-- index too long
+ 	<index name="field_index">
+		<index-column name="FIELD" />
+	</index>
+    <index name="vaslues_varchar_index">
+      <index-column name="FIELD"/>
+      <index-column name="V_VALUE"/>
+    </index>
+     -->
+  </table>
+  
+  
+</database>

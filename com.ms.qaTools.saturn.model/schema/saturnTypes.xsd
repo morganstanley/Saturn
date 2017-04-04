@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:kronus="http://www.ms.com/2015/Saturn/Kronus"
+
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="types" 
+           ecore:package="com.ms.qaTools.saturn.types"
+
+           xmlns:perl="http://www.ms.com/2006/pdsttools/xsd2perl"
+           xmlns:sl="http://www.ms.com/2011/pdsttools/xsd2scriptLib"
+           xmlns:report="http://www.ms.com/2011/pdsttools/xsd2report"
+           perl:nsPrefix="types"
+           perl:package="Saturn::Script::Types"
+           
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"           
+           
+           elementFormDefault="qualified" 
+           targetNamespace="http://www.ms.com/2006/Saturn/Types">
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="saturnValues.xsd" />
+  <xs:import namespace="http://www.ms.com/2015/Saturn/Kronus" schemaLocation="kronus.xsd" />
+
+  <xs:complexType name="AbstractListener" ecore:name="AbstractListener" abstract="true" perl:package="Saturn::Script::AbstractListener">
+  	<xs:sequence/>
+  	<xs:attribute name="name" type="xs:token" />
+  	<xs:attribute name="enabled" type="xs:boolean" default="true" />
+  </xs:complexType>
+
+  <xs:complexType name="AbstractBatchListener" abstract="true" perl:package="Saturn::Script::AbstractBatchListener">
+    <xs:complexContent>
+      <xs:extension base="type:AbstractListener" />
+    </xs:complexContent>
+  </xs:complexType>
+
+<!--  <xs:complexType name="DataSetReportListener" perl:package="Saturn::Script::DataSetReportListener">
+    <xs:complexContent>
+      <xs:extension base="type:AbstractBatchListener" >
+        <xs:sequence>
+          <xs:element name="Input" minOccurs="0" type="type:ResourceDefinition" sl:map="genDataSet"/>
+          <xs:element name="Output" minOccurs="0" type="type:ResourceDefinition" sl:map="genDataSet"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="TapReportListener" perl:package="Saturn::Script::TapReportListener">
+    <xs:complexContent>
+      <xs:extension base="type:AbstractBatchListener" >
+        <xs:sequence>
+          <xs:element name="IDs" minOccurs="0" maxOccurs="unbounded" type="type:TapReportListenerID" perl:accessor="ids"/>
+          <xs:element name="OmittedIDs" minOccurs="0" maxOccurs="unbounded" type="type:TapReportListenerID" perl:accessor="omittedIds" />
+          <xs:element name="Output" minOccurs="0" type="type:ResourceDefinition" sl:map="genDeviceResource" />
+        </xs:sequence>
+        <xs:attribute name="type" default="TEXT" type="xs:string" /> 
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+ <xs:complexType name="TapReportListenerID" perl:package="Saturn::Script::TapReportListener::ID" >
+   <xs:attribute name="ID" type="xs:string" perl:accessor="id" sl:order="1"/>
+ </xs:complexType>-->
+
+  <xs:simpleType name="RepetitionActionsEnum">
+    <xs:restriction base="xs:token">      
+      <xs:enumeration value="NONE"/>
+      <xs:enumeration value="BREAK"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="InterpretersEnum">
+    <xs:restriction base="xs:token">      
+      <xs:enumeration value="SHELL"/>
+      <xs:enumeration value="DML"/>
+      <xs:enumeration value="PERL" />
+      <xs:enumeration value="GROOVY"/>
+      <xs:enumeration value="SCALA"/>      
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ModulesEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="SQL"/>
+      <xs:enumeration value="DataCompare"/>
+      <xs:enumeration value="RunCmds"/>
+    </xs:restriction>
+  </xs:simpleType>
+           
+  <xs:simpleType name="ResourcesEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="DB-DB2"/>
+      <xs:enumeration value="DB-UDB"/>      
+      <xs:enumeration value="DB-SYBASE"/>
+      
+      <xs:enumeration value="DIR"/>
+      <xs:enumeration value="DIR-EXCEL"/>
+      <xs:enumeration value="DIR-CSV"/>
+      <xs:enumeration value="DIR-DATA"/>            
+      <xs:enumeration value="DIR-XML"/>
+      
+      <xs:enumeration value="FILE"/>
+      <xs:enumeration value="FILE-EXCEL"/>
+      <xs:enumeration value="FILE-CSV"/>
+      <xs:enumeration value="FILE-DATA"/>
+      <xs:enumeration value="FILE-XML"/>
+      
+      <xs:enumeration value="MQ-MANAGER"/>
+      <xs:enumeration value="RESOURCE-REFERENCE"/>      
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="ResourceDefinition" abstract="true">
+    <xs:annotation perl:meta="true">
+      <xs:appinfo>
+        <perl:method name="resourceLogic">SAT::Assertion->throw('ResourceLogic should be stored in the context and not the resource.'); </perl:method>
+        <report:param name="instanceInfo" accessor="sub{my $result = firstval { $_->isa('Saturn::Result') } @stack; $result->getResourceInstance($_[0]) if $result}" displayType="none"/>
+        <report:param name="index" accessor="sub { return 'resource_'.refaddr($_[0]); }" displayType="none"/> 
+        <report:param name="resourceType" accessor="sub { my $type = ref($_[0]); $type =~ s/Saturn::Resource:://; return $type}" displayType="none"/>    
+      </xs:appinfo>
+    </xs:annotation>  
+  	<xs:attribute name="enabled" type="xs:boolean" default="true" report:displayType="none"/>
+  	<xs:attribute name="state" type="xs:string" default="" report:displayType="none"/>
+  	<xs:attribute name="connectorPreference" type="xs:string" perl:transient="true" report:displayType="none"/>
+  </xs:complexType>
+
+  <xs:complexType name="NamedResourceDefinition" abstract="true" sl:name="namedResource">
+    <xs:complexContent>
+      <xs:extension base="type:ResourceDefinition">
+        <xs:attribute name="name" type="type:ObjectName" use="optional" default="" report:displayType="none"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="KronusResource" >
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element ref="kronus:KronusCallConfiguration" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="DeviceResourceDefinition" abstract="true" >
+      <xs:annotation>
+      <xs:appinfo>
+        <perl:field name="parentResource" type="type:ResourceDefinition" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence></xs:sequence>
+        <xs:attribute name="initialize" type="xs:boolean" use="optional" default="true" />
+        <xs:attribute name="isInline" type="xs:boolean" use="optional" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+
+  </xs:complexType>
+  
+  <xs:complexType name="InlineDeviceResourceDefinition" sl:name="inlineFile">
+      <xs:annotation>
+        <xs:appinfo>
+           <report:param name="inlineContent" accessor="sub {return $_[0]->value;}" />
+        </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="type:DeviceResourceDefinition">
+        <xs:sequence>
+          <xs:element name="Value" minOccurs="1" maxOccurs="1" type="value:complexValue" sl:order="1"/>
+        </xs:sequence>  
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="DataSetResourceDefinition" abstract="true" sl:name="dataSetResource">
+    <xs:annotation>
+      <xs:appinfo>
+        <report:param name="FileName" accessor="sub {return eval {$_[0]->deviceResource->fileName;}}" displayType="none"/>
+        <report:param name="inlineContent" accessor="sub {return eval {$_[0]->deviceResource->value};}" displayTYpe="none"/>
+        <sl:postSerialize>  $fieldAccessor = sub { $_[0]-&gt;deviceResource };
+  $field = $object-&gt;$fieldAccessor;
+  if($parms{compact} &amp;&amp; $field &amp;&amp; ref($field) eq 'Saturn::Resource::DeviceFile')
+  {
+    $self-&gt;intAppendOutput(\$output, $space2 . "fileName =&gt; " . $self-&gt;serialize($field-&gt;fileName, %parms, indent =&gt; "$indent  ") . ",$space1", %parms);
+  }
+  elsif($parms{compact} &amp;&amp; $field &amp;&amp; ref($field) eq 'Saturn::Script::Types::InlineDeviceResourceDefinition')
+  {
+    $self-&gt;intAppendOutput(\$output, $space2 . "value =&gt; " . $self-&gt;serialize($field-&gt;value, %parms, indent =&gt; "$indent  ") . ",$space1", %parms);
+  }
+  else
+  {
+    $self-&gt;intAppendOutput(\$output, $space2 . $self-&gt;mappedFieldName('deviceResource', $parms{maps}) . $self-&gt;serialize($field, %parms, indent =&gt; "$indent  ") . ",$space1", %parms) if defined $field;
+  }
+</sl:postSerialize>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element name="DeviceResource" minOccurs="0" type="type:ResourceDefinition" sl:dontSerialize="true"/>
+          <xs:element name="DataSet" type="type:DataSet" minOccurs="0" maxOccurs="1" perl:init="true" sl:include="true"/>
+        </xs:sequence>
+        <xs:attribute name="hasColNames" type="xs:boolean" default="true" />
+      </xs:extension>      
+    </xs:complexContent>
+  </xs:complexType>  
+
+  <xs:complexType name="DatabaseResourceDefinition" abstract="true" >
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence></xs:sequence>
+        <xs:attribute name="persistent" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="XmlNamespaceDefinition">
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition" />
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="InlineNamespaceUriDefinition">
+    <xs:complexContent>
+      <xs:extension base="type:DeviceResourceDefinition">
+        <xs:sequence>
+          <xs:element name="UriDefinitions" minOccurs="0" maxOccurs="unbounded" type="type:XmlUriDefinition" />
+        </xs:sequence>  
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="XmlUriDefinition">
+    <xs:sequence>
+      <xs:element name="Prefix" type="value:complexValue" />
+      <xs:element name="Uri" type="value:complexValue" />
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean" default="true" />
+  </xs:complexType>
+  
+  <xs:complexType name="DataSet" sl:name="dataSetConfig">
+  	<xs:sequence>
+  	  <xs:element name="Columns" minOccurs="0" maxOccurs="unbounded" type="type:Column" />
+  	</xs:sequence>
+  	<xs:attribute name="name" type="type:ObjectName" sl:order="1"/>
+  	<xs:attribute name="trimAll" type="type:ColumnTrimEnum" default="TRIM_NONE" />
+    <xs:attribute name="trimColNames" type="xs:boolean" default="true" />
+  </xs:complexType>
+  
+  <xs:complexType name="Column" >
+  	<xs:attribute name="name" type="xs:token" sl:order="1" report:colNum="1"/>
+  	<xs:attribute name="type" type="type:ColumnTypeEnum" default="STRING" report:colNum="3"/>
+  	<xs:attribute name="keyOrder" type="xs:nonNegativeInteger" report:colNum="2"/>
+  	<xs:attribute name="ignored" type="xs:boolean" default="false" report:colNum="10"/>
+  	<xs:attribute name="trim" type="type:ColumnTrimEnum" default="TRIM_NONE" />
+  </xs:complexType>
+
+  <xs:simpleType name="ColumnTrimEnum">
+    <xs:restriction base="xs:token">
+        <xs:enumeration value="TRIM_NONE" />
+        <xs:enumeration value="TRIM_LEFT" />
+        <xs:enumeration value="TRIM_RIGHT" />
+        <xs:enumeration value="TRIM_BOTH" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="DataSetInstance">
+  	<xs:sequence>
+  	  <xs:element name="Rows" minOccurs="0" maxOccurs="unbounded" type="type:RowInstance" />
+  	</xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="RowInstance">
+    <xs:sequence>
+      <xs:element name="Columns" minOccurs="0" maxOccurs="unbounded" type="value:complexValue" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:simpleType name="ColumnTypeEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="STRING"/>
+      <xs:enumeration value="NUMERIC"/>      
+      <xs:enumeration value="DATE"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SaturnStatusEnum">
+    <xs:restriction base="xs:token">
+<!--      <xs:enumeration value="NOT RUN"/> -->
+      <xs:enumeration value="PASS"/>      
+      <xs:enumeration value="FAIL"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="SaturnStatusConditionEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="ANY FAIL"/>          
+      <xs:enumeration value="ANY PASS"/>
+      <xs:enumeration value="ALL PASS"/>
+      <xs:enumeration value="ALL FAIL"/>      
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- ComplexValuePair -->
+  <xs:complexType name="ComplexValuePair" ecore:name="ComplexValuePair">
+    <xs:sequence>
+  	  <xs:element name="First" minOccurs="1" maxOccurs="1" type="value:complexValue" />
+  	  <xs:element name="Second" minOccurs="1" maxOccurs="1" type="value:complexValue" />  	      
+    </xs:sequence>    
+  </xs:complexType>
+  
+  <!-- ComplexValueMap -->
+   <xs:complexType name="ComplexValueMap" ecore:name="ComplexValueMap">
+       <xs:sequence>
+         <xs:element name="Source" minOccurs="1" maxOccurs="1" type="value:complexValue" report:colNum="1"/>
+         <xs:element name="Target" minOccurs="1" maxOccurs="1" type="value:complexValue" report:colNum="2"/>          
+       </xs:sequence>  
+       <xs:attribute name="enabled" type="xs:boolean" default="true" />
+  </xs:complexType>
+  
+  <!--  AbstractAnnotation -->
+  <xs:complexType name="AbstractAnnotation" ecore:name="AbstractAnnotation" />
+
+  <!--  Comment -->
+  <xs:complexType name="Comment" ecore:name="Comment">
+    <xs:complexContent>
+      <xs:extension base="type:AbstractAnnotation">
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="AbstractRepetitionHandler" ecore:name="AbstractRepetitionHandler" perl:package="Saturn::Script::AbstractRepetitionHandler">
+    <xs:attribute name="defaultStatus" type="type:SaturnStatusEnum" default="FAIL" use="optional" />
+    <xs:attribute name="statusCondition" type="type:SaturnStatusConditionEnum"  default="ANY FAIL" use="optional" />
+    <xs:attribute name="enabled" type="xs:boolean" default="true" />
+  </xs:complexType>
+  
+  <!-- AbstractRunGroupModifier -->  
+  <xs:complexType name="AbstractRunGroupModifier" abstract="true" ecore:name="AbstractRunGroupModifier" perl:package="Saturn::Script::AbstractRunGroupModifier">
+    <xs:sequence/>
+    <xs:attribute name="enabled" type="xs:boolean" default="true" use="optional" />
+  </xs:complexType>
+  
+  <xs:complexType name="Empty" />
+  
+  <xs:simpleType name="ObjectName">
+    <xs:restriction base="xs:string">    
+	    <xs:pattern value="[A-Za-z0-9_]*"/>
+    </xs:restriction>    
+  </xs:simpleType>
+  
+  <xs:simpleType name="ObjectId">
+    <xs:restriction base="xs:string">    
+        <xs:pattern value="[A-Za-z0-9_]*"/>
+    </xs:restriction>    
+  </xs:simpleType>
+  
+</xs:schema>

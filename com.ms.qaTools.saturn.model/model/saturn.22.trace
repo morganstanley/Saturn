@@ -1,0 +1,1253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trace:TraceModel
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:trace="http://www.eclipse.org/gmf/2006/Trace">
+  <nodeTraces
+      visualID="2001"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5048"
+        queryText="true"/>
+    <compartmentTraces
+        visualID="7001"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2002"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'ReferenceStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5049"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5050"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2003"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'DataCompareStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5051"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5052"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2004"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'DocumentumStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5053"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5054"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2005"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'MQStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5055"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5056"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2006"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'MailStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5057"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5058"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2007"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunCmdsStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5059"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5060"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2008"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'SQLStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5061"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5062"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2009"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'SoapIOStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5063"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5064"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2010"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'XmlGenStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5065"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5066"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2011"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'Xml2CsvStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5067"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5068"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2012"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'XSplitStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5069"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5070"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2013"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'XmlDiffStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5071"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5072"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2014"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'PassTerminal') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')"/>
+  <nodeTraces
+      visualID="2015"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'FailTerminal') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')"/>
+  <nodeTraces
+      visualID="2016"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'NoopTerminal') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')"/>
+  <nodeTraces
+      visualID="2017"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'ProcedureCallStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5073"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5074"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2018"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'DSConvertStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5075"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5076"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2019"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'CpsStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5077"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5078"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2020"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'ExtractDDLStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5079"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5080"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2021"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'SingularityStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5081"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5082"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2022"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'DSValidatorStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5083"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5084"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2023"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'XmlManipStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5085"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5086"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2024"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'XmlValidatorStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5087"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5088"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2025"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'PsManagerStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5089"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5090"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2026"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'EnvValidatorStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5091"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5092"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2027"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'CometStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5093"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5094"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2028"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'JiraStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5101"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5102"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2029"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'P4Step') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5103"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5104"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2030"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'VmsStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5105"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5106"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2031"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'CSVFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5171"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5172"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2032"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Reference' and _eClass_.name = 'ReferenceResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5173"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5174"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2033"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'BinaryFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5175"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5176"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2034"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'CustomFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5177"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5178"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2035"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'DataFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5179"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5180"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2036"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'ExcelWorkBook') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5181"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5182"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2037"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'ExcelWorkSheet') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5183"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5184"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2038"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'FIXFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5185"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5186"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2039"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'FixedWidthFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5187"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5188"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2040"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'GoogleProtoBufFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5189"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5190"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2041"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'JsonFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5191"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5192"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2042"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'LineFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5193"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5194"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2043"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'OOCalcWorkBook') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5195"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5196"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2044"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'OOCalcWorkSheet') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5197"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5198"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2045"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'PropertiesFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5199"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5200"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2046"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'SlurpFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5201"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5202"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2047"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'StandardIO') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5203"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5204"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2048"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'XMLFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5205"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5206"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2049"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/DB2' and _eClass_.name = 'DB2Resource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5207"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5208"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2050"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2013/Saturn/Resources/H2' and _eClass_.name = 'H2Resource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5209"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5210"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2051"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2013/Saturn/Resources/MongoDb' and _eClass_.name = 'MongoDbResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5211"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5212"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2052"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2012/Saturn/Resources/MSSQL' and _eClass_.name = 'MSSQLResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5213"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5214"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2053"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2008/Saturn/Resources/Oracle' and _eClass_.name = 'OracleResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5215"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5216"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2054"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/ShadowDirect' and _eClass_.name = 'ShadowDirectResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5217"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5218"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2055"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2011/Saturn/Resources/SQLite' and _eClass_.name = 'SQLiteResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5219"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5220"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2056"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Sybase' and _eClass_.name = 'SybaseResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5221"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5222"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2057"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2009/Saturn/Resources/Teradata' and _eClass_.name = 'TeradataResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5223"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5224"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2058"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/UDB' and _eClass_.name = 'UDBResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5225"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5226"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2059"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2011/Saturn/Resources/Transaction' and _eClass_.name = 'TransactionResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5227"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5228"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2060"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2008/Saturn/Resources/Informix' and _eClass_.name = 'InformixResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5229"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5230"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2061"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'DeviceFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5231"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5232"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2062"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2009/Saturn/Resources/Query' and _eClass_.name = 'QueryResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5233"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5234"
+        queryText="true"/>
+  </nodeTraces>
+  <nodeTraces
+      visualID="2063"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'KronusStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5237"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5238"
+        queryText="true"/>
+  </nodeTraces>
+  <childNodeTraces
+      visualID="3001"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5047"
+        queryText="true"/>
+    <compartmentTraces
+        visualID="7002"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3002"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'ReferenceStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5001"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5002"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3003"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'DataCompareStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5003"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5004"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3004"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'DocumentumStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5005"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5006"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3005"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'MQStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5007"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5008"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3006"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'MailStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5009"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5010"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3007"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunCmdsStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5011"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5012"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3008"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'SQLStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5013"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5014"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3009"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'SoapIOStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5015"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5016"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3010"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'XSplitStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5017"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5018"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3011"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'Xml2CsvStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5019"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5020"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3012"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'XmlDiffStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5021"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5022"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3013"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'XmlGenStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5023"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5024"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3014"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'FailTerminal') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')"/>
+  <childNodeTraces
+      visualID="3015"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'PassTerminal') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')"/>
+  <childNodeTraces
+      visualID="3016"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'ProcedureCallStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5025"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5026"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3017"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'DSConvertStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5027"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5028"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3018"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'CpsStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5029"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5030"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3019"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'ExtractDDLStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5031"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5032"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3020"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'SingularityStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5033"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5034"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3021"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'DSValidatorStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5035"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5036"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3022"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'XmlManipStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5037"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5038"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3023"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'XmlValidatorStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5039"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5040"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3024"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'PsManagerStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5041"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5042"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3025"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'EnvValidatorStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5043"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5044"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3026"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'NoopTerminal') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')"/>
+  <childNodeTraces
+      visualID="3027"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'CometStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5045"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5046"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3028"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'JiraStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5095"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5096"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3029"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'P4Step') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5097"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5098"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3030"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'VmsStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5099"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5100"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3031"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'CSVFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5107"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5108"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3032"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Reference' and _eClass_.name = 'ReferenceResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5109"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5110"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3033"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'BinaryFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5111"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5112"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3034"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'CustomFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5113"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5114"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3035"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'DataFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5115"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5116"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3036"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'ExcelWorkBook') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5117"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5118"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3037"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'ExcelWorkSheet') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5119"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5120"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3038"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'FIXFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5121"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5122"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3039"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'FixedWidthFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5123"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5124"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3040"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'GoogleProtoBufFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5125"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5126"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3041"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'JsonFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5127"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5128"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3042"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'LineFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5129"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5130"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3043"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'OOCalcWorkBook') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5131"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5132"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3044"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'OOCalcWorkSheet') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5133"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5134"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3045"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'PropertiesFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5135"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5136"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3046"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'SlurpFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5137"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5138"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3047"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'StandardIO') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5139"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5140"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3048"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'XMLFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5141"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5142"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3049"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/DB2' and _eClass_.name = 'DB2Resource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5143"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5144"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3050"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2013/Saturn/Resources/H2' and _eClass_.name = 'H2Resource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5145"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5146"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3051"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2013/Saturn/Resources/MongoDb' and _eClass_.name = 'MongoDbResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5147"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5148"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3052"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2012/Saturn/Resources/MSSQL' and _eClass_.name = 'MSSQLResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5149"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5150"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3053"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2008/Saturn/Resources/Oracle' and _eClass_.name = 'OracleResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5151"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5152"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3054"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/ShadowDirect' and _eClass_.name = 'ShadowDirectResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5153"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5154"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3055"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2011/Saturn/Resources/SQLite' and _eClass_.name = 'SQLiteResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5155"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5156"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3056"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Sybase' and _eClass_.name = 'SybaseResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5157"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5158"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3057"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2009/Saturn/Resources/Teradata' and _eClass_.name = 'TeradataResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5159"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5160"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3058"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/UDB' and _eClass_.name = 'UDBResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5161"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5162"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3059"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2011/Saturn/Resources/Transaction' and _eClass_.name = 'TransactionResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5163"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5164"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3060"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2008/Saturn/Resources/Informix' and _eClass_.name = 'InformixResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5165"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5166"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3061"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2009/Saturn/Resources/Query' and _eClass_.name = 'QueryResource') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5167"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5168"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3062"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/Resources/Files' and _eClass_.name = 'DeviceFile') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'AbstractRunGroup') and _containmentMF_.name = 'resources')">
+    <nodeLabelTraces
+        visualID="5169"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5170"
+        queryText="true"/>
+  </childNodeTraces>
+  <childNodeTraces
+      visualID="3063"
+      queryText="(let _eClass_:ecore::EClass = modelFacet.metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'KronusStep') and (let _containmentMF_:ecore::EStructuralFeature = modelFacet.containmentMetaFeature.ecoreFeature in (let _eClass_:ecore::EClass = _containmentMF_.eContainingClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'RunGroup') and _containmentMF_.name = 'runGroups')">
+    <nodeLabelTraces
+        visualID="5235"
+        queryText="true"/>
+    <nodeLabelTraces
+        visualID="5236"
+        queryText="true"/>
+  </childNodeTraces>
+  <linkTraces
+      visualID="4001"
+      queryText="modelFacet.oclIsKindOf(gmfgen::TypeLinkModelFacet) and (let _eClass_:ecore::EClass = modelFacet.oclAsType(gmfgen::TypeLinkModelFacet).metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'OnFailLink')"/>
+  <linkTraces
+      visualID="4002"
+      queryText="modelFacet.oclIsKindOf(gmfgen::TypeLinkModelFacet) and (let _eClass_:ecore::EClass = modelFacet.oclAsType(gmfgen::TypeLinkModelFacet).metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'OnFinishLink')"/>
+  <linkTraces
+      visualID="4003"
+      queryText="modelFacet.oclIsKindOf(gmfgen::TypeLinkModelFacet) and (let _eClass_:ecore::EClass = modelFacet.oclAsType(gmfgen::TypeLinkModelFacet).metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'OnPassLink')"/>
+  <linkTraces
+      visualID="4004"
+      queryText="modelFacet.oclIsKindOf(gmfgen::TypeLinkModelFacet) and (let _eClass_:ecore::EClass = modelFacet.oclAsType(gmfgen::TypeLinkModelFacet).metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'CustomLink')">
+    <linkLabelTraces
+        visualID="6001"
+        queryText="true"/>
+  </linkTraces>
+  <linkTraces
+      visualID="4005"
+      queryText="modelFacet.oclIsKindOf(gmfgen::TypeLinkModelFacet) and (let _eClass_:ecore::EClass = modelFacet.oclAsType(gmfgen::TypeLinkModelFacet).metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'ResourceLink')"/>
+  <linkTraces
+      visualID="4006"
+      queryText="modelFacet.oclIsKindOf(gmfgen::TypeLinkModelFacet) and (let _eClass_:ecore::EClass = modelFacet.oclAsType(gmfgen::TypeLinkModelFacet).metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'ResourceStepLink')">
+    <linkLabelTraces
+        visualID="6002"
+        queryText="true"/>
+  </linkTraces>
+  <linkTraces
+      visualID="4007"
+      queryText="modelFacet.oclIsKindOf(gmfgen::TypeLinkModelFacet) and (let _eClass_:ecore::EClass = modelFacet.oclAsType(gmfgen::TypeLinkModelFacet).metaClass.ecoreClass in _eClass_.ePackage.nsURI = 'http://www.ms.com/2006/Saturn/gmf' and _eClass_.name = 'ResourceNestedLink')"/>
+</trace:TraceModel>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" 
+           xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:udb="http://www.ms.com/2006/Saturn/Resources/UDB" 
+           xmlns:value="http://www.ms.com/2006/Saturn/Values" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           ecore:nsPrefix="udbResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.udbResource" 
+           elementFormDefault="qualified" 
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+           
+           targetNamespace="http://www.ms.com/2006/Saturn/Resources/UDB">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+
+    <xs:complexType ecore:name="UDBResource" name="UDBResource" >	
+      <xs:complexContent>	
+	    <xs:extension base="type:DatabaseResourceDefinition">
+	      <xs:sequence>
+            <xs:element name="Login" type="value:complexValue" minOccurs="0" maxOccurs="1"  />  
+            <xs:element name="Server" type="value:complexValue"  />  
+            <xs:element name="Qualifier" type="value:complexValue"  />  
+          </xs:sequence>
+        </xs:extension>  
+      </xs:complexContent>  
+    </xs:complexType>  
+
+</xs:schema>

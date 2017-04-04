@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:mq="http://www.ms.com/2006/Saturn/Modules/MQ"
+           xmlns:exception="http://www.ms.com/2009/Saturn/Exception"
+           
+           xmlns:mqResource="http://www.ms.com/2006/Saturn/Resources/MQ"
+
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"           
+           ecore:nsPrefix="mqModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.mqModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+                      
+           targetNamespace="http://www.ms.com/2006/Saturn/Modules/MQ"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/MQ" schemaLocation="../resources/mq.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Exception" schemaLocation="../saturnException.xsd"/>
+  
+  <xs:complexType name="AbstractMQOperation" abstract="true" ecore:name="AbstractMQOperation">
+  </xs:complexType>
+
+  <xs:element name="Configuration" ecore:name="MQConfiguration">
+    <xs:complexType ecore:name="MQConfiguration">
+      <xs:sequence>
+        <xs:element name="MQResource" type="type:ResourceDefinition" minOccurs="0"/>
+        <xs:element name="Operation" type="mq:AbstractMQOperation" minOccurs="0"/>
+      </xs:sequence>         
+    </xs:complexType>
+  </xs:element>
+  
+<xs:complexType name="MQGetOperation" ecore:name="MQGetOperation">
+  <xs:complexContent>
+    <xs:extension base="mq:AbstractMQOperation">
+      <xs:sequence>
+        <xs:element ref="exception:Exception" minOccurs="0"/>
+        <xs:element name="OutputResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+        <xs:element name="Pattern" type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="Priority" type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="Delimiter" type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="OutputFormat" minOccurs="0" maxOccurs="1" >
+          <xs:complexType ecore:name="MQGetOutputFormat">
+            <xs:attribute name="noCps" type="xs:boolean"/>
+            <xs:attribute name="noCrLf" type="xs:boolean"/>
+            <xs:attribute name="oneLine" type="xs:boolean" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Actions" type="mq:GetAction" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="MessageProcessors" type="mq:AbstractMessageProcessor" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="removeFromQueue" type="xs:boolean" default="false"/>
+    </xs:extension>  
+  </xs:complexContent>  
+</xs:complexType>
+
+<xs:complexType name="GetAction" ecore:name="MQGetAction">
+  <xs:sequence>
+    <xs:element name="Queue" type="value:complexValue"/>
+    <xs:element name="Output" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/>
+  </xs:sequence>
+  <xs:attribute name="enabled" type="xs:boolean" default="true"/>
+</xs:complexType>      
+  
+
+<xs:complexType name="MQPutOperation" ecore:name="MQPutOperation">
+  <xs:complexContent>
+    <xs:extension base="mq:AbstractMQOperation">
+      <xs:sequence>
+        <xs:element ref="exception:Exception" minOccurs="0" />
+        <xs:element name="InputResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="Actions" type="mq:PutAction" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="delay" type="xs:integer" default="0" />
+      <xs:attribute name="cpsHeader" type="xs:string" default="" />
+      <xs:attribute name="delimiter" type="xs:string" />
+    </xs:extension>  
+  </xs:complexContent>         
+</xs:complexType>
+
+<xs:simpleType name="InputMessageType" ecore:name="InputMessageType">
+  <xs:restriction base="xs:token">    
+    <xs:enumeration value="BYTES"/>
+    <xs:enumeration value="MAP"/>
+    <xs:enumeration value="OBJECT"/>
+    <xs:enumeration value="STREAM"/>
+    <xs:enumeration value="TEXT"/>
+  </xs:restriction>  
+</xs:simpleType>
+
+<xs:complexType name="PutAction" ecore:name="MQPutAction">
+  <xs:sequence>
+    <xs:element name="Input" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/>
+    <xs:element name="InputType" type="mq:InputMessageType" minOccurs="0" maxOccurs="1" default="TEXT" />
+    <xs:element name="Queue" type="value:complexValue"/>
+  </xs:sequence>
+  <xs:attribute name="isXml" type="xs:boolean" default="false" />
+  <xs:attribute name="phonyElementName" type="xs:token"/>
+  <xs:attribute name="oneMessage" type="xs:boolean" default="false" />
+  <xs:attribute name="enabled" type="xs:boolean" default="true" />
+  <xs:attribute name="delay" type="xs:integer" default="0" />
+</xs:complexType>
+  
+<xs:complexType name="MQClearOperation" ecore:name="MQClearOperation">
+  <xs:complexContent>
+    <xs:extension base="mq:AbstractMQOperation">
+      <xs:sequence>
+        <xs:element ref="exception:Exception" minOccurs="0" />
+        <xs:element name="Queues" minOccurs="0" maxOccurs="unbounded" type="mq:MQClearAction"/>
+      </xs:sequence>
+    </xs:extension>  
+  </xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="MQClearAction" ecore:name="MQClearAction">
+   <xs:complexContent>
+    <xs:extension base="value:complexValue">
+      <xs:sequence/>
+      <xs:attribute name="enabled" type="xs:boolean" default="true"/>
+    </xs:extension>
+   </xs:complexContent>
+
+</xs:complexType>
+  
+<xs:complexType name="MQWaitOperation" ecore:name="MQWaitOperation">
+  <xs:complexContent>
+    <xs:extension base="mq:AbstractMQOperation">
+      <xs:sequence>
+        <xs:element name="Comparison" minOccurs="0" maxOccurs="1">
+          <xs:complexType ecore:name="WaitComparison">
+            <xs:complexContent>
+              <xs:extension base="value:complexValue">
+                <xs:sequence/>
+                <xs:attribute name="timeout" type="xs:integer" default="0" />          	
+                <xs:attribute name="depth" type="mq:WaitDepth" default="0" />
+                <xs:attribute name="operator" type="mq:WaitOperator" default="=="  />
+                <xs:attribute name="checkTotal" type="xs:boolean" default="false" />
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Queues" minOccurs="0" maxOccurs="unbounded" type="mq:MQWaitAction"/>
+      </xs:sequence>
+    </xs:extension>  
+  </xs:complexContent> 
+</xs:complexType>
+
+<xs:complexType name="MQWaitAction" ecore:name="MQWaitAction">
+  <xs:complexContent>
+    <xs:extension base="value:complexValue">
+      <xs:sequence/>
+      <xs:attribute name="enabled" type="xs:boolean" default="true"/>
+    </xs:extension>
+  </xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="MQReportOperation" ecore:name="MQReportOperation">
+  <xs:complexContent>
+    <xs:extension base="mq:AbstractMQOperation">
+      <xs:sequence>
+        <xs:element name="Queues" minOccurs="0" maxOccurs="unbounded" type="mq:MQReportAction"/>
+      </xs:sequence>
+    </xs:extension>  
+  </xs:complexContent> 
+</xs:complexType>
+  
+<xs:complexType name="MQReportAction" mixed="true" ecore:name="MQReportAction">
+  <xs:complexContent>
+    <xs:extension base="value:complexValue">
+      <xs:attribute name="enabled" type="xs:boolean" default="true"/>
+    </xs:extension>
+   </xs:complexContent>
+</xs:complexType>  
+  
+<xs:simpleType name="WaitDepth" ecore:name="WaitDepth">
+  <xs:restriction base="xs:integer">
+    <xs:minInclusive value="0"/>
+  </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="WaitOperator" ecore:name="WaitOperator">
+  <xs:restriction base="xs:token">
+    <xs:enumeration value="&lt;"/>
+    <xs:enumeration value="&lt;="/>
+    <xs:enumeration value="=="/>
+    <xs:enumeration value="&gt;="/>
+    <xs:enumeration value="&gt;"/>
+  </xs:restriction>  
+</xs:simpleType>
+
+<xs:complexType name="AbstractMessageProcessor" 
+                ecore:name="AbstractMessageProcessor"
+                abstract="true">
+  <xs:attribute name="enabled" type="xs:boolean" default="true" />
+</xs:complexType>
+
+<xs:complexType name="SimpleHeaderProcessor" ecore:name="SimpleHeaderProcessor">
+  <xs:complexContent>
+    <xs:extension base="mq:AbstractMessageProcessor">
+      <xs:sequence>
+        <xs:element name="Fields" type="value:complexValue" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:extension>
+   </xs:complexContent>
+</xs:complexType>  
+
+<xs:complexType name="CpsHeaderProcessor" ecore:name="CpsHeaderProcessor">
+  <xs:complexContent>
+    <xs:extension base="mq:AbstractMessageProcessor">
+      <xs:sequence/>
+    </xs:extension>
+   </xs:complexContent>
+</xs:complexType>  
+  
+</xs:schema>

@@ -1,0 +1,22 @@
+package com.ms.qaTools.kronus.rfb.kronusReport
+
+// def @Report() = {}
+// def @Scenario() = {}
+// def @ScenarioResult() = {}
+// def @ScenarioInfo() = {}
+
+// @Report(name="MyReport")
+// @Scenario(name="MyScenario")
+val MyTest = {
+  // val expectedXml = XmlIO(device=FileIO(fileName = "expected.xml"))
+  // val templateXml = XmlIO(device=FileIO(fileName = "template.xml"))
+  // val messageData = CsvIO(device=FileIO(fileName="actualData.csv"))
+  // val messagesXml = Generate(template=Input(io=templateXml), data=Input(io=messageData))
+  
+  // val actualXml = SendReceive(requests=messagesXml)
+  
+  // val validator = Validate(actual=actualXml, expected=expectedXml)
+  
+  // @ScenarioResult(name="XmlValidationResult")
+  // val result = Write(input=validator, output=ValidatioConsumer())
+}

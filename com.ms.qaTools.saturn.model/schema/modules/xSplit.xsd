@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:directoryResource="http://www.ms.com/2006/Saturn/Resources/Directory" 
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" 
+           xmlns:perl="http://www.ms.com/2006/pdsttools/xsd2perl" 
+           xmlns:sl="http://www.ms.com/2011/pdsttools/xsd2scriptLib"
+           xmlns:report="http://www.ms.com/2011/pdsttools/xsd2report"
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf" 
+           xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:value="http://www.ms.com/2006/Saturn/Values" 
+           xmlns:xSplit="http://www.ms.com/2006/Saturn/Modules/XSplit" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           
+           ecore:nsPrefix="xSplitModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.XSplitModule" 
+           elementFormDefault="qualified" 
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+           
+           targetNamespace="http://www.ms.com/2006/Saturn/Modules/XSplit">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Directory" schemaLocation="../resources/directory.xsd"/>
+  
+<xs:element ecore:name="XSplitConfiguration" name="Configuration">
+  <xs:complexType ecore:name="XSplitConfiguration" >
+    <xs:sequence>
+      <xs:element name="XMLFile" type="type:ResourceDefinition" />
+      <xs:element name="OutputDirectory" type="type:ResourceDefinition" minOccurs="0" />
+      <xs:element name="XPaths" maxOccurs="unbounded" minOccurs="0" type="xSplit:XPath" />
+      <xs:element name="ConfigFile" type="type:ResourceDefinition" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute default="false" name="clearOutputDirectory" type="xs:boolean" use="optional" />
+    <xs:attribute default="true" name="gzip" type="xs:boolean" use="optional" />
+  </xs:complexType>
+</xs:element>
+ 
+ <xs:complexType name="XPath" >
+   <xs:complexContent>
+     <xs:extension base="value:complexValue">
+       <xs:sequence/>
+       <xs:attribute name="enabled" type="xs:boolean" default="true" />
+       <xs:attribute name="groupBy" type="xs:boolean" default="false" />
+     </xs:extension>
+   </xs:complexContent>
+ </xs:complexType>
+ 
+</xs:schema>

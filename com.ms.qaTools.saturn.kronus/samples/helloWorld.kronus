@@ -1,0 +1,20 @@
+package com.ms.qaTools.kronus.rfb.helloWorld
+
+type Unit
+type String
+type Any
+
+// def @Debug(THIS:Any, message:String=""):Unit = {
+//   val TR = THIS
+// }
+
+//def Println(msg:String):Unit = generate("yield") { println(msg) }
+def Println(msg:Any):Unit = generate("yield") { println(msg) }
+
+// @Debug(message="DEBUG:")
+val P0 = Println(msg = "Hello World")
+val P1 = Println(msg = 123454321)
+
+// @Debug()
+val A = "A"
+

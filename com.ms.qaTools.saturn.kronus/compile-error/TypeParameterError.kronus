@@ -1,0 +1,8 @@
+package com.ms.qaTools.kronus.rfb.compileerror.TypeParameterError
+
+type S
+type T[A, B]
+
+val A = {
+  def B(x: T[S]): S = {}
+}

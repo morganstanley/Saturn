@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:mail="http://www.ms.com/2006/Saturn/Modules/Mail"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="mailModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.mailModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"           
+           
+           targetNamespace="http://www.ms.com/2006/Saturn/Modules/Mail"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  
+  <xs:element name="Configuration" ecore:name="MailConfiguration" >
+    <xs:complexType  ecore:name="MailConfiguration">
+      <xs:sequence>
+        <xs:element name="Subject"     type="value:complexValue" minOccurs="0"/>
+        <xs:element name="Message"     type="value:complexValue" minOccurs="0" />
+        <xs:element name="Attachments" type="type:ResourceDefinition" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="Recipients"  type="mail:Recipient" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="attachAsLink" type="xs:boolean" use="optional" default="false" />
+      <xs:attribute name="messageType" type="mail:MessageTypeEnum" use="optional" default="TEXT" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="Recipient" ecore:name="MailRecipient"> 
+    <xs:complexContent>
+      <xs:extension base="value:complexValue">
+        <xs:attribute name="type" type="mail:RecipientTypeEnum" default="TO"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+ 
+  <xs:simpleType name="RecipientTypeEnum" ecore:name="RecipientTypeEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="TO" />
+      <xs:enumeration value="CC" />
+      <xs:enumeration value="BCC" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="MessageTypeEnum" ecore:name="MessageTypeEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="TEXT" />
+      <xs:enumeration value="HTML" />
+      <xs:enumeration value="XML" />
+    </xs:restriction>
+  </xs:simpleType>   
+</xs:schema>

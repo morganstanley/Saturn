@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.ms.com/2015/Saturn/Kronus"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="kronus"
+           ecore:package="com.ms.qaTools.saturn.kronus.backport"
+
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:procedureCall="http://www.ms.com/2009/Saturn/Modules/ProcedureCall">
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types"                 schemaLocation="saturnTypes.xsd"/>
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/ProcedureCall" schemaLocation="modules/procedureCall.xsd"/>
+
+  <xs:element name="KronusCallConfiguration">
+    <xs:complexType ecore:name="KronusCallConfiguration">
+      <xs:sequence>
+        <xs:element name="Def"       type="type:ObjectName"                minOccurs="1" maxOccurs="1" />
+        <xs:element name="Arguments" type="procedureCall:AbstractArgument" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

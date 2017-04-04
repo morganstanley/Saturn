@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="sqlModuleResult"
+    nsURI="http://www.ms.com/2006/Saturn/Modules/SQL/Result" nsPrefix="sqlModuleResult">
+  <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+    <details key="nsPrefix" value="sqlResult"/>
+    <details key="package" value="Saturn::Module::SQL::Result"/>
+  </eAnnotations>
+  <eAnnotations source="http://www.ms.com/2011/tdo-qa-tools/rcs">
+    <details key="author" value="$Author: karaic $"/>
+    <details key="change" value="$Change: 4642608 $"/>
+    <details key="file" value="$File: //std/qaTools/saturn/trunk/eclipse/com.ms.qaTools.saturn.model/schema/modules/sqlResult.xsd $"/>
+    <details key="id" value="$Id: //std/qaTools/saturn/trunk/eclipse/com.ms.qaTools.saturn.model/schema/modules/sqlResult.xsd#4 $"/>
+    <details key="revision" value="$Revision: #4 $"/>
+    <details key="timestamp" value="$DateTime: 2011/11/08 10:54:55 $"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="SQLCallResult" eSuperTypes="#//SQLResult">
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::Module::SQL::Call::Result"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="CallResult"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="individualResults" upperBound="-1"
+        eType="#//SQLIndCallResult" containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="IndividualResults"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SQLClearResult" eSuperTypes="#//SQLResult">
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::Module::SQL::Clear::Result"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="ClearResult"/>
+      <details key="kind" value="empty"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="clearedRows" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Integer">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="count"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="3"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="clearedRows"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="tableName" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="2"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="tableName"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SQLExecuteResult" eSuperTypes="#//SQLResult">
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::Module::SQL::Execute::Result"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="ExecuteResult"/>
+      <details key="kind" value="empty"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="message" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="2"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="message"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="success" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="3"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="success"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SQLIndCallResult">
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::Module::SQL::Call::Procedure::IndividualCallResult"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="IndividualCallResult"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="inParms" upperBound="-1"
+        eType="#//SQLIndCallResultVal" containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="1"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="InParms"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outParms" upperBound="-1"
+        eType="#//SQLIndCallResultVal" containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="2"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="OutParms"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="resultSets" upperBound="-1"
+        eType="#//SQLIndCallResultVal" containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="3"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="ResultSets"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="callNo" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Integer">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="callNo"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rowCount" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Integer">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="rowCount"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SQLIndCallResultVal">
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::Module::SQL::Call::Procedure::IndividualCallResult::Value"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="IndividualCallResultValue"/>
+      <details key="kind" value="empty"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="value"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SQLResult">
+    <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+      <details key="skip" value="true"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Result"/>
+      <details key="kind" value="empty"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SQLResultBase" eSuperTypes="#//SQLResult">
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::Module::SQL::Result::Base"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="ResultBase"/>
+      <details key="kind" value="empty"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="2"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="name"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rowcount" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Integer">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="count"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="3"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="Rowcount"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+</ecore:EPackage>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"                                 
+           xmlns:repetition="http://www.ms.com/2007/Saturn/repetition"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="repetition" 
+           ecore:package="com.ms.qaTools.saturn.repetition"
+           
+           xmlns:perl="http://www.ms.com/2006/pdsttools/xsd2perl"
+           xmlns:sl="http://www.ms.com/2011/pdsttools/xsd2scriptLib"
+           xmlns:report="http://www.ms.com/2011/pdsttools/xsd2report"
+           perl:nsPrefix="repetition"
+           perl:package="Saturn::RepetitionHandler"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2007/Saturn/repetition"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="saturnValues.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="saturnTypes.xsd" />
+
+  <xs:complexType name="ForRepetition" ecore:name="ForRepetition" sl:name="_forLoop">
+    <xs:annotation>
+      <xs:appinfo>
+        <sl:serialize>
+  my $indent = $parms{indent} || '';
+  my $space1 = $parms{compact} ? ""  : "\n";
+  my $space2 = $parms{compact} ? ""  : "$indent";
+  my $space3 = $parms{compact} ? ""  : "$indent  ";
+  my $output = 'forLoop(' . $space1;
+
+  my ($field, $fieldAccessor);
+  $fieldAccessor = sub { $_[0]-&gt;iterators };
+  $field = $object->$fieldAccessor;
+
+  if( defined $field &amp;&amp; @$field )
+  {
+    my $iter0 = $field-&gt;[0];
+    $self-&gt;intAppendOutput(\$output, $space3 . $iter0-&gt;attribute . " =&gt; " . $iter0-&gt;startIndex . ", " . $iter0-&gt;endIndex . $space1, %parms);
+  }
+
+  $self-&gt;intAppendLastOutput(\$output, $space2 . ")", %parms);
+  return $output;
+        </sl:serialize>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+	  <xs:extension base="type:AbstractRepetitionHandler">
+	    <xs:sequence>
+	      <xs:element name="Iterators" minOccurs="0" maxOccurs="unbounded">
+	        <xs:complexType ecore:name="ForRepetitionIterator" perl:package="Saturn::RepetitionHandler::ForRepetition::Iterator">
+              <xs:sequence/>
+              <xs:attribute name="attribute" type="xs:token" sl:order="1" report:colNum="1"/>
+              <xs:attribute name="startIndex" type="xs:integer" default="0" sl:accessor="from" sl:order="2" report:colNum="2"/>
+              <xs:attribute name="endIndex" use="required" type="xs:integer" sl:accessor="to" sl:order="3" report:colNum="3"/>
+	        </xs:complexType>
+	      </xs:element>
+	    </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:annotation>
+    <xs:appinfo>
+      <sl:method name="forLoop">
+        return _forLoop(iterators => [iterators(@_)]);
+     </sl:method>
+   </xs:appinfo>
+  </xs:annotation>
+
+  <xs:complexType name="ForEachRepetition" ecore:name="ForEachRepetition" sl:name="forEachLoop">
+    <xs:complexContent>
+	  <xs:extension base="type:AbstractRepetitionHandler">
+	    <xs:sequence>
+	      <xs:element name="DataSetResource" minOccurs="1" maxOccurs="1" type="type:NamedResourceDefinition" sl:accessor="dataSet" sl:map="genDataSet"/>
+	      <xs:element name="ColumnMappings" minOccurs="0" maxOccurs="unbounded" sl:accessor="mappings" >
+	        <xs:complexType ecore:name="ColumnMapping" perl:package="Saturn::RepetitionHandler::ForEachRepetition::ColumnMapping" sl:name="forEachLoop_mapping">
+              <xs:annotation>
+                <xs:appinfo>
+                  <sl:serialize>
+  return "forEachLoop_mapping(" . $object->attribute . " => " . $self->intSerializeValue( $object->column, %parms ) . ")";
+                  </sl:serialize>
+                </xs:appinfo>
+              </xs:annotation>
+	          <xs:sequence/>
+	          <xs:attribute name="attribute" type="xs:token" sl:order="1"/>
+	          <xs:attribute name="column" type="xs:token" sl:order="2"/>
+	        </xs:complexType>
+	      </xs:element>
+	    </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ForEachXPathRepetition" ecore:name="ForEachXPathRepetition">
+    <xs:complexContent>
+      <xs:extension base="type:AbstractRepetitionHandler">
+        <xs:sequence>
+          <xs:element name="XMLResource" minOccurs="1" maxOccurs="1" type="type:NamedResourceDefinition" perl:accessor="xmlResource"/>
+          <xs:element name="NamespaceDefinition" type="type:NamedResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="XPathMappings" minOccurs="0" maxOccurs="unbounded">
+            <xs:complexType ecore:name="XPathMapping" perl:package="Saturn::RepetitionHandler::ForEachXPathRepetition::XPathMapping">
+              <xs:sequence/>
+              <xs:attribute name="attribute" type="xs:token" />
+              <xs:attribute name="xPath" type="xs:token" />
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+</xs:schema>

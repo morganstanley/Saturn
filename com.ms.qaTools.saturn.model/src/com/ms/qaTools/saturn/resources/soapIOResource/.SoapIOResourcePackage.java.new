@@ -1,0 +1,1225 @@
+/**
+ * <copyright>
+ * COPYRIGHT NOTICE AND DISCLAIMER
+ *  
+ * Copyright © 2009, Contributor
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License, version 3, as published by the Free Software Foundation.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License, version 3 for more details.
+ * You should have received a copy of the GNU Lesser General Public License, version 3, along with this program; if not, see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * THE FOLLOWING DISCLAIMER APPLIES TO ALL SOFTWARE CODE AND OTHER MATERIALS CONTRIBUTED IN CONNECTION WITH THIS PROGRAM:
+ * THIS SOFTWARE IS LICENSED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE AND ANY WARRANTY OF NON-INFRINGEMENT, ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. THIS SOFTWARE MAY BE REDISTRIBUTED TO OTHERS ONLY BY EFFECTIVELY USING THIS OR ANOTHER EQUIVALENT DISCLAIMER AS WELL AS ANY OTHER LICENSE TERMS THAT MAY APPLY.
+ * </copyright>
+ *
+ * $Id: //std/qaTools/saturn/trunk/eclipse/com.ms.qaTools.saturn.model/src/com/ms/qaTools/saturn/resources/soapIOResource/SoapIOResourcePackage.java#13 $
+ */
+
+package com.ms.qaTools.saturn.resources.soapIOResource;
+
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
+
+import com.ms.qaTools.saturn.types.TypesPackage;
+
+/**
+ * <!-- begin-user-doc -->
+ * The <b>Package</b> for the model.
+ * It contains accessors for the meta objects to represent
+ * <ul>
+ *   <li>each class,</li>
+ *   <li>each feature of each class,</li>
+ *   <li>each enum,</li>
+ *   <li>and each data type</li>
+ * </ul>
+ * <!-- end-user-doc -->
+ * @see com.ms.qaTools.saturn.resources.soapIOResource.SoapIOResourceFactory
+ * @model kind="package"
+ *        annotation="http://www.ms.com/2006/pdsttools/xsd2perl nsPrefix='soapIOResource' package='SaturnLib::Script::Resource::SoapIO'"
+ * @generated
+ */
+public interface SoapIOResourcePackage extends EPackage
+{
+  /**
+   * The package name.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  String eNAME = "soapIOResource";
+
+  /**
+   * The package namespace URI.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  String eNS_URI = "http://www.ms.com/2007/Saturn/Resources/SoapIO";
+
+  /**
+   * The package namespace name.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  String eNS_PREFIX = "soapIOResource";
+
+  /**
+   * The singleton instance of the package.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  SoapIOResourcePackage eINSTANCE = com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl.init();
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.AbstractTransportImpl <em>Abstract Transport</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.AbstractTransportImpl
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getAbstractTransport()
+   * @generated
+   */
+  int ABSTRACT_TRANSPORT = 0;
+
+  /**
+   * The feature id for the '<em><b>Asynchronous</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ABSTRACT_TRANSPORT__ASYNCHRONOUS = 0;
+
+  /**
+   * The number of structural features of the '<em>Abstract Transport</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ABSTRACT_TRANSPORT_FEATURE_COUNT = 1;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.CPSTransportImpl <em>CPS Transport</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.CPSTransportImpl
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getCPSTransport()
+   * @generated
+   */
+  int CPS_TRANSPORT = 1;
+
+  /**
+   * The feature id for the '<em><b>Asynchronous</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CPS_TRANSPORT__ASYNCHRONOUS = ABSTRACT_TRANSPORT__ASYNCHRONOUS;
+
+  /**
+   * The feature id for the '<em><b>Transport</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CPS_TRANSPORT__TRANSPORT = ABSTRACT_TRANSPORT_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Topic</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CPS_TRANSPORT__TOPIC = ABSTRACT_TRANSPORT_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>Filter</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CPS_TRANSPORT__FILTER = ABSTRACT_TRANSPORT_FEATURE_COUNT + 2;
+
+  /**
+   * The feature id for the '<em><b>Message Type</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CPS_TRANSPORT__MESSAGE_TYPE = ABSTRACT_TRANSPORT_FEATURE_COUNT + 3;
+
+  /**
+   * The feature id for the '<em><b>Subscribe</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CPS_TRANSPORT__SUBSCRIBE = ABSTRACT_TRANSPORT_FEATURE_COUNT + 4;
+
+  /**
+   * The number of structural features of the '<em>CPS Transport</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CPS_TRANSPORT_FEATURE_COUNT = ABSTRACT_TRANSPORT_FEATURE_COUNT + 5;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.HTTPTransportImpl <em>HTTP Transport</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.HTTPTransportImpl
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getHTTPTransport()
+   * @generated
+   */
+  int HTTP_TRANSPORT = 2;
+
+  /**
+   * The feature id for the '<em><b>Asynchronous</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HTTP_TRANSPORT__ASYNCHRONOUS = ABSTRACT_TRANSPORT__ASYNCHRONOUS;
+
+  /**
+   * The feature id for the '<em><b>Url</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HTTP_TRANSPORT__URL = ABSTRACT_TRANSPORT_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Proxy Url</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HTTP_TRANSPORT__PROXY_URL = ABSTRACT_TRANSPORT_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>User Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HTTP_TRANSPORT__USER_ID = ABSTRACT_TRANSPORT_FEATURE_COUNT + 2;
+
+  /**
+   * The feature id for the '<em><b>Password</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HTTP_TRANSPORT__PASSWORD = ABSTRACT_TRANSPORT_FEATURE_COUNT + 3;
+
+  /**
+   * The number of structural features of the '<em>HTTP Transport</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HTTP_TRANSPORT_FEATURE_COUNT = ABSTRACT_TRANSPORT_FEATURE_COUNT + 4;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.MQTransportImpl <em>MQ Transport</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.MQTransportImpl
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getMQTransport()
+   * @generated
+   */
+  int MQ_TRANSPORT = 3;
+
+  /**
+   * The feature id for the '<em><b>Asynchronous</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MQ_TRANSPORT__ASYNCHRONOUS = ABSTRACT_TRANSPORT__ASYNCHRONOUS;
+
+  /**
+   * The feature id for the '<em><b>MQ Resource</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MQ_TRANSPORT__MQ_RESOURCE = ABSTRACT_TRANSPORT_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Request Queue</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MQ_TRANSPORT__REQUEST_QUEUE = ABSTRACT_TRANSPORT_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>Response Queue</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MQ_TRANSPORT__RESPONSE_QUEUE = ABSTRACT_TRANSPORT_FEATURE_COUNT + 2;
+
+  /**
+   * The feature id for the '<em><b>Model QName</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MQ_TRANSPORT__MODEL_QNAME = ABSTRACT_TRANSPORT_FEATURE_COUNT + 3;
+
+  /**
+   * The feature id for the '<em><b>Dynamic QName</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MQ_TRANSPORT__DYNAMIC_QNAME = ABSTRACT_TRANSPORT_FEATURE_COUNT + 4;
+
+  /**
+   * The feature id for the '<em><b>Persistent</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MQ_TRANSPORT__PERSISTENT = ABSTRACT_TRANSPORT_FEATURE_COUNT + 5;
+
+  /**
+   * The feature id for the '<em><b>Use Correl Id</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MQ_TRANSPORT__USE_CORREL_ID = ABSTRACT_TRANSPORT_FEATURE_COUNT + 6;
+
+  /**
+   * The number of structural features of the '<em>MQ Transport</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MQ_TRANSPORT_FEATURE_COUNT = ABSTRACT_TRANSPORT_FEATURE_COUNT + 7;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourceImpl <em>Soap IO Resource</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourceImpl
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getSoapIOResource()
+   * @generated
+   */
+  int SOAP_IO_RESOURCE = 4;
+
+  /**
+   * The feature id for the '<em><b>Enabled</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SOAP_IO_RESOURCE__ENABLED = TypesPackage.NAMED_RESOURCE_DEFINITION__ENABLED;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SOAP_IO_RESOURCE__NAME = TypesPackage.NAMED_RESOURCE_DEFINITION__NAME;
+
+  /**
+   * The feature id for the '<em><b>Time Out</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SOAP_IO_RESOURCE__TIME_OUT = TypesPackage.NAMED_RESOURCE_DEFINITION_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Transport</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SOAP_IO_RESOURCE__TRANSPORT = TypesPackage.NAMED_RESOURCE_DEFINITION_FEATURE_COUNT + 1;
+
+  /**
+   * The number of structural features of the '<em>Soap IO Resource</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SOAP_IO_RESOURCE_FEATURE_COUNT = TypesPackage.NAMED_RESOURCE_DEFINITION_FEATURE_COUNT + 2;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.TCPTransportImpl <em>TCP Transport</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.TCPTransportImpl
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getTCPTransport()
+   * @generated
+   */
+  int TCP_TRANSPORT = 5;
+
+  /**
+   * The feature id for the '<em><b>Asynchronous</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TCP_TRANSPORT__ASYNCHRONOUS = ABSTRACT_TRANSPORT__ASYNCHRONOUS;
+
+  /**
+   * The feature id for the '<em><b>Hostname</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TCP_TRANSPORT__HOSTNAME = ABSTRACT_TRANSPORT_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Port</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TCP_TRANSPORT__PORT = ABSTRACT_TRANSPORT_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>Handshake</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TCP_TRANSPORT__HANDSHAKE = ABSTRACT_TRANSPORT_FEATURE_COUNT + 2;
+
+  /**
+   * The feature id for the '<em><b>Max Retries</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TCP_TRANSPORT__MAX_RETRIES = ABSTRACT_TRANSPORT_FEATURE_COUNT + 3;
+
+  /**
+   * The number of structural features of the '<em>TCP Transport</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TCP_TRANSPORT_FEATURE_COUNT = ABSTRACT_TRANSPORT_FEATURE_COUNT + 4;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes <em>Cps Message Types</em>}' enum.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getCpsMessageTypes()
+   * @generated
+   */
+  int CPS_MESSAGE_TYPES = 6;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums <em>Handshake Enums</em>}' enum.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getHandshakeEnums()
+   * @generated
+   */
+  int HANDSHAKE_ENUMS = 7;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums <em>Subscribe Enums</em>}' enum.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getSubscribeEnums()
+   * @generated
+   */
+  int SUBSCRIBE_ENUMS = 8;
+
+  /**
+   * The meta object id for the '<em>Cps Message Types Object</em>' data type.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getCpsMessageTypesObject()
+   * @generated
+   */
+  int CPS_MESSAGE_TYPES_OBJECT = 9;
+
+  /**
+   * The meta object id for the '<em>Handshake Enums Object</em>' data type.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getHandshakeEnumsObject()
+   * @generated
+   */
+  int HANDSHAKE_ENUMS_OBJECT = 10;
+
+
+  /**
+   * The meta object id for the '<em>Subscribe Enums Object</em>' data type.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getSubscribeEnumsObject()
+   * @generated
+   */
+  int SUBSCRIBE_ENUMS_OBJECT = 11;
+
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.resources.soapIOResource.AbstractTransport <em>Abstract Transport</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Abstract Transport</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.AbstractTransport
+   * @generated
+   */
+  EClass getAbstractTransport();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.resources.soapIOResource.AbstractTransport#isAsynchronous <em>Asynchronous</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Asynchronous</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.AbstractTransport#isAsynchronous()
+   * @see #getAbstractTransport()
+   * @generated
+   */
+  EAttribute getAbstractTransport_Asynchronous();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport <em>CPS Transport</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>CPS Transport</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport
+   * @generated
+   */
+  EClass getCPSTransport();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport#getTransport <em>Transport</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Transport</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport#getTransport()
+   * @see #getCPSTransport()
+   * @generated
+   */
+  EReference getCPSTransport_Transport();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport#getTopic <em>Topic</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Topic</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport#getTopic()
+   * @see #getCPSTransport()
+   * @generated
+   */
+  EReference getCPSTransport_Topic();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport#getFilter <em>Filter</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Filter</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport#getFilter()
+   * @see #getCPSTransport()
+   * @generated
+   */
+  EReference getCPSTransport_Filter();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport#getMessageType <em>Message Type</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Message Type</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport#getMessageType()
+   * @see #getCPSTransport()
+   * @generated
+   */
+  EAttribute getCPSTransport_MessageType();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport#getSubscribe <em>Subscribe</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Subscribe</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.CPSTransport#getSubscribe()
+   * @see #getCPSTransport()
+   * @generated
+   */
+  EAttribute getCPSTransport_Subscribe();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.resources.soapIOResource.HTTPTransport <em>HTTP Transport</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>HTTP Transport</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.HTTPTransport
+   * @generated
+   */
+  EClass getHTTPTransport();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.HTTPTransport#getUrl <em>Url</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Url</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.HTTPTransport#getUrl()
+   * @see #getHTTPTransport()
+   * @generated
+   */
+  EReference getHTTPTransport_Url();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.HTTPTransport#getProxyUrl <em>Proxy Url</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Proxy Url</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.HTTPTransport#getProxyUrl()
+   * @see #getHTTPTransport()
+   * @generated
+   */
+  EReference getHTTPTransport_ProxyUrl();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.HTTPTransport#getUserId <em>User Id</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>User Id</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.HTTPTransport#getUserId()
+   * @see #getHTTPTransport()
+   * @generated
+   */
+  EReference getHTTPTransport_UserId();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.HTTPTransport#getPassword <em>Password</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Password</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.HTTPTransport#getPassword()
+   * @see #getHTTPTransport()
+   * @generated
+   */
+  EReference getHTTPTransport_Password();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.resources.soapIOResource.MQTransport <em>MQ Transport</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>MQ Transport</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.MQTransport
+   * @generated
+   */
+  EClass getMQTransport();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#getMQResource <em>MQ Resource</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>MQ Resource</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#getMQResource()
+   * @see #getMQTransport()
+   * @generated
+   */
+  EReference getMQTransport_MQResource();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#getRequestQueue <em>Request Queue</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Request Queue</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#getRequestQueue()
+   * @see #getMQTransport()
+   * @generated
+   */
+  EReference getMQTransport_RequestQueue();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#getResponseQueue <em>Response Queue</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Response Queue</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#getResponseQueue()
+   * @see #getMQTransport()
+   * @generated
+   */
+  EReference getMQTransport_ResponseQueue();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#getModelQName <em>Model QName</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Model QName</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#getModelQName()
+   * @see #getMQTransport()
+   * @generated
+   */
+  EReference getMQTransport_ModelQName();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#getDynamicQName <em>Dynamic QName</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Dynamic QName</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#getDynamicQName()
+   * @see #getMQTransport()
+   * @generated
+   */
+  EReference getMQTransport_DynamicQName();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#isPersistent <em>Persistent</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Persistent</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#isPersistent()
+   * @see #getMQTransport()
+   * @generated
+   */
+  EAttribute getMQTransport_Persistent();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#isUseCorrelId <em>Use Correl Id</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Use Correl Id</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.MQTransport#isUseCorrelId()
+   * @see #getMQTransport()
+   * @generated
+   */
+  EAttribute getMQTransport_UseCorrelId();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.resources.soapIOResource.SoapIOResource <em>Soap IO Resource</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Soap IO Resource</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.SoapIOResource
+   * @generated
+   */
+  EClass getSoapIOResource();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.SoapIOResource#getTimeOut <em>Time Out</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Time Out</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.SoapIOResource#getTimeOut()
+   * @see #getSoapIOResource()
+   * @generated
+   */
+  EReference getSoapIOResource_TimeOut();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.SoapIOResource#getTransport <em>Transport</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Transport</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.SoapIOResource#getTransport()
+   * @see #getSoapIOResource()
+   * @generated
+   */
+  EReference getSoapIOResource_Transport();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.resources.soapIOResource.TCPTransport <em>TCP Transport</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>TCP Transport</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.TCPTransport
+   * @generated
+   */
+  EClass getTCPTransport();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.TCPTransport#getHostname <em>Hostname</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Hostname</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.TCPTransport#getHostname()
+   * @see #getTCPTransport()
+   * @generated
+   */
+  EReference getTCPTransport_Hostname();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.resources.soapIOResource.TCPTransport#getPort <em>Port</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Port</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.TCPTransport#getPort()
+   * @see #getTCPTransport()
+   * @generated
+   */
+  EReference getTCPTransport_Port();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.resources.soapIOResource.TCPTransport#getHandshake <em>Handshake</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Handshake</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.TCPTransport#getHandshake()
+   * @see #getTCPTransport()
+   * @generated
+   */
+  EAttribute getTCPTransport_Handshake();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.resources.soapIOResource.TCPTransport#getMaxRetries <em>Max Retries</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Max Retries</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.TCPTransport#getMaxRetries()
+   * @see #getTCPTransport()
+   * @generated
+   */
+  EAttribute getTCPTransport_MaxRetries();
+
+  /**
+   * Returns the meta object for enum '{@link com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes <em>Cps Message Types</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for enum '<em>Cps Message Types</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes
+   * @generated
+   */
+  EEnum getCpsMessageTypes();
+
+  /**
+   * Returns the meta object for enum '{@link com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums <em>Handshake Enums</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for enum '<em>Handshake Enums</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums
+   * @generated
+   */
+  EEnum getHandshakeEnums();
+
+  /**
+   * Returns the meta object for enum '{@link com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums <em>Subscribe Enums</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for enum '<em>Subscribe Enums</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums
+   * @generated
+   */
+  EEnum getSubscribeEnums();
+
+  /**
+   * Returns the meta object for data type '{@link com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes <em>Cps Message Types Object</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for data type '<em>Cps Message Types Object</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes
+   * @model instanceClass="com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes"
+   *        extendedMetaData="name='CpsMessageTypes:Object' baseType='CpsMessageTypes'"
+   * @generated
+   */
+  EDataType getCpsMessageTypesObject();
+
+  /**
+   * Returns the meta object for data type '{@link com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums <em>Handshake Enums Object</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for data type '<em>Handshake Enums Object</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums
+   * @model instanceClass="com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums"
+   *        extendedMetaData="name='HandshakeEnums:Object' baseType='HandshakeEnums'"
+   * @generated
+   */
+  EDataType getHandshakeEnumsObject();
+
+  /**
+   * Returns the meta object for data type '{@link com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums <em>Subscribe Enums Object</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for data type '<em>Subscribe Enums Object</em>'.
+   * @see com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums
+   * @model instanceClass="com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums"
+   *        extendedMetaData="name='SubscribeEnums:Object' baseType='SubscribeEnums'"
+   * @generated
+   */
+  EDataType getSubscribeEnumsObject();
+
+  /**
+   * Returns the factory that creates the instances of the model.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the factory that creates the instances of the model.
+   * @generated
+   */
+  SoapIOResourceFactory getSoapIOResourceFactory();
+
+  /**
+   * <!-- begin-user-doc -->
+   * Defines literals for the meta objects that represent
+   * <ul>
+   *   <li>each class,</li>
+   *   <li>each feature of each class,</li>
+   *   <li>each enum,</li>
+   *   <li>and each data type</li>
+   * </ul>
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  interface Literals
+  {
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.AbstractTransportImpl <em>Abstract Transport</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.AbstractTransportImpl
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getAbstractTransport()
+     * @generated
+     */
+    EClass ABSTRACT_TRANSPORT = eINSTANCE.getAbstractTransport();
+
+    /**
+     * The meta object literal for the '<em><b>Asynchronous</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute ABSTRACT_TRANSPORT__ASYNCHRONOUS = eINSTANCE.getAbstractTransport_Asynchronous();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.CPSTransportImpl <em>CPS Transport</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.CPSTransportImpl
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getCPSTransport()
+     * @generated
+     */
+    EClass CPS_TRANSPORT = eINSTANCE.getCPSTransport();
+
+    /**
+     * The meta object literal for the '<em><b>Transport</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference CPS_TRANSPORT__TRANSPORT = eINSTANCE.getCPSTransport_Transport();
+
+    /**
+     * The meta object literal for the '<em><b>Topic</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference CPS_TRANSPORT__TOPIC = eINSTANCE.getCPSTransport_Topic();
+
+    /**
+     * The meta object literal for the '<em><b>Filter</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference CPS_TRANSPORT__FILTER = eINSTANCE.getCPSTransport_Filter();
+
+    /**
+     * The meta object literal for the '<em><b>Message Type</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute CPS_TRANSPORT__MESSAGE_TYPE = eINSTANCE.getCPSTransport_MessageType();
+
+    /**
+     * The meta object literal for the '<em><b>Subscribe</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute CPS_TRANSPORT__SUBSCRIBE = eINSTANCE.getCPSTransport_Subscribe();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.HTTPTransportImpl <em>HTTP Transport</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.HTTPTransportImpl
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getHTTPTransport()
+     * @generated
+     */
+    EClass HTTP_TRANSPORT = eINSTANCE.getHTTPTransport();
+
+    /**
+     * The meta object literal for the '<em><b>Url</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference HTTP_TRANSPORT__URL = eINSTANCE.getHTTPTransport_Url();
+
+    /**
+     * The meta object literal for the '<em><b>Proxy Url</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference HTTP_TRANSPORT__PROXY_URL = eINSTANCE.getHTTPTransport_ProxyUrl();
+
+    /**
+     * The meta object literal for the '<em><b>User Id</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference HTTP_TRANSPORT__USER_ID = eINSTANCE.getHTTPTransport_UserId();
+
+    /**
+     * The meta object literal for the '<em><b>Password</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference HTTP_TRANSPORT__PASSWORD = eINSTANCE.getHTTPTransport_Password();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.MQTransportImpl <em>MQ Transport</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.MQTransportImpl
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getMQTransport()
+     * @generated
+     */
+    EClass MQ_TRANSPORT = eINSTANCE.getMQTransport();
+
+    /**
+     * The meta object literal for the '<em><b>MQ Resource</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference MQ_TRANSPORT__MQ_RESOURCE = eINSTANCE.getMQTransport_MQResource();
+
+    /**
+     * The meta object literal for the '<em><b>Request Queue</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference MQ_TRANSPORT__REQUEST_QUEUE = eINSTANCE.getMQTransport_RequestQueue();
+
+    /**
+     * The meta object literal for the '<em><b>Response Queue</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference MQ_TRANSPORT__RESPONSE_QUEUE = eINSTANCE.getMQTransport_ResponseQueue();
+
+    /**
+     * The meta object literal for the '<em><b>Model QName</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference MQ_TRANSPORT__MODEL_QNAME = eINSTANCE.getMQTransport_ModelQName();
+
+    /**
+     * The meta object literal for the '<em><b>Dynamic QName</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference MQ_TRANSPORT__DYNAMIC_QNAME = eINSTANCE.getMQTransport_DynamicQName();
+
+    /**
+     * The meta object literal for the '<em><b>Persistent</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute MQ_TRANSPORT__PERSISTENT = eINSTANCE.getMQTransport_Persistent();
+
+    /**
+     * The meta object literal for the '<em><b>Use Correl Id</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute MQ_TRANSPORT__USE_CORREL_ID = eINSTANCE.getMQTransport_UseCorrelId();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourceImpl <em>Soap IO Resource</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourceImpl
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getSoapIOResource()
+     * @generated
+     */
+    EClass SOAP_IO_RESOURCE = eINSTANCE.getSoapIOResource();
+
+    /**
+     * The meta object literal for the '<em><b>Time Out</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference SOAP_IO_RESOURCE__TIME_OUT = eINSTANCE.getSoapIOResource_TimeOut();
+
+    /**
+     * The meta object literal for the '<em><b>Transport</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference SOAP_IO_RESOURCE__TRANSPORT = eINSTANCE.getSoapIOResource_Transport();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.impl.TCPTransportImpl <em>TCP Transport</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.TCPTransportImpl
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getTCPTransport()
+     * @generated
+     */
+    EClass TCP_TRANSPORT = eINSTANCE.getTCPTransport();
+
+    /**
+     * The meta object literal for the '<em><b>Hostname</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference TCP_TRANSPORT__HOSTNAME = eINSTANCE.getTCPTransport_Hostname();
+
+    /**
+     * The meta object literal for the '<em><b>Port</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference TCP_TRANSPORT__PORT = eINSTANCE.getTCPTransport_Port();
+
+    /**
+     * The meta object literal for the '<em><b>Handshake</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute TCP_TRANSPORT__HANDSHAKE = eINSTANCE.getTCPTransport_Handshake();
+
+    /**
+     * The meta object literal for the '<em><b>Max Retries</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute TCP_TRANSPORT__MAX_RETRIES = eINSTANCE.getTCPTransport_MaxRetries();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes <em>Cps Message Types</em>}' enum.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getCpsMessageTypes()
+     * @generated
+     */
+    EEnum CPS_MESSAGE_TYPES = eINSTANCE.getCpsMessageTypes();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums <em>Handshake Enums</em>}' enum.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getHandshakeEnums()
+     * @generated
+     */
+    EEnum HANDSHAKE_ENUMS = eINSTANCE.getHandshakeEnums();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums <em>Subscribe Enums</em>}' enum.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getSubscribeEnums()
+     * @generated
+     */
+    EEnum SUBSCRIBE_ENUMS = eINSTANCE.getSubscribeEnums();
+
+    /**
+     * The meta object literal for the '<em>Cps Message Types Object</em>' data type.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.CpsMessageTypes
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getCpsMessageTypesObject()
+     * @generated
+     */
+    EDataType CPS_MESSAGE_TYPES_OBJECT = eINSTANCE.getCpsMessageTypesObject();
+
+    /**
+     * The meta object literal for the '<em>Handshake Enums Object</em>' data type.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.HandshakeEnums
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getHandshakeEnumsObject()
+     * @generated
+     */
+    EDataType HANDSHAKE_ENUMS_OBJECT = eINSTANCE.getHandshakeEnumsObject();
+
+    /**
+     * The meta object literal for the '<em>Subscribe Enums Object</em>' data type.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.SubscribeEnums
+     * @see com.ms.qaTools.saturn.resources.soapIOResource.impl.SoapIOResourcePackageImpl#getSubscribeEnumsObject()
+     * @generated
+     */
+    EDataType SUBSCRIBE_ENUMS_OBJECT = eINSTANCE.getSubscribeEnumsObject();
+
+  }
+
+} //SoapIOResourcePackage
+
+
+

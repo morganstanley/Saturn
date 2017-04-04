@@ -1,0 +1,88 @@
+package com.ms.qaTools.kronus.rfb.LOOP
+
+include com.ms.qaTools.kronus.rfb.PRELUDE
+
+type Buffer[A] = scala.collection.mutable.Buffer[A]
+type BlockingQueue[A] = java.util.concurrent.BlockingQueue[A]
+
+// TODO: move this to Predef.kronus
+def FOR_EACH[A, B](xs: Iterator[A],
+	               f: KronusFunction1[A, B],
+	               batchSize: Int = 1,
+	               breakCondition: KronusFunction1[B, Boolean] = generate("yield") {Function.const(Context.successful(false)) _}): Unit = generate("for") {
+  import scala.concurrent.Future
+  for {
+    xs        <- xs
+    f         <- f
+    batchSize <- batchSize
+    breakCond <- breakCondition
+    fut = (Future.successful(false) /: xs.grouped(batchSize)) { (brk, xs) =>
+      brk.flatMap {
+        case false => for {
+          ys <- Future.sequence(xs.map(x => f(x).future))
+          bs <- Future.sequence(ys.map(y => breakCond(Context.fromTry(y._1)).future))
+        } yield bs.exists(_._1.get)
+        case true =>
+          brk
+      }
+    }
+    _ <- Context.fromFuture(fut)
+  } yield ()
+}
+
+def CURRENT_TIME_MILLIS(): Long = generate("yield") {System.currentTimeMillis()}
+def RANGE(max: Int): Iterator[Int] = generate("yield") {Iterator.range(0, max)}
+def AVAILABLE_PROCESSORS(): Int = generate("yield") {Runtime.getRuntime.availableProcessors()}
+
+val TEST_EXECUTE = AFTER(TEST_BATCH_RUN, {
+  val YS = generate("yield") {scala.collection.mutable.Buffer[Int]()}
+  def PUSH(x: Int): Unit = {
+    def PUSH(x: Int, buf: Buffer[Int]): Unit = generate("yield") {buf += x * 2}
+    return PUSH(x, YS)
+  }
+  val RUN_LOOP = FOR_EACH(generate("yield") {Iterator(1, 2, 3)}, PUSH)
+  return AFTER(RUN_LOOP, ASSERT_EQUAL(YS, generate("yield") {Seq(2, 4, 6)}))
+})
+
+val TEST_SHORT_CIRCUIT = AFTER(TEST_BATCH_RUN, {
+  val YS = generate("yield") {scala.collection.mutable.Buffer[Int]()}
+  def PUSH(x: Int): Int = {
+    def PUSH(x: Int, buf: Buffer[Int]): Int = generate("yield") {
+      val y = x * 2
+      buf += y
+      y
+    }
+    return PUSH(x, YS)
+  }
+  def BREAK(y: Int): Boolean = {return y == 4}
+  val RUN_LOOP = FOR_EACH(generate("yield") {Iterator(1, 2, 3)}, PUSH, breakCondition = BREAK)
+  return AFTER(RUN_LOOP, ASSERT_EQUAL(YS, generate("yield") {Seq(2, 4)}))
+})
+
+val TEST_BATCH_RUN = AFTER(TEST_NO_MEMORY_LEAK, {
+  def SLEEP(x: Int): Unit = generate("yield") {Thread.sleep(1000)}
+  val START = CURRENT_TIME_MILLIS()
+  val MAX_THREAD_NUM = AVAILABLE_PROCESSORS()
+  val RUN_LOOP = FOR_EACH(RANGE(MAX_THREAD_NUM), SLEEP, batchSize = MAX_THREAD_NUM)
+  val END = AFTER(RUN_LOOP, CURRENT_TIME_MILLIS())
+  val T = END - START
+  return ASSERT(MAX_THREAD_NUM > 1 && T >= 1000 && T < 1500)
+})
+
+val TEST_NO_MEMORY_LEAK = {
+  def VALIDATE(freeMem: BlockingQueue[Long]): Unit = generate("yield") {
+    val usage = freeMem.max - freeMem.min
+    assert(usage < (1 << 19) * 1024, s"Usage: $usage")
+  }
+  val FREE_MEM = generate("yield") {new java.util.concurrent.ArrayBlockingQueue[Long](1024)}
+  def MALLOC(x: Int): Array[Byte] = {
+    def MALLOC(x: Int, freeMem: BlockingQueue[Long]): Array[Byte] = generate("yield") {
+      Runtime.getRuntime.gc()
+      freeMem.add(Runtime.getRuntime.freeMemory())
+      Array.ofDim[Byte](1 << 20)
+    }
+    return MALLOC(x, FREE_MEM)
+  }
+  val RUN_LOOP = FOR_EACH(RANGE(1024), MALLOC, batchSize = AVAILABLE_PROCESSORS())
+  return AFTER(RUN_LOOP, VALIDATE(FREE_MEM))
+}

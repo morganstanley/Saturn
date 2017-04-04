@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:result="http://www.ms.com/2009/Saturn/Result"
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="saturnResult" 
+           ecore:package="com.ms.qaTools.saturn.result"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+           
+           elementFormDefault="qualified" 
+           targetNamespace="http://www.ms.com/2009/Saturn/Result">
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/gmf" schemaLocation="saturn.gmf.xsd" />
+
+  <xs:complexType name="SaturnResult" >
+    <xs:attribute name="status" type="xs:string" />
+    <xs:attribute name="name" type="xs:string"  />
+    <xs:attribute name="iterationNo" type="xs:string" />
+    <xs:attribute name="startTime" type="xs:string"  />
+    <xs:attribute name="stopTime" type="xs:string"  />
+    <xs:attribute name="message" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="ResultStep" >
+    <xs:complexContent>
+      <xs:extension base="result:SaturnResult">
+        <xs:sequence>
+          <xs:element name="Config" type="saturn:AbstractRunGroup" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ResultRunGroup" >
+    <xs:complexContent>
+      <xs:extension base="result:SaturnResult">
+        <xs:sequence>
+          <xs:element name="RunGroupResult" type="result:SaturnResult" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="Config" type="saturn:AbstractRunGroup" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ResultIteration"  >
+    <xs:complexContent>
+      <xs:extension base="result:SaturnResult">
+        <xs:sequence>
+          <xs:element name="IterationResult" type="result:SaturnResult" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>

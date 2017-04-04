@@ -1,0 +1,94 @@
+package com.ms.qaTools.kronus.rfb.ErrorMessage
+
+import scala.util.Try
+
+include com.ms.qaTools.kronus.rfb.PRELUDE
+
+def F1(n: Int): Int = {return n + 1}
+
+def F2(n: Int): Int = {
+  val X = n * 2
+  return X
+}
+
+def G1(n: Int): Int = {return 1 / n}
+
+def G2(n: Int): Int = {
+  val X = 1 / n
+  return X
+}
+
+val TEST_SIMPLE = {
+  val SIMPLE = ASSERT(false)
+  return generate("for") {
+    SIMPLE.mapTry { t =>
+      Try {
+        val msg = t.failed.get.getMessage
+        assert(msg.contains("TEST_SIMPLE.SIMPLE"))
+        assert(msg.contains("line 22 to 22"))
+      }
+    }
+  }
+}
+
+val TEST_FUNCTION_CALL = {
+  val CALL1 = 1 + G1(0)
+  val CALL2 = 42 + G2(0)
+  val CALL3 = F1(G1(0))
+  val CALL4 = F1(G2(0))
+  return {
+    val VALIDATE1 = generate("for") {
+      CALL1.mapTry { t =>
+        Try {
+          val msg = t.failed.get.getCause.getMessage
+          assert(msg.contains("TEST_FUNCTION_CALL.CALL1.(G1)"))
+          assert(msg.contains("line 35 to 35"))
+        }
+      }
+    }
+    val VALIDATE2 = generate("for") {
+      CALL2.mapTry { t =>
+        Try {
+          val exG2 = t.failed.get.getCause
+          val exG2X = exG2.getCause
+          assert(exG2.getMessage.contains("TEST_FUNCTION_CALL.CALL2.(G2)"))
+          assert(exG2.getMessage.contains("line 36 to 36"))
+          assert(exG2X.getMessage.contains("TEST_FUNCTION_CALL.CALL2.(G2).X"))
+          assert(exG2X.getMessage.contains("line 17 to 17"))
+        }
+      }
+    }
+    val VALIDATE3 = generate("for") {
+      CALL3.mapTry { t =>
+        Try {
+          val msg = t.failed.get.getCause.getCause.getCause.getMessage
+          assert(msg.contains("TEST_FUNCTION_CALL.CALL3.(F1).n.(G1)"))
+          assert(msg.contains("line 37 to 37"))
+        }
+      }
+    }
+    val VALIDATE4 = generate("for") {
+      CALL4.mapTry { t =>
+        Try {
+          val msg = t.failed.get.getCause.getCause.getCause.getCause.getMessage
+          assert(msg.contains("TEST_FUNCTION_CALL.CALL4.(F1).n.(G2).X"))
+          assert(msg.contains("line 17 to 17"))
+        }
+      }
+    }
+  }
+}
+
+val TEST_INCLUDED_FUNCTION_CALL = {
+  include com.ms.qaTools.kronus.rfb.PRELUDE as P
+  val CALL = P.FAIL()
+  return generate("for") {
+    CALL.mapTry { t =>
+      Try {
+        val msg = t.failed.get.getCause.getMessage
+        assert(msg.contains("TEST_INCLUDED_FUNCTION_CALL.CALL.(P.FAIL)"))
+        assert(msg.contains("line 84 to 84"))
+      }
+    }
+  }
+}

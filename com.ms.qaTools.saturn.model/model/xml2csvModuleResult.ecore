@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="xml2csvModuleResult"
+    nsURI="http://www.ms.com/2006/Saturn/Modules/Xml2Csv/Result" nsPrefix="x2csvModuleResult">
+  <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+    <details key="nsPrefix" value="x2csvModuleResult"/>
+    <details key="package" value="Saturn::Module::XML2CSV::Result"/>
+  </eAnnotations>
+  <eAnnotations source="http://www.ms.com/2011/tdo-qa-tools/rcs">
+    <details key="author" value="$Author: karaic $"/>
+    <details key="change" value="$Change: 5117306 $"/>
+    <details key="file" value="$File: //std/qaTools/saturn/trunk/eclipse/com.ms.qaTools.saturn.model/schema/modules/xml2csvResult.xsd $"/>
+    <details key="id" value="$Id: //std/qaTools/saturn/trunk/eclipse/com.ms.qaTools.saturn.model/schema/modules/xml2csvResult.xsd#5 $"/>
+    <details key="revision" value="$Revision: #5 $"/>
+    <details key="timestamp" value="$DateTime: 2012/05/31 06:35:14 $"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="x2csvResult">
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::Module::XML2CSV::Result"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+      <details key="createSerializer" value="true"/>
+      <details key="skip" value="true"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Result_._type"/>
+      <details key="kind" value="empty"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rowCount" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Integer">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="count"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="RowCount"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DocumentRoot">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value=""/>
+      <details key="kind" value="mixed"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixed" unique="false" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="elementWildcard"/>
+        <details key="name" value=":mixed"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="xMLNSPrefixMap" upperBound="-1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EStringToStringMapEntry"
+        transient="true" containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="xmlns:prefix"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="xSISchemaLocation" upperBound="-1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EStringToStringMapEntry"
+        transient="true" containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="xsi:schemaLocation"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="result" upperBound="-2"
+        eType="#//x2csvResult" volatile="true" transient="true" derived="true" containment="true"
+        resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="Result"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+</ecore:EPackage>

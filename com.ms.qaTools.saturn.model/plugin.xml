@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ COPYRIGHT NOTICE AND DISCLAIMER
+  
+ Copyright © 2009, Contributor
+ This program is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License, version 3, as published by the Free Software Foundation.
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License, version 3 for more details.
+ You should have received a copy of the GNU Lesser General Public License, version 3, along with this program; if not, see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ THE FOLLOWING DISCLAIMER APPLIES TO ALL SOFTWARE CODE AND OTHER MATERIALS CONTRIBUTED IN CONNECTION WITH THIS PROGRAM:
+ THIS SOFTWARE IS LICENSED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE AND ANY WARRANTY OF NON-INFRINGEMENT, ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. THIS SOFTWARE MAY BE REDISTRIBUTED TO OTHERS ONLY BY EFFECTIVELY USING THIS OR ANOTHER EQUIVALENT DISCLAIMER AS WELL AS ANY OTHER LICENSE TERMS THAT MAY APPLY.
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Modules/EnvValidator"
+            class="com.ms.qaTools.saturn.modules.envValidatorModule.EnvValidatorModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="envvalidatormodule"
+            class="com.ms.qaTools.saturn.modules.envValidatorModule.util.EnvValidatorModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Types"
+            class="com.ms.qaTools.saturn.types.TypesPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="types"
+            class="com.ms.qaTools.saturn.types.util.TypesResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Values"
+            class="com.ms.qaTools.saturn.values.ValuesPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="values"
+            class="com.ms.qaTools.saturn.values.util.ValuesResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Modules/Cps"
+            class="com.ms.qaTools.saturn.modules.cpsModule.CpsModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="cpsmodule"
+            class="com.ms.qaTools.saturn.modules.cpsModule.util.CpsModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/DataCompare"
+            class="com.ms.qaTools.saturn.modules.datacompareModule.DatacompareModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="datacomparemodule"
+            class="com.ms.qaTools.saturn.modules.datacompareModule.util.DatacompareModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2011/Saturn/Modules/DataCompare/Result"
+            class="com.ms.qaTools.saturn.modules.datacompareModuleResult.DatacompareModuleResultPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="datacomparemoduleresult"
+            class="com.ms.qaTools.saturn.modules.datacompareModuleResult.util.DatacompareModuleResultResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Exception"
+            class="com.ms.qaTools.saturn.exception.ExceptionPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="exception"
+            class="com.ms.qaTools.saturn.exception.util.ExceptionResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated saturn -->
+      <package
+            uri="http://www.ms.com/2015/Saturn/Kronus"
+            class="com.ms.qaTools.saturn.kronus.backport.BackportPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated saturn -->
+      <parser
+            type="backport"
+            class="com.ms.qaTools.saturn.kronus.backport.util.BackportResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Resources/Files"
+            class="com.ms.qaTools.saturn.resources.fileResource.FileResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="fileresource"
+            class="com.ms.qaTools.saturn.resources.fileResource.util.FileResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Resources/Directory"
+            class="com.ms.qaTools.saturn.resources.directoryResource.DirectoryResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="directoryresource"
+            class="com.ms.qaTools.saturn.resources.directoryResource.util.DirectoryResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Resources/Reference"
+            class="com.ms.qaTools.saturn.resources.referenceResource.ReferenceResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="referenceresource"
+            class="com.ms.qaTools.saturn.resources.referenceResource.util.ReferenceResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/Documentum"
+            class="com.ms.qaTools.saturn.modules.documentumModule.DocumentumModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="documentummodule"
+            class="com.ms.qaTools.saturn.modules.documentumModule.util.DocumentumModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/Mail"
+            class="com.ms.qaTools.saturn.modules.mailModule.MailModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="mailmodule"
+            class="com.ms.qaTools.saturn.modules.mailModule.util.MailModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/MQ"
+            class="com.ms.qaTools.saturn.modules.mqModule.MqModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="mqmodule"
+            class="com.ms.qaTools.saturn.modules.mqModule.util.MqModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/MQ/Result"
+            class="com.ms.qaTools.saturn.modules.mqModuleResult.MqModuleResultPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="mqmoduleresult"
+            class="com.ms.qaTools.saturn.modules.mqModuleResult.util.MqModuleResultResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Resources/MQ"
+            class="com.ms.qaTools.saturn.resources.mqResource.MqResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="mqresource"
+            class="com.ms.qaTools.saturn.resources.mqResource.util.MqResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2007/Saturn/Modules/Reference"
+            class="com.ms.qaTools.saturn.modules.referenceModule.ReferenceModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="referencemodule"
+            class="com.ms.qaTools.saturn.modules.referenceModule.util.ReferenceModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/RunCmds"
+            class="com.ms.qaTools.saturn.modules.runcmdsModule.RuncmdsModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="runcmdsmodule"
+            class="com.ms.qaTools.saturn.modules.runcmdsModule.util.RuncmdsModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/RunCmds/Result"
+            class="com.ms.qaTools.saturn.modules.runCmdsModuleResult.RunCmdsModuleResultPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="runcmdsmoduleresult"
+            class="com.ms.qaTools.saturn.modules.runCmdsModuleResult.util.RunCmdsModuleResultResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2007/Saturn/Modules/SoapIO"
+            class="com.ms.qaTools.saturn.modules.soapIOModule.SoapIOModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="soapiomodule"
+            class="com.ms.qaTools.saturn.modules.soapIOModule.util.SoapIOModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/SQL"
+            class="com.ms.qaTools.saturn.modules.sqlModule.SqlModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="sqlmodule"
+            class="com.ms.qaTools.saturn.modules.sqlModule.util.SqlModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Resources/Sybase"
+            class="com.ms.qaTools.saturn.resources.sybaseResource.SybaseResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="sybaseresource"
+            class="com.ms.qaTools.saturn.resources.sybaseResource.util.SybaseResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated saturn -->
+      <package
+            uri="http://www.ms.com/2012/Saturn/Resources/MSSQL"
+            class="com.ms.qaTools.saturn.resources.mssqlResource.MssqlResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated saturn -->
+      <parser
+            type="mssqlresource"
+            class="com.ms.qaTools.saturn.resources.mssqlResource.util.MssqlResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/SQL/Result"
+            class="com.ms.qaTools.saturn.modules.sqlModuleResult.SqlModuleResultPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="sqlmoduleresult"
+            class="com.ms.qaTools.saturn.modules.sqlModuleResult.util.SqlModuleResultResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Resources/DB2"
+            class="com.ms.qaTools.saturn.resources.db2Resource.Db2ResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="db2resource"
+            class="com.ms.qaTools.saturn.resources.db2Resource.util.Db2ResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Resources/UDB"
+            class="com.ms.qaTools.saturn.resources.udbResource.UdbResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="udbresource"
+            class="com.ms.qaTools.saturn.resources.udbResource.util.UdbResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/Xml2Csv"
+            class="com.ms.qaTools.saturn.modules.xml2csvModule.Xml2csvModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="xml2csvmodule"
+            class="com.ms.qaTools.saturn.modules.xml2csvModule.util.Xml2csvModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/Xml2Csv/Result"
+            class="com.ms.qaTools.saturn.modules.xml2csvModuleResult.Xml2csvModuleResultPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="xml2csvmoduleresult"
+            class="com.ms.qaTools.saturn.modules.xml2csvModuleResult.util.Xml2csvModuleResultResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2007/Saturn/Modules/XmlDiff"
+            class="com.ms.qaTools.saturn.modules.xmlDiffModule.XmlDiffModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="xmldiffmodule"
+            class="com.ms.qaTools.saturn.modules.xmlDiffModule.util.XmlDiffModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2007/Saturn/Modules/XmlDiff/Result"
+            class="com.ms.qaTools.saturn.modules.xmlDiffModuleResult.XmlDiffModuleResultPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="xmldiffmoduleresult"
+            class="com.ms.qaTools.saturn.modules.xmlDiffModuleResult.util.XmlDiffModuleResultResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2007/Saturn/Modules/XmlGen"
+            class="com.ms.qaTools.saturn.modules.xmlGenModule.XmlGenModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="xmlgenmodule"
+            class="com.ms.qaTools.saturn.modules.xmlGenModule.util.XmlGenModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2007/Saturn/Modules/XmlGen/Result"
+            class="com.ms.qaTools.saturn.modules.xmlGenModuleResult.XmlGenModuleResultPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="xmlgenmoduleresult"
+            class="com.ms.qaTools.saturn.modules.xmlGenModuleResult.util.XmlGenModuleResultResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Modules/XSplit"
+            class="com.ms.qaTools.saturn.modules.XSplitModule.XSplitModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="xsplitmodule"
+            class="com.ms.qaTools.saturn.modules.XSplitModule.util.XSplitModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Resources/DataSet"
+            class="com.ms.qaTools.saturn.resources.dataSetResource.DataSetResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="datasetresource"
+            class="com.ms.qaTools.saturn.resources.dataSetResource.util.DataSetResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Resources/ShadowDirect"
+            class="com.ms.qaTools.saturn.resources.shadowDirectResource.ShadowDirectResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="shadowdirectresource"
+            class="com.ms.qaTools.saturn.resources.shadowDirectResource.util.ShadowDirectResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2007/Saturn/Resources/SoapIO"
+            class="com.ms.qaTools.saturn.resources.soapIOResource.SoapIOResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="soapioresource"
+            class="com.ms.qaTools.saturn.resources.soapIOResource.util.SoapIOResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Modules/DsConvert"
+            class="com.ms.qaTools.saturn.modules.dsConvertModule.DsConvertModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="dsconvertmodule"
+            class="com.ms.qaTools.saturn.modules.dsConvertModule.util.DsConvertModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Modules/DsValidator"
+            class="com.ms.qaTools.saturn.modules.dsValidatorModule.DsValidatorModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="dsvalidatormodule"
+            class="com.ms.qaTools.saturn.modules.dsValidatorModule.util.DsValidatorModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Modules/ExtractDDL"
+            class="com.ms.qaTools.saturn.modules.extractDDLModule.ExtractDDLModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="extractddlmodule"
+            class="com.ms.qaTools.saturn.modules.extractDDLModule.util.ExtractDDLModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Modules/ProcedureCall"
+            class="com.ms.qaTools.saturn.modules.procedureCallModule.ProcedureCallModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="procedurecallmodule"
+            class="com.ms.qaTools.saturn.modules.procedureCallModule.util.ProcedureCallModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated saturn -->
+      <package
+            uri="http://www.ms.com/2009/Saturn/Result"
+            class="com.ms.qaTools.saturn.result.ResultPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated saturn -->
+      <parser
+            type="result"
+            class="com.ms.qaTools.saturn.result.util.ResultResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Modules/PsManager"
+            class="com.ms.qaTools.saturn.modules.psManagerModule.PsManagerModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="psmanagermodule"
+            class="com.ms.qaTools.saturn.modules.psManagerModule.util.PsManagerModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Modules/Singularity"
+            class="com.ms.qaTools.saturn.modules.singularityModule.SingularityModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="singularitymodule"
+            class="com.ms.qaTools.saturn.modules.singularityModule.util.SingularityModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Modules/XmlManip"
+            class="com.ms.qaTools.saturn.modules.xmlManipModule.XmlManipModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="xmlmanipmodule"
+            class="com.ms.qaTools.saturn.modules.xmlManipModule.util.XmlManipModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Modules/XmlValidator"
+            class="com.ms.qaTools.saturn.modules.xmlValidatorModule.XmlValidatorModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="xmlvalidatormodule"
+            class="com.ms.qaTools.saturn.modules.xmlValidatorModule.util.XmlValidatorModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2011/Saturn/Modules/Comet"
+            class="com.ms.qaTools.saturn.modules.cometModule.CometModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="cometmodule"
+            class="com.ms.qaTools.saturn.modules.cometModule.util.CometModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2011/Saturn/Modules/FixManip"
+            class="com.ms.qaTools.saturn.modules.fixManipModule.FixManipModulePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="fixmanipmodule"
+            class="com.ms.qaTools.saturn.modules.fixManipModule.util.FixManipModuleResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/gmf"
+            class="com.ms.qaTools.saturn.SaturnPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="saturn"
+            class="com.ms.qaTools.saturn.util.SaturnResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2011/Saturn/Resources/SQLite"
+            class="com.ms.qaTools.saturn.resources.sqliteResource.SqliteResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="sqliteresource"
+            class="com.ms.qaTools.saturn.resources.sqliteResource.util.SqliteResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2008/Saturn/SaturnWeb"
+            class="com.ms.qaTools.saturn.annotations.saturnWeb.SaturnWebPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="saturnweb"
+            class="com.ms.qaTools.saturn.annotations.saturnWeb.util.SaturnWebResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2011/Saturn/Resources/Transaction"
+            class="com.ms.qaTools.saturn.resources.transactionResource.TransactionResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="transactionresource"
+            class="com.ms.qaTools.saturn.resources.transactionResource.util.TransactionResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Resources/Teradata"
+            class="com.ms.qaTools.saturn.resources.teradataResource.TeradataResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="teradataresource"
+            class="com.ms.qaTools.saturn.resources.teradataResource.util.TeradataResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2006/Saturn/Listeners"
+            class="com.ms.qaTools.saturn.listeners.ListenersPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="listeners"
+            class="com.ms.qaTools.saturn.listeners.util.ListenersResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2010/Saturn/Resources/Documentum"
+            class="com.ms.qaTools.saturn.resources.documentumResource.DocumentumResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="documentumresource"
+            class="com.ms.qaTools.saturn.resources.documentumResource.util.DocumentumResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2007/Saturn/repetition"
+            class="com.ms.qaTools.saturn.repetition.RepetitionPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="repetition"
+            class="com.ms.qaTools.saturn.repetition.util.RepetitionResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated saturn -->
+      <package
+            uri="http://www.ms.com/2011/Saturn/Resources/IceLink"
+            class="com.ms.qaTools.saturn.resources.icelinkResource.IcelinkResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated saturn -->
+      <parser
+            type="icelinkresource"
+            class="com.ms.qaTools.saturn.resources.icelinkResource.util.IcelinkResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2008/Saturn/Resources/Informix"
+            class="com.ms.qaTools.saturn.resources.informixResource.InformixResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="informixresource"
+            class="com.ms.qaTools.saturn.resources.informixResource.util.InformixResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2011/Saturn/Resources/LDAPQuery"
+            class="com.ms.qaTools.saturn.resources.ldapQueryResource.LdapQueryResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="ldapqueryresource"
+            class="com.ms.qaTools.saturn.resources.ldapQueryResource.util.LdapQueryResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2011/Saturn/Resources/LDAP"
+            class="com.ms.qaTools.saturn.resources.ldapResource.LdapResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="ldapresource"
+            class="com.ms.qaTools.saturn.resources.ldapResource.util.LdapResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated saturn -->
+      <package
+            uri="http://www.ms.com/2011/Saturn/Resources/MarkitWire"
+            class="com.ms.qaTools.saturn.resources.markitwireResource.MarkitwireResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated saturn -->
+      <parser
+            type="markitwireresource"
+            class="com.ms.qaTools.saturn.resources.markitwireResource.util.MarkitwireResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2008/Saturn/Resources/Oracle"
+            class="com.ms.qaTools.saturn.resources.oracleResource.OracleResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="oracleresource"
+            class="com.ms.qaTools.saturn.resources.oracleResource.util.OracleResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/Resources/Query"
+            class="com.ms.qaTools.saturn.resources.queryResource.QueryResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="queryresource"
+            class="com.ms.qaTools.saturn.resources.queryResource.util.QueryResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2009/Saturn/SaturnReport"
+            class="com.ms.qaTools.saturn.annotations.saturnReport.SaturnReportPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="saturnreport"
+            class="com.ms.qaTools.saturn.annotations.saturnReport.util.SaturnReportResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated saturn -->
+      <package
+            uri="http://www.ms.com/2011/Saturn/Resources/RmiConnection"
+            class="com.ms.qaTools.saturn.resources.rmiConnectionResource.RmiConnectionResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated saturn -->
+      <parser
+            type="rmiconnectionresource"
+            class="com.ms.qaTools.saturn.resources.rmiConnectionResource.util.RmiConnectionResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated saturn -->
+      <package
+            uri="http://www.ms.com/2014/Saturn/SaturnVerbosity"
+            class="com.ms.qaTools.saturn.annotations.saturnVerbosity.SaturnVerbosityPackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated saturn -->
+      <parser
+            type="saturnverbosity"
+            class="com.ms.qaTools.saturn.annotations.saturnVerbosity.util.SaturnVerbosityResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2010/Saturn/Resources/Null"
+            class="com.ms.qaTools.saturn.resources.nullResource.NullResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="nullresource"
+            class="com.ms.qaTools.saturn.resources.nullResource.util.NullResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2010/Saturn/Resources/DsSQL"
+            class="com.ms.qaTools.saturn.resources.dsSQLResource.DsSQLResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="dssqlresource"
+            class="com.ms.qaTools.saturn.resources.dsSQLResource.util.DsSQLResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.ms.com/2011/Saturn/Resources/Semaphore"
+            class="com.ms.qaTools.saturn.resources.semaphoreResource.SemaphoreResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            type="semaphoreresource"
+            class="com.ms.qaTools.saturn.resources.semaphoreResource.util.SemaphoreResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated saturn -->
+      <package
+            uri="http://www.ms.com/2013/Saturn/Resources/MongoDb"
+            class="com.ms.qaTools.saturn.resources.mongoDbResource.MongoDbResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated saturn -->
+      <parser
+            type="mongodbresource"
+            class="com.ms.qaTools.saturn.resources.mongoDbResource.util.MongoDbResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated saturn -->
+      <package
+            uri="http://www.ms.com/2013/Saturn/Resources/H2"
+            class="com.ms.qaTools.saturn.resources.h2Resource.H2ResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated saturn -->
+      <parser
+            type="h2resource"
+            class="com.ms.qaTools.saturn.resources.h2Resource.util.H2ResourceResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated saturn -->
+      <package
+            uri="http://www.ms.com/2013/Saturn/Resources/Mapper"
+            class="com.ms.qaTools.saturn.resources.mapperResource.MapperResourcePackage"
+            genModel="model/saturn.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated saturn -->
+      <parser
+            type="mapperresource"
+            class="com.ms.qaTools.saturn.resources.mapperResource.util.MapperResourceResourceFactoryImpl"/>
+   </extension>
+
+</plugin>

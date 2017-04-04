@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="repetition" nsURI="http://www.ms.com/2007/Saturn/repetition"
+    nsPrefix="repetition">
+  <eAnnotations>
+    <details key="appinfo" value="&#xD;&#xA;      &lt;sl:method name=&quot;forLoop&quot; xmlns:sl=&quot;http://www.ms.com/2011/pdsttools/xsd2scriptLib&quot;>&#xD;&#xA;        return _forLoop(iterators =&amp;gt; [iterators(@_)]);&#xD;&#xA;     &lt;/sl:method>&#xD;&#xA;   "/>
+  </eAnnotations>
+  <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+    <details key="nsPrefix" value="repetition"/>
+    <details key="package" value="Saturn::RepetitionHandler"/>
+  </eAnnotations>
+  <eAnnotations source="http://www.ms.com/2011/tdo-qa-tools/rcs">
+    <details key="author" value="$Author$"/>
+    <details key="change" value="$Change$"/>
+    <details key="file" value="$File$"/>
+    <details key="id" value="$Id$"/>
+    <details key="revision" value="$Revision$"/>
+    <details key="timestamp" value="$DateTime$"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="ColumnMapping">
+    <eAnnotations>
+      <details key="appinfo" value="&#xD;&#xA;                  &lt;sl:serialize xmlns:sl=&quot;http://www.ms.com/2011/pdsttools/xsd2scriptLib&quot;>&#xD;&#xA;  return &quot;forEachLoop_mapping(&quot; . $object-&amp;gt;attribute . &quot; =&amp;gt; &quot; . $self-&amp;gt;intSerializeValue( $object-&amp;gt;column, %parms ) . &quot;)&quot;;&#xD;&#xA;                  &lt;/sl:serialize>&#xD;&#xA;                "/>
+    </eAnnotations>
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::RepetitionHandler::ForEachRepetition::ColumnMapping"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+      <details key="name" value="forEachLoop_mapping"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="ColumnMappings_._type"/>
+      <details key="kind" value="empty"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="attribute" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Token">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="order" value="1"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="attribute"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="column" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Token">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="order" value="2"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="column"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ForEachRepetition" eSuperTypes="types.ecore#//AbstractRepetitionHandler">
+    <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+      <details key="name" value="forEachLoop"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="ForEachRepetition"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dataSetResource" lowerBound="1"
+        eType="ecore:EClass types.ecore#//NamedResourceDefinition" containment="true"
+        resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="accessor" value="dataSet"/>
+        <details key="map" value="genDataSet"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="DataSetResource"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="columnMappings" upperBound="-1"
+        eType="#//ColumnMapping" containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="accessor" value="mappings"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="ColumnMappings"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ForEachXPathRepetition" eSuperTypes="types.ecore#//AbstractRepetitionHandler">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="ForEachXPathRepetition"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="xMLResource" lowerBound="1"
+        eType="ecore:EClass types.ecore#//NamedResourceDefinition" containment="true"
+        resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="xmlResource"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="XMLResource"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="namespaceDefinition" eType="ecore:EClass types.ecore#//NamedResourceDefinition"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="NamespaceDefinition"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="xPathMappings" upperBound="-1"
+        eType="#//XPathMapping" containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="XPathMappings"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ForRepetition" eSuperTypes="types.ecore#//AbstractRepetitionHandler">
+    <eAnnotations>
+      <details key="appinfo" value="&#xD;&#xA;        &lt;sl:serialize xmlns:sl=&quot;http://www.ms.com/2011/pdsttools/xsd2scriptLib&quot;>&#xD;&#xA;  my $indent = $parms{indent} || '';&#xD;&#xA;  my $space1 = $parms{compact} ? &quot;&quot;  : &quot;\n&quot;;&#xD;&#xA;  my $space2 = $parms{compact} ? &quot;&quot;  : &quot;$indent&quot;;&#xD;&#xA;  my $space3 = $parms{compact} ? &quot;&quot;  : &quot;$indent  &quot;;&#xD;&#xA;  my $output = 'forLoop(' . $space1;&#xD;&#xA;&#xD;&#xA;  my ($field, $fieldAccessor);&#xD;&#xA;  $fieldAccessor = sub { $_[0]-&amp;gt;iterators };&#xD;&#xA;  $field = $object-&amp;gt;$fieldAccessor;&#xD;&#xA;&#xD;&#xA;  if( defined $field &amp;amp;&amp;amp; @$field )&#xD;&#xA;  {&#xD;&#xA;    my $iter0 = $field-&amp;gt;[0];&#xD;&#xA;    $self-&amp;gt;intAppendOutput(\$output, $space3 . $iter0-&amp;gt;attribute . &quot; =&amp;gt; &quot; . $iter0-&amp;gt;startIndex . &quot;, &quot; . $iter0-&amp;gt;endIndex . $space1, %parms);&#xD;&#xA;  }&#xD;&#xA;&#xD;&#xA;  $self-&amp;gt;intAppendLastOutput(\$output, $space2 . &quot;)&quot;, %parms);&#xD;&#xA;  return $output;&#xD;&#xA;        &lt;/sl:serialize>&#xD;&#xA;      "/>
+    </eAnnotations>
+    <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+      <details key="name" value="_forLoop"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="ForRepetition"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="iterators" upperBound="-1"
+        eType="#//ForRepetitionIterator" containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="Iterators"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ForRepetitionIterator">
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::RepetitionHandler::ForRepetition::Iterator"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Iterators_._type"/>
+      <details key="kind" value="empty"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="attribute" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Token">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="1"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="order" value="1"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="attribute"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="startIndex" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Integer"
+        defaultValueLiteral="0" unsettable="true">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="2"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="accessor" value="from"/>
+        <details key="order" value="2"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="startIndex"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="endIndex" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Integer">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="3"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="accessor" value="to"/>
+        <details key="order" value="3"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="endIndex"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="XPathMapping">
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::RepetitionHandler::ForEachXPathRepetition::XPathMapping"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="XPathMappings_._type"/>
+      <details key="kind" value="empty"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="attribute" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Token">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="attribute"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="xPath" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Token">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="xPath"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+</ecore:EPackage>

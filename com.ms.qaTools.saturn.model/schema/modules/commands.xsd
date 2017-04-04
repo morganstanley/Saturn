@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:commands="http://www.ms.com/2009/Saturn/Modules/Commands"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="commands" 
+           ecore:package="com.ms.qaTools.saturn.modules.commandsModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2009/Saturn/Modules/Commands"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  
+  <xs:element name="Configuration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Commands" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="interpreter" type="type:InterpretersEnum" default="SHELL" />
+    </xs:complexType>
+  </xs:element>
+ 
+   <xs:complexType name="AbstractCommand">
+     <xs:sequence>
+      <xs:element name="Command" minOccurs="1" maxOccurs="1" type="value:complexValue" />
+      <xs:element name="CheckString" minOccurs="0" maxOccurs="1" type="value:complexValue" />
+      <xs:element name="CheckStringAction" minOccurs="0" maxOccurs="1" type="commands:ActionEnum" />
+     </xs:sequence>
+     <xs:attribute name="enabled" type="xs:boolean" default="true" />
+   </xs:complexType>
+ 
+   <xs:simpleType name="ActionEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="NONE"/>
+      <xs:enumeration value="PASS"/>
+      <xs:enumeration value="FAIL"/>      
+    </xs:restriction>
+  </xs:simpleType>
+ 
+</xs:schema>

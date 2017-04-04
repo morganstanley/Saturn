@@ -1,0 +1,566 @@
+package com.ms.qaTools.saturn.kronusCode.Backport
+
+import com.fasterxml.jackson.databind.JsonNode
+import com.google.protobuf.Descriptors.FieldDescriptor
+import com.google.protobuf.Message
+import com.ms.qaTools.compare.AbstractDiff
+import com.ms.qaTools.compare.Comparator
+import com.ms.qaTools.interpreter.CommandExecutorResult
+import com.ms.qaTools.interpreter.GroovyInterpreter
+import com.ms.qaTools.interpreter.GroovyInterpreterResult
+import com.ms.qaTools.interpreter.ShellInterpreter
+import com.ms.qaTools.interpreter.ShellInterpreterResult
+import com.ms.qaTools.interpreter.SqlInterpreter
+import com.ms.qaTools.interpreter.SqlInterpreterResult
+import com.ms.qaTools.io.definition.ByteArrayIO
+import com.ms.qaTools.io.definition.CsvIO
+import com.ms.qaTools.io.definition.CustomIO
+import com.ms.qaTools.io.definition.ExcelWsIO
+import com.ms.qaTools.io.definition.ExtractorIO
+import com.ms.qaTools.io.definition.GeneratorIO
+import com.ms.qaTools.io.definition.LineIO
+import com.ms.qaTools.io.definition.PropertiesIO
+import com.ms.qaTools.io.DeviceIO
+import com.ms.qaTools.io.DiffWriter
+import com.ms.qaTools.io.DirIO
+import com.ms.qaTools.io.ExcelIO
+import com.ms.qaTools.io.FileIO
+import com.ms.qaTools.io.Input
+import com.ms.qaTools.io.NullIO
+import com.ms.qaTools.io.Output
+import com.ms.qaTools.io.rowSource.AsTemplateOf
+import com.ms.qaTools.io.rowSource.ColumnDefinition
+import com.ms.qaTools.io.rowSource.Convert
+import com.ms.qaTools.io.rowSource.ExternalSort._
+import com.ms.qaTools.io.rowSource.ExtractRows
+import com.ms.qaTools.io.rowSource.DatabaseConnection
+import com.ms.qaTools.io.rowSource.file.ByteArrayRowSource
+import com.ms.qaTools.io.rowSource.jdbc._
+import com.ms.qaTools.io.rowSource.SQLiteConnection
+import com.ms.qaTools.io.rowSource.rest.RestRowSource
+import com.ms.qaTools.io.rowSource.rest.RestRowSource._
+import com.ms.qaTools.io.rowSource.Utils._
+import com.ms.qaTools.io.rowWriter.file.ByteArrayRowWriter
+import com.ms.qaTools.io.StandardIO
+import com.ms.qaTools.io.StringIO
+import com.ms.qaTools.io.TCPHandshake
+import com.ms.qaTools.io.transports._
+import com.ms.qaTools.io.Writer
+import com.ms.qaTools.json.JsonValidator
+import com.ms.qaTools.protobuf.PbValidator
+import com.ms.qaTools.toolkit.runCmds.RunCmds
+import com.ms.qaTools.toolkit.runCmds.RunCmdsResult
+import com.ms.qaTools.toolkit.write.WriteResult
+import com.ms.qaTools.tree.validator.ComparatorWithKeys
+import com.ms.qaTools.tree.validator.HasIndexedDiffSet
+import com.ms.qaTools.xml.XmlValidator
+import org.w3c.dom.{Document => W3cDocument}
+import org.w3c.dom.Node
+
+/// Scala types
+type Any
+type Array[A]
+type Boolean
+type Byte
+type Int
+type Iterator[A]
+type KronusFunction1[-T1, +R] = Function1[Context[T1], Context[R]]
+type List[A]
+type Seq[A]
+type String
+type Throwable
+type Try[A]
+type Unit
+type W3cDocument
+
+/// Resource types
+type AsTemplateOf[A]
+type ByteArrayIO
+type ColumnDefinition
+type ColumnDefinitions = com.ms.qaTools.io.rowSource.ColumnDefinitions
+type Comparator
+type CompareColDefs = com.ms.qaTools.compare.CompareColDefs
+type CsvIO
+type CustomIO
+type DataSets = Iterator[Seq[String]] with com.ms.qaTools.io.rowSource.ColumnDefinitions
+type DeviceIO
+type DiffSetWriter = com.ms.qaTools.compare.writer.DiffSetWriter
+type DiffWriter
+type DirIO
+type ExcelIO
+type ExcelWsIO
+type ExtractRows
+type FailTerminal
+type FieldDescriptor = com.google.protobuf.Descriptors.FieldDescriptor
+type FileIO
+type FixIO = com.ms.qaTools.io.definition.FIXIO
+type GoogleProtoBufIO = com.ms.qaTools.io.definition.GoogleProtoBufIO
+type HTTP
+type HTTPClientTransport
+type Input[A]
+type JsonIO = com.ms.qaTools.io.definition.JsonIO
+type JsonNode
+type LineIO
+type Message = com.google.protobuf.Message
+type Node = org.w3c.dom.Node
+type NullIO = DeviceIO with Input[ByteArrayRowSource] with Output[ByteArrayRowWriter] with DiffWriter
+type Output[A]
+type PassTerminal
+type ProcessIO = com.ms.qaTools.io.ProcessIO
+type PropertiesIO
+type QueryIO = com.ms.qaTools.io.definition.QueryIO
+type SQLiteConnection
+type StandardIO
+type StringIO
+type TableIO = com.ms.qaTools.io.definition.TableIO
+type TCP
+type Terminal
+type Transport
+type ValidatorConfig[A, B] = com.ms.qaTools.Validator.Config[A, B]
+type ValidatorOutput[A, B] = com.ms.qaTools.Validator[A, B]
+type Writer[A]
+type XmlIO = com.ms.qaTools.io.definition.XmlIO
+
+type DatabaseConnection
+type FetchSupport
+type DatabaseConnectionX = DatabaseConnection with FetchSupport with ExecuteSupport
+//type CommandX = sql.Command // remove if unnecessary
+
+/// Result types
+type CommandExecutorResult[A]
+type GroovyInterpreterResult
+type RunCmdsResult[A]
+type ShellInterpreterResult
+type SqlInterpreterResult
+type ToolkitResult = com.ms.qaTools.toolkit.Result
+type WriteResult
+
+/// Hashtag annotations
+def #Resource()
+def #Step()
+def #Attributes(varName: String)
+def #Implicit(paramType: String)
+
+/// Resource definitions
+#Resource()
+def BinaryFile(device: DeviceIO): ByteArrayIO = generate("yield") {ByteArrayIO(device)}
+
+#Resource()
+def ColumnDefinitions(data: Input[DataSets]): Input[Seq[ColumnDefinition]] = generate("yield") {
+  import scalaz.Scalaz._, Input._
+  data.map(ColumnDefinition.fromDataSets)
+}
+
+#Resource()
+def Compare(columns: Input[CompareColDefs], left: Input[DataSets], right: Input[DataSets], smartMatch: String = "false"): Input[Comparator] = generate("yield") {
+  val matcher: Function3[String, String, String, Double] = {case (_, l, r) => if(l == r) 0 else 1}
+
+  import scalaz.Scalaz._, Input._
+  for (c <- columns; l <- left; r <- right) yield Comparator(l, r, c.cols, matcher = Option(matcher).filter(_ => smartMatch.toBoolean))
+}
+
+#Resource()
+def CompareColDefs(data: Input[DataSets],
+                   left: Input[Seq[ColumnDefinition]],
+                   right: Input[Seq[ColumnDefinition]]): Input[CompareColDefs] = generate("yield") {
+  import scalaz.Scalaz._, Input._
+  for (d <- data; l <- left; r <- right) yield com.ms.qaTools.compare.CompareColDefs.fromData(d, l, r)
+}
+
+#Resource()
+def CsvFile(device: DeviceIO): CsvIO = generate("yield") {CsvIO(device)}
+
+#Resource()
+def CustomFile(device: DeviceIO,
+               cellSeparator: String,
+               rowSeparator: String,
+               quoteChar: String,
+               escapeChar: String,
+               nullMarker: String = ""): CustomIO = generate("yield") {
+  val Array(qc, ec) = Array(quoteChar, escapeChar) map { s =>
+    require(s.length <= 1, "quoteChar or escapeChar must be at most 1 character long")
+    s.headOption
+  }
+  CustomIO(device, cellSeparator, rowSeparator, qc, ec, nullMarker)
+}
+
+#Resource()
+def DeviceFile(fileName: String, append: Int = 0): FileIO = generate("yield") {FileIO(fileName, append.toInt != 0)}
+
+#Resource()
+def DiffSetWriter(output: DiffWriter,
+                  columns: Input[CompareColDefs],
+                  pageConfig: Input[DataSets]): Output[DiffSetWriter] = generate("yield") {
+  import scalaz.Scalaz._, Output._
+  import com.ms.qaTools.compare.writer.PageConfig
+  for (wf <- fromTry(output.diffWriter); c <- columns.asOutput; p <- pageConfig.asOutput) yield {
+    val PageConfig(names, omitted) = PageConfig.fromData(p)
+    wf(c.cols, names, omitted)
+  }
+}
+
+#Resource()
+def Directory(dirName: String, filter: String = ".*"): DirIO = generate("yield") {DirIO(dirName, filter)}
+
+#Resource()
+def DumpColumnDefinitions(columns: Input[Seq[ColumnDefinition]]): Input[DataSets] = generate("yield") {
+  import scalaz.Scalaz._, Input._
+  columns.map(ColumnDefinition.toDataSets)
+}
+
+#Resource()
+def ExcelWorkBook(fileName: String, version: String = "XML-2007"): ExcelIO = generate("yield") {
+  val isXlsx = version match {
+    case "BIN-2003" => false
+    case "XML-2007" => true
+    case _          => throw new IllegalArgumentException(s"Invalid Excel workbook version: $version")
+  }
+  ExcelIO(fileName, isXlsx)
+}
+
+#Resource()
+def ExcelWorkSheet(workbook: ExcelIO, sheetName: String): ExcelWsIO = generate("yield") {ExcelWsIO(workbook, sheetName)}
+
+#Resource()
+def ExtractColumnDefinitions(input: Input[DataSets]): Input[Seq[ColumnDefinition]] = generate("yield") {
+  import scalaz.Scalaz._, Input._
+  input.map(_.colDefs)
+}
+
+#Resource()
+#Implicit(paramType = "ToExtractRows[A]")
+#Implicit(paramType = "ToStringPairs[B]")
+def Extractor[A, B](trees: Input[A], mappings: Input[B]): Input[DataSets] = generate("yield") {
+  val t = for (ts <- trees.input; ms <- mappings.input) yield ExtractorIO(ts, ms)
+  t.get
+}
+
+#Resource()
+def Generator[A](template: Input[AsTemplateOf[Iterator[A]]], data: Input[DataSets]): Input[Iterator[A]] = generate("yield") {
+  val t = for (t <- template.input; d <- data.input) yield GeneratorIO(t, d)
+  t.get
+}
+
+#Resource()
+def HttpTransport(uri: String, method: String = "POST"): HTTP = generate("yield") {
+  HTTP(new java.net.URI(uri), HTTP.Method.fromString(method))
+}
+
+#Resource()
+def InlineDevice(contents: String): StringIO = generate("yield") {StringIO(contents)}
+
+#Resource()
+def JsonFile(device: DeviceIO): JsonIO = // TODO rename to JsonIO?
+  generate("yield") {com.ms.qaTools.io.definition.JsonIO(device)}
+
+#Resource()
+def JsonRestResponses(http: HTTP, requests: Input[Iterator[JsonNode]]): Input[Iterator[JsonNode]] = generate("yield") {
+  import scalaz.Scalaz._, Input._
+  requests.map(RestRowSource(http, _).dropStatus)
+}
+
+#Resource()
+def LineFile(device: DeviceIO): LineIO = generate("yield") {LineIO(device)}
+
+#Resource()
+def NullDevice(): NullIO = generate("yield") {NullIO}
+
+#Resource()
+def ProcessIO(command: String, timeout: Int = 2000): ProcessIO = generate("yield") {com.ms.qaTools.io.ProcessIO(command, timeout)}
+
+#Resource()
+def PropertiesFile(device: DeviceIO): PropertiesIO = generate("yield") {PropertiesIO(device)}
+
+#Resource()
+def Sort(unsorted: Input[DataSets]): Input[DataSets] = generate("yield") {
+  import scalaz.Scalaz._, Input._
+  for (xss <- unsorted) yield {
+    implicit val ord = xss.keyColOrdering
+    xss.sortExternal
+  }
+}
+
+#Resource()
+def StdErr(): StandardIO = generate("yield") {StandardIO(true)}
+
+#Resource()
+def StdOut(): StandardIO = generate("yield") {StandardIO(false)}
+
+#Resource()
+def SubstituteColumnDefinitions(resource: Input[DataSets], columns: Input[Seq[ColumnDefinition]]): Input[DataSets] = generate("yield") {
+  import scalaz.Scalaz._, Input._
+  for (r <- resource; cs <- columns) yield r.withColumns(cs)
+}
+
+#Resource()
+def TcpTransport(host: String, port: String, authentication: String = "KERBEROS"): TCP = generate("yield") {
+  TCP(host, port, TCPHandshake.fromString(authentication))
+}
+
+#Resource()
+def TextRestResponses(http: HTTP, requests: Input[Iterator[String]]): Input[Iterator[String]] = generate("yield") {
+  import scalaz.Scalaz._, Input._
+  requests.map(RestRowSource(http, _).dropStatus)
+}
+
+#Resource()
+def FixIO(device: DeviceIO, dataDictionary: String, doValidation: String, separator: String): FixIO = generate("yield") {
+  val dict = new quickfix.DataDictionary(dataDictionary)
+  com.ms.qaTools.io.definition.FIXIO(device, dict, doValidation.toBoolean, separator.ensuring(_.size == 1).head)}
+
+#Resource()
+def GoogleProtoBufIO(device: DeviceIO, className: String, jarLocation: String, readDelimited: String, readEncoded: String): GoogleProtoBufIO = generate("yield") {
+  com.ms.qaTools.io.definition.GoogleProtoBufIO(device, className, jarLocation, readDelimited.toBoolean, readEncoded.toBoolean)}
+
+#Resource()
+def JsonIO(device: DeviceIO): JsonIO = generate("yield") {
+  com.ms.qaTools.io.definition.JsonIO(device)}
+
+#Resource()
+def XmlIO(device: DeviceIO, namespace: Iterator[Seq[String]] = EmptyIterator()): XmlIO = generate("yield") {
+  com.ms.qaTools.io.definition.XmlIO(device, com.ms.qaTools.xml.NamespaceContextImpl(namespace))}
+
+#Resource()
+def XmlRestResponses(http: HTTP, requests: Input[Iterator[W3cDocument]]): Input[Iterator[W3cDocument]] = generate("yield") {
+  import scalaz.Scalaz._, Input._
+  requests.map(RestRowSource(http, _).dropStatus)
+}
+
+#Resource()
+def Sqlite(): SQLiteConnection =
+  generate("yield") {SQLiteConnection()}
+#Resource()
+def SqliteFromFile(file: FileIO): SQLiteConnection =
+  generate("yield") {SQLiteConnection(new java.io.File(file.fileName))}
+
+#Resource() def TableIO(connection: DatabaseConnectionX, table: String, fetchSize: Int = 1024): TableIO =
+  generate("yield") {com.ms.qaTools.io.definition.TableIO(connection, table, fetchSize)}
+#Resource() def QueryIO(connection: FetchSupport, query: String, fetchSize: Int = 1024): QueryIO =
+  generate("yield") {com.ms.qaTools.io.definition.QueryIO(connection, query, None, fetchSize)}
+#Resource() def ParametrizedQueryIO(connection: FetchSupport, query: String, parameters: Input[Iterator[Seq[String]]], fetchSize: Int = 1024): QueryIO =
+  generate("yield") {com.ms.qaTools.io.definition.QueryIO(connection, query, Option(parameters.input.get), fetchSize)}
+
+#Resource()
+def JsonValidatorConfig(): ValidatorConfig[JsonNode, JsonNode] = generate("yield") {
+  com.ms.qaTools.Validator.JsonConfig}
+
+#Resource()
+def ProtobufValidatorConfig(descFileName: String, pbMessageType: String, configFileName: String): ValidatorConfig[Message, FieldDescriptor] = generate("yield") {
+  import com.ms.qaTools.protobuf.DescriptorBuilder
+  import com.ms.qaTools.protobuf.PBTemplateBuilder
+  val template = Option(configFileName).map(PBTemplateBuilder(_, descFileName, pbMessageType))
+  val descriptor = Option(descFileName).map(f => DescriptorBuilder(f, pbMessageType).filter(_.getName == pbMessageType).head).orNull
+  com.ms.qaTools.Validator.PbConfig(template, descriptor)
+}
+
+#Resource()
+def XmlValidatorConfig(configFileName: String): ValidatorConfig[W3cDocument, Node] = generate("yield") {
+  com.ms.qaTools.Validator.XmlConfig(Option(configFileName))}
+
+#Resource()
+def Validator[A, B](config: ValidatorConfig[A, B], left: Input[Iterator[A]], right: Input[Iterator[A]]): Input[ValidatorOutput[A, B]] = generate("yield") {
+  import scalaz.Scalaz._, Input._
+  for (l <- left; r <- right) yield com.ms.qaTools.Validator(config, l, r)
+}
+
+/// Step definitions
+#Step()
+#Attributes(varName = "env")
+def GroovyCommand(command: String): RunCmdsResult[GroovyInterpreterResult] = generate("yield") {
+  RunCmds(Seq(command), GroovyInterpreter(new groovy.lang.Binding(env.toMap))).run.get
+}
+
+#Step()
+#Attributes(varName = "env")
+def ShellCommand(command: String): RunCmdsResult[ShellInterpreterResult] = generate("yield") {
+  val strEnv = env map {case (k, v) => (k, v.toString)}
+  RunCmds(Seq(command), ShellInterpreter(tee = true, extraEnv = strEnv)).run.get
+}
+
+#Step()
+#Implicit(paramType = "Convert[A, B]")
+def Write[A, B](input: Input[A], output: Output[Writer[B]]): WriteResult = generate("yield") {
+  val t = for (i <- input.input; o <- output.output; r <- com.ms.qaTools.toolkit.write.Write(i, o).run) yield r
+  t.get
+}
+
+#Step()
+// def SqlCommand(database: DatabaseConnection, command: CommandX): RunCmdsResult[SqlInterpreterResult] = generate("yield") {
+def SqlCommand(database: DatabaseConnection, command: String): RunCmdsResult[SqlInterpreterResult] = generate("yield") {
+  RunCmds(Seq(command), SqlInterpreter(database)).run.get
+}
+
+
+/// Helpers
+
+def ToString(x: Any): String = generate("yield") {x.toString}
+def ToInt(s: String): Int = generate("yield") {s.toInt}
+
+def InputOf[A](io: Input[A]): A = generate("yield") {io.input.get}
+
+def ToolkitResult[A <: ToolkitResult](result: A): A = generate("yield") {
+  if (result.failed) throw KronusFailure(Seq(scala.util.Success(result)), None, result.exception)
+  else result
+}
+
+def EmptyIterator[A](): Iterator[A] = generate("yield") {Iterator.empty}
+
+def ScalaCommand(result: Any, code: String): RunCmdsResult[CommandExecutorResult[Any]] = generate("for") {
+  result.flatMapTry { r =>
+    code.map { c =>
+      val cmd = new com.ms.qaTools.interpreter.Command[Any] {
+        def execute = r
+        override def toString = c
+      }
+      RunCmds(Seq(cmd), com.ms.qaTools.interpreter.CommandExecutor).run.get.asInstanceOf[RunCmdsResult[CommandExecutorResult[Any]]]
+    }
+  }
+}
+
+def EnvVar(name: String): String = generate("yield") {sys.env(name)}
+
+def File(name: String): String = generate("yield") {
+  val source = scala.io.Source.fromFile(name)
+  try source.mkString finally source.close()
+}
+
+def Cell(resource: DataSets, column: String, row: Int): String = generate("yield") {
+  val colDef = resource.getColDefByName(column).getOrElse(sys.error(s"Cannot find column named $column"))
+  Option(resource(row)(colDef.index)).getOrElse("")
+}
+
+#Implicit(paramType = "Convert[A, W3cDocument]")
+def XPath[A](xml: Iterator[A],
+             xpath: String,
+             row: Int,
+             returnType: String,
+             fragment: Int,
+             namespace: Iterator[Seq[String]] = EmptyIterator()): String = generate("yield") {
+  import javax.xml.xpath.XPathConstants._
+  val docs = xml.map(implicitly[Convert[A, W3cDocument]].convert).buffered
+  val extraNs = namespace.map(r => r(0) -> r(1)).toMap
+  val ns = com.ms.qaTools.xml.NamespaceContextImpl(docs.head, extraNs)
+  val retTyp = returnType match {
+    case "NUMBER"  => NUMBER
+    case "STRING"  => STRING
+    case "BOOLEAN" => BOOLEAN
+    case "NODE"    => NODE
+  }
+  com.ms.qaTools.complexValues.getXPathValue(docs, ns, xpath, row, fragment != 0, retTyp)
+}
+
+def JsonPath(json: Iterator[JsonNode], path: String, row: Int): String = generate("yield") {
+  import com.ms.qaTools.io.rowSource.json.JSONPathRowSource
+  JSONPathRowSource(Seq(path -> ""), json).asDelimitedRowIterator(row).ensuring(_.size == 1).head
+}
+
+def Groovy(code: String): Any = generate("yield") {
+  val result = GroovyInterpreter().run(code)
+  result.resultObj match {
+    case Some(x) if result.passed => x
+    case _                        => sys.error(s"Code does not pass: $code")
+  }
+}
+
+def Shell(code: String): String = generate("yield") {
+  val result = ShellInterpreter().run(code)
+  result.stdout match {
+    case Some(s) if result.passed => s
+    case _                        => sys.error(s"Code does not pass: $code")
+  }
+}
+
+def When[A](pred: Boolean, body: => A): A = generate("for") {
+  val f = for ((scala.util.Success(p), ms) <- pred.future if p; (x, ns) <- body.future) yield {
+    (x, ns.put(ms[TerminalMeta].increaseDepth))
+  }
+  Context(future = f)
+}
+
+def OnPass(result: Any): Boolean = generate("for") {result.mapTry(t => scala.util.Success(t.isSuccess))}
+def OnFail(result: Any): Boolean = generate("for") {result.mapTry(t => scala.util.Success(t.isFailure))}
+def OnFinish(result: Any): Boolean = generate("for") {result.mapTry(Function.const(scala.util.Success(true)))}
+
+def OnCustom(result: Any, pred: Boolean): Boolean = generate("for") {
+  pred.flatMap(p => result.mapTry(Function.const(scala.util.Success(p))))
+}
+
+def And(preds: Boolean*): Boolean = generate("for") {import TerminalMeta._; preds.flatMap(_.reduce(_ && _))}
+def Or(preds: Boolean*): Boolean = generate("for") {import TerminalMeta._; preds.flatMap(_.reduce(_ || _))}
+
+def FailOnFalse(pred: Boolean): Boolean = generate("for") {pred.mapTry(_.filter(identity))}
+
+def Compose[A, B, C](f: KronusFunction1[B, C], g: KronusFunction1[A, B]): KronusFunction1[A, C] = generate("yield") {
+  f.compose(g)
+}
+
+def ForEach[A, B](xs: Iterator[A], f: KronusFunction1[A, B], batchSize: Int): Unit = generate("for") {
+  import scala.concurrent.Future
+  for {
+    xs0        <- xs
+    f0         <- f
+    batchSize0 <- batchSize
+    fut = (Future.successful(()) /: xs0.grouped(batchSize0)) { (fut, ys) =>
+      for (_ <- fut; _ <- Future.sequence(ys.map(y => f0(y).future))) yield ()
+    }
+    _ <- Context.fromFuture(fut)
+  } yield ()
+}
+
+def RangeIterator(start: Int, end: Int): Iterator[Int] = generate("yield") {(start until end).toIterator}
+
+def IndexOfColumn(cols: ColumnDefinitions, name: String): Int = generate("yield") {
+  cols.getColDefByName(name).getOrElse {
+    throw new IllegalArgumentException(s"Unable to find column with name `$name'")
+  }.index
+}
+
+def Nth[A](n: Int, xs: Seq[A]): A = generate("yield") {xs(n)}
+
+#Implicit(paramType = "ToNamespaceContext[A]")
+def SubstituteNamespaces[A](xml: XmlIO, namespaces: A): XmlIO = generate("yield") {
+  xml.copy(namespaceContext = implicitly[ToNamespaceContext[A]].convert(namespaces))
+}
+
+def ValidateWriteResult(result: WriteResult): WriteResult = {
+  def Validate(result: WriteResult): WriteResult = generate("yield") {
+    result.summary match {
+      case com.ms.qaTools.toolkit.write.WriteDiffCount(c) if c.different != 0 || c.inLeftOnly != 0 || c.inRightOnly != 0 =>
+        throw new KronusFailure(Seq(scala.util.Success(result)), Some("Compare result not identical"), result.exception)
+      case _ => result
+    }
+  }
+  return Validate(result = ToolkitResult(result = result))
+}
+
+def DataCompareStep(left: Input[DataSets],
+                    right: Input[DataSets],
+                    columns: Input[DataSets],
+                    output: DiffWriter,
+                    pageConfig: Input[DataSets]): WriteResult = {
+  val CompCols = CompareColDefs(data = columns,
+                                left = ExtractColumnDefinitions(input = left),
+                                right = ExtractColumnDefinitions(input = right))
+  val Comp = Compare(columns = CompCols, left = left, right = right)
+  val Output = DiffSetWriter(output = output, pageConfig = pageConfig, columns = CompCols)
+  return ValidateWriteResult(result = Write(input = Comp, output = Output))
+}
+
+def PassIfAnyPass(results: Seq[Try[Any]]): Seq[Try[Any]] = generate("for") {
+  @scala.annotation.tailrec def f(t: Throwable): Option[Seq[Try[Any]]] = t match {
+    case KronusFailure(ts, _, _) if ts.exists(_.map(_ != com.ms.qaTools.saturn.kronus.runtime.NoopTerminal).getOrElse(false)) => Some(ts)
+    case Rethrow(_, t)                                                                                                        => f(t)
+    case _                                                                                                                    => None
+  }
+  results.mapTry(_.recover(Function.unlift(f)))
+}
+
+def Sleep(duration: Int): Unit = generate("for") {
+  import scala.concurrent.{Future, blocking}
+  duration.flatMap(n => Context.fromFuture(Future(blocking(Thread.sleep(n * 1000)))))
+}
+
+def NoopTerminal(): Terminal = generate("yield") {com.ms.qaTools.saturn.kronus.runtime.NoopTerminal}
+def PassTerminal(name: String): PassTerminal = generate("yield") {com.ms.qaTools.saturn.kronus.runtime.PassTerminal(name)}
+def FailTerminal(name: String): FailTerminal = generate("yield") {com.ms.qaTools.saturn.kronus.runtime.FailTerminal(name)}
+def TerminalResult(results: Any*): Seq[Try[Any]] = generate("for") {results.flatMap(Terminal.result)}

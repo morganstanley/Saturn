@@ -1,0 +1,32 @@
+package com.ms.qaTools.kronus.rfb.vals
+
+include com.ms.qaTools.kronus.rfb.PRELUDE
+
+//
+//////////////////////////////////////////////  vals
+//
+
+type String
+type Int
+type Double
+type Any
+type Unit
+
+val MyStr1 = "AB"
+val MyStr2 = "CD"
+val MyStr3 = MyStr1 + MyStr2
+
+val MyInt1 = 111
+val MyInt2 = MyInt1 * 2
+
+def PrintIntln(dat:Int):Unit = generate("yield") { println(dat) }
+
+
+val R2 = PrintIntln(dat = MyInt1)
+val R3 = PrintIntln(dat = MyInt2)
+
+val RR1 = ASSERT_EQUAL(x = MyStr1, y = "AB")
+val RR2 = ASSERT_EQUAL(x = MyStr2, y = "CD")
+val RR3 = ASSERT_EQUAL(x = MyStr3, y = "ABCD")
+val RR4 = ASSERT_EQUAL(x = MyInt1, y = 111)
+val RR5 = ASSERT_EQUAL(x = MyInt2, y = 222)

@@ -1,0 +1,11 @@
+package com.ms.qaTools.kronus.rfb.LITERAL
+
+include com.ms.qaTools.kronus.rfb.PRELUDE
+
+val TEST_STRING_LITERAL = ASSERT_EQUAL("FOO", generate("yield") {"FOO"})
+val TEST_INTEGER_LITERAL = ASSERT_EQUAL(42, generate("yield") {42})
+val TEST_NEGATIVE_INTEGER_LITERAL = ASSERT_EQUAL(-42, generate("yield") {-42})
+val TEST_DOUBLE_LITERAL = ASSERT_EQUAL(4.2, generate("yield") {4.2})
+val TEST_NEGATIVE_DOUBLE_LITERAL = ASSERT_EQUAL(-4.2, generate("yield") {-4.2})
+val TEST_BOOLEAN_LITERAL_1 = ASSERT(true)
+val TEST_BOOLEAN_LITERAL_2 = ASSERT(!false)

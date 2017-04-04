@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:result="http://www.ms.com/2009/Saturn/Result"
+           xmlns:exception="http://www.ms.com/2009/Saturn/Exception"
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"           
+           ecore:nsPrefix="exception" 
+           ecore:package="com.ms.qaTools.saturn.exception"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+           
+           elementFormDefault="qualified" 
+           targetNamespace="http://www.ms.com/2009/Saturn/Exception">
+
+<xs:element name="Exception">
+  <xs:complexType ecore:name="exception" >
+    <xs:sequence>
+      <xs:element name="Exception" type="exception:QAT_Traceable" minOccurs="0" maxOccurs="1" />
+      <xs:element name="Message" type="xs:string"  />
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
+
+  <xs:complexType ecore:name="SATException" name="SAT"  >
+    <xs:complexContent>
+      <xs:extension base="exception:QAT_Traceable" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType ecore:name="TraceableException" name="QAT_Traceable"  >
+    <xs:sequence>
+      <xs:element name="Message" type="xs:string"  />
+      <xs:element name="Exception" type="exception:SAT" minOccurs="0" /> 
+<!--    <xs:element name="Exception" type="xs:string" minOccurs="0" />  -->
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType ecore:name="StackTraceException" name="StackTrace" >
+    <xs:sequence>
+      <xs:element name="Trace" type="xs:string"  />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType ecore:name="RawException" name="Raw"  />
+
+  <xs:complexType name="QAT_UnknownCode" >
+    <xs:complexContent>
+      <xs:extension base="exception:QAT_Traceable">
+        <xs:sequence>
+          <xs:element name="Env" type="xs:string" minOccurs="0" />
+          <xs:element name="Raw" type="xs:string" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType ecore:name="FileSystemException" name="QAT_FileSystem" >
+    <xs:complexContent>
+      <xs:extension base="exception:QAT_Traceable">
+        <xs:sequence>
+          <xs:element name="FileName" type="xs:string" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+   <xs:complexType ecore:name="FileNotFoundException" name="QAT_FileSystem_FileNotFound" >
+    <xs:complexContent>
+      <xs:extension base="exception:QAT_FileSystem"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+   <xs:complexType ecore:name="PermissionDeniedException" name="QAT_FileSystem_PermissionDenied" >
+    <xs:complexContent>
+      <xs:extension base="exception:QAT_FileSystem"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType ecore:name="CompareException" name="QAT_Compare" >
+    <xs:complexContent>
+      <xs:extension base="exception:QAT_Traceable"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType ecore:name="CompareInitException" name="QAT_Compare_Init"  >
+    <xs:complexContent>
+      <xs:extension base="exception:QAT_Compare" />
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"                                 
+           xmlns:listeners="http://www.ms.com/2006/Saturn/Listeners"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="listeners" 
+           ecore:package="com.ms.qaTools.saturn.listeners"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+           
+           targetNamespace="http://www.ms.com/2006/Saturn/Listeners"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="saturnValues.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="saturnTypes.xsd" />
+
+  <xs:complexType name="XmlReportListener" ecore:name="XmlReportListener">
+    <xs:complexContent>
+      <xs:extension base="type:AbstractListener">
+      	<xs:sequence>
+          <xs:element name="XmlFiles" minOccurs="0" maxOccurs="unbounded">
+            <xs:complexType ecore:name="XmlFile">
+              <xs:sequence>
+                <xs:element name="Title" type="value:complexValue" />
+                <xs:element name="FileName" type="value:complexValue" />
+                <xs:element name="XsltURI" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>  
+      	</xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="XmlHierarchicalReportListener" ecore:name="XmlHierarchicalReportListener">
+    <xs:complexContent>
+      <xs:extension base="type:AbstractListener">
+        <xs:sequence>
+          <xs:element name="XmlDirectories" minOccurs="0" maxOccurs="unbounded">
+            <xs:complexType ecore:name="XmlDirectory">
+              <xs:sequence>
+                <xs:element name="Directory" type="value:complexValue" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element> 
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ConsoleReportListener" ecore:name="ConsoleReportListener">
+    <xs:complexContent>
+      <xs:extension base="type:AbstractListener">
+      	<xs:sequence/>
+        <xs:attribute name="verbosity" type="xs:integer" default="1" />
+        <xs:attribute name="color" type="xs:boolean" default="true" />  	
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="DataSetReportListener" ecore:name="DataSetReportListener"  >
+    <xs:complexContent>
+      <xs:extension base="type:AbstractListener">
+        <xs:sequence>
+          <xs:element name="Input" minOccurs="1" maxOccurs="1" type="type:DataSetResourceDefinition" />
+          <xs:element name="Output" minOccurs="1" maxOccurs="1" type="type:DataSetResourceDefinition" />
+        </xs:sequence>      
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType> 
+
+  <xs:complexType name="TAPReportListener" ecore:name="TAPReportListener" >
+    <xs:complexContent>
+      <xs:extension base="type:AbstractListener">
+        <xs:sequence>
+          <xs:element name="Output" minOccurs="1" maxOccurs="1" type="type:ResourceDefinition" />
+          <xs:element name="OmittedIDs" minOccurs="0" maxOccurs="unbounded" type="listeners:TapReportListenerID"  />
+          <xs:element name="IDs" minOccurs="0" maxOccurs="unbounded" type="listeners:TapReportListenerID" />
+        </xs:sequence>
+        <xs:attribute name="type" type="listeners:TAPOutputTypeEnum" default="TEXT" />      
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType> 
+
+ <xs:complexType ecore:name="ID" name="TapReportListenerID"  >
+   <xs:attribute name="id" type="xs:string" />
+ </xs:complexType>
+ 
+   <xs:complexType name="ScenarioReportListener" ecore:name="ScenarioReportListener" >
+    <xs:complexContent>
+      <xs:extension base="type:AbstractListener">
+        <xs:sequence>
+          <xs:element name="Output" minOccurs="1" maxOccurs="1" type="type:ResourceDefinition" />
+        </xs:sequence>
+        <xs:attribute name="title" type="xs:string" default="Saturn result report" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType> 
+
+  <xs:simpleType name="TAPOutputTypeEnum" ecore:name="TAPOutputTypeEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="TEXT"/>
+      <xs:enumeration value="HTML"/>
+    </xs:restriction>
+  </xs:simpleType>   
+
+  <xs:complexType name="EMailPostExecutionListener">
+    <xs:complexContent>
+      <xs:extension base="type:AbstractListener">
+      	<xs:sequence>
+      	</xs:sequence>      	
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="MailConfiguration" ecore:name="MailConfiguration">
+    <xs:sequence>
+      <xs:element name="Subject"     type="value:complexValue" />
+      <xs:element name="Message"     type="value:complexValue" />
+      <xs:element name="Attachments" type="type:ResourceDefinition" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="Recipients"  type="listeners:Recipient" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="attachAsLink" type="xs:boolean" use="optional" default="false" />
+  </xs:complexType>
+ 
+  <xs:complexType name="Recipient" ecore:name="MailRecipient"> 
+    <xs:complexContent>
+      <xs:extension base="value:complexValue">
+        <xs:attribute name="type" type="listeners:RecipientTypeEnum" default="TO" />
+      </xs:extension>
+    </xs:complexContent>  
+  </xs:complexType>
+ 
+  <xs:simpleType name="RecipientTypeEnum" ecore:name="RecipientTypeEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="TO"/>
+      <xs:enumeration value="CC"/>
+      <xs:enumeration value="BCC"/>
+    </xs:restriction>
+  </xs:simpleType>   
+
+</xs:schema>

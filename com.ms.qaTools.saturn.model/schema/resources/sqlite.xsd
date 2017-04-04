@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:sqliteResource="http://www.ms.com/2011/Saturn/Resources/SQLite"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="sqliteResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.sqliteResource"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2011/Saturn/Resources/SQLite"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd" />
+
+  <xs:complexType name="SQLiteResource" ecore:name="SQLiteResource" >
+    <xs:complexContent>
+      <xs:extension base="type:DatabaseResourceDefinition">
+        <xs:sequence>
+          <xs:element name="Database" type="sqliteResource:AbstractDatabase"  />
+          <xs:element name="DDLResource" type="type:NamedResourceDefinition" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="AbstractDatabase" abstract="true"/>
+  
+  <xs:complexType name="MemoryDatabase" >
+    <xs:complexContent>
+      <xs:extension base="sqliteResource:AbstractDatabase"/>
+    </xs:complexContent>    
+  </xs:complexType>
+  
+  <xs:complexType name="SQLiteDatabase" >
+    <xs:complexContent>
+      <xs:extension base="sqliteResource:AbstractDatabase">
+        <xs:sequence>
+          <xs:element name="DBResource" type="type:NamedResourceDefinition" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>    
+  </xs:complexType>
+  
+</xs:schema>

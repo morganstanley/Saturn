@@ -1,0 +1,43 @@
+«EXTENSION xpt::navigator::Utils»
+
+«AROUND getViewChildren FOR gmfgen::GenNavigator-»
+«EXPAND xpt::Common::generatedMemberComment»
+private Object[] getViewChildren(org.eclipse.gmf.runtime.notation.View view, Object parentElement) {
+    switch («EXPAND xpt::editor::VisualIDRegistry::getVisualIDMethodCall FOR editorGen.diagram»(view)) {
+    «FOREACH getNavigatorContainerNodes(self) AS navigator-»
+        «EXPAND xpt::Common::caseVisualID FOR navigator» «EXPAND getViewChildrenNavigatorNodeMethodName FOR navigator»(view, parentElement);
+    «ENDFOREACH»
+    }
+    return EMPTY_ARRAY;
+}
+«EXPAND getViewChildrenNavigatorNode(self) FOREACH getNavigatorContainerNodes(self)»
+«ENDAROUND»
+
+«DEFINE getViewChildrenNavigatorNodeMethodName FOR gmfgen::GenCommonBase»getViewChildren_«EXPAND xpt::Common::disqualifiedClassName FOR getEditPartQualifiedClassName()»«ENDDEFINE»
+
+«DEFINE getViewChildrenNavigatorNode(navigator : gmfgen::GenNavigator) FOR gmfgen::GenCommonBase-»
+«EXPAND xpt::Common::generatedMemberComment»
+private Object[] «EXPAND getViewChildrenNavigatorNodeMethodName»(org.eclipse.gmf.runtime.notation.View view, Object parentElement) {
+    «EXPAND CodeStyle::newGenericInstance('result', 'java.util.LinkedList', navigator.getAbstractNavigatorItemQualifiedClassName())»();
+    «EXPAND xpt::navigator::NavigatorContentProvider::addForeignShortcuts FOR self-»
+    «EXPAND xpt::navigator::NavigatorContentProvider::_nailedDownVariable('sv', 'view')»
+    «LET getChildReferencesFrom(navigator, self) AS _references-»
+        «EXPAND xpt::navigator::NavigatorContentProvider::initGroupVariables(navigator, _references, 'parentElement', self) FOREACH getGroupNames(_references)-»
+        «IF _references->notEmpty() and _references->findConnectionPaths()->notEmpty()-»
+        «EXPAND CodeStyle::G('java.util.Collection', 'org.eclipse.gmf.runtime.notation.View')» connectedViews;
+        «FOREACH _references AS reference-»
+            «FOREACH reference.findConnectionPaths() AS path-»
+                «FOREACH path.segments->asSequence() AS segment ITERATOR segmentsIterator-»
+                    connectedViews = «EXPAND xpt::navigator::NavigatorContentProvider::childrenMethodName(reference.referenceType, segment) FOR segment._from-»
+                    («IF segmentsIterator.isFirstIteration()»java.util.Collections.singleton(sv)«ELSE»connectedViews«ENDIF-»
+                    , «EXPAND xpt::editor::VisualIDRegistry::typeMethodCall FOR segment.to»);
+                «ENDFOREACH-»
+                «EXPAND xpt::navigator::NavigatorContentProvider::addNavigatorItemsPrefix FOR reference»connectedViews«EXPAND xpt::navigator::NavigatorContentProvider::addNavigatorItemsSuffix('parentElement', reference.referenceType <> gmfgen::GenNavigatorReferenceType::children) FOR reference-»
+            «ENDFOREACH-»
+        «ENDFOREACH-»
+        «ENDIF-»
+        «EXPAND xpt::navigator::NavigatorContentProvider::addGroups(_references) FOREACH getGroupNames(_references)-»
+    «ENDLET-»
+    return result.toArray();
+}
+«ENDDEFINE»

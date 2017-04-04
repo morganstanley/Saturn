@@ -1,0 +1,5 @@
+package com.ms.qaTools.kronus.rfb.compileerror.ScalaCodeBlockInvalidCode
+
+type Unit
+
+def F(): Unit = generate("yield") {<this is invalid scala code>}

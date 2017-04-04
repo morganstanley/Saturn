@@ -1,0 +1,57 @@
+package com.ms.qaTools.kronus.rfb.DynamicAnnotation
+
+include com.ms.qaTools.kronus.rfb.PRELUDE
+
+def @MY_ANNOTATION_1(attr1: String, attr2: Int)
+def @MY_ANNOTATION_2(attr: String)
+
+def VALIDATE_MY_ANNOTATION_1(value: Any, attr1: String, attr2: Int): Unit = {
+  val ANNO = generate("for") {
+    value.getMeta[ValDefScope].map(_.annotations.collectFirst {case x: MY_ANNOTATION_1 => x}.get)
+  }
+  return AFTER(ANNO, {
+    val ATTR1 = generate("for") {ANNO.flatMap(_.attr1)}
+    val ATTR2 = generate("for") {ANNO.flatMap(_.attr2)}
+    return ASSERT(ATTR1 == attr1 && ATTR2 == attr2)
+  })
+}
+
+@MY_ANNOTATION_1(attr1 = "FOO", attr2 = 42)
+val STATIC_VALUE = {}
+val TEST_STATIC_VALUE = VALIDATE_MY_ANNOTATION_1(STATIC_VALUE, "FOO", 42)
+
+val TEST_ANNOTATIONS_DO_NOT_TRANSMIT = {
+  val ANOTHER_VALUE = STATIC_VALUE
+  return AFTER(ANOTHER_VALUE, generate("for") {
+    ANOTHER_VALUE.getMeta[ValDefScope].map { s =>
+      assert(s.annotations.collectFirst {case x: MY_ANNOTATION_1 => x}.isEmpty)
+    }
+  })
+}
+
+val TEST_MULTIPLE_ANNOTATIONS = {
+  @MY_ANNOTATION_1(attr1 = "BAR", attr2 = 41)
+  @MY_ANNOTATION_2(attr = "QUUX")
+  val MULTIPLE = {}
+
+  val ANNOTATION_1 = VALIDATE_MY_ANNOTATION_1(MULTIPLE, "BAR", 41)
+  val ANNOTATION_2 = AFTER(MULTIPLE, {
+    val ANNO = generate("for") {
+      MULTIPLE.getMeta[ValDefScope].map(_.annotations.collectFirst {case x: MY_ANNOTATION_2 => x}.get)
+    }
+    return AFTER(ANNO, ASSERT(generate("for") {ANNO.flatMap(_.attr)} == "QUUX"))
+  })
+}
+
+def RANDOM_STRING(): String = generate("yield") {scala.util.Random.alphanumeric.take(6).mkString}
+def RANDOM_INT(): Int = generate("yield") {scala.util.Random.nextInt()}
+
+val TEST_DYNAMIC_VALUE = {
+  val S = RANDOM_STRING()
+  val N = RANDOM_INT()
+
+  @MY_ANNOTATION_1(S, N)
+  val X = {}
+
+  return VALIDATE_MY_ANNOTATION_1(X, S, N)
+}

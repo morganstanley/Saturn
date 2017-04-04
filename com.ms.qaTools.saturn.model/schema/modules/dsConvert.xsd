@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:dsConvert="http://www.ms.com/2009/Saturn/Modules/DsConvert"
+           xmlns:exception="http://www.ms.com/2009/Saturn/Exception"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="dsConvertModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.dsConvertModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2009/Saturn/Modules/DsConvert"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Exception" schemaLocation="../saturnException.xsd"/>
+  
+  <xs:element name="Configuration" ecore:name="DSConvertConfiguration">
+    <xs:complexType ecore:name="DSConvertConfiguration">
+      <xs:sequence>
+        <xs:element name="Operations" minOccurs="0" maxOccurs="unbounded" type="dsConvert:AbstractOperation" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:complexType name="AbstractOperation" ecore:name="AbstractOperation" abstract="true">
+     <xs:attribute name="enabled" type="xs:boolean" default="true" />
+  </xs:complexType>
+ 
+  <xs:complexType name="SimpleOperation" ecore:name="SimpleOperation">
+    <xs:complexContent>
+      <xs:extension base="dsConvert:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="Source"  type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Target"  type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="IgnoreCols" type="value:complexValue"   minOccurs="0" maxOccurs="unbounded" />
+          <xs:element ref="exception:Exception" minOccurs="0"/>
+        </xs:sequence>
+       <xs:attribute name="numberDuplicateCols" type="xs:boolean" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/com.ms.qaTools.saturn.kronus/src-gen" editDirectory="/com.ms.qaTools.saturn.kronus.edit/src"
+    editorDirectory="/com.ms.qaTools.saturn.kronus.editor/src" modelPluginID="com.ms.qaTools.saturn.kronus"
+    forceOverwrite="true" modelName="Kronus" updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    complianceLevel="5.0" copyrightFields="false" editPluginID="com.ms.qaTools.saturn.kronus.edit"
+    editorPluginID="com.ms.qaTools.saturn.kronus.editor" runtimeVersion="2.10">
+  <genPackages prefix="Kronus" basePackage="com.ms.qaTools.saturn" disposableProviderFactory="true"
+      fileExtensions="kronus" ecorePackage="Kronus.ecore#/">
+    <genClasses ecoreClass="Kronus.ecore#//TopLevelKronus">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//TopLevelKronus/package"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//TopLevelKronus/kronus"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//Kronus">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//Kronus/imports"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//Kronus/includes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//Kronus/defs"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//Kronus/return"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//AbstractDef">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//AbstractDef/name"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//ReferenceableDefs"/>
+    <genClasses ecoreClass="Kronus.ecore#//ValDef">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//ValDef/hashtags"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//ValDef/annotations"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//ValDef/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//PackageDef">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//PackageDef/module"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//ImportDef">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//ImportDef/module"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//IncludeDef">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//IncludeDef/module"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//IncludeDef/name"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//TypeDef">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//TypeDef/variance"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//TypeDef/boundsHi"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//TypeDef/typeParameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//TypeDef/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//TypeValue">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//TypeValue/extensions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//TypeValue/type"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//TypeValue/parms"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//TypeName">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//TypeName/name"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//TypeRef">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Kronus.ecore#//TypeRef/typeRef"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//TypeId"/>
+    <genClasses ecoreClass="Kronus.ecore#//TypeInstance">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Kronus.ecore#//TypeInstance/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//TypeInstance/typeParameters"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//FunctionDef">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//FunctionDef/hashtags"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//FunctionDef/typeParameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//FunctionDef/parameterDefs"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//FunctionDef/returnType"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//FunctionDef/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//AnnotationDef">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//AnnotationDef/parameterDefs"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//HashtagDef">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//HashtagDef/parameterDefs"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//CodeAssignment"/>
+    <genClasses ecoreClass="Kronus.ecore#//CodeBlock">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//CodeBlock/type"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//ScalaCodeBlock">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//ScalaCodeBlock/codeStr"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//KronusCodeBlock">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//KronusCodeBlock/code"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//SimpleParameterValue">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//SimpleParameterValue/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//SimpleParameterValue/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//HashtagCall">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Kronus.ecore#//HashtagCall/method"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//HashtagCall/parameterValues"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//AnnotationCall">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Kronus.ecore#//AnnotationCall/method"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//AnnotationCall/parameterValues"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//ParameterDef">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//ParameterDef/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//ParameterDef/byName"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//ParameterDef/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//ParameterDef/list"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//ParameterDef/defaultValue"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//ParameterValue">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//ParameterValue/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//KeywordParameterValue">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//KeywordParameterValue/name"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//PositionParameterValue"/>
+    <genClasses ecoreClass="Kronus.ecore#//Expression"/>
+    <genClasses ecoreClass="Kronus.ecore#//Value"/>
+    <genClasses ecoreClass="Kronus.ecore#//Sequence">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//Sequence/values"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//ValRef">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Kronus.ecore#//ValRef/ref"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//FunctionCall">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Kronus.ecore#//FunctionCall/method"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//FunctionCall/parameterValues"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//IncludeRef">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Kronus.ecore#//IncludeRef/include"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//IncludeRef/ref"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//StringLiteral">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//StringLiteral/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//DoubleLiteral">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//DoubleLiteral/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//IntegerLiteral">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//IntegerLiteral/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//BooleanLiteral">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//BooleanLiteral/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//UnaryOperation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//UnaryOperation/op"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//UnaryOperation/expr"/>
+    </genClasses>
+    <genClasses ecoreClass="Kronus.ecore#//BinaryOperation">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//BinaryOperation/left"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Kronus.ecore#//BinaryOperation/op"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Kronus.ecore#//BinaryOperation/right"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

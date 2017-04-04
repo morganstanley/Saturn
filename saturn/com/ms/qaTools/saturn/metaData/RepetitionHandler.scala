@@ -1,0 +1,6 @@
+package com.ms.qaTools.saturn.metaData
+
+trait RepetitionHandler
+case object ForRepetitionHandler extends RepetitionHandler
+case object ForEachRepetitionHandler extends RepetitionHandler
+case object ForEachXPathRepetitionHandler extends RepetitionHandler

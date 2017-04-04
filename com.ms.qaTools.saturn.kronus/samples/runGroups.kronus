@@ -1,0 +1,48 @@
+package com.ms.qaTools.kronus.rfb.runGroups
+
+type String
+type Int
+type Double
+type Boolean
+type Kronus = Seq[Try[Any]]
+
+def RunGroup(g:Kronus):String = generate("for") { g.map{s => if(s.exists{_.isFailure}) "FAILED" else "PASSED" } }
+
+val MyStringGroup = {
+  val MyString0 = "A"
+  val MyString1 = MyString0 + "B"
+  val MyString2 = MyString1 + MyString1
+}
+
+val MyIntGroup = {
+  val MyInt0 = 1
+  val MyInt1 = MyInt0 + 2
+  val MyInt2 = MyInt1 + MyInt1
+}
+
+val MyDoubleGroup = {
+  val MyDouble0 = 1
+  val MyDouble1 = MyDouble0 + 2
+  val MyDouble2 = MyDouble1 + MyDouble1
+}
+
+val MyRunGroupStatus = RunGroup(g=MyDoubleGroup)
+
+/*
+type Function1
+
+def MyFunction(s:String):String = yield { s }
+def Loop[X](i:Iterator[X], b:Function1[X,_]):Unit = yield { i.map{iv => b(Future{iv}) } }
+def Loop[X](i:Iterator[X], b:Future[Function1[X,_]]):Unit = yield { i.map{iv => b(Future{iv}) } }
+
+
+def Loop2[X](i:Iterator[X], b:Function1[X,_]):Unit = {
+  if(NotEmpty(i)) { if(OK(b(Next(i)))) Loop2(i,b) } 
+}
+
+val QQQ = MyFunction
+//val QQQ:Future[Function1[Future[z],Future[z]]] = Future{MyFunction}
+
+val MyFile = Input(i=LineIO(d=FileIO(fn="")))
+val doIt = Loop(i=MyFile, b=MyFunction)
+*/

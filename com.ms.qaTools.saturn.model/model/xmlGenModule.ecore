@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="xmlGenModule" nsURI="http://www.ms.com/2007/Saturn/Modules/XmlGen"
+    nsPrefix="xGenModule">
+  <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+    <details key="nsPrefix" value="xGenModule"/>
+    <details key="package" value="Saturn::Module::XMLGen"/>
+    <details key="typeExtractorBase" value="Saturn::Script::TypeExtractor"/>
+  </eAnnotations>
+  <eAnnotations source="http://www.ms.com/2011/tdo-qa-tools/rcs">
+    <details key="author" value="$Author$"/>
+    <details key="change" value="$Change$"/>
+    <details key="file" value="$File$"/>
+    <details key="id" value="$Id$"/>
+    <details key="revision" value="$Revision$"/>
+    <details key="timestamp" value="$DateTime$"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="DataSet">
+    <eAnnotations>
+      <details key="appinfo" value="&#xD;&#xA;                &lt;sl:preCreate xmlns:sl=&quot;http://www.ms.com/2011/pdsttools/xsd2scriptLib&quot;>%parms = @_ == 1 ? (file =&amp;gt; $_[0], prefix =&amp;gt; 'd0') : @_;&lt;/sl:preCreate>&#xD;&#xA;              "/>
+    </eAnnotations>
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::Module::XMLGen::DataSet"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+      <details key="name" value="xmlGen_dataSet"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="DataSets_._type"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="file" lowerBound="1" eType="ecore:EClass types.ecore#//ResourceDefinition"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2006/Saturn/gmf">
+        <details key="description" value="DataSet File"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="file"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="3"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="map" value="genDataSet"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="File"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="prefix" lowerBound="1"
+        eType="ecore:EClass values.ecore#//ComplexValue" containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="prefix"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="2"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="Prefix"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="enabled" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Boolean"
+        defaultValueLiteral="true" unsettable="true">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="enabled"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="1"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="enabled"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DocumentRoot">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value=""/>
+      <details key="kind" value="mixed"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mixed" unique="false" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFeatureMapEntry">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="elementWildcard"/>
+        <details key="name" value=":mixed"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="xMLNSPrefixMap" upperBound="-1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EStringToStringMapEntry"
+        transient="true" containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="xmlns:prefix"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="xSISchemaLocation" upperBound="-1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EStringToStringMapEntry"
+        transient="true" containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="xsi:schemaLocation"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="xmlGenConfiguration" upperBound="-2"
+        eType="#//XmlGenConfiguration" volatile="true" transient="true" derived="true"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="Configuration"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OutputDirectory" eSuperTypes="directoryResource.ecore#//DirectoryResource">
+    <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+      <details key="name" value="xmlGen_outDir"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="OutputDirectoryResource"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="fileNamePattern" eType="ecore:EClass values.ecore#//ComplexValue"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="accessor" value="pattern"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="FileNamePattern"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="XmlFormatEnums">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="XmlFormatEnums"/>
+    </eAnnotations>
+    <eLiterals name="ORIGINAL"/>
+    <eLiterals name="INDENT" value="1"/>
+    <eLiterals name="PRETTY" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="XmlFormatEnumsObject" instanceClassName="org.eclipse.emf.common.util.Enumerator">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="XmlFormatEnums:Object"/>
+      <details key="baseType" value="XmlFormatEnums"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="XmlGenConfiguration">
+    <eAnnotations>
+      <details key="appinfo" value="&#xD;&#xA;          &lt;sl:postCreate xmlns:sl=&quot;http://www.ms.com/2011/pdsttools/xsd2scriptLib&quot;>$runGroup-&amp;gt;fixResources;&lt;/sl:postCreate>&#xD;&#xA;        "/>
+    </eAnnotations>
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="basePackage" value="true"/>
+      <details key="executable" value="Saturn::Module::XMLGen::Executable"/>
+      <details key="isa" value="Saturn::Script::AbstractStep"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+      <details key="name" value="xmlGen"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="Configuration_._type"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="templateFile" eType="ecore:EClass types.ecore#//ResourceDefinition"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="accessor" value="template"/>
+        <details key="map" value="xmlFile"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="TemplateFile"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outputResource" eType="ecore:EClass types.ecore#//ResourceDefinition"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+        <details key="accessor" value="output"/>
+        <details key="map" value="xmlFile"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="OutputResource"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dataSets" upperBound="-1"
+        eType="#//DataSet" containment="true" resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="DataSets"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="xmlFormat" eType="#//XmlFormatEnums"
+        defaultValueLiteral="ORIGINAL" unsettable="true">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="xmlFormat"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="legacyMode" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Boolean"
+        defaultValueLiteral="false" unsettable="true">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="legacyMode"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2report">
+        <details key="colNum" value="1"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="legacyMode"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+</ecore:EPackage>

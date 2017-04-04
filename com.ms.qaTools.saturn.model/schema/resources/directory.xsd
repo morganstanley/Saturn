@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:dir="http://www.ms.com/2006/Saturn/Resources/Directory" 
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" 
+           xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:value="http://www.ms.com/2006/Saturn/Values" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           ecore:nsPrefix="directoryResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.directoryResource" 
+           elementFormDefault="qualified" 
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+           
+           targetNamespace="http://www.ms.com/2006/Saturn/Resources/Directory">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd" />
+
+  <xs:complexType ecore:name="DirectoryResource" name="DirectoryResource" >
+    <xs:complexContent>
+      <xs:extension base="type:DeviceResourceDefinition">
+        <xs:sequence>
+          <xs:element name="Directory"     type ="value:complexValue" minOccurs="0" />
+          <xs:element name="AvailableSize" type ="value:complexValue" minOccurs="0" />
+        </xs:sequence>  
+        <xs:attribute name="canRead"            type="xs:boolean" use="optional" default="true" />
+        <xs:attribute name="canWrite"           type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="exists"             type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="create"             type="xs:boolean" use="optional" default="true" />
+        <xs:attribute name="checkAvailableSize" type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="filter"             type="xs:token"   use="optional" default=".*" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+</xs:schema>

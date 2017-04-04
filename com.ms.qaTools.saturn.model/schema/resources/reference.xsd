@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:reference="http://www.ms.com/2006/Saturn/Resources/Reference"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" 
+           
+           ecore:nsPrefix="referenceResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.referenceResource"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2006/Saturn/Resources/Reference" 
+           elementFormDefault="qualified">
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/gmf" schemaLocation="../saturn.gmf.xsd" />
+
+
+  <xs:complexType name="ReferenceResource" ecore:name="ReferenceResource" >
+    <xs:complexContent>
+      <xs:extension base="type:DeviceResourceDefinition">
+        <xs:sequence>
+          <xs:element name="IncludeFile" type="value:complexValue" ecore:name="IncludeFileAdv" minOccurs="0" maxOccurs="1" />
+          <xs:element name="Resource"    type="value:complexValue" ecore:name="ResourceAdv"    minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="includeFile" type="xs:token" />
+        <xs:attribute name="resource" type="xs:token" />
+        <xs:attribute name="advanced" type="xs:boolean" default="false" />
+        <xs:attribute name="clone" type="xs:boolean" default="false" />
+        <xs:attribute name="Link"  type="xs:anyURI" ecore:reference="saturn:AbstractResourceLink" ecore:transient="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>

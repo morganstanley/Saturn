@@ -1,0 +1,31 @@
+package com.ms.qaTools.kronus.rfb.scalaOperators
+
+type String
+type Int
+type Double
+type Boolean
+
+val MyString0 = "A"
+val MyString1 = MyString0 + "B"
+val MyString2 = MyString1 + MyString1
+
+val MyInt0 = 1
+val MyInt1 = MyInt0 + 2
+val MyInt2 = MyInt1 + MyInt1
+
+val MyDouble0 = 1
+val MyDouble1 = MyDouble0 + 2
+val MyDouble2 = MyDouble1 + MyDouble1
+
+def TRUE():Boolean = generate("yield") { true }
+def FALSE():Boolean = generate("yield") { false }
+
+//val QQ = TRUE
+
+//val MyBoolean0 = TRUE()
+/*
+val MyBoolean1 = MyBoolean0 && TRUE()
+val MyBoolean2 = MyBoolean0 && FALSE()
+val MyBoolean3 = MyBoolean0 || TRUE()
+val MyBoolean4 = MyBoolean0 || FALSE()
+*/

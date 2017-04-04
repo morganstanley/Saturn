@@ -1,0 +1,24 @@
+package com.ms.qaTools.kronus.rfb.types
+
+//
+//////////////////////////////////////////////  types
+//
+
+type String
+type Int
+type Double
+type Any
+type Unit
+type UT = Unit
+type StrT = String
+type IntT = Int
+type SeqT[A] = Seq[A]
+
+def Fun1(P1: String): String = { 
+	return "ABAB"
+}
+
+def Fun2(P1: StrT): StrT = {
+	return P1
+}
+

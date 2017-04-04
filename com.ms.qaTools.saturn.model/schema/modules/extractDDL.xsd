@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values" 
+           xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:extractDDL="http://www.ms.com/2009/Saturn/Modules/ExtractDDL"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           xmlns:exception="http://www.ms.com/2009/Saturn/Exception"
+           
+           ecore:nsPrefix="extractDDLModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.extractDDLModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2009/Saturn/Modules/ExtractDDL" 
+           elementFormDefault="qualified">
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Exception" schemaLocation="../saturnException.xsd"/>
+
+  <xs:complexType name="AbstractOperation" abstract="true" ecore:name="AbstractOperation">
+      <xs:sequence> 
+        <xs:element name="Objects" type="value:complexValue" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean" default="true" />
+  </xs:complexType>
+
+  <xs:complexType name="ReadOperation" ecore:name="ReadOperation">
+    <xs:complexContent>
+      <xs:extension base="extractDDL:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0"/>
+          <xs:element name="Input" type="type:NamedResourceDefinition"/>
+          <xs:element name="DataBaseQualifier" type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="ignoreMissing" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ExtractOperation" ecore:name="ExtractOperation">
+    <xs:complexContent>
+      <xs:extension base="extractDDL:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0"/>
+          <xs:element name="DatabaseResource"  type="type:NamedResourceDefinition" />
+          <xs:element name="DataBaseQualifier" type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="ignoreMissing" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DiffOperation" ecore:name="DiffOperation">
+    <xs:complexContent>
+      <xs:extension base="extractDDL:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0"/>
+          <xs:element name="OutputResource"    type="type:NamedResourceDefinition"/>
+          <xs:element name="DataBaseQualifier" type="value:complexValue" />
+          <xs:element name="ColumnLength"      type="value:complexValue" />
+          <xs:element name="ObjectMaps"      type="type:ComplexValueMap" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="ignoreMissing"          type="xs:boolean" default="false" />
+        <xs:attribute name="showIdenticals"         type="xs:boolean" default="false" />
+        <xs:attribute name="omitNewlyAdded"         type="xs:boolean" default="false" />
+        <xs:attribute name="omitTables"             type="xs:boolean" default="false" />
+        <xs:attribute name="omitViews"              type="xs:boolean" default="false" />
+        <xs:attribute name="omitSequences"          type="xs:boolean" default="false" />
+        <xs:attribute name="omitProcedures"         type="xs:boolean" default="false" />
+        <xs:attribute name="omitPermissions"        type="xs:boolean" default="false" />
+        <xs:attribute name="omitIndexes"            type="xs:boolean" default="false" />
+        <xs:attribute name="omitTableSpaces"        type="xs:boolean" default="false" />
+        <xs:attribute name="omitStorage"            type="xs:boolean" default="false" />
+        <xs:attribute name="preserveColumnSequence" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AlterOperation" ecore:name="AlterOperation">
+    <xs:complexContent>
+      <xs:extension base="extractDDL:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0"/>
+          <xs:element name="OutputResource"        type="type:NamedResourceDefinition"/>
+          <xs:element name="DataBaseQualifier"     type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="DataBaseOverride"      type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="TableSpaceOverride"    type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="TableSpaceSuffix"      type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="StorageGroupOverride"  type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="QualifierMaps"         type="type:ComplexValueMap" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="DataBaseMaps"          type="type:ComplexValueMap" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="StorageGroupMaps"      type="type:ComplexValueMap" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="tableLockOverride"     type="extractDDL:TableLockOverrideTypeEnum" default="ANY" use="optional"/> 
+        <xs:attribute name="addDataBaseName"        type="xs:boolean" default="false"  />
+        <xs:attribute name="addOwner"               type="xs:boolean" default="false"  />
+        <xs:attribute name="addQualifier"           type="xs:boolean" default="false"  />
+        <xs:attribute name="createTableSpaces"      type="xs:boolean" default="false"  />
+        <xs:attribute name="forceAlter"             type="xs:boolean" default="false"  />
+        <xs:attribute name="genIDByDefault"         type="xs:boolean" default="false"  />
+        <xs:attribute name="ignoreMissing"          type="xs:boolean" default="false"  />
+        <xs:attribute name="noComments"             type="xs:boolean" default="false" />
+        <xs:attribute name="noRestrictOnDrop"       type="xs:boolean" default="false"  />
+        <xs:attribute name="removeRestrictOnDrop"   type="xs:boolean" default="false"  />
+        <xs:attribute name="separateForeignKeys"    type="xs:boolean" default="false"  />
+        <xs:attribute name="translateProcedureDefs" type="xs:boolean" default="false"  />
+        <xs:attribute name="translateViewDefs"      type="xs:boolean" default="false"  />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ImpactOperation" ecore:name="ImpactOperation">
+    <xs:complexContent>
+      <xs:extension base="extractDDL:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0"/>
+          <xs:element name="OutputResource" type="type:NamedResourceDefinition"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="RenderOperation" ecore:name="RenderOperation">
+    <xs:complexContent>
+      <xs:extension base="extractDDL:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0"/>
+          <xs:element name="OutputResource"       type="type:NamedResourceDefinition"/>
+          <xs:element name="DataBaseQualifier"    type="value:complexValue"                minOccurs="0" maxOccurs="1" />
+          <xs:element name="DataBaseOverride"     type="value:complexValue"                minOccurs="0" maxOccurs="1" />
+          <xs:element name="TableSpaceOverride"   type="value:complexValue"                minOccurs="0" maxOccurs="1" />
+          <xs:element name="TableSpaceSuffix"     type="value:complexValue"                minOccurs="0" maxOccurs="1" />
+          <xs:element name="StorageGroupOverride" type="value:complexValue"                minOccurs="0" maxOccurs="1"  />
+          <xs:element name="QualifierMaps"         type="type:ComplexValueMap"             minOccurs="0" maxOccurs="unbounded"  />
+          <xs:element name="DataBaseMaps"          type="type:ComplexValueMap"             minOccurs="0" maxOccurs="unbounded"  />
+          <xs:element name="StorageGroupMaps"      type="type:ComplexValueMap"             minOccurs="0" maxOccurs="unbounded"  />
+        </xs:sequence>
+        <xs:attribute name="tableLockOverride"      type="extractDDL:TableLockOverrideTypeEnum" default="ANY" use="optional"/> 
+        <xs:attribute name="dataBaseDriver"         type="extractDDL:DataBaseDriverTypeEnum" use="optional"/>
+        <xs:attribute name="addDataBaseName"        type="xs:boolean" default="false" />
+        <xs:attribute name="addOwner"               type="xs:boolean" default="false" />
+        <xs:attribute name="addQualifier"           type="xs:boolean" default="false" />
+        <xs:attribute name="createForeignKeys"      type="xs:boolean" default="false" />
+        <xs:attribute name="createIndexes"          type="xs:boolean" default="false" />
+        <xs:attribute name="createPermissions"      type="xs:boolean" default="false" />
+        <xs:attribute name="createPrimaryKeys"      type="xs:boolean" default="false" />
+        <xs:attribute name="createTableSpaces"      type="xs:boolean" default="false" />
+        <xs:attribute name="ddlXml"                 type="xs:boolean" default="false" />
+        <xs:attribute name="deferViews"             type="xs:boolean" default="false" />
+        <xs:attribute name="dropProcedures"         type="xs:boolean" default="false" />
+        <xs:attribute name="dropSequences"          type="xs:boolean" default="false" />
+        <xs:attribute name="dropTables"             type="xs:boolean" default="false" />
+        <xs:attribute name="dropTableSpaces"        type="xs:boolean" default="false" />
+        <xs:attribute name="genIDByDefault"         type="xs:boolean" default="false" />
+        <xs:attribute name="noComments"             type="xs:boolean" default="false" />
+        <xs:attribute name="noDDLInfo"              type="xs:boolean" default="false" />
+        <xs:attribute name="noRestrictOnDrop"       type="xs:boolean" default="false" />
+        <xs:attribute name="publicPermissions"      type="xs:boolean" default="false" />
+        <xs:attribute name="removeRestrictOnDrop"   type="xs:boolean" default="false" />
+        <xs:attribute name="separateForeignKeys"    type="xs:boolean" default="false" />
+        <xs:attribute name="shortFileNames"         type="xs:boolean" default="false" />
+        <xs:attribute name="translateProcedureDefs" type="xs:boolean" default="false" />
+        <xs:attribute name="translateViewDefs"      type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Configuration" ecore:name="ExtractDDLConfiguration">
+    <xs:complexType ecore:name="ExtractDDLConfiguration">
+      <xs:sequence>       
+         <xs:element name="EnvFile"   type="type:NamedResourceDefinition" minOccurs="0" maxOccurs="1"/> 
+        <xs:element name="Operations" type="extractDDL:AbstractOperation" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="TableLockOverrideTypeEnum" ecore:name="TableLockOverrideTypeEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="ANY" />
+      <xs:enumeration value="LOB" />
+      <xs:enumeration value="PAGE" />
+      <xs:enumeration value="ROW" />
+      <xs:enumeration value="TABLESPACE" />
+      <xs:enumeration value="TABLE" />
+    </xs:restriction>
+  </xs:simpleType>
+
+ <xs:simpleType name="DataBaseDriverTypeEnum" ecore:name="DataBaseDriverTypeEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="SYBASE" />
+      <xs:enumeration value="DB2" />
+      <xs:enumeration value="UDB" />
+      <xs:enumeration value="MSSQL" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

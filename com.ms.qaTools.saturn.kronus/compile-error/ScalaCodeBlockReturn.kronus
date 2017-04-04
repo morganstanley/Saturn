@@ -1,0 +1,5 @@
+package com.ms.qaTools.kronus.rfb.compileerror.ScalaCodeBlockReturn
+
+type Unit
+
+def F(): Unit = generate("yield") {return}

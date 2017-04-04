@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"            
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"           
+
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="values" 
+           ecore:package="com.ms.qaTools.saturn.values"
+           
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"           
+           
+           targetNamespace="http://www.ms.com/2006/Saturn/Values"
+           elementFormDefault="qualified">
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="saturnTypes.xsd"/>
+
+  <xs:complexType name="complexValue" mixed="true" ecore:name="ComplexValue" ecore:implements="value:Describable">
+    <xs:choice minOccurs="0" maxOccurs="1">
+      <xs:element name="Null" type="type:Empty" />
+      
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:choice>
+	      <xs:element name="Text" >
+	      	<xs:complexType ecore:name="TextComplexValue">
+	      	  <xs:attribute name="text" type="xs:string" />
+            </xs:complexType>
+	      </xs:element>
+	        
+	      <xs:element name="EnvVar" type="value:FallibleComplexValue" />
+	      <xs:element name="File" type="value:FallibleComplexValue" />
+	      
+        <xs:element name="XPathValue" >
+          <xs:complexType ecore:name="XPathComplexValue" ecore:implements="value:Describable">
+            <xs:complexContent>
+              <xs:extension base="value:Fallible">
+                <xs:sequence>
+                  <xs:element name="Resource"   type="type:ResourceDefinition" minOccurs="1" maxOccurs="1" />
+                  <xs:element name="XPath"      type="value:complexValue"      minOccurs="1" maxOccurs="1" />
+                  <xs:element name="Namespaces" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+                  <xs:element name="Row"        type="value:complexValue"      minOccurs="1" maxOccurs="1" />
+                </xs:sequence>
+                <xs:attribute name="fragment" type="xs:boolean" default="true" />
+                <xs:attribute name="returnType" type="value:XPathReturnTypeEnum" default="NODE"/>
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="JSONValue" >
+          <xs:complexType ecore:name="JSONComplexValue" ecore:implements="value:Describable">
+            <xs:complexContent>
+              <xs:extension base="value:Fallible">
+                <xs:sequence>
+                  <xs:element name="Resource" type="type:NamedResourceDefinition" minOccurs="1" maxOccurs="1" />
+                  <xs:element name="JSONPath" type="value:complexValue"           minOccurs="1" maxOccurs="1" />
+                  <xs:element name="Row"      type="value:complexValue"           minOccurs="1" maxOccurs="1" />
+                </xs:sequence>
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="FIXValue" >
+          <xs:complexType ecore:name="FIXComplexValue" ecore:implements="value:Describable">
+            <xs:complexContent>
+              <xs:extension base="value:Fallible">
+                <xs:sequence>
+                  <xs:element name="Resource"    type="type:NamedResourceDefinition" minOccurs="1" maxOccurs="1" />
+                  <xs:element name="FIXPath"     type="value:complexValue"           minOccurs="1" maxOccurs="1" />
+                  <xs:element name="MessageType" type="value:complexValue"           minOccurs="1" maxOccurs="1" />
+                  <xs:element name="Row"         type="value:complexValue"           minOccurs="1" maxOccurs="1" />
+                </xs:sequence>
+                <xs:attribute name="returnType" type="value:XPathReturnTypeEnum" default="STRING"/>
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="CellValue" >
+          <xs:complexType ecore:name="CellComplexValue" ecore:implements="value:Describable">
+            <xs:complexContent>
+              <xs:extension base="value:Fallible">
+                <xs:sequence>
+                  <xs:element name="Resource"   type="type:ResourceDefinition" minOccurs="1" maxOccurs="1" />
+                  <xs:element name="Row"        type="value:complexValue"      minOccurs="0" maxOccurs="1" />
+                  <xs:element name="Column"     type="value:complexValue"      minOccurs="1" maxOccurs="1" />
+                  <xs:element name="ColumnName" type="value:complexValue"      minOccurs="0" maxOccurs="1" />
+                </xs:sequence>
+                <xs:attribute name="memoize" type="xs:boolean" use="optional" default="true" />
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="PropertyValue" >
+          <xs:complexType ecore:name="PropertyComplexValue" ecore:implements="value:Describable">
+            <xs:complexContent>
+              <xs:extension base="value:Fallible">
+                <xs:sequence>
+                  <xs:element name="Resource" type="type:ResourceDefinition" minOccurs="1" maxOccurs="1" />
+                  <xs:element name="Property" type="value:complexValue"      minOccurs="1" maxOccurs="1" />
+                </xs:sequence>
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>        
+                    
+          <xs:element name="Code">
+            <xs:complexType ecore:name="CodeComplexValue" ecore:implements="value:Describable">
+              <xs:complexContent>
+                <xs:extension base="value:FallibleComplexValue">
+                  <xs:attribute name="interpreter" type="type:InterpretersEnum" use="optional" default="SHELL" />
+                </xs:extension>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+
+	      <xs:element name="RunNumber">
+	        <xs:complexType ecore:name="RunNumberComplexValue">
+	          <xs:attribute name="padding" type="xs:integer" use="optional" default="3" />
+	          <xs:attribute name="padCharacter" type="xs:string" use="optional" default="0" />            
+	        </xs:complexType>
+	      </xs:element>
+
+	      <xs:element name="Reference" >  
+	        <xs:complexType ecore:name="ReferenceComplexValue">
+	          <xs:attribute name="includeFile"     type="xs:token" />
+	          <xs:attribute name="template"        type="xs:token" />
+	          <xs:attribute name="runGroup"        type="xs:token" />
+	          <xs:attribute name="saturnAttribute" type="xs:token" />
+	          <xs:attribute name="userAttribute"   type="xs:token" />
+	          <xs:attribute name="moduleAttribute" type="xs:token" />
+	        </xs:complexType>
+	      </xs:element>
+	    </xs:choice>  
+      </xs:sequence>  
+    </xs:choice>
+    <xs:attribute name="memoize" type="xs:boolean" use="optional" default="true" />
+  </xs:complexType>
+
+  <xs:simpleType name="FailBehaviorsEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="IGNORE"/>
+      <xs:enumeration value="WARN"/>
+      <xs:enumeration value="ERROR"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="XPathReturnTypeEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="NODE"/>
+      <xs:enumeration value="STRING"/>
+      <xs:enumeration value="NUMBER"/>
+      <xs:enumeration value="BOOLEAN"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="Describable" ecore:interface="true" abstract="true">
+    <xs:attribute name="description" type="xs:string" />
+  </xs:complexType>  
+
+  <xs:complexType name="Fallible" ecore:interface="true" abstract="true">
+    <xs:sequence>
+      <xs:element name="DefaultValue" minOccurs="0" maxOccurs="1" type="value:complexValue" />
+    </xs:sequence>
+    <xs:attribute name="failBehavior" default="IGNORE" type="value:FailBehaviorsEnum" />
+  </xs:complexType>
+
+  <xs:complexType name="FallibleComplexValue" ecore:implements="value:Fallible">
+    <xs:complexContent>
+      <xs:extension base="value:complexValue" />
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:sql="http://www.ms.com/2006/Saturn/Modules/SQL"           
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           xmlns:exception="http://www.ms.com/2009/Saturn/Exception"
+           
+           xmlns:db2Resource="http://www.ms.com/2006/Saturn/Resources/DB2"
+           xmlns:udbResource="http://www.ms.com/2006/Saturn/Resources/UDB"
+           xmlns:sybaseResource="http://www.ms.com/2006/Saturn/Resources/Sybase"
+           xmlns:mssqlResource="http://www.ms.com/2012/Saturn/Resources/MSSQL"
+           xmlns:fileResource="http://www.ms.com/2006/Saturn/Resources/Files"
+           xmlns:directoryResource="http://www.ms.com/2006/Saturn/Resources/Directory"
+           xmlns:referenceResource="http://www.ms.com/2006/Saturn/Resources/Reference"
+           
+           ecore:nsPrefix="sqlModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.sqlModule"
+           
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+           
+           targetNamespace="http://www.ms.com/2006/Saturn/Modules/SQL"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Exception" schemaLocation="../saturnException.xsd"/>
+  
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/DB2" schemaLocation="../resources/db2.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/UDB" schemaLocation="../resources/udb.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Sybase" schemaLocation="../resources/sybase.xsd" />
+  <xs:import namespace="http://www.ms.com/2012/Saturn/Resources/MSSQL" schemaLocation="../resources/mssql.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Files" schemaLocation="../resources/file.xsd" />  
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Directory" schemaLocation="../resources/directory.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Reference" schemaLocation="../resources/reference.xsd" />
+
+  <xs:element name="Configuration" ecore:name="SQLConfiguration">
+    <xs:complexType ecore:name="SQLConfiguration" >
+      <xs:sequence>
+        <xs:element name="DatabaseResource" type="type:ResourceDefinition" minOccurs="1" />
+        <xs:element name="Operation" type="sql:AbstractSQLOperation"  />
+      </xs:sequence>
+    </xs:complexType>    
+  </xs:element>
+  
+  <xs:complexType name="AbstractSQLOperation" abstract="true"/>
+
+  <xs:complexType name="Fetch" ecore:name="SQLFetchOperation" >
+    <xs:complexContent>
+      <xs:extension base="sql:AbstractSQLOperation">
+        <xs:sequence>
+          <xs:element name="OutputResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="ParameterResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="Queries" minOccurs="0" maxOccurs="unbounded" >
+            <xs:complexType ecore:name="FetchQuery" >
+              <xs:sequence>
+                <xs:element ref="exception:Exception" minOccurs="0"  />
+                <xs:element name="SQL" type="value:complexValue" />
+                <xs:element name="Output" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+                <xs:element name="ParameterFile" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+              </xs:sequence>
+              <xs:attribute name="enabled" type="xs:boolean" default="true" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="TableGroupDefinition" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="defaultOutputResourceType" type="sql:IOFileTypesEnum" default="CSV" />
+      </xs:extension>  
+    </xs:complexContent>
+  </xs:complexType>
+          
+  <xs:complexType name="Load" ecore:name="SQLLoadOperation" >
+    <xs:complexContent>
+      <xs:extension base="sql:AbstractSQLOperation">  
+        <xs:sequence>
+          <xs:element name="InputResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="Tables" minOccurs="0" maxOccurs="unbounded" >
+            <xs:complexType ecore:name="LoadTable" >
+              <xs:sequence>
+                <xs:element ref="exception:Exception" minOccurs="0"  />
+                <xs:element name="Input" type="type:ResourceDefinition" />
+                <xs:element name="SQL" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+              </xs:sequence>
+              <xs:attribute name="cleanLoad" type="xs:boolean" default="false"/>
+              <xs:attribute name="enabled" type="xs:boolean" default="true" />
+              <xs:attribute name="batchSize" type="xs:integer" default="0" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="TableGroupDefinition" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="defaultInputResourceType" type="sql:IOFileTypesEnum" default="CSV" />
+      </xs:extension>  
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Clear" ecore:name="SQLClearOperation" >
+    <xs:complexContent>
+      <xs:extension base="sql:AbstractSQLOperation">  
+        <xs:sequence>
+          <xs:element name="Tables" minOccurs="0" maxOccurs="unbounded" type="sql:ClearTable" />
+          <xs:element name="TableGroupDefinition" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>  
+    </xs:complexContent>      
+  </xs:complexType>
+  
+  <xs:complexType name="ClearTable" mixed="true" ecore:name="ClearTable" >
+    <xs:complexContent>
+      <xs:extension base="value:complexValue">
+        <xs:sequence/>
+        <xs:attribute name="enabled" type="xs:boolean" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+          
+  <xs:complexType name="Execute" ecore:name="SQLExecuteOperation" >
+    <xs:complexContent>
+      <xs:extension base="sql:AbstractSQLOperation">  
+        <xs:sequence>
+          <xs:element name="ParameterResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="Commands" minOccurs="0" maxOccurs="unbounded" >
+            <xs:complexType ecore:name="ExecuteCommand" >
+              <xs:sequence>
+                <xs:element ref="exception:Exception" minOccurs="0"  />
+                <xs:element name="SQL" type="value:complexValue" />
+                <xs:element name="ParameterFile" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+              </xs:sequence>
+              <xs:attribute name="enabled" type="xs:boolean" default="true" />
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>  
+    </xs:complexContent>  
+  </xs:complexType>
+
+
+  <xs:complexType name="Call" ecore:name="SQLCallOperation" >
+    <xs:complexContent>
+      <xs:extension base="sql:AbstractSQLOperation">
+        <xs:sequence>
+          <xs:element name="OutputResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="ParameterResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+          <xs:element name="ProcedureCalls" minOccurs="0" maxOccurs="unbounded" >
+            <xs:complexType ecore:name="ProcCallDefinition" >
+              <xs:sequence>
+                <xs:element name="SQL" type="value:complexValue" />
+                <xs:element name="Output" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+                <xs:element name="ParameterFile" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+                <xs:element name="IgnoreVal" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+              </xs:sequence>
+          	  <xs:attribute name="hasOutput" type="xs:boolean" default="true" />
+          	  <xs:attribute name="callCount" type="xs:integer" default="1" />
+          	  <xs:attribute name="enabled" type="xs:boolean" default="true" />
+          	</xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="defaultOutputResourceType" type="sql:IOFileTypesEnum" default="CSV" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:simpleType name="IOFileTypesEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="CSV"/>
+      <xs:enumeration value="DATA"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

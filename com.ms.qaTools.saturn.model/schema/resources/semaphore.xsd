@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:semaphoreResource="http://www.ms.com/2011/Saturn/Resources/Semaphore"
+           
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="semaphoreResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.semaphoreResource"
+           
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"           
+           
+           targetNamespace="http://www.ms.com/2011/Saturn/Resources/Semaphore"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+
+  <xs:complexType name="SemaphoreDefinition" ecore:name="SemaphoreDefinition">
+    <xs:sequence>
+      <xs:element name="Name" minOccurs="1" maxOccurs="1" type="value:complexValue"/>
+    </xs:sequence>
+    <xs:attribute name="count" default="1" type="xs:integer" />
+  </xs:complexType>
+ 
+  <xs:complexType name="SemaphoreResource" ecore:name="SemaphoreResource">
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+          <xs:element name="Provider" type="semaphoreResource:SemaphoreProvider" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>      
+    </xs:complexContent>
+  </xs:complexType>
+ 
+  <xs:complexType name="SemaphoreProvider" ecore:name="SemaphoreProvider"> 
+  </xs:complexType>
+ 
+ 
+  <xs:complexType name="LocalSemaphoreProvider" ecore:name="LocalSemaphoreProvider"> 
+    <xs:complexContent>
+      <xs:extension base="semaphoreResource:SemaphoreProvider">
+        <xs:sequence>
+           <xs:element name="Semaphores" type="semaphoreResource:SemaphoreDefinition" minOccurs="1" maxOccurs="unbounded" />   
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="RemoteSemaphoreProvider" ecore:name="RemoteSemaphoreProvider"> 
+    <xs:complexContent>
+      <xs:extension base="semaphoreResource:SemaphoreProvider">
+        <xs:sequence>
+           <xs:element name="Host" minOccurs="1" maxOccurs="1" type="value:complexValue" />
+           <xs:element name="Port" minOccurs="1" maxOccurs="1" type="value:complexValue" />   
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+ 
+  <xs:complexType name="ObtainSemaphoreResource" ecore:name="ObtainSemaphoreResource">  
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+           <xs:element name="SemaphoreResource" type="type:NamedResourceDefinition" minOccurs="1" maxOccurs="1" />
+           <xs:element name="SemaphoreName" type="xs:string" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="timeout" type="xs:integer" use="optional" />
+        <xs:attribute name="releaseAtEndOfScope" type="xs:boolean" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ReleaseSemaphoreResource" ecore:name="ReleaseSemaphoreResource">  
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+           <xs:element name="SemaphoreResource" type="type:NamedResourceDefinition" minOccurs="1" maxOccurs="1" />
+           <xs:element name="SemaphoreName" type="xs:string" minOccurs="1" maxOccurs="1" />   
+        </xs:sequence>
+        <xs:attribute name="timeout" type="xs:integer" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+</xs:schema>

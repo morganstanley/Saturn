@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:documentumResource="http://www.ms.com/2010/Saturn/Resources/Documentum"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="documentumResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.documentumResource"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2010/Saturn/Resources/Documentum"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd" />
+
+  <xs:complexType name="DocumentumResource" ecore:name="DocumentumResource" >
+    <xs:complexContent>
+      <xs:extension base="type:DeviceResourceDefinition">
+        <xs:sequence>
+          <xs:element name="Base" type="value:complexValue" />
+          <xs:element name="UserName" type="value:complexValue" />
+          <xs:element name="Password" type="value:complexValue"  />
+          <xs:element name="Folder" type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Document" type="value:complexValue"  />
+          <xs:element name="File" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="debug" type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="temporary" type="xs:boolean" use="optional" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>

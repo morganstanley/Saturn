@@ -1,0 +1,24 @@
+package com.ms.qaTools.kronus.rfb.includes
+
+//
+//////////////////////////////////////////////  Import
+//
+
+include com.ms.qaTools.kronus.rfb.scalaOperators as S
+include com.ms.qaTools.kronus.rfb.imports
+include com.ms.qaTools.kronus.rfb.PRELUDE
+
+type Any
+type Unit
+
+def Println(dat:Any):Unit = generate("yield") { println(dat) }
+
+val MyStr = S.MyString2 + "MoreAdded"
+
+val RR1 = ASSERT_EQUAL(x = S.MyString2, y = "ABAB")
+val RR2 = ASSERT_EQUAL(x = MyStr, y = "ABABMoreAdded")
+val RR3 = ASSERT_EQUAL(x = MyIntImp1, y = 99)
+
+val R1 = Println(dat = "S.MyString2: " + S.MyString2)
+val R2 = Println(dat = "S.MyStr: " + MyStr)
+val R3 = Println(dat = MyIntImp1)

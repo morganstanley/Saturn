@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:transactionResource="http://www.ms.com/2011/Saturn/Resources/Transaction"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="transactionResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.transactionResource"
+
+           xmlns:perl="http://www.ms.com/2006/pdsttools/xsd2perl"
+           xmlns:sl="http://www.ms.com/2011/pdsttools/xsd2scriptLib"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+                      
+           targetNamespace="http://www.ms.com/2011/Saturn/Resources/Transaction"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+
+  <xs:simpleType name="TransactionTermination">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="COMMIT"/>
+      <xs:enumeration value="ROLLBACK"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="AbstractTerminationEvent" ecore:name="AbstractEvent" abstract="true" />
+
+  <xs:complexType name="TerminationEvent" ecore:name="TerminationEvent">
+    <xs:complexContent>
+      <xs:extension base="transactionResource:AbstractTerminationEvent">
+              <!-- 
+        <xs:attribute name="onPass" type="transactionResource:TransactionTermination"  />
+        <xs:attribute name="onFail" type="transactionResource:TransactionTermination"  />
+        <xs:attribute name="onWarn" type="transactionResource:TransactionTermination"  />
+         -->
+        <xs:attribute name="onPass" type="transactionResource:TransactionTermination" default="COMMIT" />
+        <xs:attribute name="onFail" type="transactionResource:TransactionTermination" default="ROLLBACK" />
+        <xs:attribute name="onWarn" type="transactionResource:TransactionTermination" default="ROLLBACK" />
+
+      </xs:extension>      
+    </xs:complexContent>    
+  </xs:complexType>
+
+  <xs:complexType name="CustomTerminationEvent" ecore:name="CustomTerminationEvent">
+    <xs:complexContent>
+      <xs:extension base="transactionResource:AbstractTerminationEvent">
+        <xs:sequence>
+          <xs:element name="PerlCode" type="value:complexValue" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="TransactionResource" ecore:name="TransactionResource" >	
+    <xs:complexContent>
+      <xs:extension base="type:NamedResourceDefinition">
+        <xs:sequence>
+           <xs:element name="ManagedResource" type="type:NamedResourceDefinition" minOccurs="1" maxOccurs="1" />
+           <xs:element name="Termination" type="transactionResource:AbstractTerminationEvent" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>

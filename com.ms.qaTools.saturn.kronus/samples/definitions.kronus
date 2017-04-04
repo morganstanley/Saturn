@@ -1,0 +1,66 @@
+package com.ms.qaTools.kronus.rfb.definitions
+
+include com.ms.qaTools.kronus.rfb.PRELUDE
+
+//
+//////////////////////////////////////////////  types
+//
+
+type String
+type Int
+type Any
+type Unit
+type Double
+type Try
+type KSeq = Seq[Try[Any]]
+
+
+def FunImplictRet1():KSeq = {
+	val L1 = "A"
+}
+
+
+def FunImplictRet():Any = {
+	val L1 = "AA"
+	val L2 = "BB"
+}
+
+
+def FunExplictRet():String = {
+	val L1 = "AAA"
+	val L2 = "BBB"
+	return L1
+}
+
+def Println(dat:Any):Unit = generate("yield") { 
+	println(dat) 
+}
+
+
+def #SAnnotation1(sname: String)
+
+#SAnnotation1(sname = "MySAnnotation1")
+val FR0 = FunImplictRet1()
+val R0 = Println(dat = FR0)
+
+val FR1 = FunImplictRet()
+val R1 = Println(dat = FR1)
+
+val FR2 = FunExplictRet()
+val R2 = Println(dat = FR2)
+val RR2 = ASSERT_EQUAL(x = FR2, y = "AAA")
+
+val P3 = {
+	val MyVal11 = "MyVal11"
+	val MyVal12 = 1234
+}
+
+
+val P4 = generate("yield") {
+	11
+}
+
+val P5 = generate("for") {
+	Context.successful(22)
+}
+

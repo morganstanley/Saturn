@@ -1,0 +1,31 @@
+«EXTENSION xpt::diagram::ViewmapAttributesUtils»
+
+«AROUND createNodeMethod FOR gmfgen::GenNode-»
+    «EXPAND xpt::Common::generatedMemberComment»
+    public org.eclipse.gmf.runtime.notation.Node create«getUniqueIdentifier()»(org.eclipse.emf.ecore.EObject domainElement, org.eclipse.gmf.runtime.notation.View containerView, int index, boolean persisted, org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint preferencesHint) {
+«IF viewmap.canUseShapeStyle()-»
+        org.eclipse.gmf.runtime.notation.Shape node = org.eclipse.gmf.runtime.notation.NotationFactory.eINSTANCE.createShape();
+«ELSE-»
+        org.eclipse.gmf.runtime.notation.Node node = org.eclipse.gmf.runtime.notation.NotationFactory.eINSTANCE.createNode();
+        node.getStyles().add(org.eclipse.gmf.runtime.notation.NotationFactory.eINSTANCE.createDescriptionStyle());«REM»FIXME Contionally add this style, whether toolsmith needs Notes or not«ENDREM»
+        «EXPAND xpt::diagram::views::Utils::addFontLineFillStylesConditionally('node.getStyles()') FOR viewmap-»
+«ENDIF-»
+        «EXPAND xpt::diagram::views::Utils::addLinkedDiagramStyle('node.getStyles()')-»
+        «EXPAND xpt::diagram::views::Utils::addCustomStyles('node.getStyles()')-»
+        node.setLayoutConstraint(org.eclipse.gmf.runtime.notation.NotationFactory.eINSTANCE.createBounds());
+        node.setType(«EXPAND xpt::editor::VisualIDRegistry::typeMethodCall»);
+        org.eclipse.gmf.runtime.diagram.core.util.ViewUtil.insertChildView(containerView, node, index, persisted);
+        node.setElement(domainElement);
+«IF self.oclIsTypeOf(gmfgen::GenTopLevelNode)-»
+        stampShortcut(containerView, node);
+«ENDIF-»
+        // initializeFromPreferences «REM»XXX Perhaps, do init only once, for complete figure?«ENDREM»
+        final org.eclipse.jface.preference.IPreferenceStore prefStore = (org.eclipse.jface.preference.IPreferenceStore) preferencesHint.getPreferenceStore();
+        «EXPAND xpt::providers::ViewProvider::initializeStyles('node', 'prefStore', not viewmap.isFixedForeground(), not viewmap.isFixedBackground(), not viewmap.isFixedFont())-»
+        «EXPAND xpt::providers::ViewProvider::initLabel('node', 'prefStore') FOREACH labels-»
+        «EXPAND xpt::providers::ViewProvider::initCompartment('node', 'prefStore') FOREACH compartments-»
+        if (domainElement instanceof com.ms.qaTools.saturn.types.NamedResourceDefinition)
+            com.ms.qaTools.saturn.diagram.scala.Util.initResourceNodeVisibility(node);
+        return node;
+    }
+«ENDAROUND»

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:soapIO="http://www.ms.com/2007/Saturn/Resources/SoapIO"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+
+           ecore:nsPrefix="soapIOResource"
+           ecore:package="com.ms.qaTools.saturn.resources.soapIOResource"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2007/Saturn/Resources/SoapIO"
+           elementFormDefault="qualified">
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+
+  <xs:simpleType name="HandshakeEnums">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="NONE"/>
+      <xs:enumeration value="KERBEROS"/>
+      <xs:enumeration value="ANONYMOUS"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="SubscribeEnums">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="NONE"/>
+      <xs:enumeration value="Subscribe"/>
+      <xs:enumeration value="Subscribe + SOW"/>
+    </xs:restriction>
+  </xs:simpleType>  
+
+  <xs:simpleType name="CpsMessageTypes">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="CPS0"/>
+      <xs:enumeration value="SOAP"/>
+      <xs:enumeration value="GPB"/>
+    </xs:restriction>
+  </xs:simpleType>
+    
+  <xs:simpleType name="AuthenticationMethod">
+    <xs:restriction base="xs:token">
+        <xs:enumeration value="NONE" />
+        <xs:enumeration value="NETEGRITY" />
+        <xs:enumeration value="NETEGRITY+SM" />    
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="AbstractTransport" abstract="true" ecore:name="AbstractTransport" >
+    <xs:sequence/>
+    <xs:attribute name="asynchronous" type="xs:boolean" use="optional" default="false" />
+  </xs:complexType>
+  
+  <xs:complexType name="HTTPTransport" ecore:name="HTTPTransport" >
+    <xs:complexContent>
+      <xs:extension base="soapIO:AbstractTransport">
+        <xs:sequence>
+      	  <xs:element name="Url"      type="value:complexValue" />
+          <xs:element name="ProxyUrl" type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="UserId"   type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Password" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="forwardSMSession" type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="disableChunkedEncoding" type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="authenticationMethod" type="soapIO:AuthenticationMethod" default="NONE" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="MQTransport" ecore:name="MQTransport" >
+    <xs:complexContent>
+      <xs:extension base="soapIO:AbstractTransport">
+        <xs:sequence>
+          <xs:element name="MQResource"    type="type:ResourceDefinition" />
+          <xs:element name="RequestQueue"  type="value:complexValue"       />
+          <xs:element name="ResponseQueue" type="value:complexValue"       />
+          <xs:element name="ModelQName"    type="value:complexValue"      minOccurs="0" maxOccurs="1" />
+          <xs:element name="DynamicQName"  type="value:complexValue"      minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="persistent"  type="xs:boolean" use="optional" default="false"/>
+        <xs:attribute name="useCorrelId" type="xs:boolean" use="optional" default="true"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:complexType name="TCPTransport" ecore:name="TCPTransport" >
+    <xs:complexContent>
+      <xs:extension base="soapIO:AbstractTransport">
+        <xs:sequence>
+      	  <xs:element name="Hostname" type="value:complexValue" />
+          <xs:element name="Port"     type="value:complexValue" />
+        </xs:sequence>
+        <xs:attribute name="handshake"  type="soapIO:HandshakeEnums" use="optional" default="NONE" />
+        <xs:attribute name="maxRetries" type="xs:integer" use="optional" default="0" />
+        <xs:attribute name="authenticationMethod" type="soapIO:AuthenticationMethod" default="NONE" />
+        <xs:attribute name="gzipSend" type="xs:boolean" default="false" />
+        <xs:attribute name="nagle" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PTCPTransport" ecore:name="PTCPTransport" >
+    <xs:complexContent>
+      <xs:extension base="soapIO:AbstractTransport">
+        <xs:sequence>
+      	  <xs:element name="Hostname" type="value:complexValue" />
+          <xs:element name="Port"     type="value:complexValue" />
+        </xs:sequence>
+        <xs:attribute name="maxRetries" type="xs:integer" use="optional" default="0" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+
+  <xs:complexType name="CPSTransport" ecore:name="CPSTransport" >
+    <xs:complexContent>
+      <xs:extension base="soapIO:AbstractTransport">
+        <xs:sequence>
+          <xs:element name="Transport" type="soapIO:AbstractTransport" />
+          <xs:element name="Topic"     type="value:complexValue"          minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Filter"    type="value:complexValue"          minOccurs="0" maxOccurs="1"/>
+          <xs:element name="NamespaceDefinition" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="CpsMessageType" type="soapIO:CpsMessageTypes" minOccurs="0" maxOccurs="1" />
+          <xs:element name="jarLocation"    type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="className"      type="value:complexValue" minOccurs="0" maxOccurs="1" />          
+        </xs:sequence>
+        <xs:attribute name="subscribe" type="soapIO:SubscribeEnums" use="optional" default="NONE" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:complexType name="SoapIOResource" ecore:name="SoapIOResource" >
+    <xs:complexContent>	
+      <xs:extension base="type:DeviceResourceDefinition">
+        <xs:sequence>
+          <xs:element name="TimeOut" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="Transport" type="soapIO:AbstractTransport" />
+        </xs:sequence>
+      </xs:extension>  
+    </xs:complexContent>  
+  </xs:complexType>
+  
+  <xs:complexType name="CpsResource" ecore:name="CpsResource" >
+    <xs:complexContent> 
+      <xs:extension base="type:DeviceResourceDefinition">
+        <xs:sequence>
+          <xs:element name="TimeOut" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="Transport" type="soapIO:CPSTransport"/>
+        </xs:sequence>
+      </xs:extension>  
+    </xs:complexContent>
+  </xs:complexType>
+  
+</xs:schema>

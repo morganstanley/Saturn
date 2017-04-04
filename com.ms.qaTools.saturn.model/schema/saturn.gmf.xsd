@@ -1,0 +1,720 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"                                 
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:kronus="http://www.ms.com/2015/Saturn/Kronus"
+
+           xmlns:db2Resource="http://www.ms.com/2006/Saturn/Resources/DB2"
+           xmlns:udbResource="http://www.ms.com/2006/Saturn/Resources/UDB"
+           xmlns:oracleResource="http://www.ms.com/2008/Saturn/Resources/Oracle"
+           xmlns:informixResource="http://www.ms.com/2008/Saturn/Resources/Informix"
+           xmlns:sybaseResource="http://www.ms.com/2006/Saturn/Resources/Sybase"
+           xmlns:mssqlResource="http://www.ms.com/2012/Saturn/Resources/MSSQL"
+           xmlns:teradataResource="http://www.ms.com/2009/Saturn/Resources/Teradata"
+           xmlns:shadowDirectResource="http://www.ms.com/2006/Saturn/Resources/ShadowDirect"           
+           xmlns:mqResource="http://www.ms.com/2006/Saturn/Resources/MQ"
+           xmlns:fileResource="http://www.ms.com/2006/Saturn/Resources/Files"           
+           xmlns:directoryResource="http://www.ms.com/2006/Saturn/Resources/Directory"
+           xmlns:referenceResource="http://www.ms.com/2006/Saturn/Resources/Reference"
+           xmlns:soapIOResource="http://www.ms.com/2007/Saturn/Resources/SoapIO"
+           xmlns:documentumResource="http://www.ms.com/2010/Saturn/Resources/Documentum"
+           xmlns:ldapResource="http://www.ms.com/2011/Saturn/Resources/LDAP"
+           xmlns:ldapQueryResource="http://www.ms.com/2011/Saturn/Resources/LDAPQuery"
+           xmlns:sqliteResource="http://www.ms.com/2011/Saturn/Resources/SQLite"
+           xmlns:queryResource="http://www.ms.com/2009/Saturn/Resources/Query"
+           xmlns:transactionResource="http://www.ms.com/2011/Saturn/Resources/Transaction"     
+           xmlns:icelink="http://www.ms.com/2011/Saturn/Resources/IceLink"  
+           xmlns:markitwire="http://www.ms.com/2011/Saturn/Resources/MarkitWire"  
+           xmlns:rmiConnection="http://www.ms.com/2011/Saturn/Resources/RmiConnection"  
+           
+           xmlns:dataCompareModule="http://www.ms.com/2006/Saturn/Modules/DataCompare"
+           xmlns:documentumModule="http://www.ms.com/2006/Saturn/Modules/Documentum"           
+           xmlns:mqModule="http://www.ms.com/2006/Saturn/Modules/MQ"
+           xmlns:runCmdsModule="http://www.ms.com/2006/Saturn/Modules/RunCmds"           
+           xmlns:sqlModule="http://www.ms.com/2006/Saturn/Modules/SQL"
+           xmlns:mailModule="http://www.ms.com/2006/Saturn/Modules/Mail"
+           xmlns:xSplitModule="http://www.ms.com/2006/Saturn/Modules/XSplit"
+
+           xmlns:extractDDLModule="http://www.ms.com/2009/Saturn/Modules/ExtractDDL"
+           xmlns:singularityModule="http://www.ms.com/2009/Saturn/Modules/Singularity"
+           xmlns:psManagerModule="http://www.ms.com/2009/Saturn/Modules/PsManager"
+           
+           xmlns:dsConvertModule="http://www.ms.com/2009/Saturn/Modules/DsConvert"
+           xmlns:dsValidatorModule="http://www.ms.com/2009/Saturn/Modules/DsValidator"
+           xmlns:x2csv="http://www.ms.com/2006/Saturn/Modules/Xml2Csv"
+           xmlns:xDiff="http://www.ms.com/2007/Saturn/Modules/XmlDiff"
+           xmlns:xGen="http://www.ms.com/2007/Saturn/Modules/XmlGen"
+           xmlns:xManipModule="http://www.ms.com/2009/Saturn/Modules/XmlManip"
+           xmlns:xValidatorModule="http://www.ms.com/2009/Saturn/Modules/XmlValidator"
+           xmlns:eValidatorModule="http://www.ms.com/2009/Saturn/Modules/EnvValidator"
+           
+           xmlns:soapIOModule="http://www.ms.com/2007/Saturn/Modules/SoapIO"
+           xmlns:cpsModule="http://www.ms.com/2009/Saturn/Modules/Cps"
+           xmlns:cometModule="http://www.ms.com/2011/Saturn/Modules/Comet"
+           xmlns:p4Module="http://www.ms.com/2011/Saturn/Modules/P4"
+           xmlns:vmsModule="http://www.ms.com/2011/Saturn/Modules/VMS"
+           xmlns:jiraModule="http://www.ms.com/2011/Saturn/Modules/Jira"
+           xmlns:fManipModule="http://www.ms.com/2011/Saturn/Modules/FixManip"
+           
+           xmlns:referenceModule="http://www.ms.com/2007/Saturn/Modules/Reference"
+           xmlns:procedureCallModule="http://www.ms.com/2009/Saturn/Modules/ProcedureCall"           
+           
+           xmlns:saturnListeners="http://www.ms.com/2006/Saturn/Listeners"
+           xmlns:repetitionHandlers="http://www.ms.com/2007/Saturn/repetition"
+           xmlns:saturnWeb="http://www.ms.com/2008/Saturn/SaturnWeb"
+           xmlns:saturnReport="http://www.ms.com/2009/Saturn/SaturnReport"
+           xmlns:saturnVerbosity="http://www.ms.com/2014/Saturn/SaturnVerbosity"
+           xmlns:saturnResult="http://www.ms.com/2009/Saturn/Result"
+
+           xmlns:exception="http://www.ms.com/2009/Saturn/Exception"
+           
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="saturn" 
+           ecore:package="com.ms.qaTools.saturn"
+           
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"           
+           
+           targetNamespace="http://www.ms.com/2006/Saturn/gmf"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="saturnValues.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="saturnTypes.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Listeners" schemaLocation="saturnListeners.xsd" />
+  <xs:import namespace="http://www.ms.com/2007/Saturn/repetition" schemaLocation="saturnRepetitionHandlers.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Exception" schemaLocation="saturnException.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Result" schemaLocation="saturnResult.xsd" />
+  <xs:import namespace="http://www.ms.com/2015/Saturn/Kronus" schemaLocation="kronus.xsd" />
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/DB2" schemaLocation="resources/db2.xsd" />
+  <xs:import namespace="http://www.ms.com/2008/Saturn/Resources/Oracle" schemaLocation="resources/oracle.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/UDB" schemaLocation="resources/udb.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Sybase" schemaLocation="resources/sybase.xsd" />
+  <xs:import namespace="http://www.ms.com/2012/Saturn/Resources/MSSQL" schemaLocation="resources/mssql.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Resources/Teradata" schemaLocation="resources/teradata.xsd" />
+  <xs:import namespace="http://www.ms.com/2008/Saturn/Resources/Informix" schemaLocation="resources/informix.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/ShadowDirect" schemaLocation="resources/shadowDirect.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/MQ" schemaLocation="resources/mq.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Directory" schemaLocation="resources/directory.xsd" />  
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Files" schemaLocation="resources/file.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Reference" schemaLocation="resources/reference.xsd" />  
+  <xs:import namespace="http://www.ms.com/2007/Saturn/Resources/SoapIO" schemaLocation="resources/soapIO.xsd" />
+  <xs:import namespace="http://www.ms.com/2010/Saturn/Resources/Documentum" schemaLocation="resources/documentum.xsd" />  
+  <xs:import namespace="http://www.ms.com/2011/Saturn/Resources/LDAP" schemaLocation="resources/ldap.xsd" />  
+  <xs:import namespace="http://www.ms.com/2011/Saturn/Resources/LDAPQuery" schemaLocation="resources/ldapquery.xsd" />  
+  <xs:import namespace="http://www.ms.com/2011/Saturn/Resources/SQLite" schemaLocation="resources/sqlite.xsd" />  
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Resources/Query" schemaLocation="resources/query.xsd" />  
+  <xs:import namespace="http://www.ms.com/2011/Saturn/Resources/Transaction" schemaLocation="resources/transaction.xsd" />
+  <xs:import namespace="http://www.ms.com/2011/Saturn/Resources/MarkitWire" schemaLocation="resources/markitwire.xsd" />
+  <xs:import namespace="http://www.ms.com/2011/Saturn/Resources/RmiConnection" schemaLocation="resources/rmiconnection.xsd" />
+  <xs:import namespace="http://www.ms.com/2011/Saturn/Resources/IceLink" schemaLocation="resources/icelink.xsd" />
+    
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Modules/RunCmds" schemaLocation="modules/runCmds.xsd" />  
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Modules/DataCompare" schemaLocation="modules/dataCompare.xsd" />  
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Modules/Documentum" schemaLocation="modules/documentum.xsd" />  
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Modules/SQL" schemaLocation="modules/sql.xsd" />  
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Modules/MQ" schemaLocation="modules/mq.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Modules/Mail" schemaLocation="modules/mail.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Modules/XSplit" schemaLocation="modules/xSplit.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Modules/Xml2Csv" schemaLocation="modules/xml2csv.xsd" />
+  
+  <xs:import namespace="http://www.ms.com/2007/Saturn/Modules/Reference" schemaLocation="modules/reference.xsd" />
+  <xs:import namespace="http://www.ms.com/2007/Saturn/Modules/XmlGen" schemaLocation="modules/xmlGen.xsd" />
+  <xs:import namespace="http://www.ms.com/2007/Saturn/Modules/XmlDiff" schemaLocation="modules/xmlDiff.xsd" />
+  <xs:import namespace="http://www.ms.com/2007/Saturn/Modules/SoapIO" schemaLocation="modules/soapIO.xsd" />
+
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/DsConvert" schemaLocation="modules/dsConvert.xsd" />  
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/ExtractDDL" schemaLocation="modules/extractDDL.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/XmlManip" schemaLocation="modules/xmlManip.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/XmlValidator" schemaLocation="modules/xmlValidator.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/EnvValidator" schemaLocation="modules/envValidator.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/DsValidator" schemaLocation="modules/dsValidator.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/Singularity" schemaLocation="modules/singularity.xsd" />  
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/Cps" schemaLocation="modules/cps.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/PsManager" schemaLocation="modules/psManager.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Modules/ProcedureCall" schemaLocation="modules/procedureCall.xsd" />
+  
+  <xs:import namespace="http://www.ms.com/2011/Saturn/Modules/FixManip" schemaLocation="modules/fixManip.xsd" />
+  <xs:import namespace="http://www.ms.com/2011/Saturn/Modules/Comet" schemaLocation="modules/comet.xsd" />
+  
+  <xs:import namespace="http://www.ms.com/2008/Saturn/SaturnWeb" schemaLocation="annotations/saturnWeb.xsd" />
+  <xs:import namespace="http://www.ms.com/2009/Saturn/SaturnReport" schemaLocation="annotations/saturnReport.xsd" />
+  <xs:import namespace="http://www.ms.com/2014/Saturn/SaturnVerbosity" schemaLocation="annotations/saturnVerbosity.xsd" />
+        
+  <xs:element name="Saturn">
+    <xs:complexType ecore:name="Saturn" >    
+      <xs:complexContent>
+        <xs:extension base="saturn:RunGroup">
+          <xs:sequence>
+            <xs:element name="WorkDir"           type="value:complexValue" minOccurs="0" maxOccurs="1" />
+            <xs:element name="RunNumberFileName" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+            <xs:element name="DefaultRunNumber"  type="value:complexValue" minOccurs="0" maxOccurs="1" />
+            
+            <!-- ReportingConfigurations -->
+            <xs:element name="PreExecutionListeners"  minOccurs="0" maxOccurs="unbounded" type="type:AbstractListener" />
+            <xs:element name="Listeners"              minOccurs="0" maxOccurs="unbounded" type="type:AbstractListener" />
+            <xs:element name="PostExecutionListeners" minOccurs="0" maxOccurs="unbounded" type="type:AbstractListener" />
+                  
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="Links"         type="saturn:AbstractLink" />
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="ResourceLinks" type="saturn:AbstractResourceLink" ecore:transient="true" />
+          </xs:sequence>
+          <xs:attribute name="version" type="xs:token" default="2.1.11" />
+        </xs:extension>  
+      </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:unique name="uniqueIncludeFileNames">
+      <xs:selector xpath="saturn:IncludeFiles" />
+      <xs:field xpath="@name" />
+    </xs:unique>    
+  </xs:element>	
+  <!-- AbstractLink -->
+  <xs:complexType name="AbstractLink" ecore:name="AbstractLink" abstract="true" ecore:abstract="true">
+    <xs:attribute ecore:reference="saturn:AbstractRunGroup" name="source" type="xs:anyURI" />
+    <xs:attribute ecore:reference="saturn:AbstractRunGroup" name="target" type="xs:anyURI" />
+  </xs:complexType>
+  
+  <!-- OnPassLinkType -->
+  <xs:complexType name="OnPassLink" ecore:name="OnPassLink" >
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractLink"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- OnFailLink -->
+  <xs:complexType name="OnFailLink" ecore:name="OnFailLink" >
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractLink"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- OnFinishLink -->
+  <xs:complexType name="OnFinishLink" ecore:name="OnFinishLink" >
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractLink"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- CustomLink -->
+  <xs:complexType name="CustomLink" ecore:name="CustomLink" >
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractLink">
+        <xs:sequence>          
+          <xs:element name="Code" minOccurs="0" maxOccurs="1" type="value:complexValue" />
+        </xs:sequence>
+        <xs:attribute name="Description" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AbstractResourceLink" abstract="true">
+    <xs:attribute ecore:reference="type:NamedResourceDefinition"        name="source" type="xs:anyURI" />
+    <xs:attribute ecore:reference="referenceResource:ReferenceResource" name="target" type="xs:anyURI" />
+  </xs:complexType>
+
+  <xs:complexType name="ResourceLink">
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractResourceLink" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ResourceStepLink">
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractResourceLink">
+        <xs:attribute ecore:reference="saturn:AbstractStep" name="targetStep" type="xs:anyURI" />
+        <xs:attribute name="description" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ResourceNestedLink">
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractResourceLink">
+        <xs:attribute ecore:reference="type:NamedResourceDefinition" name="targetEnclosingResource" type="xs:anyURI" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+
+  <!-- AbstractRunGroup -->
+  <xs:complexType name="AbstractRunGroup" abstract="true" ecore:name="AbstractRunGroup" ecore:abstract="true" >
+   	<xs:sequence>
+   	  <xs:element name="Imports" minOccurs="0" maxOccurs="unbounded" >
+   	    <xs:complexType ecore:name="RunGroupImport" >
+   	      <xs:sequence/>
+   	      <xs:attribute name="includeFile" type="xs:token"                  />
+   	      <xs:attribute name="runGroup"    type="xs:token"                  />
+   	      <xs:attribute name="attributes"  type="xs:boolean" default="true" />
+   	      <xs:attribute name="resources"   type="xs:boolean" default="true" />
+   	      <xs:attribute name="enabled"     type="xs:boolean" default="true" />
+   	    </xs:complexType>
+      </xs:element>
+      <xs:element ref="exception:Exception" minOccurs="0" />
+   	  <xs:element name="Resources"          minOccurs="0" maxOccurs="unbounded" type="type:NamedResourceDefinition"   />
+   	  <xs:element name="Attributes"         minOccurs="0" maxOccurs="unbounded" type="saturn:Attribute"               />
+   	  <xs:element name="Annotations"        minOccurs="0" maxOccurs="unbounded" type="type:AbstractAnnotation"        />
+   	  <xs:element name="RepetitionHandler"  minOccurs="0" maxOccurs="1"         type="type:AbstractRepetitionHandler" />
+      <xs:element name="Modifiers"          minOccurs="0" maxOccurs="unbounded"         type="type:AbstractRunGroupModifier"  />
+      <xs:element name="Parameters"         minOccurs="0" maxOccurs="unbounded" type="saturn:AbstractParameter" />
+      <xs:element name="IncludeFiles" minOccurs="0" maxOccurs="unbounded" type="saturn:IncludeFile" />
+    </xs:sequence>      	
+    <xs:attribute name="name"            type="xs:string" use="optional" />
+    <xs:attribute name="id"              type="xs:string" use="optional" />
+    <xs:attribute name="enabled"         type="xs:boolean"                      default="true"     use="optional" />
+    <xs:attribute name="warnOnFailure"   type="xs:boolean"                      default="false"    use="optional" />
+    <xs:attribute name="waitBefore"      type="xs:integer"                      default="0" />
+    <xs:attribute name="waitAfter"       type="xs:integer"                      default="0" />
+    <xs:attribute name="defaultStatus"   type="type:SaturnStatusEnum"           default="FAIL"     use="optional" />
+    <xs:attribute name="statusCondition" type="type:SaturnStatusConditionEnum"  default="ANY FAIL" use="optional" />
+    <xs:attribute name="procedure"       type="xs:boolean"                      default="false"    use="optional" />
+
+    <xs:attribute name="canMultiplex"              type="xs:boolean" default="false" use="optional" />
+    <xs:attribute name="maxSimultaneousIterations" type="xs:integer" default="10"    use="optional" />
+
+  </xs:complexType>  
+  
+  <xs:complexType name="PerlRunGroupModifier" >
+    <xs:complexContent>    
+      <xs:extension base="type:AbstractRunGroupModifier">
+        <xs:sequence>
+          <xs:element name="PerlCode" minOccurs="1" maxOccurs="1" type="value:complexValue" />
+        </xs:sequence>  
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!--  RunGroup -->
+  <xs:complexType name="RunGroup" ecore:name="RunGroup" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractRunGroup">
+        <xs:sequence>
+	       <xs:element minOccurs="0" maxOccurs="unbounded" name="RunGroups" type="saturn:AbstractRunGroup" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent> 
+  </xs:complexType>
+	
+  <xs:complexType name="AbstractParameter" abstract="true" ecore:name="AbstractParameter">
+    <xs:attribute name="name" type="type:ObjectName" use="required" />
+    <xs:attribute name="isMandatory" type="xs:boolean" default="false" />
+  </xs:complexType>
+  
+  <xs:complexType name="AttributeParameter" >
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractParameter">
+        <xs:sequence>
+          <xs:element name="DefaultValue" minOccurs="0" maxOccurs="1" type="value:complexValue" />
+        </xs:sequence>
+      </xs:extension>    
+    </xs:complexContent>    
+  </xs:complexType>
+  
+  <xs:complexType name="ResourceParameter" >
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractParameter">
+        <xs:sequence>
+          <xs:element name="DefaultResource" minOccurs="0" maxOccurs="1" type="type:NamedResourceDefinition" />
+        </xs:sequence>
+      </xs:extension>    
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- P4Step -->
+  <xs:complexType name="P4Step" ecore:name="P4Step" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- VmsStep -->
+  <xs:complexType name="VmsStep" ecore:name="VmsStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- JiraCallStep -->
+  <xs:complexType name="JiraStep" ecore:name="JiraStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+    
+  <!-- ProcedureCallStep -->
+  <xs:complexType name="ProcedureCallStep" ecore:name="ProcedureCallStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="procedureCallModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!--  AbstractTerminal -->
+  <xs:complexType name="AbstractTerminal" abstract="true" ecore:name="AbstractTerminal">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:attribute name="repetitionAction" type="type:RepetitionActionsEnum" default="NONE"/>
+        <xs:attribute name="terminationStatus" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>	
+
+  <!--  PassTerminal -->
+  <xs:complexType name="PassTerminal" ecore:name="PassTerminal" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractTerminal" />
+    </xs:complexContent>
+  </xs:complexType>	
+  
+  <!--  FailTerminal -->
+  <xs:complexType name="FailTerminal" ecore:name="FailTerminal" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractTerminal" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!--  NoopTerminal -->
+  <xs:complexType name="NoopTerminal" ecore:name="NoopTerminal" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractTerminal" />
+    </xs:complexContent>
+  </xs:complexType>
+	
+  <!-- AbstractStep -->
+  <xs:complexType name="AbstractStep" abstract="true" ecore:name="AbstractStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractRunGroup" />
+    </xs:complexContent>
+  </xs:complexType>	
+
+  <!-- SQLStep -->
+  <xs:complexType name="SQLStep" ecore:name="SQLStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>            
+          <xs:element ref="sqlModule:Configuration"/>
+        </xs:sequence>                
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- MQStep -->
+  <xs:complexType name="MQStep" ecore:name="MQStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="mqModule:Configuration"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- RunCmdsStep -->
+  <xs:complexType name="RunCmdsStep" ecore:name="RunCmdsStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="runCmdsModule:Configuration"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- DSConvertStep -->
+  <xs:complexType name="DSConvertStep" ecore:name="DSConvertStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="dsConvertModule:Configuration"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- ExtractDDLStep -->
+  <xs:complexType name="ExtractDDLStep" ecore:name="ExtractDDLStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="extractDDLModule:Configuration"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+    <!-- SingularityStep -->
+  <xs:complexType name="SingularityStep" ecore:name="SingularityStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="singularityModule:Configuration"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+    <!-- CometStep -->
+  <xs:complexType name="CometStep" ecore:name="CometStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="cometModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+  
+    <!-- DSConvertStep -->
+  <xs:complexType name="XmlManipStep" ecore:name="XmlManipStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="xManipModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="FixManipStep" ecore:name="FixManipStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="fManipModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- DSConvertStep -->
+  <xs:complexType name="DSValidatorStep" ecore:name="DSValidatorStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="dsValidatorModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- XmlValidatorStep -->
+  <xs:complexType name="XmlValidatorStep" ecore:name="XmlValidatorStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="xValidatorModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+    <!-- EnvValidatorStep -->
+  <xs:complexType name="EnvValidatorStep" ecore:name="EnvValidatorStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="eValidatorModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- CpsStep -->
+  <xs:complexType name="CpsStep" ecore:name="CpsStep">
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="cpsModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- DataCompareStep -->
+  <xs:complexType name="DataCompareStep" ecore:name="DataCompareStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="dataCompareModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>      
+  
+  <!-- DataCompareSummaryStep -->
+  <xs:complexType name="DataCompareSummaryStep" ecore:name="DataCompareSummaryStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+  
+  <!-- DocumentumStep -->
+  <xs:complexType name="DocumentumStep" ecore:name="DocumentumStep" >
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="documentumModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+  
+  <xs:complexType name="KronusStep">
+    <xs:complexContent>
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="kronus:KronusCallConfiguration" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- MailStep -->
+  <xs:complexType name="MailStep" ecore:name="MailStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="mailModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+  
+  <!-- XSplitStep -->
+  <xs:complexType name="XSplitStep" ecore:name="XSplitStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="xSplitModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- Xml2CsvStep -->
+  <xs:complexType name="Xml2CsvStep" ecore:name="Xml2CsvStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="x2csv:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- XmlGenStep -->
+  <xs:complexType name="XmlGenStep" ecore:name="XmlGenStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="xGen:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- XmlDiffStep -->
+  <xs:complexType name="XmlDiffStep" ecore:name="XmlDiffStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="xDiff:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- PsManagerStep -->
+  <xs:complexType name="PsManagerStep" ecore:name="PsManagerStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="psManagerModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- SoapIOStep -->
+  <xs:complexType name="SoapIOStep" ecore:name="SoapIOStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="soapIOModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!--  ReferenceStep -->
+  <xs:complexType name="ReferenceStep" ecore:name="ReferenceStep" >
+    <xs:complexContent>    
+      <xs:extension base="saturn:AbstractStep">
+        <xs:sequence>
+          <xs:element ref="referenceModule:Configuration" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!--  IncludeFile -->
+  <xs:complexType name="IncludeFile" ecore:name="IncludeFile" >
+    <xs:complexContent>
+      <xs:extension base="value:complexValue" >
+        <xs:attribute name="name" type="type:ObjectName" use="required" />
+        <xs:attribute name="format" type="saturn:IncludeFileType" use="optional" default="SATURN" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+
+    
+  <xs:simpleType name="IncludeFileType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="SATURN" />
+      <xs:enumeration value="SCRIPTLIB" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!--  Reference -->
+  <xs:complexType name="Reference" ecore:name="Reference" >
+    <xs:attribute name="includeFile" type="xs:token" />
+    <xs:attribute name="template" type="xs:token"/>
+    <xs:attribute name="runGroup" type="xs:token"/>
+  </xs:complexType>
+		    
+  <!--  Attribute -->
+  <xs:complexType name="Attribute" ecore:name="Attribute" >
+    <xs:complexContent>
+      <xs:extension base="value:complexValue">
+        <xs:attribute name="name" type="type:ObjectName" use="required" />
+        <xs:attribute name="external" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Config" >
+   <xs:sequence>
+     <xs:element name="RequiredPackages" minOccurs="0" maxOccurs="unbounded" />
+   </xs:sequence>
+   <xs:attribute name="name" type="xs:string" />
+   <xs:attribute name="logicProvider" />
+ </xs:complexType>
+
+</xs:schema>

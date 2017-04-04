@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" 
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf" 
+           xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:value="http://www.ms.com/2006/Saturn/Values" 
+           xmlns:dir="http://www.ms.com/2006/Saturn/Resources/Directory" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:xGenModule="http://www.ms.com/2007/Saturn/Modules/XmlGen"
+           xmlns:exception="http://www.ms.com/2009/Saturn/Exception"
+           
+           ecore:nsPrefix="xGenModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.xmlGenModule" 
+           
+           xmlns:perl="http://www.ms.com/2006/pdsttools/xsd2perl"
+           xmlns:sl="http://www.ms.com/2011/pdsttools/xsd2scriptLib"
+           xmlns:report="http://www.ms.com/2011/pdsttools/xsd2report"
+           perl:nsPrefix="xGenModule"
+           perl:package="Saturn::Module::XMLGen"           
+           perl:typeExtractorBase="Saturn::Script::TypeExtractor"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+           
+           elementFormDefault="qualified" 
+           targetNamespace="http://www.ms.com/2007/Saturn/Modules/XmlGen">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  <!-- <xs:import namespace="http://www.ms.com/2006/Saturn/gmf" schemaLocation="../saturn.gmf.xsd"/> -->
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Directory" schemaLocation="../resources/directory.xsd"/>
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Exception" schemaLocation="../saturnException.xsd"/>
+
+  <xs:simpleType name="XmlFormatEnums">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="ORIGINAL"/>
+      <xs:enumeration value="INDENT"/>
+      <xs:enumeration value="PRETTY"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:element ecore:name="XmlGenConfiguration" name="Configuration">
+    <xs:complexType ecore:name="XmlGenConfiguration" perl:isa="Saturn::Script::AbstractStep" perl:executable="Saturn::Module::XMLGen::Executable" sl:name="xmlGen" perl:basePackage="true">
+      <xs:annotation>
+        <xs:appinfo>
+          <sl:postCreate>$runGroup->fixResources;</sl:postCreate>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="TemplateFile" minOccurs="0" type="type:ResourceDefinition" sl:accessor="template" sl:map="xmlFile"/>
+        <xs:element name="OutputResource" minOccurs="0" type="type:ResourceDefinition" sl:accessor="output" sl:map="xmlFile"/>
+<!--        <xs:element name="OutFile" type="type:ResourceDefinition"/> -->
+<!--        <xs:element name="OutFileNamePattern" type="value:complexValue"/> -->
+        <xs:element maxOccurs="unbounded" minOccurs="0" name="DataSets">
+          <xs:complexType ecore:name="DataSet" perl:package="Saturn::Module::XMLGen::DataSet" sl:name="xmlGen_dataSet">
+            <xs:annotation>
+              <xs:appinfo>
+                <sl:preCreate>%parms = @_ == 1 ? (file => $_[0], prefix => 'd0') : @_;</sl:preCreate>
+              </xs:appinfo>
+            </xs:annotation>
+            <xs:sequence>
+              <xs:element name="File" type="type:ResourceDefinition" perl:accessor="file" sl:map="genDataSet" report:colNum="3">
+                <xs:annotation>
+                  <xs:appinfo source="http://www.ms.com/2006/Saturn/gmf" ecore:key="description">DataSet File</xs:appinfo>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Prefix" type="value:complexValue" perl:accessor="prefix" report:colNum="2"/>
+            </xs:sequence>
+            <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true" perl:accessor="enabled" report:colNum="1"/>            
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="xmlFormat" type="xGenModule:XmlFormatEnums" default="ORIGINAL" use="optional"/>
+      <xs:attribute name="legacyMode" type="xs:boolean" use="optional" default="false" perl:accessor="legacyMode" report:colNum="1"/>
+    </xs:complexType>
+  </xs:element>
+  
+
+  <xs:complexType name="OutputDirectoryResource" ecore:name="OutputDirectory" sl:name="xmlGen_outDir">
+    <xs:complexContent>
+      <xs:extension base="dir:DirectoryResource">
+        <xs:sequence>
+          <xs:element name="FileNamePattern" type="value:complexValue" sl:accessor="pattern" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>      
+    </xs:complexContent>
+  </xs:complexType>
+
+ </xs:schema>

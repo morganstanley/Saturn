@@ -1,0 +1,6 @@
+package com.ms.qaTools.kronus.rfb.compileerror.CircularDependencies
+
+val K = {
+  val A = B
+  val B = A
+}

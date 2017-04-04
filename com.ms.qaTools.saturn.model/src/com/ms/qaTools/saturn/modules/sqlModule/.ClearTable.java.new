@@ -1,0 +1,85 @@
+/**
+ * <copyright>
+ * </copyright>
+ *
+ * $Id: //std/qaTools/saturn/trunk/eclipse/com.ms.qaTools.saturn.model/src/com/ms/qaTools/saturn/modules/sqlModule/ClearTable.java#5 $
+ */
+package com.ms.qaTools.saturn.modules.sqlModule;
+
+import com.ms.qaTools.saturn.values.ComplexValue;
+
+/**
+ * <!-- begin-user-doc -->
+ * A representation of the model object '<em><b>Clear Table</b></em>'.
+ * <!-- end-user-doc -->
+ *
+ * <p>
+ * The following features are supported:
+ * <ul>
+ *   <li>{@link com.ms.qaTools.saturn.modules.sqlModule.ClearTable#isEnabled <em>Enabled</em>}</li>
+ * </ul>
+ * </p>
+ *
+ * @see com.ms.qaTools.saturn.modules.sqlModule.SqlModulePackage#getClearTable()
+ * @model annotation="http://www.ms.com/2006/pdsttools/xsd2perl package='SaturnModule::SQL::ClearTable'"
+ *        extendedMetaData="name='ClearTable' kind='mixed'"
+ * @generated
+ */
+public interface ClearTable extends ComplexValue
+{
+  /**
+     * Returns the value of the '<em><b>Enabled</b></em>' attribute.
+     * The default value is <code>"true"</code>.
+     * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Enabled</em>' attribute isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+     * @return the value of the '<em>Enabled</em>' attribute.
+     * @see #isSetEnabled()
+     * @see #unsetEnabled()
+     * @see #setEnabled(boolean)
+     * @see com.ms.qaTools.saturn.modules.sqlModule.SqlModulePackage#getClearTable_Enabled()
+     * @model default="true" unsettable="true" dataType="org.eclipse.emf.ecore.xml.type.Boolean"
+     *        extendedMetaData="kind='attribute' name='enabled'"
+     * @generated
+     */
+  boolean isEnabled();
+
+  /**
+     * Sets the value of the '{@link com.ms.qaTools.saturn.modules.sqlModule.ClearTable#isEnabled <em>Enabled</em>}' attribute.
+     * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Enabled</em>' attribute.
+     * @see #isSetEnabled()
+     * @see #unsetEnabled()
+     * @see #isEnabled()
+     * @generated
+     */
+  void setEnabled(boolean value);
+
+  /**
+     * Unsets the value of the '{@link com.ms.qaTools.saturn.modules.sqlModule.ClearTable#isEnabled <em>Enabled</em>}' attribute.
+     * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+     * @see #isSetEnabled()
+     * @see #isEnabled()
+     * @see #setEnabled(boolean)
+     * @generated
+     */
+  void unsetEnabled();
+
+  /**
+     * Returns whether the value of the '{@link com.ms.qaTools.saturn.modules.sqlModule.ClearTable#isEnabled <em>Enabled</em>}' attribute is set.
+     * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+     * @return whether the value of the '<em>Enabled</em>' attribute is set.
+     * @see #unsetEnabled()
+     * @see #isEnabled()
+     * @see #setEnabled(boolean)
+     * @generated
+     */
+  boolean isSetEnabled();
+
+} // ClearTable

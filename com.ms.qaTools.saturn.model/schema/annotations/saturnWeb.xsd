@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:saturnWeb="http://www.ms.com/2008/Saturn/SaturnWeb"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="saturnWeb" 
+           ecore:package="com.ms.qaTools.saturn.annotations.saturnWeb"
+
+           xmlns:perl="http://www.ms.com/2006/pdsttools/xsd2perl"
+           xmlns:sl="http://www.ms.com/2011/pdsttools/xsd2scriptLib"
+           perl:nsPrefix="saturnWeb"
+           perl:package="Saturn::Web::XML"
+           
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"          
+           
+           elementFormDefault="qualified" 
+           targetNamespace="http://www.ms.com/2008/Saturn/SaturnWeb">
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd" />
+
+  <xs:complexType name="SaturnWebConfiguration" ecore:name="SaturnWebConfiguration">
+    <xs:annotation id="saturn-eclipse-meta-info">
+      <xs:appinfo source="caption">Saturn Web Annotation</xs:appinfo>
+      <xs:appinfo source="description"></xs:appinfo>
+    </xs:annotation>
+  
+    <xs:complexContent>
+      <xs:extension base="type:AbstractAnnotation">
+        <xs:sequence>
+          <xs:element name="Name"        minOccurs="0" maxOccurs="1"         type="xs:string" />
+          <xs:element name="Description" minOccurs="0" maxOccurs="1"         type="xs:string" />
+          <xs:element name="Values"      minOccurs="0" maxOccurs="unbounded" type="saturnWeb:ValueDefinition" />
+        </xs:sequence>
+        <xs:attribute name="enabled" type="xs:boolean" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="ValueDefinition" ecore:name="ValueDefinition">
+    <xs:sequence>
+      <xs:element name="Source" minOccurs="1" maxOccurs="1" type="saturnWeb:AbstractSourceDefinition" />
+      <xs:element name="Target" minOccurs="1" maxOccurs="1" type="saturnWeb:AbstractTargetDefinition" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="AbstractSourceDefinition" ecore:name="AbstractSourceDefinition">
+    <xs:sequence>
+      <xs:element name="Caption"     minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="Description" minOccurs="0" maxOccurs="1" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="TextSourceDefinition" ecore:name="TextSourceDefinition">
+    <xs:complexContent>
+      <xs:extension base="saturnWeb:AbstractSourceDefinition">
+        <xs:attribute name="defaultValue" type="xs:string" />
+        <xs:attribute name="multiLine" type="xs:boolean" default="false" use="optional" />
+        <xs:attribute name="password" type="xs:boolean" default="false" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="DropDownSourceDefinition" ecore:name="DropDownSourceDefinition">
+    <xs:complexContent>
+      <xs:extension base="saturnWeb:AbstractSourceDefinition">
+        <xs:sequence>
+          <xs:element name="Options" type="saturnWeb:DropDownOption" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="multiSelect" type="xs:boolean" default="false" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="DropDownOption" ecore:name="DropDownOption">
+    <xs:sequence/>
+      <xs:attribute name="selected" type="xs:boolean" default="false" />
+      <xs:attribute name="text" type="xs:string" />
+      <xs:attribute name="value" type="xs:string" />
+  </xs:complexType>
+  
+  <xs:complexType name="FileSelectorSourceDefinition" ecore:name="FileSelectorSourceDefinition">
+    <xs:complexContent>
+      <xs:extension base="saturnWeb:AbstractSourceDefinition">
+        <xs:attribute name="directory" type="xs:string" />
+        <xs:attribute name="filePattern" type="xs:string" />
+        <xs:attribute name="defaultValue" type="xs:string" />
+        <xs:attribute name="selectorType" type="saturnWeb:SelectorTypeEnum" default="FILE" />                
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:simpleType name="SelectorTypeEnum">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="FILE"/>
+      <xs:enumeration value="DIRECTORY"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="AbstractTargetDefinition" ecore:name="AbstractTargetDefinition" />
+  
+  <xs:complexType name="SingleValueTargetDefinition" ecore:name="SingleValueTargetDefinition">
+    <xs:complexContent>
+      <xs:extension base="saturnWeb:AbstractTargetDefinition"/>
+    </xs:complexContent>  
+  </xs:complexType>
+  
+  <xs:complexType name="SingleValueEnvVarTargetDefinition" ecore:name="SingleValueEnvVarTargetDefinition">
+    <xs:complexContent>
+      <xs:extension base="saturnWeb:SingleValueTargetDefinition">
+        <xs:sequence>
+          <xs:element name="EnvVar" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>  
+  </xs:complexType>  
+</xs:schema>

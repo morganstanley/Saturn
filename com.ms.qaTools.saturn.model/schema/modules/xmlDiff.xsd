@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:xDiff="http://www.ms.com/2007/Saturn/Modules/XmlDiff"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+
+           xmlns:report="http://www.ms.com/2011/pdsttools/xsd2report"
+           
+           ecore:nsPrefix="xDiffModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.xmlDiffModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2007/Saturn/Modules/XmlDiff"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+    
+  <xs:complexType name="Column" ecore:name="XmlDiffColumn" >   
+    <xs:sequence>
+      <xs:element name="ColumnDesc" type="type:Column" />
+      <xs:element name="XPath" type="value:complexValue" />
+    </xs:sequence>
+   <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+   <xs:attribute name="threshold" type="xs:integer"/>
+  </xs:complexType>
+
+  <xs:complexType name="Object" ecore:name="XmlDiffObject" >
+    <xs:sequence>
+      <xs:element name="Keys" minOccurs="0" maxOccurs="unbounded" type="xDiff:Column"/>
+      <xs:element name="XPath" minOccurs="0" type="value:complexValue"/>
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+  
+  <xs:complexType name="Namespace" ecore:name="XmlDiffNamespace" >
+    <xs:sequence>
+      <xs:element name="Prefix"  type="value:complexValue" />
+      <xs:element name="Uri"  type="value:complexValue" />
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+  
+  <xs:element name="Configuration" ecore:name="XmlDiffConfiguration">
+    <xs:complexType ecore:name="XmlDiffConfiguration" >
+      <xs:sequence>
+        <xs:element name="Objects" minOccurs="0" maxOccurs="unbounded" type="xDiff:Object" />
+        <xs:element name="Columns" minOccurs="0" maxOccurs="unbounded" type="xDiff:Column" />
+        <xs:element name="DocumentKeys" minOccurs="0" maxOccurs="unbounded" type="xDiff:Column" />
+        <xs:element name="Namespaces" minOccurs="0" maxOccurs="unbounded" type="xDiff:Namespace" />
+        <xs:element name="LeftFile" minOccurs="0" type="type:ResourceDefinition" />
+        <xs:element name="RightFile" minOccurs="0" type="type:ResourceDefinition"  />
+        <xs:element name="OutResource" minOccurs="0" type="type:ResourceDefinition"  />
+        <xs:element name="Description" type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attribute name="failOnValidation" type="xs:boolean" default="true" use="optional" />
+      <xs:attribute name="ignoreInLeftOnly" type="xs:boolean" use="optional" default="false" />
+      <xs:attribute name="ignoreInRightOnly" type="xs:boolean" use="optional" default="false" />
+    </xs:complexType>
+  </xs:element> 
+
+</xs:schema>

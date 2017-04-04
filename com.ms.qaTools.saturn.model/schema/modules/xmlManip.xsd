@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values" 
+           xmlns:type="http://www.ms.com/2006/Saturn/Types" 
+           xmlns:xManipModule="http://www.ms.com/2009/Saturn/Modules/XmlManip"
+           xmlns:fileResource="http://www.ms.com/2006/Saturn/Resources/Files"
+           xmlns:perl="http://www.ms.com/2006/pdsttools/xsd2perl"
+           xmlns:sl="http://www.ms.com/2011/pdsttools/xsd2scriptLib"
+           xmlns:report="http://www.ms.com/2011/pdsttools/xsd2report"
+           
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" 
+           ecore:nsPrefix="xManipModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.xmlManipModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2009/Saturn/Modules/XmlManip" 
+           elementFormDefault="qualified">
+
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd" />  
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Resources/Files" schemaLocation="../resources/file.xsd" />
+
+  <xs:complexType name="AbstractOperation" abstract="true" ecore:name="AbstractOperation">
+    <xs:attribute name="enabled" type="xs:boolean" default="true"/>
+  </xs:complexType>
+
+  <xs:complexType name="AddOperation" ecore:name="AddOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="ParentNodeName" type="value:complexValue" minOccurs="0"  />
+          <xs:element name="NodeName"       type="value:complexValue" minOccurs="0" />
+          <xs:element name="Uri"            type="value:complexValue" minOccurs="0" />
+          <xs:element name="Value"          type="value:complexValue" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="isAttribute" type="xs:boolean" default="false" />
+        <xs:attribute name="isXml" type="xs:boolean" default="false" />
+        <xs:attribute name="isCData" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="CleanNamespacesOperation" ecore:name="CleanNamespacesOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="StripNamespacesOperation" ecore:name="StripNamespacesOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DeleteOperation" ecore:name="DeleteOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="XPaths" type="xManipModule:XPath" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="IntersectOperation" ecore:name="IntersectOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="IntersectResource" type="type:ResourceDefinition"  />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="RegisterFunctionOperation" ecore:name="RegisterFunctionOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="Function" type="value:complexValue" minOccurs="0" />
+          <xs:element name="Package" type="type:NamedResourceDefinition" minOccurs="0"  />
+          <xs:element name="SubName" type="value:complexValue" minOccurs="0" />
+          <xs:element name="Uri" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="ReplaceOperation" ecore:name="ReplaceOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="Search" type="value:complexValue" minOccurs="0"  />
+          <xs:element name="With"   type="value:complexValue" minOccurs="0"  />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ValueReplaceOperation" ecore:name="ValueReplaceOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="RegExp"   type="value:complexValue" />
+          <xs:element name="NewValue"   type="value:complexValue" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ShiftOperation" ecore:name="ShiftOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="OutputResource" type="type:ResourceDefinition" />
+        </xs:sequence>
+        <xs:attribute name="count" type="xs:integer" default="1"/>
+        <xs:attribute name="remain" type="xs:boolean" default="false" />
+        <xs:attribute name="remove" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SortOperation" ecore:name="SortOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="XPaths" type="xManipModule:XPath" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SplitOperation" ecore:name="SplitOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="Keys"     type="xManipModule:XPath" minOccurs="0" maxOccurs="unbounded"  />
+          <xs:element name="GroupBys" type="xManipModule:XPath" minOccurs="0" maxOccurs="unbounded"  />
+          <xs:element name="OutputResource" type="type:NamedResourceDefinition" minOccurs="0"  />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="WhereOperation" ecore:name="WhereOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="XPath" type="value:complexValue" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="exclude" type="xs:boolean" default="false" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+
+  <xs:complexType name="ExtractOperation" ecore:name="ExtractOperation" >
+    <xs:complexContent>
+      <xs:extension base="xManipModule:AbstractOperation">
+        <xs:sequence>
+          <xs:element name="xPath" type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Namespace" ecore:name="XmlManipNamespace" >
+    <xs:sequence>
+      <xs:element name="Prefix" minOccurs="0" type="value:complexValue" />
+      <xs:element name="Uri" minOccurs="0" type="value:complexValue" />
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true" />
+  </xs:complexType>  
+
+  <xs:complexType name="XPath" ecore:name="XPath" >
+    <xs:complexContent>
+      <xs:extension base="value:complexValue">
+        <xs:attribute name="enabled" type="xs:boolean" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="Configuration" ecore:name="XmlManipConfiguration">
+    <xs:complexType ecore:name="XmlManipConfiguration" >
+      <xs:sequence>
+        <xs:element name="InputResource" type="type:ResourceDefinition" minOccurs="0" />
+        <xs:element name="OutputResource" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1" />
+        <xs:element name="Operations" type="xManipModule:AbstractOperation" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="Namespaces" type="xManipModule:Namespace" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

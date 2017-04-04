@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="sybaseResource"
+    nsURI="http://www.ms.com/2006/Saturn/Resources/Sybase" nsPrefix="sybaseResource">
+  <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+    <details key="nsPrefix" value="sybaseResource"/>
+    <details key="package" value="Saturn::Resource::Sybase"/>
+  </eAnnotations>
+  <eAnnotations source="http://www.ms.com/2011/tdo-qa-tools/rcs">
+    <details key="author" value="$Author: karaic $"/>
+    <details key="change" value="$Change: 4983582 $"/>
+    <details key="file" value="$File: //std/qaTools/saturn/trunk/eclipse/com.ms.qaTools.saturn.model/schema/resources/sybase.xsd $"/>
+    <details key="id" value="$Id: //std/qaTools/saturn/trunk/eclipse/com.ms.qaTools.saturn.model/schema/resources/sybase.xsd#9 $"/>
+    <details key="revision" value="$Revision: #9 $"/>
+    <details key="timestamp" value="$DateTime: 2012/04/02 07:35:20 $"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="SybaseResource" eSuperTypes="http://www.ms.com/2006/Saturn/Types#//DeviceResourceDefinition">
+    <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+      <details key="package" value="Saturn::Resource::Sybase"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.ms.com/2011/pdsttools/xsd2scriptLib">
+      <details key="name" value="sybase"/>
+    </eAnnotations>
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="SybaseResource"/>
+      <details key="kind" value="elementOnly"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="login" eType="ecore:EClass http://www.ms.com/2006/Saturn/Values#//ComplexValue"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="dbLogin"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="Login"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+      <eAnnotations source="org.eclipse.emf.texo">
+        <details key="java.member" value="login"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="password" eType="ecore:EClass http://www.ms.com/2006/Saturn/Values#//ComplexValue"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="dbPasswd"/>
+        <details key="password" value="true"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="Password"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+      <eAnnotations source="org.eclipse.emf.texo">
+        <details key="java.member" value="password"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="server" eType="ecore:EClass http://www.ms.com/2006/Saturn/Values#//ComplexValue"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="dbServer"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="Server"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+      <eAnnotations source="org.eclipse.emf.texo">
+        <details key="java.member" value="server"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="database" eType="ecore:EClass http://www.ms.com/2006/Saturn/Values#//ComplexValue"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="dbName"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="Database"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+      <eAnnotations source="org.eclipse.emf.texo">
+        <details key="java.member" value="database"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="maxConnect" eType="ecore:EClass http://www.ms.com/2006/Saturn/Values#//ComplexValue"
+        containment="true" resolveProxies="false">
+      <eAnnotations source="http://www.ms.com/2006/pdsttools/xsd2perl">
+        <details key="accessor" value="maxConnect"/>
+      </eAnnotations>
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="MaxConnect"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+      <eAnnotations source="org.eclipse.emf.texo">
+        <details key="java.member" value="maxConnect"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="authentification" eType="#//AuthentificationEnums"
+        defaultValueLiteral="PASSWORD" unsettable="true">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="attribute"/>
+        <details key="name" value="authentification"/>
+      </eAnnotations>
+      <eAnnotations source="org.eclipse.emf.texo">
+        <details key="java.member" value="authentification"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="AuthentificationEnums">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="AuthentificationEnums"/>
+    </eAnnotations>
+    <eLiterals name="PASSWORD"/>
+    <eLiterals name="KERBEROS" value="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="AuthentificationEnumsObject" instanceClassName="org.eclipse.emf.common.util.Enumerator">
+    <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+      <details key="name" value="AuthentificationEnums:Object"/>
+      <details key="baseType" value="AuthentificationEnums"/>
+    </eAnnotations>
+  </eClassifiers>
+</ecore:EPackage>
+

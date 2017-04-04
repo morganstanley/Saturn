@@ -1,0 +1,15 @@
+package com.ms.qaTools.kronus.rfb.FUNCTION_CALL
+
+include com.ms.qaTools.kronus.rfb.PRELUDE
+
+def F(p1: Int, p2: Int = 41, p3: Int = 42): Int = {
+  return p1 + p2 + p3
+}
+
+val TEST_CALL_WITH_NAME = ASSERT_EQUAL(F(p1 = 1, p2 = 2, p3 = 3), 6)
+val TEST_CALL_WITHOUT_NAME = ASSERT_EQUAL(F(1, 2, 3), 6)
+val TEST_DEFAULT_ARGUMENT = ASSERT_EQUAL(F(1, p3 = 2), 44)
+
+def MY_IF[A](pred: Boolean, thn: => A, els: => A): A = generate("for") {pred.flatMap(if (_) thn else els)}
+
+val TEST_LAZY_ARG = ASSERT_EQUAL(MY_IF(generate("yield") {true}, 42, FAIL()), 42)

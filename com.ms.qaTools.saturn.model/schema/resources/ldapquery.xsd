@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:ldapQuery="http://www.ms.com/2011/Saturn/Resources/LDAPQuery"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="ldapQueryResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.ldapQueryResource"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2011/Saturn/Resources/LDAPQuery"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+
+  <xs:complexType name="LDAPQueryResource" >
+    <xs:complexContent>
+      <xs:extension base="type:DataSetResourceDefinition">
+        <xs:sequence>
+          <xs:element name="Type" type="value:complexValue" minOccurs="1" maxOccurs="1" />
+          <xs:element name="Filters" type="ldapQuery:LDAPQueryFilter" minOccurs="1" maxOccurs="unbounded" />
+          <xs:element name="SelectedFields" type="value:complexValue" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>          
+    </xs:complexContent>      
+  </xs:complexType>  
+
+  <!--  LDAPQueryFilter -->
+  
+  <xs:complexType name="LDAPQueryFilter" >
+    <xs:complexContent>
+      <xs:extension base="value:complexValue">
+        <xs:attribute name="name" type="type:ObjectName" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema> 

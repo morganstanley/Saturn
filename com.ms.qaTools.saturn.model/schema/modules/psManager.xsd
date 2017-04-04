@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:psManager="http://www.ms.com/2009/Saturn/Modules/PsManager"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           xmlns:exception="http://www.ms.com/2009/Saturn/Exception"
+           
+           ecore:nsPrefix="psManagerModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.psManagerModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2009/Saturn/Modules/PsManager"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  <xs:import namespace="http://www.ms.com/2009/Saturn/Exception" schemaLocation="../saturnException.xsd"/>
+  
+  <xs:complexType name="AbstractOperation" abstract="true" ecore:name="AbstractOperation" >
+    <xs:attribute name="enabled" type="xs:boolean" default="true" />
+  </xs:complexType>
+  
+  <xs:complexType name="LaunchSessionOperation" ecore:name="LaunchSessionOperation" >
+    <xs:complexContent>
+      <xs:extension base="psManager:AbstractOperation">
+        <xs:sequence>          
+          <xs:element ref="exception:Exception" minOccurs="0" />
+          <xs:element name="SessionName"  type="value:complexValue" minOccurs="0" />
+          <xs:element name="Timeout"      type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="PollInterval" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="Pause"        type="value:complexValue" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+       <xs:attribute name="wait"  type="xs:boolean" default="false"/> 
+       <xs:attribute name="force" type="xs:boolean" default="false"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="TerminateSessionOperation" ecore:name="TerminateSessionOperation" >
+    <xs:complexContent>
+      <xs:extension base="psManager:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0" />
+          <xs:element name="SessionName"  type="value:complexValue" minOccurs="0"  />
+          <xs:element name="Timeout"      type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="PollInterval" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+          <xs:element name="KillAfter"    type="value:complexValue" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+       <xs:attribute name="wait"              type="xs:boolean" default="false" />
+       <xs:attribute name="ignoreIfNotExists" type="xs:boolean" default="false" />   
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+  
+   <xs:complexType name="RemoveSessionOperation" ecore:name="RemoveSessionOperation" >
+    <xs:complexContent>
+      <xs:extension base="psManager:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0" />
+          <xs:element name="SessionName" type="value:complexValue" minOccurs="0" />
+        </xs:sequence>
+       <xs:attribute name="ignoreIfNotExists" type="xs:boolean" default="false"/> 
+       <xs:attribute name="force"             type="xs:boolean" default="false"/> 
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+    <xs:complexType name="LaunchProcessOperation" ecore:name="LaunchProcessOperation" >
+    <xs:complexContent>
+      <xs:extension base="psManager:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0" />
+          <xs:element name="ProcessIds" type="value:complexValue" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+   <xs:complexType name="TerminateProcessOperation" ecore:name="TerminateProcessOperation" >
+    <xs:complexContent>
+      <xs:extension base="psManager:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0" />
+         <xs:element name="ProcessIds" type="value:complexValue" minOccurs="0" maxOccurs="unbounded" />  
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+   <xs:complexType name="CheckSessionUpOperation" ecore:name="CheckSessionUpOperation" >
+    <xs:complexContent>
+      <xs:extension base="psManager:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0" />
+          <xs:element name="SessionName" type="value:complexValue" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+   <xs:complexType name="CheckSessionDownOperation" ecore:name="CheckSessionDownOperation" >
+    <xs:complexContent>
+      <xs:extension base="psManager:AbstractOperation">
+        <xs:sequence>
+          <xs:element ref="exception:Exception" minOccurs="0" />
+         <xs:element name="SessionName" type="value:complexValue" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="Configuration" ecore:name="PsManagerConfiguration">
+    <xs:complexType ecore:name="PsManagerConfiguration" >
+      <xs:sequence>
+        <xs:element name="ConfigFile" type="type:NamedResourceDefinition" minOccurs="0" maxOccurs="1" />
+        <xs:element name="Operations"  type="psManager:AbstractOperation" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+</xs:schema>

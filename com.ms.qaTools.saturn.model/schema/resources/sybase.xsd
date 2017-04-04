@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:sybase="http://www.ms.com/2006/Saturn/Resources/Sybase"  
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="sybaseResource" 
+           ecore:package="com.ms.qaTools.saturn.resources.sybaseResource"                      
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+                                          
+           targetNamespace="http://www.ms.com/2006/Saturn/Resources/Sybase"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  
+  <xs:simpleType name="AuthentificationEnums">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="PASSWORD"/>
+      <xs:enumeration value="KERBEROS"/>      
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="SybaseResource" ecore:name="SybaseResource" >	
+    <xs:complexContent>	
+      <xs:extension base="type:DatabaseResourceDefinition">
+	      <xs:sequence>
+          <xs:element name="Login"    type="value:complexValue" minOccurs="0" maxOccurs="1" />  
+          <xs:element name="Password" type="value:complexValue" minOccurs="0" maxOccurs="1" />  
+          <xs:element name="Server"   type="value:complexValue" minOccurs="0" maxOccurs="1" />  
+          <xs:element name="Database" type="value:complexValue" minOccurs="0" maxOccurs="1" /> 
+          <xs:element name="MaxConnect" type="value:complexValue" minOccurs="0" maxOccurs="1" /> 
+        </xs:sequence>
+        <xs:attribute name="authentification" type="sybase:AuthentificationEnums" default="PASSWORD" />  <!-- FIXME typo -> authentication -->
+      </xs:extension>
+    </xs:complexContent>  
+  </xs:complexType>
+  
+  
+</xs:schema>

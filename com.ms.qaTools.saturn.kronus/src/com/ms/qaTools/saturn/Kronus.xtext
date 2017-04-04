@@ -1,0 +1,201 @@
+/*
+ * If you get `java.lang.IllegalArgumentException: URI has an authority component`, this could be caused by some
+ * external jars on the class path.  Currently com.ms.qaTools.kronus.repository is the dependency having external jars,
+ * so remove it from MANIFEST.MF, generate the parser, then put it back.
+ */
+grammar com.ms.qaTools.saturn.Kronus hidden(WS, ML_COMMENT, SL_COMMENT)
+
+generate kronus "http://www.ms.com/qaTools/saturn/Kronus"
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+TopLevelKronus:
+  package = PackageDef
+  kronus = Kronus
+;
+
+Kronus: {Kronus}
+  imports += ImportDef*
+  includes += IncludeDef*
+  defs += AbstractDef*
+  (RETURN return=ValueOperation)?
+;
+
+AbstractDef: TypeDef | AnnotationDef | HashtagDef | FunctionDef | ValDef;
+
+ReferenceableDefs: FunctionDef | ValDef | ParameterDef;
+
+ValDef:
+  hashtags+=HashtagCall*
+  annotations+=AnnotationCall*
+  VAL name=CAPITALIZED_ID KRONUS_ASSIGN value=ValueOperation
+;
+
+PackageDef:
+    PACKAGE module=ModuleParts
+;
+
+ImportDef:
+	IMPORT module=ModuleDef
+;
+
+IncludeDef:
+    INCLUDE module=ModuleDef (AS name=CAPITALIZED_ID)?
+;
+
+ModulePart: ID | Keywords;
+
+ModuleDef hidden(): ModuleParts ('.' ('_' | ModuleLeaf))?;
+ModuleParts: ModulePart ('.' ModulePart)*;
+ModuleLeaf hidden(WS): '{' ModuleLeafPart (',' ModuleLeafPart)* '}';
+ModuleLeafPart hidden(WS): ModulePart ('=>' ModulePart)?;
+
+AS: 'as';
+DEF: 'def';
+FALSE: 'false';
+GENERATE: 'generate';
+IMPORT: 'import';
+INCLUDE: 'include';
+KRONUSKW: 'kronus';
+PACKAGE: 'package';
+RETURN: 'return';
+TRUE: 'true';
+TYPE: 'type';
+VAL: 'val';
+WITH: 'with';
+
+Keywords: AS
+        | DEF
+        | FALSE
+        | GENERATE
+        | IMPORT
+        | INCLUDE
+        | KRONUSKW
+        | PACKAGE
+        | RETURN
+        | TRUE
+        | TYPE
+        | VAL
+        | WITH
+        ;
+
+TypeParameter returns TypeDef: variance=('+'|'-')? name=CAPITALIZED_ID ("<:" boundsHi=TypeInstance)?;
+
+// type A
+// type A = String
+// type A[B]
+// type A[B] = Seq[B]
+TypeDef:
+  TYPE name=CAPITALIZED_ID ('[' typeParameters+=TypeParameter (',' typeParameters+=TypeParameter)* ']')? (KRONUS_ASSIGN value=TypeValue)?
+;
+
+TypeValue hidden(WS): TypeValueAtomic (WITH extensions+=TypeValueAtomic)*;
+TypeValueAtomic returns TypeValue: type=TypeId ('[' parms+=TypeValue (',' parms+=TypeValue)* ']')?;
+
+TypeNameStr hidden(): '_' | ID ('.' ID)* ('.' '_')?;
+TypeName: name=TypeNameStr;
+
+TypeRef hidden(): '$' typeRef=[TypeDef];
+TypeId: TypeName | TypeRef;
+
+// def A(a:String)
+// def A[O](a:List[O]):O
+// def A[O](a:List[List[O]]):O
+TypeInstance: name=[TypeDef] ('[' typeParameters+=TypeInstance (',' typeParameters+=TypeInstance)* ']')?;
+
+FunctionDef:
+  hashtags+=HashtagCall*
+  DEF     name=CAPITALIZED_ID ('[' typeParameters+=TypeParameter (',' typeParameters+=TypeParameter)* ']')? '(' (parameterDefs+=ParameterDef (',' parameterDefs+=ParameterDef)*)? ')' ':' returnType=TypeInstance value=CodeAssignment?
+;
+
+AnnotationDef:
+  DEF '@' name=CAPITALIZED_ID '(' (parameterDefs+=ParameterDef (',' parameterDefs+=ParameterDef)*)? ')';
+
+HashtagDef:
+  DEF '#' name=CAPITALIZED_ID '(' (parameterDefs+=ParameterDef (',' parameterDefs+=ParameterDef)*)? ')';
+
+CodeAssignment: KRONUS_ASSIGN CodeBlock;
+CodeBlock: ScalaCodeBlock | KronusCodeBlock;
+ScalaCodeBlock: GENERATE '(' type=STRING ')' codeStr=SCALA_CODE_BLOCK;
+KronusCodeBlock: type=KRONUSKW?  '{' code=Kronus '}';
+
+SimpleParameterValue:
+  name=ID KRONUS_ASSIGN value=STRING
+;
+
+HashtagCall: 
+  '#' method=[HashtagDef] '(' (parameterValues+=SimpleParameterValue (',' parameterValues+=SimpleParameterValue)*)? ')'
+;
+
+AnnotationCall: 
+  '@' method=[AnnotationDef] '(' (parameterValues+=ParameterValue (',' parameterValues+=ParameterValue)*)? ')'
+;
+
+ParameterDef:
+  name=ID ':' byName?='=>'? type=TypeInstance list?='*'? (KRONUS_ASSIGN defaultValue=ValueOperation)?
+;
+
+ParameterValue: KeywordParameterValue | PositionParameterValue;
+KeywordParameterValue: name=ID KRONUS_ASSIGN value=ValueOperation;
+PositionParameterValue: value=ValueOperation;
+
+Primary returns Expression: Value | '(' ValueOperation ')';
+Value: Sequence | ValRef | FunctionCall | IncludeRef | StringLiteral | DoubleLiteral | IntegerLiteral | BooleanLiteral | CodeBlock;
+Sequence: {Sequence} '[' (values += ValueOperation (',' values += ValueOperation)*)? ']';
+ValRef: ref=[ReferenceableDefs];
+FunctionCall: method=[FunctionDef] '(' (parameterValues+=ParameterValue (',' parameterValues+=ParameterValue)*)? ')';
+IncludeRef: include=[IncludeDef] '.' ref=(ValRef | FunctionCall);
+StringLiteral: value=STRING;
+DoubleLiteral: value=DOUBLE;
+IntegerLiteral: value=INT;
+BooleanLiteral: value=BOOLEAN;
+UnaryOperation returns Expression: {UnaryOperation} op=UNARY_OPS expr=UnaryOrPrimary;
+UnaryOrPrimary returns Expression: Primary | UnaryOperation;
+BinaryOperation1 returns Expression: UnaryOrPrimary   ({BinaryOperation.left=current} op=BINARY_OPS_1 right=UnaryOrPrimary)*;
+BinaryOperation2 returns Expression: BinaryOperation1 ({BinaryOperation.left=current} op=BINARY_OPS_2 right=BinaryOperation1)*;
+BinaryOperation3 returns Expression: BinaryOperation2 ({BinaryOperation.left=current} op=BINARY_OPS_3 right=BinaryOperation2)*;
+BinaryOperation4 returns Expression: BinaryOperation3 ({BinaryOperation.left=current} op=BINARY_OPS_4 right=BinaryOperation3)*;
+BinaryOperation5 returns Expression: BinaryOperation4 ({BinaryOperation.left=current} op=BINARY_OPS_5 right=BinaryOperation4)*;
+ValueOperation   returns Expression: BinaryOperation5 ({BinaryOperation.left=current} op=BINARY_OPS_6 right=BinaryOperation5)*;
+
+UNARY_ONLY_OPS: '!';
+UNARY_OPS: UNARY_ONLY_OPS | '-';
+BINARY_OPS_1: '*' | '/';
+BINARY_OPS_2: '+' | '-';
+BINARY_OPS_3: '<' | '<=' | '>' | '>=';
+BINARY_OPS_4: '==' | '!=';
+BINARY_OPS_5: '&&';
+BINARY_OPS_6: '||';
+
+NOT_A_BRACKET hidden(): UNARY_ONLY_OPS
+                      | BINARY_OPS_1 | BINARY_OPS_2 | BINARY_OPS_3 | BINARY_OPS_4 | BINARY_OPS_5 | BINARY_OPS_6
+                      | '#' | '$' | '%' | '&' | ',' | '.' | ':' | ';' | KRONUS_ASSIGN | '?' | '@' | '\\' | '^' | '_'
+                      | '`' | '|' | '~' | '<-' | '=>' | WS | INT | ID | TRIPPLE_STRING | ML_COMMENT | SL_COMMENT
+                      | Keywords
+                      ;
+SQUIGGLY_BRACKET_BLOCK hidden(): '{' BRACKET_BLOCK_CENTER '}';
+ROUND_BRACKET_BLOCK hidden():    '(' BRACKET_BLOCK_CENTER ')';
+SQUARE_BRACKET_BLOCK hidden():   '[' BRACKET_BLOCK_CENTER ']';
+BRACKET_BLOCK_CENTER hidden():   (NOT_A_BRACKET | SQUIGGLY_BRACKET_BLOCK | ROUND_BRACKET_BLOCK | SQUARE_BRACKET_BLOCK | STRING)*;
+SCALA_CODE_BLOCK hidden():       SQUIGGLY_BRACKET_BLOCK;
+
+BOOLEAN returns ecore::EBoolean: TRUE | FALSE;
+DOUBLE returns ecore::EDouble: INT '.' INT;
+ID: CAPITALIZED_ID | OTHER_ID;
+
+terminal KRONUS_ASSIGN: '=';
+
+terminal CAPITALIZED_ID: ('A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+terminal OTHER_ID:       ('a'..'z')     ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+
+terminal INT returns ecore::EInt: ('0'..'9')+;
+terminal TRIPPLE_STRING: '"""' -> '"""';
+terminal STRING:
+            '"' ( '\\' ('b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\') | !('\\'|'"') )* '"' |
+            "'" ( '\\' ('b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\') | !('\\'|"'") )* "'"
+        ;
+
+terminal ML_COMMENT: '/*' -> '*/';
+terminal SL_COMMENT: '//' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal WS: (' '|'\t'|'\r'|'\n')+;

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:reference="http://www.ms.com/2007/Saturn/Modules/Reference"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="referenceModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.referenceModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2007/Saturn/Modules/Reference"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  
+  <xs:element name="Configuration" ecore:name="ReferenceConfiguration">
+    <xs:complexType ecore:name="ReferenceConfiguration" >
+      <xs:sequence>
+        <xs:element name="IncludeFile" type="value:complexValue" ecore:name="IncludeFileAdv"  />
+        <xs:element name="RunGroup" type="value:complexValue" ecore:name="RunGroupAdv"  />
+      </xs:sequence>
+      <xs:attribute name="includeFile" type="xs:token" />
+      <xs:attribute name="runGroup" type="xs:token" />
+      <xs:attribute name="advanced" type="xs:boolean" default="false" />
+    </xs:complexType>
+  </xs:element>
+ 
+</xs:schema>

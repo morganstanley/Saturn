@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"             
+           xmlns:saturn="http://www.ms.com/2006/Saturn/gmf"
+           xmlns:value="http://www.ms.com/2006/Saturn/Values"
+           xmlns:type="http://www.ms.com/2006/Saturn/Types"
+           xmlns:soapIO="http://www.ms.com/2007/Saturn/Modules/SoapIO"
+           xmlns:soapIOModule="http://www.ms.com/2007/Saturn/Modules/SoapIO"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           
+           ecore:nsPrefix="soapIOModule" 
+           ecore:package="com.ms.qaTools.saturn.modules.soapIOModule"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2007/Saturn/Modules/SoapIO"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="../saturnValues.xsd"/>
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="../saturnTypes.xsd"/>
+  
+  <xs:complexType name="AbstractSoapIOOperation" abstract="true" ecore:name="AbstractSoapIOOperation" >
+    <xs:sequence>
+      <xs:element name="RequestId" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+      <xs:element name="TimeOut" type="value:complexValue" minOccurs="0" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SoapIOGetOperation" ecore:name="SoapIOGetOperation" >
+    <xs:complexContent>
+      <xs:extension base="soapIO:AbstractSoapIOOperation">
+        <xs:sequence>
+          <xs:element name="Output"  type="type:ResourceDefinition" minOccurs="0" />
+          <xs:element name="TerminationCondition"  type="soapIO:AbstractTerminationCondition" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="extractBody" type="xs:boolean" use="optional" default="false"/>
+        <xs:attribute name="maxRetries" type="xs:integer" use="optional" default="1"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SoapIOPutOperation" ecore:name="SoapIOPutOperation" >
+    <xs:complexContent>
+      <xs:extension base="soapIO:AbstractSoapIOOperation">
+        <xs:sequence>
+          <xs:element name="Action"      type="value:complexValue"      minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Namespace"   type="value:complexValue"      minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Input"       type="type:ResourceDefinition" minOccurs="0" />          
+          <xs:element name="Message"     type="value:complexValue"      minOccurs="0" maxOccurs="1"/> <!-- deprecated -->
+          <xs:element name="MessageFile" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/> <!-- deprecated -->
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SoapIOPutAndGetOperation" ecore:name="SoapIOPutAndGetOperation" >
+    <xs:complexContent>
+      <xs:extension base="soapIO:AbstractSoapIOOperation">
+        <xs:sequence>
+          <xs:element name="Action"     type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Namespace"  type="value:complexValue" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Input"       type="type:ResourceDefinition" minOccurs="0" />
+          <xs:element name="Output"      type="type:ResourceDefinition" minOccurs="0" />          
+          <xs:element name="Message"     type="value:complexValue"  minOccurs="0" maxOccurs="1"/> <!-- deprecated -->
+          <xs:element name="MessageFile" type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/> <!-- deprecated -->
+          <xs:element name="OutDir"      type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/> <!-- deprecated -->
+          <xs:element name="OutFile"     type="type:ResourceDefinition" minOccurs="0" maxOccurs="1"/> <!-- deprecated -->          
+        </xs:sequence>        
+      </xs:extension>      
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="Configuration" ecore:name="SoapIOConfiguration">
+    <xs:complexType ecore:name="SoapIOConfiguration" >
+      <xs:sequence>
+        <xs:element name="SoapIOResource" type="type:ResourceDefinition" />
+        <xs:element name="Operation" type="soapIO:AbstractSoapIOOperation" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:complexType name="AbstractTerminationCondition"  ecore:name="AbstractTerminationCondition" abstract="true" />
+  <xs:complexType name="PerlTerminationCondition"  ecore:name="PerlTerminationCondition" >
+    <xs:complexContent>
+      <xs:extension base="soapIO:AbstractTerminationCondition">
+        <xs:sequence>
+          <xs:element name="PerlCode" type="value:complexValue" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+
+  <!-- 
+  <xs:complexType name="Statefule">
+    <xs:attribute name="State" type="xs:string" default="IDLE"/>
+    <xs:attribute name="Result" />
+  </xs:complexType>
+   -->
+
+</xs:schema>

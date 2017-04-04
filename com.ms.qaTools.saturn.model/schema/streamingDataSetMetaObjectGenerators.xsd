@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"                                 
+           xmlns:streamingMOG="http://www.ms.com/2007/Saturn/MetaObjectGenerators/Streaming"
+           xmlns:values="http://www.ms.com/2006/Saturn/Values"
+           xmlns:types="http://www.ms.com/2006/Saturn/Types"
+
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           ecore:nsPrefix="streamingMOG" 
+           ecore:package="com.ms.qaTools.saturn.metaObjectGenerators.streaming"
+
+           xmlns:rcs="http://www.ms.com/2011/tdo-qa-tools/rcs"
+           rcs:id="$Id$"
+           rcs:timestamp="$DateTime$"
+           rcs:change="$Change$"
+           rcs:file="$File$"
+           rcs:revision="$Revision$"
+           rcs:author="$Author$"
+
+           targetNamespace="http://www.ms.com/2007/Saturn/MetaObjectGenerators/Streaming"
+           elementFormDefault="qualified">
+           
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Values" schemaLocation="saturnValues.xsd" />
+  <xs:import namespace="http://www.ms.com/2006/Saturn/Types" schemaLocation="saturnTypes.xsd" />
+
+  <xs:complexType name="StreamingDataSetMetaObjectGenerator" ecore:name="StreamingDataSetMetaObjectGenerator">
+    <xs:complexContent>
+	  <xs:extension base="types:AbstractMetaObjectGenerator">
+	    <xs:sequence>
+	      <xs:element name="Resource" minOccurs="1" maxOccurs="1" type="types:DataSetResourceDefinition" />
+	      <xs:element name="Mappings" minOccurs="1" maxOccurs="unbounded" type="streamingMOG:AccessorMapping" />	      
+	    </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AccessorMapping" ecore:name="AccessorMapping">
+   <xs:sequence>
+     <xs:element name="Accessor" minOccurs="1" maxOccurs="1" type="values:complexValue"/>
+     <xs:element name="Adapter" minOccurs="1" maxOccurs="1" type="streamingMOG:MappingAdapter" />
+   </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="MappingAdapter" ecore:name="MappingAdapter">
+   <xs:sequence>
+     <xs:element name="Name" minOccurs="1" maxOccurs="1" type="values:complexValue" />
+     <xs:element name="ParameterMappings" minOccurs="0" maxOccurs="unbounded" type="types:ComplexValuePair" />
+   </xs:sequence>
+  </xs:complexType>  
+  
+</xs:schema>
