@@ -9,7 +9,7 @@ import com.ms.qaTools.io.definition.XmlIO
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.saturn.codeGen.Context
 import com.ms.qaTools.saturn.codeGen.Utils.connectTry
-import com.ms.qaTools.toolkit.xmlGen.XmlGen
+import com.ms.qaTools.toolkit.XmlGen
 
 object XmlGenRunner {
   def apply[TEMPLATE_TYPE](context: Context,
@@ -21,7 +21,8 @@ object XmlGenRunner {
            outputIOTry.flatMap(output => connectTry(context, output.output, "Output", false)),
            inputIOTry.flatMap(input => connectTry(context, input.input, "DsInput", false)),
            isLegacy)
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

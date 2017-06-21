@@ -8,25 +8,26 @@ import com.google.protobuf.Message
 import com.google.protobuf.ByteString
 import org.apache.commons.codec.binary.Base64
 
-
-
-abstract class PBNode(val node: Descriptors.FieldDescriptor, val value: Option[Any], pathStack: Seq[String])
-  extends TreeNode[Descriptors.FieldDescriptor] {
-  val path: String = pathStack.reverse.mkString(".")
-  val name = if (node != null) node.getName() else ""
+abstract class PBNode(val node: Descriptors.FieldDescriptor, val value: Option[Any], pathStack: Seq[PathNode])
+extends TreeNode[Descriptors.FieldDescriptor] {
+  def path(canonical: Boolean): String = pathStack.map {_.toString(canonical)}.reverse.mkString(".")
+  def name = Option(node).map {_.getName}.getOrElse("")
 }
 
-class PBMessageNode(node: Descriptors.FieldDescriptor, data: Message, pathStack: Seq[String])
-  extends PBNode(node, Option(data), pathStack) {
-  private val message = value.get.asInstanceOf[Message]
+class PBMessageNode(node: Descriptors.FieldDescriptor, data: Message, pathStack: Seq[PathNode])
+extends PBNode(node, Option(data), pathStack) {
+  private val message = value match {
+    case Some(v: Message) => v
+    case v => throw new java.lang.ClassCastException(v.toString + " cannot be cast to Some[com.google.protobuf.Message]")
+  }
   private val fields = message.getAllFields()
   def fieldToSeqOfValues(f: Descriptors.FieldDescriptor): Seq[TreeNode[Descriptors.FieldDescriptor]] = {
     def getSeqOfValues0[S](f: Descriptors.FieldDescriptor): Seq[TreeNode[Descriptors.FieldDescriptor]] = {
       val v: S = message.getField(f).asInstanceOf[S]
       if (f.isRepeated()) {
         val s: Seq[S] = v.asInstanceOf[java.util.List[S]]
-        s.zipWithIndex.map { p => PBNode(f, p._1, p._2, (f.getName() + "[" + p._2 + "]") +: pathStack) }
-      } else Seq(PBNode(f, v, f.getName() +: pathStack))
+        s.zipWithIndex.map { p => PBNode(f, p._1, p._2, PathNode(f.getName(), Some(p._2)) +: pathStack) }
+      } else Seq(PBNode(f, v, PathNode(f.getName()) +: pathStack))
     }
     f.getJavaType() match {
       case JavaType.MESSAGE => getSeqOfValues0[Message](f)
@@ -34,20 +35,20 @@ class PBMessageNode(node: Descriptors.FieldDescriptor, data: Message, pathStack:
     }
   }
 
-  def children(filterOut: (Descriptors.FieldDescriptor) => Boolean = Function.const(false)) = 
+  def children(filterOut: (Descriptors.FieldDescriptor) => Boolean = Function.const(false)) =
     fields.keySet().filterNot{filterOut}.toSeq.flatMap { f => fieldToSeqOfValues(f) }
-    
+
   override def hasValue = false
 }
 
-class PBFieldNode(node: Descriptors.FieldDescriptor, data: Any, pathStack: Seq[String])
-  extends PBNode(node, Option(data), pathStack) {
+class PBFieldNode(node: Descriptors.FieldDescriptor, data: Any, pathStack: Seq[PathNode])
+extends PBNode(node, Option(data), pathStack) {
   require(node != null, "node cannot be null.")
   def children(filterOut: (Descriptors.FieldDescriptor) => Boolean) = Nil
-  override val value = data match {
-    case c: Comparable[Any] => Some(c)
-    case e: Descriptors.EnumValueDescriptor => Some(e.getName())
-    case b: ByteString => Some(new String(Base64.encodeBase64(b.toByteArray())))
+  override val value: Some[Comparable[_ <: Any]] = data match {
+    case c: Comparable[_] => Some(c)
+    case e: Descriptors.EnumValueDescriptor => Some(e.getName)
+    case b: ByteString => Some(new String(Base64.encodeBase64(b.toByteArray)))
     case _ => throw new Error("Value of the field must implement Comparable.")
   }
 }
@@ -56,20 +57,20 @@ trait PBRepeated {
   val index: Int
 }
 
-class PBRepeatedMessageNode(node: Descriptors.FieldDescriptor, data: Message, val index: Int, pathStack: Seq[String])
+class PBRepeatedMessageNode(node: Descriptors.FieldDescriptor, data: Message, val index: Int, pathStack: Seq[PathNode])
   extends PBMessageNode(node, data, pathStack) with PBRepeated
-class PBRepeatedFieldNode(node: Descriptors.FieldDescriptor, data: Any, val index: Int, pathStack: Seq[String])
+class PBRepeatedFieldNode(node: Descriptors.FieldDescriptor, data: Any, val index: Int, pathStack: Seq[PathNode])
   extends PBFieldNode(node, data, pathStack) with PBRepeated
 
 object PBNode {
   def apply(m: Message): TreeNode[Descriptors.FieldDescriptor] = new PBMessageNode(null, m, Nil)
-  def apply(f: Descriptors.FieldDescriptor, v: Any, pathStack: Seq[String]): TreeNode[Descriptors.FieldDescriptor] = {
+  def apply(f: Descriptors.FieldDescriptor, v: Any, pathStack: Seq[PathNode]): TreeNode[Descriptors.FieldDescriptor] = {
     f.getJavaType() match {
       case JavaType.MESSAGE => new PBMessageNode(f, v.asInstanceOf[Message], pathStack)
       case _ => new PBFieldNode(f, v, pathStack)
     }
   }
-  def apply(f: Descriptors.FieldDescriptor, v: Any, index: Int, pathStack: Seq[String]): TreeNode[Descriptors.FieldDescriptor] = {
+  def apply(f: Descriptors.FieldDescriptor, v: Any, index: Int, pathStack: Seq[PathNode]): TreeNode[Descriptors.FieldDescriptor] = {
     f.getJavaType() match {
       case JavaType.MESSAGE => new PBRepeatedMessageNode(f, v.asInstanceOf[Message], index, pathStack)
       case _ => new PBRepeatedFieldNode(f, v, index, pathStack)

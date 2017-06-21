@@ -139,6 +139,7 @@ import com.ms.qaTools.saturn.types.AbstractBatchListener;
 import com.ms.qaTools.saturn.types.AbstractListener;
 import com.ms.qaTools.saturn.types.AbstractRepetitionHandler;
 import com.ms.qaTools.saturn.types.AbstractRunGroupModifier;
+import com.ms.qaTools.saturn.types.AlmId;
 import com.ms.qaTools.saturn.types.Column;
 import com.ms.qaTools.saturn.types.ColumnTrimEnum;
 import com.ms.qaTools.saturn.types.ColumnTypeEnum;
@@ -206,6 +207,13 @@ public class TypesPackageImpl extends EPackageImpl implements TypesPackage
    * @generated
    */
   private EClass    abstractRunGroupModifierEClass           = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass almIdEClass = null;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -787,6 +795,46 @@ public class TypesPackageImpl extends EPackageImpl implements TypesPackage
   public EAttribute getAbstractRunGroupModifier_Enabled()
   {
     return (EAttribute)abstractRunGroupModifierEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getAlmId()
+  {
+    return almIdEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAlmId_Domain()
+  {
+    return (EReference)almIdEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAlmId_Project()
+  {
+    return (EReference)almIdEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAlmId_Id()
+  {
+    return (EReference)almIdEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -1448,6 +1496,11 @@ public class TypesPackageImpl extends EPackageImpl implements TypesPackage
     abstractRunGroupModifierEClass = createEClass(ABSTRACT_RUN_GROUP_MODIFIER);
     createEAttribute(abstractRunGroupModifierEClass, ABSTRACT_RUN_GROUP_MODIFIER__ENABLED);
 
+    almIdEClass = createEClass(ALM_ID);
+    createEReference(almIdEClass, ALM_ID__DOMAIN);
+    createEReference(almIdEClass, ALM_ID__PROJECT);
+    createEReference(almIdEClass, ALM_ID__ID);
+
     columnEClass = createEClass(COLUMN);
     createEAttribute(columnEClass, COLUMN__NAME);
     createEAttribute(columnEClass, COLUMN__TYPE);
@@ -1598,6 +1651,11 @@ public class TypesPackageImpl extends EPackageImpl implements TypesPackage
 
     initEClass(abstractRunGroupModifierEClass, AbstractRunGroupModifier.class, "AbstractRunGroupModifier", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getAbstractRunGroupModifier_Enabled(), theXMLTypePackage.getBoolean(), "enabled", "true", 0, 1, AbstractRunGroupModifier.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(almIdEClass, AlmId.class, "AlmId", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getAlmId_Domain(), theValuesPackage.getComplexValue(), null, "domain", null, 1, 1, AlmId.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getAlmId_Project(), theValuesPackage.getComplexValue(), null, "project", null, 1, 1, AlmId.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getAlmId_Id(), theValuesPackage.getComplexValue(), null, "id", null, 1, 1, AlmId.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(columnEClass, Column.class, "Column", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getColumn_Name(), theXMLTypePackage.getToken(), "name", null, 0, 1, Column.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1932,6 +1990,41 @@ public class TypesPackageImpl extends EPackageImpl implements TypesPackage
        {
        "kind", "attribute",
        "name", "enabled"
+       });	
+    addAnnotation
+      (almIdEClass, 
+       source, 
+       new String[] 
+       {
+       "name", "AlmId",
+       "kind", "elementOnly"
+       });	
+    addAnnotation
+      (getAlmId_Domain(), 
+       source, 
+       new String[] 
+       {
+       "kind", "element",
+       "name", "Domain",
+       "namespace", "##targetNamespace"
+       });	
+    addAnnotation
+      (getAlmId_Project(), 
+       source, 
+       new String[] 
+       {
+       "kind", "element",
+       "name", "Project",
+       "namespace", "##targetNamespace"
+       });	
+    addAnnotation
+      (getAlmId_Id(), 
+       source, 
+       new String[] 
+       {
+       "kind", "element",
+       "name", "Id",
+       "namespace", "##targetNamespace"
        });	
     addAnnotation
       (columnEClass, 

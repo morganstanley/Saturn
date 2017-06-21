@@ -17,7 +17,6 @@ import com.ms.qaTools.saturn.dsl.OnFinish
 import com.ms.qaTools.saturn.dsl.OnPass
 import scala.annotation.tailrec
 
-
 case class WrappedEdge(link:MAbstractLink) {
   val source = link.getSource
   val target = link.getTarget
@@ -58,14 +57,9 @@ case class NodePath(edges:List[WrappedEdge]) {
   override def toString = "(" + edges.mkString(" -> ") + lastEdge.map{" -> " + _.link.getTarget.getName}.getOrElse("") + ")"
 }
 
-
-
 class CanRunExpressionGenerator(nodeExpressions:Map[MAbstractRunGroup,String]) {
   def getCanRunExpression(node:MAbstractRunGroup):String = nodeExpressions.getOrElse(node, "true")
 }
-
-
-
 
 object CanRunExpressionGenerator {
   def apply(saturn:MSaturn) = {
@@ -202,7 +196,6 @@ object CanRunExpressionGenerator {
       val reducedExprs = exprs.map{_.reduce}
       val(ambiguouExprs,notAmbiguousExprs) = reducedExprs.partition{_.isAmbiguous}
       val(simpleNodes,boolExprs) = notAmbiguousExprs.partition{_.isInstanceOf[NodeExpr]}
-
       @tailrec
       def resolveAmbiguousExprs(ambiguousExprs:List[CanRunExpr], boolExprs:List[CanRunExpr],seenExprs:List[CanRunExpr],didSome:Boolean=false, uncertain:List[CanRunExpr]=Nil):List[CanRunExpr] = {
         if(ambiguousExprs.isEmpty) {
@@ -210,15 +203,14 @@ object CanRunExpressionGenerator {
             val allBoolExprs = uncertain.map{_.toAndExpr} ::: boolExprs
             val boolExprMap = allBoolExprs.map{b=>(b.id,b)}.toMap
             val retHash = (allBoolExprs.map{_.id}.toSet -- seenExprs.map{_.id}.toSet).toList
-            val ret = retHash.map{boolExprMap(_)}
-            ret
+            retHash.map{boolExprMap(_)}
           }
           else resolveAmbiguousExprs(uncertain, boolExprs, seenExprs)
         }
         else {
           val ambiguousExpr = ambiguousExprs.head
           val resolvedExprs = boolExprs.foldRight((ambiguousExpr, List[CanRunExpr]())) { case (boolExpr, (ambiguous, seen)) =>
-            ambiguous.resolveWith(boolExpr) map ((_, boolExpr :: seen)) getOrElse (ambiguous, seen)
+            ambiguous.resolveWith(boolExpr) map ((_, boolExpr :: seen)) getOrElse ((ambiguous, seen))
           }
           if(resolvedExprs._2.isEmpty) resolveAmbiguousExprs(ambiguousExprs.tail, boolExprs, seenExprs, didSome, ambiguousExpr::uncertain)
           else resolveAmbiguousExprs(ambiguousExprs.tail, resolvedExprs._1 :: boolExprs, resolvedExprs._2 ::: seenExprs, true, uncertain)
@@ -228,8 +220,7 @@ object CanRunExpressionGenerator {
       val resolved = resolveAmbiguousExprs(ambiguouExprs,boolExprs,Nil)
       val remainingSimpleNodes:Set[CanRunExpr] = simpleNodes.toSet -- resolved.flatMap{_.nodeExprs}
       val allResolved = resolved ::: remainingSimpleNodes.toList
-      val ret = if(allResolved.length == 1) allResolved.head else AndExpr(allResolved)
-      ret
+      if(allResolved.length == 1) allResolved.head else AndExpr(allResolved)
     }
 
     val dependencyExpressionsByTarget = for {
@@ -257,7 +248,7 @@ object CanRunExpressionGenerator {
   def getLinkResultName(l:MAbstractLink) = getLinkName(l)
   def getRunGroupName(r:MAbstractRunGroup):String = r.getName()
   def getRunGroupResultName(r:MAbstractRunGroup):String = getRunGroupName(r) + "Result"
-  def getLinkSatisfied(l:MAbstractLink) = l.getSource().getName() + "2" + l.getTarget().getName() + "Satisfied_" + l.hashCode()
+  def getLinkSatisfied(l:MAbstractLink) = s"__${getRunGroupName(l.getSource)}2${getRunGroupName(l.getTarget)}Satisfied"
 }
 
 /*

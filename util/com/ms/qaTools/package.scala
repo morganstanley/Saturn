@@ -1,32 +1,34 @@
 package com.ms
 
 import java.io.ByteArrayOutputStream
+import java.io.Closeable
 import java.io.File
 import java.io.IOException
 import java.io.PrintStream
+import java.lang.reflect.InvocationHandler
+import java.lang.reflect.Proxy
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Collections
-import java.util.{Map => JMap}
+import java.util.{ Map => JMap }
 
-import scala.annotation.switch
-import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.collection.immutable.Queue
-import scala.util.{Try, Success, Failure}
+import scala.compat.Platform
+import scala.reflect.{ ClassTag, classTag }
+import scala.util.{ Try, Success, Failure }
 
 import org.apache.commons.io.output.TeeOutputStream
 
 import com.ms.qaTools.exceptions.AggregateException
 
-
 package object qaTools {
   val dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
-  def printTime = println(dateFormat.format(Calendar.getInstance().getTime()))
+  def printTime() = println(dateFormat.format(Calendar.getInstance().getTime()))
 
   def time[R](message: String, block: => R): R = {
     val t0 = System.currentTimeMillis()
-    val result = block    // call-by-name
+    val result = block // call-by-name
     val t1 = System.currentTimeMillis()
     println(message + " - [elapsed time: " + (t1 - t0) + "ms]")
     result
@@ -48,10 +50,17 @@ package object qaTools {
     outputDir
   }
 
-  def withCloseable[A <: {def close(): Unit}, B](closeable: A)(f: A => B): B = try {
+  def withCloseable[A <: { def close(): Unit }, B](closeable: A)(f: A => B): B = try {
     f(closeable)
-  } finally {
+  }
+  finally {
+    import scala.language.reflectiveCalls
     Option(closeable).foreach(_.close())
+  }
+
+  def closeAny(x: Any): Unit = x match {
+    case c: Closeable => c.close()
+    case _            =>
   }
 
   /** Change the environment while the process is running is very dangerous.  Use this function with extreme caution.
@@ -69,85 +78,122 @@ package object qaTools {
     }
     try {
       Seq("theEnvironment", "theCaseInsensitiveEnvironment") foreach (setEnv(procEnv, _, null))
-    } catch {
+    }
+    catch {
       case e: NoSuchFieldException =>
         for (c <- classOf[Collections].getDeclaredClasses if c.getName == "java.util.Collections$UnmodifiableMap")
           setEnv(c, "m", System.getenv)
     }
   }
 
-  def stdOutDuring(action: => Unit): String = {
+  def stdOutDuring[A](action: => A): (String, A) = {
     val oldSystemOut = System.out
     val out = new ByteArrayOutputStream
     val systemTee = new PrintStream(new TeeOutputStream(oldSystemOut, out))
     val consoleTee = new PrintStream(new TeeOutputStream(Console.out, out))
     System.setOut(systemTee)
     try {
-      Console.withOut(consoleTee)(action)
-      out.toString
+      val v = Console.withOut(consoleTee)(action)
+      (out.toString, v)
     }
     finally {
       System.setOut(oldSystemOut)
     }
   }
 
+  def newProxyInstance[A: ClassTag](h: InvocationHandler): A = {
+    val interface = classTag[A].runtimeClass
+    Proxy.newProxyInstance(interface.getClassLoader, Array(interface), h).asInstanceOf[A]
+  }
+
   /*
    * extra functions for throwables
    */
-  implicit class ThrowableUtil[T<:Throwable](t:T) {
-    def getCauseStack(soFar:List[Throwable] = List(t)):Seq[Throwable] = {
-      Option(t.getCause()) match {
-        case Some(cause) => cause.getCauseStack(cause :: soFar)
-        case None        => soFar.reverse
-      }
+  implicit class ThrowableUtil[T <: Throwable](val t: T) extends AnyVal {
+    def getCauseStack(soFar: List[Throwable] = List(t)): Seq[Throwable] = {
+      Iterator.iterate(t.asInstanceOf[Throwable])(_.getCause).takeWhile(_ != null).toList
     }
 
-    def getCauseStackString():String = t.getCauseStack().zipWithIndex.map{p => val (e:Throwable,d:Int)=p; " " * d + s"${e.getMessage}"}.mkString("\n")
+    def getCauseStackString(keepDuplicate: Boolean = false): String = {
+      val cs = t.getCauseStack().reverse
+      val filteredCS = cs.tail.foldLeft(List[Throwable](cs.head)) {
+        (l, e) =>
+          if (!keepDuplicate && e.getMessage.contains(l.head match {
+            case first if first == cs.head => l.head.toString
+            case _                         => l.head.getMessage
+          })) l else e :: l
+      }
+      getFormattedMessage(filteredCS, _.getCauseStackString)
+    }
+
+    def getCauseStackString: String = getCauseStackString()
+
+    def getFormattedMessage(throwables: Seq[Throwable], func: Throwable => String): String = {
+      throwables.zipWithIndex.flatMap {
+        case (ae: AggregateException, d: Int) => ae.exceptions.map(e => indendBlock(func(e), d))
+        case (e: Throwable, d: Int) => List(indendBlock((e match {
+          case lastEle if lastEle == throwables.last => e.toString
+          case _                                     => e.getMessage
+        }), d))
+      }.mkString(Platform.EOL)
+    }
+
+    def indendBlock(b: String, d: Int): String = {
+      Option(b).map(_.split(Platform.EOL).map(" " * d + _).mkString(Platform.EOL)).orNull
+    }
+
     def getMessages(): Seq[String] = {
       def _getMessages(t: Throwable, messages: Seq[String] = Seq.empty): Seq[String] = {
         Option(t) match {
           case Some(e) => _getMessages(e.getCause, messages :+ t.getMessage)
-          case None => messages
+          case None    => messages
         }
       }
       _getMessages(t)
     }
-
   }
 
   /*
    * extra functions for Seq[Try]]
    */
-  implicit class MonadSeqUtil[X](seq:Seq[Try[X]]) {
-    def flatFoldLeft[Y](s:Y)(fn:Function2[Y,X,Y]):Try[Y] = seq.foldLeft(Try{s}){(soFarTry:Try[Y], elemTry:Try[X]) => for {
+  implicit class MonadSeqUtil[X](val seq: Seq[Try[X]]) extends AnyVal {
+    def flatFoldLeft[Y](s: Y)(fn: Function2[Y, X, Y]): Try[Y] = seq.foldLeft(Try { s }) { (soFarTry: Try[Y], elemTry: Try[X]) =>
+      for {
         soFar <- soFarTry
-        elem  <- elemTry
-      } yield fn(soFar,elem)
+        elem <- elemTry
+      } yield fn(soFar, elem)
     }
 
-    def flatReduceLeft(fn:Function2[X,X,X]):Try[X] = seq.reduceLeft{(soFarTry:Try[X], elemTry:Try[X]) => for {
+    def flatReduceLeft(fn: Function2[X, X, X]): Try[X] = seq.reduceLeft { (soFarTry: Try[X], elemTry: Try[X]) =>
+      for {
         soFar <- soFarTry
-        elem  <- elemTry
-      } yield fn(soFar,elem)}
+        elem <- elemTry
+      } yield fn(soFar, elem)
+    }
 
-    def flatMkString(sep:String=""):Try[String] = seq.toTrySeq.map{_.mkString(sep)}
-    def toTrySeq:Try[Seq[X]] = {
-      val(successes,failures) = seq.partition(_.isSuccess)
-      if(failures.isEmpty) {
-        Success(successes.collect{case Success(v) => v})
+    def flatMkString(sep: String = ""): Try[String] = seq.toTrySeq.map { _.mkString(sep) }
+
+    def toTrySeq: Try[Seq[X]] = {
+      val (successes, failures) = seq.partition(_.isSuccess)
+      if (failures.isEmpty) {
+        Success(successes.collect { case Success(v) => v })
       }
       else {
-        Failure(new AggregateException("Exception(s) existed when converting a Seq[Try[X]] to a Try[Seq[X]].", failures.collect{case Failure(t) => t}))
+        Failure(new AggregateException("Exception(s) existed when converting a Seq[Try[X]] to a Try[Seq[X]].", failures.collect { case Failure(t) => t }))
       }
     }
   }
 
-  implicit class SeqUtil[T](s: Seq[T]){
+  implicit class OptionTryUtil[A](val o: Option[Try[A]]) extends AnyVal {
+    def toTryOption: Try[Option[A]] = o.map(_.map(Option(_))).getOrElse(Success(None))
+  }
+
+  implicit class SeqUtil[T](val s: Seq[T]) extends AnyVal {
     def toMapBy[U](f: T => U): Map[U, T] =
       s.map(e => (f(e), e)).toMap
   }
 
-  implicit class IteratorUtil[A](self: scala.collection.Iterator[A]) {
+  implicit class IteratorUtil[A](val self: scala.collection.Iterator[A]) extends AnyVal {
     def apply(n: Int): A =
       if (n >= 0) {
         val xs = self.drop(n)
@@ -184,44 +230,23 @@ package object qaTools {
         x
       }
 
-      private var tail: Iterator[A]  = self
+      private var tail: Iterator[A] = self
       private var satisfied: Boolean = true
     }
 
     def terminateWith(p: A => Boolean): Iterator[A] = takeWhileMore(1)(!p(_))
   }
 
-  abstract class IteratorProxy[A] extends Iterator[A] {
-    protected def self: Iterator[A]
-
-    def next    = self.next
-    def hasNext = self.hasNext
-  }
-
-  implicit class AnyUtil[A](x: A) {
+  implicit class AnyUtil[A](val x: A) extends AnyVal {
     def withSideEffect(f: A => Unit): A = { f(x); x }
   }
 
-  implicit class PromiseUtil[A](p: concurrent.Promise[A]) {
+  implicit class PromiseUtil[A](val p: concurrent.Promise[A]) extends AnyVal {
     def get: A = concurrent.Await.result(p.future, concurrent.duration.Duration.Inf)
   }
-  /*
-   * extra functions for try
-   */
-  implicit class TryUtil[X](tryThis:Try[X]) {
-    def rethrow(message: String):Try[X] = tryThis.recoverWith{case t:Throwable => throw new Exception(message, t)}
-  }
 
-  def lexicalOrdering[A : Ordering] = new Ordering[Seq[A]] {
-    val ord = implicitly[Ordering[A]]
-    @tailrec def compare(xs: Seq[A], ys: Seq[A]): Int = (xs, ys) match {
-      case (Seq(x, xs@_*), Seq(y, ys@_*)) => (ord.compare(x, y): @switch) match {
-        case 0 => compare(xs, ys)
-        case n => n
-      }
-      case (Seq(_, _), _) => 1
-      case _ => -1
-    }
+  implicit class TryUtil[X](val tryThis: Try[X]) extends AnyVal {
+    def rethrow(message: String): Try[X] = tryThis.recoverWith { case t: Throwable => throw new Exception(message, t) }
   }
 }
 /*

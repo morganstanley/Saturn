@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation;
+import com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum;
 import com.ms.qaTools.saturn.modules.xmlManipModule.XmlManipModulePackage;
 import com.ms.qaTools.saturn.values.ComplexValue;
 
@@ -19,9 +20,11 @@ import com.ms.qaTools.saturn.values.ComplexValue;
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.impl.AddOperationImpl#getNodeName <em>Node Name</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.impl.AddOperationImpl#getUri <em>Uri</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.impl.AddOperationImpl#getValue <em>Value</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.impl.AddOperationImpl#getPositionXpath <em>Position Xpath</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.impl.AddOperationImpl#isIsAttribute <em>Is Attribute</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.impl.AddOperationImpl#isIsXml <em>Is Xml</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.impl.AddOperationImpl#isIsCData <em>Is CData</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.impl.AddOperationImpl#getAddPosition <em>Add Position</em>}</li>
  * </ul>
  * </p>
  *
@@ -68,6 +71,16 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
    * @ordered
    */
   protected ComplexValue         value;
+
+  /**
+   * The cached value of the '{@link #getPositionXpath() <em>Position Xpath</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getPositionXpath()
+   * @generated
+   * @ordered
+   */
+  protected ComplexValue positionXpath;
 
   /**
    * The default value of the '{@link #isIsAttribute() <em>Is Attribute</em>}' attribute.
@@ -152,6 +165,35 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
    * @ordered
    */
   protected boolean              isCDataESet;
+
+  /**
+   * The default value of the '{@link #getAddPosition() <em>Add Position</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getAddPosition()
+   * @generated
+   * @ordered
+   */
+  protected static final AddPositionTypeEnum ADD_POSITION_EDEFAULT = AddPositionTypeEnum.NONE;
+
+  /**
+   * The cached value of the '{@link #getAddPosition() <em>Add Position</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getAddPosition()
+   * @generated
+   * @ordered
+   */
+  protected AddPositionTypeEnum addPosition = ADD_POSITION_EDEFAULT;
+
+  /**
+   * This is true if the Add Position attribute has been set.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  protected boolean addPositionESet;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -353,6 +395,54 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
   }
 
   /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public ComplexValue getPositionXpath()
+  {
+    return positionXpath;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public NotificationChain basicSetPositionXpath(ComplexValue newPositionXpath, NotificationChain msgs)
+  {
+    ComplexValue oldPositionXpath = positionXpath;
+    positionXpath = newPositionXpath;
+    if (eNotificationRequired())
+    {
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, XmlManipModulePackage.ADD_OPERATION__POSITION_XPATH, oldPositionXpath, newPositionXpath);
+      if (msgs == null) msgs = notification; else msgs.add(notification);
+    }
+    return msgs;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setPositionXpath(ComplexValue newPositionXpath)
+  {
+    if (newPositionXpath != positionXpath)
+    {
+      NotificationChain msgs = null;
+      if (positionXpath != null)
+        msgs = ((InternalEObject)positionXpath).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - XmlManipModulePackage.ADD_OPERATION__POSITION_XPATH, null, msgs);
+      if (newPositionXpath != null)
+        msgs = ((InternalEObject)newPositionXpath).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - XmlManipModulePackage.ADD_OPERATION__POSITION_XPATH, null, msgs);
+      msgs = basicSetPositionXpath(newPositionXpath, msgs);
+      if (msgs != null) msgs.dispatch();
+    }
+    else if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, XmlManipModulePackage.ADD_OPERATION__POSITION_XPATH, newPositionXpath, newPositionXpath));
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
    */
@@ -445,6 +535,56 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
   }
 
   /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public AddPositionTypeEnum getAddPosition()
+  {
+    return addPosition;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setAddPosition(AddPositionTypeEnum newAddPosition)
+  {
+    AddPositionTypeEnum oldAddPosition = addPosition;
+    addPosition = newAddPosition == null ? ADD_POSITION_EDEFAULT : newAddPosition;
+    boolean oldAddPositionESet = addPositionESet;
+    addPositionESet = true;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, XmlManipModulePackage.ADD_OPERATION__ADD_POSITION, oldAddPosition, addPosition, !oldAddPositionESet));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void unsetAddPosition()
+  {
+    AddPositionTypeEnum oldAddPosition = addPosition;
+    boolean oldAddPositionESet = addPositionESet;
+    addPosition = ADD_POSITION_EDEFAULT;
+    addPositionESet = false;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.UNSET, XmlManipModulePackage.ADD_OPERATION__ADD_POSITION, oldAddPosition, ADD_POSITION_EDEFAULT, oldAddPositionESet));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public boolean isSetAddPosition()
+  {
+    return addPositionESet;
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
    */
@@ -507,6 +647,8 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
         return basicSetUri(null, msgs);
       case XmlManipModulePackage.ADD_OPERATION__VALUE:
         return basicSetValue(null, msgs);
+      case XmlManipModulePackage.ADD_OPERATION__POSITION_XPATH:
+        return basicSetPositionXpath(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -528,12 +670,16 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
         return getUri();
       case XmlManipModulePackage.ADD_OPERATION__VALUE:
         return getValue();
+      case XmlManipModulePackage.ADD_OPERATION__POSITION_XPATH:
+        return getPositionXpath();
       case XmlManipModulePackage.ADD_OPERATION__IS_ATTRIBUTE:
         return isIsAttribute();
       case XmlManipModulePackage.ADD_OPERATION__IS_XML:
         return isIsXml();
       case XmlManipModulePackage.ADD_OPERATION__IS_CDATA:
         return isIsCData();
+      case XmlManipModulePackage.ADD_OPERATION__ADD_POSITION:
+        return getAddPosition();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -559,6 +705,9 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
       case XmlManipModulePackage.ADD_OPERATION__VALUE:
         setValue((ComplexValue)newValue);
         return;
+      case XmlManipModulePackage.ADD_OPERATION__POSITION_XPATH:
+        setPositionXpath((ComplexValue)newValue);
+        return;
       case XmlManipModulePackage.ADD_OPERATION__IS_ATTRIBUTE:
         setIsAttribute((Boolean)newValue);
         return;
@@ -567,6 +716,9 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
         return;
       case XmlManipModulePackage.ADD_OPERATION__IS_CDATA:
         setIsCData((Boolean)newValue);
+        return;
+      case XmlManipModulePackage.ADD_OPERATION__ADD_POSITION:
+        setAddPosition((AddPositionTypeEnum)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -593,6 +745,9 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
       case XmlManipModulePackage.ADD_OPERATION__VALUE:
         setValue((ComplexValue)null);
         return;
+      case XmlManipModulePackage.ADD_OPERATION__POSITION_XPATH:
+        setPositionXpath((ComplexValue)null);
+        return;
       case XmlManipModulePackage.ADD_OPERATION__IS_ATTRIBUTE:
         unsetIsAttribute();
         return;
@@ -601,6 +756,9 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
         return;
       case XmlManipModulePackage.ADD_OPERATION__IS_CDATA:
         unsetIsCData();
+        return;
+      case XmlManipModulePackage.ADD_OPERATION__ADD_POSITION:
+        unsetAddPosition();
         return;
     }
     super.eUnset(featureID);
@@ -623,12 +781,16 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
         return uri != null;
       case XmlManipModulePackage.ADD_OPERATION__VALUE:
         return value != null;
+      case XmlManipModulePackage.ADD_OPERATION__POSITION_XPATH:
+        return positionXpath != null;
       case XmlManipModulePackage.ADD_OPERATION__IS_ATTRIBUTE:
         return isSetIsAttribute();
       case XmlManipModulePackage.ADD_OPERATION__IS_XML:
         return isSetIsXml();
       case XmlManipModulePackage.ADD_OPERATION__IS_CDATA:
         return isSetIsCData();
+      case XmlManipModulePackage.ADD_OPERATION__ADD_POSITION:
+        return isSetAddPosition();
     }
     return super.eIsSet(featureID);
   }
@@ -649,6 +811,8 @@ public class AddOperationImpl extends AbstractOperationImpl implements AddOperat
     if (isXmlESet) result.append(isXml); else result.append("<unset>");
     result.append(", isCData: ");
     if (isCDataESet) result.append(isCData); else result.append("<unset>");
+    result.append(", addPosition: ");
+    if (addPositionESet) result.append(addPosition); else result.append("<unset>");
     result.append(')');
     return result.toString();
   }

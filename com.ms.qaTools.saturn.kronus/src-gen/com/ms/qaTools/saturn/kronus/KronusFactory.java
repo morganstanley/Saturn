@@ -41,6 +41,24 @@ public interface KronusFactory extends EFactory
   Kronus createKronus();
 
   /**
+   * Returns a new object of class '<em>Assignment</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Assignment</em>'.
+   * @generated
+   */
+  Assignment createAssignment();
+
+  /**
+   * Returns a new object of class '<em>Annotated Def</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Annotated Def</em>'.
+   * @generated
+   */
+  AnnotatedDef createAnnotatedDef();
+
+  /**
    * Returns a new object of class '<em>Abstract Def</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -57,6 +75,60 @@ public interface KronusFactory extends EFactory
    * @generated
    */
   ReferenceableDefs createReferenceableDefs();
+
+  /**
+   * Returns a new object of class '<em>Named Abstract Def</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Named Abstract Def</em>'.
+   * @generated
+   */
+  NamedAbstractDef createNamedAbstractDef();
+
+  /**
+   * Returns a new object of class '<em>Named Runtime Def</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Named Runtime Def</em>'.
+   * @generated
+   */
+  NamedRuntimeDef createNamedRuntimeDef();
+
+  /**
+   * Returns a new object of class '<em>Type Instance</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Type Instance</em>'.
+   * @generated
+   */
+  TypeInstance createTypeInstance();
+
+  /**
+   * Returns a new object of class '<em>Function Def</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Function Def</em>'.
+   * @generated
+   */
+  FunctionDef createFunctionDef();
+
+  /**
+   * Returns a new object of class '<em>Annotation Def</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Annotation Def</em>'.
+   * @generated
+   */
+  AnnotationDef createAnnotationDef();
+
+  /**
+   * Returns a new object of class '<em>Hashtag Def</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Hashtag Def</em>'.
+   * @generated
+   */
+  HashtagDef createHashtagDef();
 
   /**
    * Returns a new object of class '<em>Val Def</em>'.
@@ -93,6 +165,60 @@ public interface KronusFactory extends EFactory
    * @generated
    */
   IncludeDef createIncludeDef();
+
+  /**
+   * Returns a new object of class '<em>Export Def</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Export Def</em>'.
+   * @generated
+   */
+  ExportDef createExportDef();
+
+  /**
+   * Returns a new object of class '<em>Export Clause</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Export Clause</em>'.
+   * @generated
+   */
+  ExportClause createExportClause();
+
+  /**
+   * Returns a new object of class '<em>Export Symbol</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Export Symbol</em>'.
+   * @generated
+   */
+  ExportSymbol createExportSymbol();
+
+  /**
+   * Returns a new object of class '<em>Export All</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Export All</em>'.
+   * @generated
+   */
+  ExportAll createExportAll();
+
+  /**
+   * Returns a new object of class '<em>Export Hashtag</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Export Hashtag</em>'.
+   * @generated
+   */
+  ExportHashtag createExportHashtag();
+
+  /**
+   * Returns a new object of class '<em>Export Runtime Name</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Export Runtime Name</em>'.
+   * @generated
+   */
+  ExportRuntimeName createExportRuntimeName();
 
   /**
    * Returns a new object of class '<em>Type Def</em>'.
@@ -138,42 +264,6 @@ public interface KronusFactory extends EFactory
    * @generated
    */
   TypeId createTypeId();
-
-  /**
-   * Returns a new object of class '<em>Type Instance</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Type Instance</em>'.
-   * @generated
-   */
-  TypeInstance createTypeInstance();
-
-  /**
-   * Returns a new object of class '<em>Function Def</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Function Def</em>'.
-   * @generated
-   */
-  FunctionDef createFunctionDef();
-
-  /**
-   * Returns a new object of class '<em>Annotation Def</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Annotation Def</em>'.
-   * @generated
-   */
-  AnnotationDef createAnnotationDef();
-
-  /**
-   * Returns a new object of class '<em>Hashtag Def</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Hashtag Def</em>'.
-   * @generated
-   */
-  HashtagDef createHashtagDef();
 
   /**
    * Returns a new object of class '<em>Code Assignment</em>'.
@@ -318,15 +408,6 @@ public interface KronusFactory extends EFactory
    * @generated
    */
   FunctionCall createFunctionCall();
-
-  /**
-   * Returns a new object of class '<em>Include Ref</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Include Ref</em>'.
-   * @generated
-   */
-  IncludeRef createIncludeRef();
 
   /**
    * Returns a new object of class '<em>String Literal</em>'.

@@ -9,14 +9,13 @@ import com.ms.qaTools.io.Input
 import com.ms.qaTools.io.Output
 import com.ms.qaTools.io.rowSource.AsTemplateOf
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
-import com.ms.qaTools.io.rowSource.ExtractRows
 import com.ms.qaTools.io.rowSource.file.ByteArrayRowSource
 import com.ms.qaTools.io.rowSource.file.CsvRowSource
 import com.ms.qaTools.io.rowSource.file.CustomDelimitedRowSource
 import com.ms.qaTools.io.rowSource.file.DataRowSource
 import com.ms.qaTools.io.rowSource.file.ExcelRowSource
 import com.ms.qaTools.io.rowSource.file.FixedWidthRowSource
-import com.ms.qaTools.io.rowSource.file.FIXRowSource
+import com.ms.qaTools.io.rowSource.file.FixRowSource
 import com.ms.qaTools.io.rowSource.file.LineRowSource
 import com.ms.qaTools.io.rowSource.file.PropertiesRowSource
 import com.ms.qaTools.io.rowSource.file.XmlRowSource
@@ -25,25 +24,25 @@ import com.ms.qaTools.io.rowSource.DatabaseConnection
 import com.ms.qaTools.io.rowSource.jdbc.ExecuteSupport
 import com.ms.qaTools.io.rowSource.jdbc.FetchSupport
 import com.ms.qaTools.io.rowSource.jdbc.ResultSetRowSource
-import com.ms.qaTools.io.rowSource.json.JSONRowSource
+import com.ms.qaTools.io.rowSource.JsonRowSource
 import com.ms.qaTools.io.rowSource.LdapQueryRowSource
 import com.ms.qaTools.io.rowSource.MultiRowSource
 import com.ms.qaTools.io.rowSource.Named
 import com.ms.qaTools.io.rowSource.NamespaceDefinitions
-import com.ms.qaTools.io.rowSource.protobuf.ProtoBufRowSource
+import com.ms.qaTools.io.rowSource.ProtoBufRowSource
 import com.ms.qaTools.io.rowSource.Utils._
-import com.ms.qaTools.io.rowWriter.file.ByteArrayRowWriter
-import com.ms.qaTools.io.rowWriter.file.CsvRowWriter
-import com.ms.qaTools.io.rowWriter.file.CustomDelimitedRowWriter
-import com.ms.qaTools.io.rowWriter.file.DataRowWriter
-import com.ms.qaTools.io.rowWriter.file.ExcelRowWriter
-import com.ms.qaTools.io.rowWriter.file.FIXRowWriter
-import com.ms.qaTools.io.rowWriter.file.HtmlTableRowWriter
-import com.ms.qaTools.io.rowWriter.file.StringRowWriter
-import com.ms.qaTools.io.rowWriter.file.XmlRowWriter
-import com.ms.qaTools.io.rowWriter.jdbc.JdbcRowWriter
-import com.ms.qaTools.io.rowWriter.json.JSONRowWriter
-import com.ms.qaTools.io.rowWriter.protobuf.ProtoBufRowWriter
+import com.ms.qaTools.io.rowWriter.ByteArrayRowWriter
+import com.ms.qaTools.io.rowWriter.CsvRowWriter
+import com.ms.qaTools.io.rowWriter.CustomDelimitedRowWriter
+import com.ms.qaTools.io.rowWriter.DataRowWriter
+import com.ms.qaTools.io.rowWriter.ExcelRowWriter
+import com.ms.qaTools.io.rowWriter.FixRowWriter
+import com.ms.qaTools.io.rowWriter.HtmlTableRowWriter
+import com.ms.qaTools.io.rowWriter.JdbcRowWriter
+import com.ms.qaTools.io.rowWriter.StringRowWriter
+import com.ms.qaTools.io.rowWriter.XmlRowWriter
+import com.ms.qaTools.io.rowWriter.JsonRowWriter
+import com.ms.qaTools.io.rowWriter.ProtoBufRowWriter
 import com.ms.qaTools.io.Writer
 import com.ms.qaTools.ldap.Ldap
 import com.ms.qaTools.xml.NamespaceContextImpl
@@ -67,12 +66,12 @@ case class DataIO(device:DeviceIO) extends Input[MultiRowSource] with Output[Wri
     device.writer.map { writer => DataRowWriter(writer, outputColNames = writeHeader, nullMarker = nullMarker) }
 }
 
-case class JsonIO(device:DeviceIO) extends Input[JSONRowSource] with Output[JSONRowWriter] {
-  def input  = device.reader.map{reader => JSONRowSource(reader)}
-  def output = device.outputStream.map{os => JSONRowWriter(os)}
+case class JsonIO(device:DeviceIO) extends Input[JsonRowSource] with Output[JsonRowWriter] {
+  def input  = device.reader.map{reader => JsonRowSource(reader)}
+  def output = device.outputStream.map{os => JsonRowWriter(os)}
 }
 
-//TODO ExcelRowSource should take a sheet object which should be handed over by the wb created by ExcelIO.  This needs more refactoring --JMP 20140923
+//TODO ExcelRowSource should take a sheet object which should be handed over by the wb created by ExcelIO.  This needs more refactoring
 case class ExcelWsIO(device: ExcelIO, wsName: String) extends Input[ExcelRowSource] with Output[ExcelRowWriter]{
   def input  = device.file.map{wb => ExcelRowSource(wb,wsName)}
   def output = output(true, null)
@@ -88,9 +87,9 @@ extends Input[MultiRowSource] with Output[Writer[Iterator[Seq[String]]]] {
     device.writer.map(writer => CustomDelimitedRowWriter(writer,
                                                          separator = cellSeparator,
                                                          lineEnd = rowSeparator,
-                                                         quoteChar = quoteChar.getOrElse('\0'),
-                                                         escapeChar = escapeChar.getOrElse('\0'),
-                                                         outputColNames = writeHeader, 
+                                                         quoteChar = quoteChar.getOrElse('\u0000'),
+                                                         escapeChar = escapeChar.getOrElse('\u0000'),
+                                                         outputColNames = writeHeader,
                                                          nullMarker = nullMarker))
 }
 
@@ -103,16 +102,17 @@ case class FixedWidthIO(device:DeviceIO, config: Try[FixedWidthConfig]) extends 
 
 object FixedWidthIO{
   def apply(device: DeviceIO, config: W3cDocument): FixedWidthIO =
-    new FixedWidthIO(device, FixedWidthDeserializer.deserialize(config))
+    new FixedWidthIO(device, Try(FixedWidthDeserializer.deserialize(config)))
 }
 
-class FIXIO(device:DeviceIO, dataDictionary: DataDictionary, doValidation: Boolean, separator: Char) extends Input[FIXRowSource] with Output[FIXRowWriter] {
-  def input = device.reader.map(reader => FIXRowSource(reader, dataDictionary, doValidation, Option(separator)))
-  def output = device.writer.map(writer => FIXRowWriter(writer, Option(separator)))
+class FixIO(device:DeviceIO, dataDictionary: DataDictionary, doValidation: Boolean, separator: Char) extends Input[FixRowSource] with Output[FixRowWriter] {
+  def input = device.reader.map(reader => FixRowSource(reader, dataDictionary, doValidation, Option(separator)))
+  def output = device.writer.map(writer => FixRowWriter(writer, Option(separator)))
 }
-object FIXIO {
-  def apply(device:DeviceIO, dataDictionary: DataDictionary, doValidation: Boolean, separator: Char) = 
-    new FIXIO(device, dataDictionary, doValidation, separator)
+
+object FixIO {
+  def apply(device: DeviceIO, dataDictionary: DataDictionary, doValidation: Boolean, separator: Char) =
+    new FixIO(device, dataDictionary, doValidation, separator)
 }
 
 class HtmlTableIO(device: DeviceIO, outputConfig: HtmlTableRowWriter.Config) extends Output[HtmlTableRowWriter] {
@@ -157,11 +157,13 @@ case class ByteArrayIO(device: DeviceIO) extends Input[ByteArrayRowSource] with 
 
 case class QueryIO(connection: FetchSupport, query: String, parameters: Option[Iterator[Seq[String]]] = None, fetchSize: Int = 1024)
 extends Input[Iterator[Seq[String]] with Named with ColumnDefinitions with Closeable] {
+
   def input = Try(parameters match {
-    case None => connection.fetch(query, config = FetchSupport.Config(fetchSize = fetchSize))
+    case None =>
+      connection.fetch(query, config = FetchSupport.Config(fetchSize = fetchSize))
     case Some(p) =>
-      val rss = connection.fetchWithParameters(query, p, config = FetchSupport.Config(fetchSize = fetchSize))
-      new ResultSetRowSource(rss.flatten.buffered, rss.connectionToClose)})
+      connection.fetchResultSetWithParameters(query, p, config = FetchSupport.Config(fetchSize = fetchSize))
+  })
 }
 
 case class TableIO(connection: DatabaseConnection with FetchSupport with ExecuteSupport, tableName: String, fetchSize: Int = 1024)
@@ -174,7 +176,7 @@ object LdapQueryIO {
   import com.ms.qaTools.io.rowSource.Utils._
 
   def apply(ldap: Ldap, config: LdapQueryRowSource.Config) = new Input[Iterator[JsonNode]] {
-    def input = Try(LdapQueryRowSource(ldap, config))
+    def input = Try(new LdapQueryRowSource(ldap, config))
   }
 }
 

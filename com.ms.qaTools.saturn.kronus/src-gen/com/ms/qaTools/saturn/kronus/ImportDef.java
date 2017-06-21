@@ -2,7 +2,6 @@
  */
 package com.ms.qaTools.saturn.kronus;
 
-import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->
@@ -20,7 +19,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface ImportDef extends EObject
+public interface ImportDef extends AbstractDef
 {
   /**
    * Returns the value of the '<em><b>Module</b></em>' attribute.

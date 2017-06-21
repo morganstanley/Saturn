@@ -38,13 +38,13 @@ object CPSLogicGenerator {
         for {
           generator <- ComplexValueCodeGenerator(c.getPerlCode)
           code <- generator.generate
-        } yield s"Option(TerminationCondition.untilElement[CPSMessage](${code}.get))"
+        } yield s"Option(TerminationCondition.untilElement[CPSMessage](${code}. get))"
       case None => Try{"None: Option[Iterator[CPSMessage] => Iterator[CPSMessage]]"}
       case _ => throw new Error("Unsupported termination condition type")
     }
 
   protected def typeAndImplicits(typ: CpsMessageTypes): (String, String) = typ match {
-    case CpsMessageTypes.CPS0 => ("CPSMessage", "implicit val publisher = cpsResource.output.get.publisher")
+    case CpsMessageTypes.CPS0 => ("CPSMessage", "implicit val publisher = cpsResource.output. get.publisher")
     case CpsMessageTypes.SOAP => ("msjava.hdom.Document", "")
     case CpsMessageTypes.GPB  => ("GeneratedMessage", "")
   }
@@ -52,7 +52,7 @@ object CPSLogicGenerator {
   @tailrec protected def findRootCpsResource(res: ResourceDefinition)
                                             (implicit codeGenUtil: SaturnCodeGenUtil): CpsResource = res match {
     case res: CpsResource       => res
-    case ref: ReferenceResource => findRootCpsResource(ref.deref.get)
+    case ref: ReferenceResource => findRootCpsResource(ref.deref)
     case _                      => throw new IllegalArgumentException(s"Cannot get CpsResource from $res")
   }
 
@@ -66,14 +66,14 @@ object CPSLogicGenerator {
       ioType = s"CPSIO[$msgType, $msgType]"
       fold <- cfg.getOperations.zipWithIndex.map{case (op, i) => genOperation(op, implicits, i).map(
         o => FnExpr(Seq("cpsResource"), o, Option(s"$ioType => Try[($ioType, Result)]")))}.toTrySeq.map(
-        ops => FoldExpr(ops, ScalaExpr("Try(cpsResource, Pass())"), FnExpr(
-          Seq("util.Success((cpsResource, status))", "op"),
-          ScalaExpr("if(status.passed) op(cpsResource) else Try(cpsResource, status)"),
+        ops => FoldExpr(ops, ScalaExpr("Try((cpsResource, Result(Passed)))"), FnExpr(
+          Seq("t", "op"),
+          ScalaExpr("t match {case Success((cpsResource, result)) => if(result.status == Passed) op(cpsResource) else Try((cpsResource, result)) case f => f}"),
           Option(s"(Try[($ioType, Result)], $ioType => Try[($ioType, Result)]) =>  Try[($ioType, Result)]"))))
     } yield FutureExpr(ForTryExpr(Seq(
       ForAssignment("cpsResource", cpsResource),
-      ForAssignment("(_, status)", fold),
-      ForAssignment("result", TryExpr("CpsResult(if(status.passed) Passed() else Failed())"))),
+      ForAssignment("(_, _result)", fold),
+      ForAssignment("result", TryExpr("CpsResult(if(_result.status == Passed) Passed else Failed)"))),
       ScalaExpr(s"IterationResult(result.status, context, iterationMetaData, result, ${codeGenUtil.getDefaultIterationNo(cps)})")))
   }
 
@@ -90,19 +90,18 @@ object CPSLogicGenerator {
         ScalaExpr(s"""val cpsContext = context.appendMetaDataContext("CpsSubscribeOperation$index", Option("CpsSubscribeOperation"))
                       topic.foreach(t => cpsContext.appendMetaDataContext("Topic", t))
                       cpsContext.appendMetaDataContext("Filter", filter)
-                      (cpsResource, Pass())"""))
+                      (cpsResource, Result(Passed))"""))
 
     case op: CpsUnsubscribeOperation =>
       for {
         topic <- ComplexValueStringGenerator(op.getTopic)
       } yield ForTryExpr(Seq(
         ForAssignment("topic", topic),
-        ForAssignment("cpsResource", TryExpr("""val Success(old) = cpsResource.input
-                                                require(old.topic.exists(_ == topic), "Not subscribed to topic " + topic)
-                                                cpsResource.copy(i = Try(old.changeTopic(None, old.filter, old.withSow)))"""))),
+        ForAssignment("cpsResource", TryExpr("""require(cpsResource.input.toOption.flatMap(_.topic).exists(_ == topic), "Not subscribed to topic " + topic)
+                                                cpsResource.copy(i = cpsResource.input.map(old => old.changeTopic(None, old.filter, old.withSow)))"""))),
         ScalaExpr(s"""val cpsContext = context.appendMetaDataContext("CpsUnsubscribeOperation$index", Option("CpsUnsubscribeOperation"))
                       cpsContext.appendMetaDataContext("Topic", topic)
-                      (cpsResource, Pass())"""))
+                      (cpsResource, Result(Passed))"""))
 
     case op: CpsGetOperation =>
       for {
@@ -122,7 +121,7 @@ object CPSLogicGenerator {
         ScalaExpr(s"""val cpsContext = context.appendMetaDataContext("CpsGetOperation$index", Option("CpsGetOperation"))
                       cpsContext.appendMetaDataContext("Timeout", timeout)
                       cpsContext.metaDataContexts += (("Output", context.metaDataContexts("Output")))
-                      (cpsResource, Pass())"""))
+                      (cpsResource, Result(Passed))"""))
 
     case op: CpsPutOperation =>
       for {
@@ -141,7 +140,7 @@ object CPSLogicGenerator {
                       topic.foreach(t => cpsContext.appendMetaDataContext("Topic", t))
                       cpsContext.metaDataContexts += (("Input", context.metaDataContexts("Input")))
                       cpsContext.appendMetaDataContext("Timeout", Option(timeout))
-                      (cpsResource, Pass())"""))
+                      (cpsResource, Result(Passed))"""))
 
     case op: CpsSowDeleteOperation =>
       for {
@@ -154,7 +153,7 @@ object CPSLogicGenerator {
         ScalaExpr(s"""val cpsContext = context.appendMetaDataContext("CpsSowDeleteOperation$index", Option("CpsSowDeleteOperation"))
                       cpsContext.appendMetaDataContext("Topic", topic)
                       cpsContext.appendMetaDataContext("Filter", filter)
-                      (cpsResource, Pass())"""))
+                      (cpsResource, Result(Passed))"""))
   }
 }
 /*

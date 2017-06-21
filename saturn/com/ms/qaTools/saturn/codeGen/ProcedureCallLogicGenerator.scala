@@ -51,10 +51,7 @@ object ProcedureCallLogicGenerator {
         } yield s"""context.appendMetaDataContext("ProcName", "$procNameStr")
                     val argsMetaContext = context.appendMetaDataContext("Arguments", "ProcedureCall Arguments")
                     $metaDataStr
-                    $procNameStr($argumentsStr).map{ result =>
-                      val procCallResult = ProcedureCallResult("$procNameStr", result)
-                      IterationResult(procCallResult.status, context, iterationMetaData, procCallResult, ${codeGenUtil.getDefaultIterationNo(procedureCall)})
-                    }"""
+                    ProcedureCallResult.fromIteratorResult("$procNameStr", $procNameStr(context)($argumentsStr), context, iterationMetaData, ${codeGenUtil.getDefaultIterationNo(procedureCall)})"""
 
       }
     }
@@ -64,8 +61,7 @@ object ProcedureCallLogicGenerator {
       procCallForStr      <- procCallForGen.generate()
     } yield  s""" {
     val procFuture = $procCallForStr
-    val procRes = tf2ft(procFuture)//.map{result => IterationResult(Passed(), context, iterationMetaData, result.asInstanceOf[Try[IteratorResult[Result]]], ${codeGenUtil.getDefaultIterationNo(procedureCall)}) }
-    procRes
+    tf2ft(procFuture)
   }"""
   }
 }

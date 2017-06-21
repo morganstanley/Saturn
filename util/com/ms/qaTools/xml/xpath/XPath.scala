@@ -3,27 +3,52 @@ package com.ms.qaTools.xml.xpath
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 
-import com.ms.qaTools.xml.nodeList2List
+import com.ms.qaTools.xml._
+import com.ms.qaTools._
 
 import javax.xml.namespace.NamespaceContext
 import javax.xml.namespace.QName
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathExpression
 import javax.xml.xpath.XPathFactory
-
+import net.sf.saxon.xpath.{XPathFactoryImpl => SaxonXPathFactoryImpl}
+import net.sf.saxon.pull.NamespaceContextImpl
+import net.sf.saxon.om.NamespaceResolver
+import scala.collection.JavaConversions._
 
 
 trait XPathEvaluator {
-  val xPathString: String
-  val nsCtx: NamespaceContext
-  val context: Node
-  val factory = XPathFactory.newInstance()
+  def xPathString: String
+  def context: Node
+  def nsCtx: NamespaceContext
+  
+  lazy val factory =
+    XPathFactory.newInstance().withSideEffect {xf =>
+      xf match {
+        case f: SaxonXPathFactoryImpl => f.setConfiguration(globals.saxon.configuration)
+        case _                        =>
+      }
+    }
 
-  private def acquireXPath: XPathExpression = {
-    val xPath = factory.newXPath()
-    xPath.setNamespaceContext(nsCtx)
-    xPath.compile(xPathString)
-  }
+  def saxonNamespaceContext = 
+    new NamespaceContextImpl(new NamespaceResolver {
+      def getURIForPrefix(prefix: String, useDefault: Boolean) = nsCtx.getNamespaceURI(prefix)
+      def iteratePrefixes = 
+        nsCtx match {
+          case com.ms.qaTools.xml.NamespaceContextImpl(namespaces) => namespaces.keys.toIterator
+          case _ => throw new Exception(s"Could not get all prefixes with implementation: ${nsCtx.getClass.getCanonicalName}")
+        }
+      })    
+  
+  def newXPath =
+    factory.newXPath().withSideEffect { xp =>
+      if (factory.isInstanceOf[SaxonXPathFactoryImpl])
+        xp.setNamespaceContext(saxonNamespaceContext)
+      else
+        xp.setNamespaceContext(nsCtx)
+    }
+  
+  private lazy val acquireXPath: XPathExpression = newXPath.compile(xPathString)
 
   def asString(node: Node = context): String = {
     require(node != null, "XPath evaluation requires a context node.")

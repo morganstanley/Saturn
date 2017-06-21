@@ -2,12 +2,9 @@ package com.ms.qaTools.kronus.rfb.CloseResource
 
 include com.ms.qaTools.kronus.rfb.PRELUDE
 
-type VerifiableCloseable
 type InheritedCloseable
 type ProxyCloseable
 type TeeCloseable
-
-def #Closeable(dependsOn: String)
 
 #Closeable()
 def NEW_RESOURCE(): VerifiableCloseable = generate("yield") {
@@ -34,7 +31,6 @@ def INSIDE_FUNCTION(): Int = {
   return 42
 }
 
-def CLOSED(x: VerifiableCloseable): Boolean = generate("yield") {x.closed}
 def PARENT(x: InheritedCloseable): VerifiableCloseable = generate("yield") {x.parent}
 
 val A = {

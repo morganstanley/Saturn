@@ -20,7 +20,7 @@ import org.eclipse.emf.common.util.EList;
  * @model
  * @generated
  */
-public interface AnnotationDef extends AbstractDef
+public interface AnnotationDef extends NamedRuntimeDef
 {
   /**
    * Returns the value of the '<em><b>Parameter Defs</b></em>' containment reference list.

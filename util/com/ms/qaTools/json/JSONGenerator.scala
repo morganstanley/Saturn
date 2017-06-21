@@ -1,40 +1,34 @@
 package com.ms.qaTools.json
 
+import scala.collection.AbstractIterator
+import scala.slick.util.CloseableIterator
+
 import com.fasterxml.jackson.databind.JsonNode
-import com.ms.qaTools.io.DelimitedIterator
-import com.ms.qaTools.io.DelimitedRow
+import com.ms.qaTools.io.rowSource.ColumnDefinitions
+import com.ms.qaTools.json.generator.JSONCreator
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.ColMap
-import com.ms.qaTools.json.generator.JSONCreator
-import com.ms.qaTools.io.rowSource.ColumnDefinitions
-
-
 
 object JSONGeneratorMapper {
-  def apply(creator: JSONCreator, colNames: Seq[String]): (DelimitedRow) => JsonNode = {
-    (data: DelimitedRow) =>
-      {
-        val context = ColContext(creator.extractColQueries)
-        val colMap = ColMap(colNames)
-        creator.create(data)(colMap, context)
-      }
-  }
+  def apply(creator: JSONCreator, colNames: Seq[String]): (Seq[String]) => JsonNode =
+    (data: Seq[String]) => creator.create(data)(ColMap(colNames), ColContext(creator.extractColQueries))
 }
 
-class JSONGenerator(creator: JSONCreator, rowSource: Iterator[Seq[String]] with ColumnDefinitions) extends Iterator[JsonNode] {
-
-  private val generator = JSONGeneratorMapper(creator, rowSource.colNames)
+class JSONGenerator(creator: JSONCreator, rowSource: Iterator[Seq[String]] with ColumnDefinitions)
+extends AbstractIterator[JsonNode] with CloseableIterator[JsonNode] {
+  private val generator = JSONGeneratorMapper(creator, rowSource.colDefs.map(_.name))
   private val jsonRowSource: Iterator[JsonNode] = rowSource.map(generator)
 
   def next = jsonRowSource.next
   def hasNext = jsonRowSource.hasNext
+  def close() = com.ms.qaTools.closeAny(rowSource)
 }
 
 object JSONGenerator {
-  def apply(jsonNode: JsonNode, rowSource: DelimitedIterator) = {
+  def apply(jsonNode: JsonNode, rowSource: Iterator[Seq[String]] with ColumnDefinitions) = {
     val creator = JSONCreator(jsonNode)
     implicit val colContext = ColContext(creator.extractColQueries)
-    implicit val colMap = ColMap(rowSource.colNames)
+    implicit val colMap = ColMap(rowSource.colDefs.map(_.name))
 
     new JSONGenerator(creator, rowSource)
   }

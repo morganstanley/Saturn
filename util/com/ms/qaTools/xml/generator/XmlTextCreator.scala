@@ -1,21 +1,17 @@
 package com.ms.qaTools.xml.generator
-
-
-
 import org.w3c.dom.Text
-import com.ms.qaTools.io._
 import org.w3c.dom.Document
 import com.ms.qaTools.tree.generator.ParameterizedText
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.ColContext
 
-class XmlTextCreator(text: Text, override val isLegacyMode: Boolean) extends XmlLeafNodeCreator with ParameterizedText {
+class XmlTextCreator(text: Text, val isLegacyMode: Boolean) extends XmlLeafNodeCreator with ParameterizedText {
   require(text != null, "text node must not be null")
-  override val isLocal: Boolean = true
-  lazy val value: String = text.getWholeText()
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: Document): Text = {
+  def isLocal = true
+  lazy val value: String = text.getWholeText
+
+  override def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: Document): Text =
     doc.createTextNode(resolveValue(data))
-  }
 
   override def toString: String = "XmlTextCreator(" + parts.mkString(",") + ")"
 }

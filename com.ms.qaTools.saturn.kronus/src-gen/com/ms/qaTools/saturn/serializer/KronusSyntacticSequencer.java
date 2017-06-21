@@ -33,6 +33,8 @@ public class KronusSyntacticSequencer extends AbstractSyntacticSequencer {
 			return getASToken(semanticObject, ruleCall, node);
 		else if(ruleCall.getRule() == grammarAccess.getDEFRule())
 			return getDEFToken(semanticObject, ruleCall, node);
+		else if(ruleCall.getRule() == grammarAccess.getEXPORTRule())
+			return getEXPORTToken(semanticObject, ruleCall, node);
 		else if(ruleCall.getRule() == grammarAccess.getGENERATERule())
 			return getGENERATEToken(semanticObject, ruleCall, node);
 		else if(ruleCall.getRule() == grammarAccess.getIMPORTRule())
@@ -70,6 +72,15 @@ public class KronusSyntacticSequencer extends AbstractSyntacticSequencer {
 		if (node != null)
 			return getTokenText(node);
 		return "def";
+	}
+	
+	/**
+	 * EXPORT: 'export';
+	 */
+	protected String getEXPORTToken(EObject semanticObject, RuleCall ruleCall, INode node) {
+		if (node != null)
+			return getTokenText(node);
+		return "export";
 	}
 	
 	/**

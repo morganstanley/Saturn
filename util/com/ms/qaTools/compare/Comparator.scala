@@ -1,21 +1,45 @@
 package com.ms.qaTools.compare
-import breeze.optimize.linear.KuhnMunkres
-import com.ms.qaTools.AnyUtil
+
+import java.io.Externalizable
+import java.io.ObjectInput
+import java.io.ObjectOutput
+import java.io.StringWriter
+
+import scala.collection.AbstractIterator
 import scala.collection.mutable.Queue
 
-trait Comparator extends Iterator[AbstractDiff] { self =>
+import com.ms.qaTools.AnyUtil
+import com.ms.qaTools.io.rowSource.ColumnDefinition
+
+import breeze.optimize.linear.KuhnMunkres
+
+abstract class Comparator extends AbstractIterator[Diff[Seq[String]]] { self =>
   val colDefs: Seq[CompareColDef]
 
-  def explainedBy(explainer: PartialFunction[AbstractDiff, AbstractDiff]): Comparator = new Comparator {
-    val completeExplainer = explainer orElse PartialFunction(identity[AbstractDiff])
+  protected lazy val columns = new Comparator.Columns(colDefs)
+  protected def columnDefinitions = columns.columnDefinitions
+  protected def keyCols = columns.keyCols
+  protected def nonKeyCols = columns.nonKeyCols
+  protected def leftCols = columns.leftCols
+  protected def rightCols = columns.rightCols
+
+  lazy val columnOrdering = new Ordering[Seq[String]] {
+    private[this] val sorted = keyCols.sortBy(_.keyOrder)
+    def compare(l: Seq[String], r: Seq[String]) = sorted.iterator.map(_.compare(l, r)).find(_ != 0).getOrElse(0)
+  }
+
+  def explainedBy(explainer: PartialFunction[Diff[Seq[String]], Diff[Seq[String]]]): Comparator = new Comparator {
+    val completeExplainer = explainer orElse PartialFunction(identity[Diff[Seq[String]]])
     val explained         = self.map(completeExplainer)
     def hasNext           = explained.hasNext
     def next              = explained.next
     val colDefs           = self.colDefs
   }
+
+  def compareKeys(l: Seq[String], r: Seq[String]): Int = columnOrdering.compare(l, r)
 }
 
-trait DiffCounter {
+trait Counter[U, T <: Counter[U, T]] {
   val left: Int
   val right: Int
   val identical: Int
@@ -24,14 +48,32 @@ trait DiffCounter {
   val inRightOnly: Int
   val explained: Int
   def total = left + right
-  def +(t: AbstractDiff): DiffCounter
+  def +(t: U): T
+}
+
+trait DiffCounter extends Counter[AbstractDiff, DiffCounter]
+
+object DelimitedComparatorCounter {
+  implicit val isMonoid = new scalaz.Monoid[DelimitedComparatorCounter] with Externalizable {
+    def zero = DelimitedComparatorCounter()
+    def append(x: DelimitedComparatorCounter, y: => DelimitedComparatorCounter) = {
+      import scalaz.Scalaz._
+      DelimitedComparatorCounter(x.left + y.left, x.right + y.right,
+                                 x.identical + y.identical, x.different + y.different,
+                                 x.inLeftOnly + y.inLeftOnly, x.inRightOnly + y.inRightOnly,
+                                 x.explained + y.explained, x.diffColDefMapCount |+| y.diffColDefMapCount)
+    }
+
+    def writeExternal(out: ObjectOutput) = ()
+    def readExternal(in: ObjectInput) = ()
+  }
 }
 
 case class DelimitedComparatorCounter(
   left: Int = 0, right: Int = 0, identical: Int = 0, different: Int = 0, inLeftOnly: Int = 0,
   inRightOnly: Int = 0, explained: Int = 0, diffColDefMapCount: Map[CompareColDef, Int] = Map())
-extends DiffCounter {
-  def +(t: AbstractDiff): DelimitedComparatorCounter = {
+extends Counter[Diff[Seq[String]], DelimitedComparatorCounter] {
+  def +(t: Diff[Seq[String]]) = {
     val self = this
     t match {
       case d: Identical[_]       => self.copy(left = left + 1, right = right + 1, identical = identical + 1)
@@ -47,79 +89,89 @@ extends DiffCounter {
       case _                     => this
     }
   }
+
+  def userFriendlyString: String = {
+    val outWriter = new StringWriter
+    outWriter.write("Left Row Count:         " + left + "\n")
+    outWriter.write("Right Row Count:        " + right + "\n")
+    outWriter.write("Different Row Count:    " + different + "\n")
+    outWriter.write("In Left Only Row Count: " + inLeftOnly + "\n")
+    outWriter.write("In Right Only Row Count:" + inRightOnly + "\n")
+    outWriter.write("Explained Row Count:    " + explained + "\n")
+    outWriter.write("Identical Row Count:    " + identical + "\n")
+    outWriter.toString
+  }
 }
 
 class DefaultRowComparator(left: Iterator[Seq[String]], right: Iterator[Seq[String]], val colDefs: Seq[CompareColDef])
 extends Comparator {
-  def nextLeftRow = if (left.hasNext) Option(left.next) else None
-  def nextRightRow = if (right.hasNext) Option(right.next) else None
+  def nextLeftRow(): Unit  = if(l.nonEmpty) l.dequeue
+  def nextRightRow(): Unit = if(r.nonEmpty) r.dequeue
+  val l = Queue[Seq[String]]()
+  val r = Queue[Seq[String]]()
 
-  var leftRow:  Option[Seq[String]] = None
-  var rightRow: Option[Seq[String]] = None
+  def leftRow()  = l.headOption
+  def rightRow() = r.headOption
 
-  def init = {leftRow = nextLeftRow; rightRow = nextRightRow}
+  def refill() = {
+    if(l.isEmpty && left.hasNext)  l.enqueue(left.next)
+    if(r.isEmpty && right.hasNext) r.enqueue(right.next)}
 
-  def hasNext = leftRow != None || rightRow != None
+  def hasNext = {refill; leftRow != None || rightRow != None}
 
-  def next =
-    if (rightRow == None)
-      DelimitedInLeftOnly(leftRow.get, colDefs).withSideEffect(_ => leftRow = nextLeftRow)
-    else if (leftRow == None)
-      DelimitedInRightOnly(rightRow.get, colDefs).withSideEffect(_ => rightRow = nextRightRow)
-    else compareKeys(leftRow.get, rightRow.get) match {
+  def next = (leftRow, rightRow) match {
+    case (Some(l), None) =>
+      DelimitedInLeftOnly(l, leftCols).withSideEffect(_ => nextLeftRow)
+    case (None, Some(r)) =>
+      DelimitedInRightOnly(r, rightCols).withSideEffect(_ => nextRightRow)
+    case (Some(l), Some(r)) => compareKeys(l, r) match {
       case c if c < 0 =>
-        DelimitedInLeftOnly(leftRow.get, colDefs).withSideEffect(_ => leftRow = nextLeftRow)
+        DelimitedInLeftOnly(l, leftCols).withSideEffect(_ => nextLeftRow)
       case c if c > 0 =>
-        DelimitedInRightOnly(rightRow.get, colDefs).withSideEffect(_ => rightRow = nextRightRow)
+        DelimitedInRightOnly(r, rightCols).withSideEffect(_ => nextRightRow)
       case 0 => {
-        val diffColDefs = colDefs.filter(c => !c.isKey && !c.isIgnored && c.compare(leftRow.get, rightRow.get) != 0)
+        val diffColDefs = nonKeyCols.filter(_.compare(l, r) != 0)
         if (!diffColDefs.isEmpty)
-          DelimitedDifferent(leftRow.get, rightRow.get, diffColDefs, colDefs)
+          DelimitedDifferent(l, r, diffColDefs, columnDefinitions)
         else
-          DelimitedIdentical(leftRow.get, rightRow.get)
-      }.withSideEffect(_ => {leftRow = nextLeftRow; rightRow = nextRightRow})
+          DelimitedIdentical(l, r)
+      }.withSideEffect(_ => {nextLeftRow; nextRightRow})
     }
-
-  def compareKeys(leftRow: Seq[String], rightRow: Seq[String]): Int = {
-    for (colDef <- colDefs.filter(c => c.isKey && !c.isIgnored).sortBy(_.keyOrder)) {
-      val compare = colDef.compare(leftRow, rightRow)
-      if (compare != 0) return compare
-    }
-    0
+    case (None, None) => Iterator.empty.next
   }
 }
 
 class SmartMatchComparator(left: Iterator[Seq[String]], right: Iterator[Seq[String]], colDefs: Seq[CompareColDef], matcher: (String, String, String) => Double)
 extends DefaultRowComparator(left, right, colDefs) {
-  class Side(val i: Iterator[Seq[String]], val key: Seq[String] => Seq[String]) {
-    var currentKey: Option[Seq[String]] = None
+  class Side(var i: Iterator[Seq[String]], val key: Seq[String] => Seq[String]) {
+    def currentKey = buffer.headOption.map(row => key(row))
     val buffer = Queue[Seq[String]]()
-    def nextRow: Option[Seq[String]] =
-      if (buffer.nonEmpty)
-        Option(buffer.dequeue)
-      else if (i.hasNext) {
-        currentKey = None
-        getChunk(this)
-        nextRow
-      } else None
+    def refill = if(buffer.isEmpty && i.hasNext) getChunk(this) else ()
   }
 
-  val keyColumns = colDefs.filter(_.isKey).sortBy(_.keyOrder)
-  object Left extends Side(left, r => keyColumns.map(c => r(c.indexOpt.get)))
-  object Right extends Side(right, r => keyColumns.map(c => r(c.mappedIndex.getOrElse(c.indexOpt.get))))
-  override def nextLeftRow = Left.nextRow
-  override def nextRightRow = Right.nextRow
-  override def init = {
-    getChunk(Left); getChunk(Right); super.init}
+  override def nextLeftRow  = if (Left.buffer.nonEmpty)  Left.buffer.dequeue  else ()
+  override def nextRightRow = if (Right.buffer.nonEmpty) Right.buffer.dequeue else ()
+  override def leftRow  = Left.buffer.headOption
+  override def rightRow = Right.buffer.headOption
+
+  override def hasNext = {Left.refill; Right.refill; Left.buffer.nonEmpty || Right.buffer.nonEmpty}
+
+  val keyColumns = colDefs.filter(_.left.isKey).sortBy(_.left.keyOrder)
+  object Left extends Side(left, r => keyColumns.map(c => r(c.left.index)))
+  object Right extends Side(right, r => keyColumns.map(c => r(c.right.index)))
 
   val w = (l: Seq[String], r: Seq[String]) =>
-    colDefs.flatMap(c => (for(n <- c.nameOpt; i <- c.indexOpt; j <- c.mappedIndex.orElse(c.indexOpt)) yield matcher(n, l(i), r(j)))).sum
+    colDefs.filterNot(_.ignored).map(c => matcher(c.left.name, l(c.left.index), r(c.right.index))).sum
+
+  def enqueueWhile(i: Iterator[Seq[String]], p: Seq[String] => Boolean, q: Queue[Seq[String]]): Iterator[Seq[String]] =
+    if(i.hasNext) {
+      val j = i.next
+      if(p(j)) enqueueWhile(i, p, q.withSideEffect(_.enqueue(j))) else Iterator(j) ++ i
+    } else i
 
   def getChunk(s: Side) = {
     assert(s.buffer.isEmpty)
-    s.buffer ++= s.i.takeWhile(row => s.currentKey match {
-      case Some(k) => s.key(row) == k
-      case None => {s.currentKey = Some(s.key(row)); true}})
+    s.i = enqueueWhile(s.i, (row: Seq[String]) => s.currentKey.map(_ == s.key(row)).getOrElse(true), s.buffer)
     (Left.currentKey, Right.currentKey) match {
       case (Some(lk), Some(rk)) if lk == rk => {
         val (l, r) = sortSubsets(Left.buffer, Right.buffer, w)
@@ -148,18 +200,27 @@ object Comparator {
     left: Iterator[Seq[String]],
     right: Iterator[Seq[String]],
     colDefs: Seq[CompareColDef],
-    explainers: Seq[PartialFunction[AbstractDiff, AbstractDiff]] = Nil,
+    explainers: Seq[PartialFunction[Diff[Seq[String]], Diff[Seq[String]]]] = Nil,
     matcher: Option[(String, String, String) => Double] = None
   ): Comparator = {
     val c = matcher.map(m => new SmartMatchComparator(left, right, colDefs, m)).getOrElse(new DefaultRowComparator(left, right, colDefs))
-    c.init
-    val e = explainers.foldLeft(IdentityExplainer: PartialFunction[AbstractDiff, AbstractDiff])(_ andThen _)
+    val e = explainers.foldLeft(IdentityExplainer[Diff[Seq[String]]]: PartialFunction[Diff[Seq[String]], Diff[Seq[String]]])(_ andThen _)
     c explainedBy {
       case d: Different[_]   => e(d)
       case d: InLeftOnly[_]  => e(d)
       case d: InRightOnly[_] => e(d)
       case d                 => d
     }
+  }
+
+  class Columns(colDefs: Seq[CompareColDef]) extends Serializable {
+    val columnDefinitions: Seq[ColumnDefinition] = colDefs.map {
+      case ExtraCompareColDef(right) => right
+      case hasLeft                   => hasLeft.left
+    }
+    val (keyCols, nonKeyCols) = colDefs.filter(!_.ignored).partition(_.isKey)
+    val leftCols = colDefs.filter(!_.isInstanceOf[ExtraCompareColDef])
+    val rightCols = colDefs.filter(!_.isInstanceOf[MissingCompareColDef])
   }
 }
 /*

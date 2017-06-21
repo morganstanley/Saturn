@@ -1,22 +1,16 @@
 package com.ms.qaTools.io.rowWriter
-
-import java.io.File
-import java.io.FileWriter
-import java.io.RandomAccessFile
-
-import com.ms.qaTools.io.Writer
-import com.ms.qaTools.io.rowWriter.file.CsvRowWriter
-import com.ms.qaTools.io.rowWriter.file.ExcelRowWriter
-import com.ms.qaTools.io.rowWriter.file.PsvRowWriter
-import com.ms.qaTools.io.rowWriter.file.TsvRowWriter
-
 import au.com.bytecode.opencsv.CSVWriter
+import com.ms.qaTools.io.Writer
+import java.io.FileWriter
+import java.io.OutputStreamWriter
+import java.io.RandomAccessFile
 
 trait RowWriterCreator[T] {
   def createRowWriter(fmt: String): T
 }
 
-case class DsRowWriterCreator(fileName: String,
+case class DsRowWriterCreator(
+  fileName: String,
   wsName: Option[String] = None,
   separatorChar: Char = CSVWriter.DEFAULT_SEPARATOR,
   quoteChar: Char = CSVWriter.DEFAULT_QUOTE_CHARACTER,
@@ -27,24 +21,28 @@ case class DsRowWriterCreator(fileName: String,
   nullMarker: String = null)
 extends RowWriterCreator[Writer[Iterator[Seq[String]]]] {
   def createFileWriter(fileName: String, append: Boolean) = {
-    if (append) {
-      val f = new RandomAccessFile(fileName, "rw")
-      try {
-        val flen = f.length
-        val bs = lineEnd.getBytes
-        val pos = flen - bs.length
-        if (pos >= 0) {
-          val buf = Array.ofDim[Byte](bs.length)
-          f.seek(pos)
-          f.readFully(buf)
-          if (buf.toSeq != bs.toSeq) f.write(bs)
-        } else if (flen > 0) {
-          f.seek(flen)
-          f.write(bs)
-        }
-      } finally f.close()
+    if(fileName != null){
+      if (append) {
+        val f = new RandomAccessFile(fileName, "rw")
+        try {
+          val flen = f.length
+          val bs = lineEnd.getBytes
+          val pos = flen - bs.length
+          if (pos >= 0) {
+            val buf = Array.ofDim[Byte](bs.length)
+            f.seek(pos)
+            f.readFully(buf)
+            if (buf.toSeq != bs.toSeq) f.write(bs)
+          } else if (flen > 0) {
+            f.seek(flen)
+            f.write(bs)
+          }
+        } finally f.close()
+      }
+      new FileWriter(fileName, append)
     }
-    new FileWriter(fileName, append)
+    else
+      new OutputStreamWriter(Console.out)
   }
 
   def createRowWriter(fmt: String) = fmt.toUpperCase match {

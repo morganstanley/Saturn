@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Ant-Version: Apache Ant 1.9.4
-Created-By: 1.8.0_45-b14 (Oracle Corporation)
+Created-By: 1.8.0_121-b13 (Oracle Corporation)
 Built-By: renaudg
 Main-Class: 
 Specification-Title: qaTools util
@@ -15,6 +15,6 @@ Name: MSDE
 Meta: qaTools
 Project: util
 Release: 2.1.0
-TimeStamp: Wednesday April 05 2017 @ 15:14:13 GMT+0000
+TimeStamp: Wednesday June 21 2017 @ 15:45:36 GMT+0000
 Build-Class-Path: 
 

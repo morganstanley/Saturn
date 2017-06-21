@@ -1,16 +1,13 @@
 package com.ms.qaTools.toolkit.cmdLine
 
 import org.kohsuke.args4j.Option
-import com.ms.qaTools.io.rowSource.json.JSONFileRowSource
-
-
+import com.ms.qaTools.io.rowSource.JsonFileRowSource
 
 trait InputJSONTemplateFile {
   @Option(name = "--template", usage = "Specify an json template fileName.", required = true)
   val jsonTemplate: String = null
 
-  def jsonType = JSONFileRowSource(jsonTemplate).next
-
+  def jsonType = JsonFileRowSource(jsonTemplate).next
 }
 /*
 Copyright 2017 Morgan Stanley

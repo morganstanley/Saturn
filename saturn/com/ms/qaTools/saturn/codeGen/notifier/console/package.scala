@@ -167,7 +167,8 @@ package object console {
       case _ =>
     }
   }
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

@@ -9,7 +9,6 @@ import com.ms.qaTools.saturn.annotations.saturnWeb.SaturnWebConfiguration
 import com.ms.qaTools.saturn.annotations.saturnWeb.SingleValueEnvVarTargetDefinition
 import com.ms.qaTools.saturn.CometStep
 import com.ms.qaTools.saturn.{CustomLink => MCustomLink}
-import com.ms.qaTools.saturn.dsl.JTuple2
 import com.ms.qaTools.saturn.FailTerminal
 import com.ms.qaTools.saturn.{IncludeFile => MIncludeFile}
 import com.ms.qaTools.saturn.MailStep
@@ -33,6 +32,11 @@ import scala.collection.JavaConversions.asScalaIterator
 import scala.collection.JavaConversions.bufferAsJavaList
 import scala.collection.JavaConversions.seqAsJavaList
 import scala.Option.option2Iterable
+
+class JTuple2[A, B](_1: A, _2: B) {
+  def get_1() = _1
+  def get_2() = _2
+}
 
 abstract class DependencyOperator(operands:Seq[MAbstractLink])
 case class AndDependencyOperator(operands:Seq[MAbstractLink]) extends DependencyOperator(operands)
@@ -79,7 +83,7 @@ abstract class WrappedAbstractRunGroup(protected val runGroup:MAbstractRunGroup,
                                        protected val includeFileMap:Map[MIncludeFile,(MSaturn, String)]) {
 
   val dependencies = allLinks.filter{_.getTarget() == runGroup}
-  val dependencyRunGroups:Seq[MAbstractRunGroup] = dependencies.map{_.getSource()}.toSet.toSeq
+  val dependencyRunGroups:Seq[MAbstractRunGroup] = dependencies.map{_.getSource()}.distinct
 
   val hasDependencies = !dependencies.isEmpty()
   lazy val hasAllOnPassDependencies   = false
@@ -129,7 +133,7 @@ abstract class WrappedAbstractRunGroup(protected val runGroup:MAbstractRunGroup,
                                SaturnPackage.eINSTANCE.getDataCompareStep()        -> "DsCompareResult",
 //                               SaturnPackage.eINSTANCE.getDataCompareSummaryStep() -> "",
 //                               SaturnPackage.eINSTANCE.getDocumentumStep()         -> "",
-                               SaturnPackage.eINSTANCE.getDSConvertStep()          -> "DsConvertAggregateResult",
+                               SaturnPackage.eINSTANCE.getDSConvertStep()          -> "DsConvertResult",
 //                               SaturnPackage.eINSTANCE.getDSValidatorStep()        -> "",
 //                               SaturnPackage.eINSTANCE.getEnvValidatorStep()       -> "",
 //                               SaturnPackage.eINSTANCE.getExtractDDLStep()         -> "",
@@ -152,10 +156,10 @@ abstract class WrappedAbstractRunGroup(protected val runGroup:MAbstractRunGroup,
                                SaturnPackage.eINSTANCE.getSoapIOStep()             -> "SoapResult",
 //                               SaturnPackage.eINSTANCE.getSQLStep()                -> "",
 //                               SaturnPackage.eINSTANCE.getVmsStep()                -> "",
-                               SaturnPackage.eINSTANCE.getXml2CsvStep()            -> "Xml2CsvResult",
+                               SaturnPackage.eINSTANCE.getXml2CsvStep()            -> "Result",
 //                               SaturnPackage.eINSTANCE.getXmlDiffStep()            -> "",
                                SaturnPackage.eINSTANCE.getXmlGenStep()             -> "XmlGenResult",
-                               SaturnPackage.eINSTANCE.getXmlManipStep()           -> "XmlManipResult",
+                               SaturnPackage.eINSTANCE.getXmlManipStep()           -> "Result",
 //                               SaturnPackage.eINSTANCE.getXmlValidatorStep()       -> "",
                                SaturnPackage.eINSTANCE.getXSplitStep()             -> "") withDefaultValue("Result")
 
@@ -238,7 +242,7 @@ abstract class WrappedAbstractRunGroup(protected val runGroup:MAbstractRunGroup,
   def getRunGroupName:String = getRunGroupName(runGroup)
   def getRunGroupName(r:MAbstractRunGroup):String = r.getName()
   def getRunGroupResultName(r:MAbstractRunGroup):String = getRunGroupName(r) + "Result"
-  def getLinkSatisfied(l:MAbstractLink) = getRunGroupName(l.getSource()) + "2" + getRunGroupName(l.getTarget()) + "Satisfied_" + l.hashCode()
+  def getLinkSatisfied(l:MAbstractLink) = CanRunExpressionGenerator.getLinkSatisfied(l)
 
   def getWebAnnotations:JList[SaturnWebConfiguration] = runGroup.eAllContents().collect{case sw:SaturnWebConfiguration => sw}.toList
 

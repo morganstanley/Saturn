@@ -85,6 +85,16 @@ public class KronusAdapterFactory extends AdapterFactoryImpl
         return createKronusAdapter();
       }
       @Override
+      public Adapter caseAssignment(Assignment object)
+      {
+        return createAssignmentAdapter();
+      }
+      @Override
+      public Adapter caseAnnotatedDef(AnnotatedDef object)
+      {
+        return createAnnotatedDefAdapter();
+      }
+      @Override
       public Adapter caseAbstractDef(AbstractDef object)
       {
         return createAbstractDefAdapter();
@@ -93,6 +103,36 @@ public class KronusAdapterFactory extends AdapterFactoryImpl
       public Adapter caseReferenceableDefs(ReferenceableDefs object)
       {
         return createReferenceableDefsAdapter();
+      }
+      @Override
+      public Adapter caseNamedAbstractDef(NamedAbstractDef object)
+      {
+        return createNamedAbstractDefAdapter();
+      }
+      @Override
+      public Adapter caseNamedRuntimeDef(NamedRuntimeDef object)
+      {
+        return createNamedRuntimeDefAdapter();
+      }
+      @Override
+      public Adapter caseTypeInstance(TypeInstance object)
+      {
+        return createTypeInstanceAdapter();
+      }
+      @Override
+      public Adapter caseFunctionDef(FunctionDef object)
+      {
+        return createFunctionDefAdapter();
+      }
+      @Override
+      public Adapter caseAnnotationDef(AnnotationDef object)
+      {
+        return createAnnotationDefAdapter();
+      }
+      @Override
+      public Adapter caseHashtagDef(HashtagDef object)
+      {
+        return createHashtagDefAdapter();
       }
       @Override
       public Adapter caseValDef(ValDef object)
@@ -113,6 +153,36 @@ public class KronusAdapterFactory extends AdapterFactoryImpl
       public Adapter caseIncludeDef(IncludeDef object)
       {
         return createIncludeDefAdapter();
+      }
+      @Override
+      public Adapter caseExportDef(ExportDef object)
+      {
+        return createExportDefAdapter();
+      }
+      @Override
+      public Adapter caseExportClause(ExportClause object)
+      {
+        return createExportClauseAdapter();
+      }
+      @Override
+      public Adapter caseExportSymbol(ExportSymbol object)
+      {
+        return createExportSymbolAdapter();
+      }
+      @Override
+      public Adapter caseExportAll(ExportAll object)
+      {
+        return createExportAllAdapter();
+      }
+      @Override
+      public Adapter caseExportHashtag(ExportHashtag object)
+      {
+        return createExportHashtagAdapter();
+      }
+      @Override
+      public Adapter caseExportRuntimeName(ExportRuntimeName object)
+      {
+        return createExportRuntimeNameAdapter();
       }
       @Override
       public Adapter caseTypeDef(TypeDef object)
@@ -138,26 +208,6 @@ public class KronusAdapterFactory extends AdapterFactoryImpl
       public Adapter caseTypeId(TypeId object)
       {
         return createTypeIdAdapter();
-      }
-      @Override
-      public Adapter caseTypeInstance(TypeInstance object)
-      {
-        return createTypeInstanceAdapter();
-      }
-      @Override
-      public Adapter caseFunctionDef(FunctionDef object)
-      {
-        return createFunctionDefAdapter();
-      }
-      @Override
-      public Adapter caseAnnotationDef(AnnotationDef object)
-      {
-        return createAnnotationDefAdapter();
-      }
-      @Override
-      public Adapter caseHashtagDef(HashtagDef object)
-      {
-        return createHashtagDefAdapter();
       }
       @Override
       public Adapter caseCodeAssignment(CodeAssignment object)
@@ -238,11 +288,6 @@ public class KronusAdapterFactory extends AdapterFactoryImpl
       public Adapter caseFunctionCall(FunctionCall object)
       {
         return createFunctionCallAdapter();
-      }
-      @Override
-      public Adapter caseIncludeRef(IncludeRef object)
-      {
-        return createIncludeRefAdapter();
       }
       @Override
       public Adapter caseStringLiteral(StringLiteral object)
@@ -327,6 +372,36 @@ public class KronusAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.Assignment <em>Assignment</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.Assignment
+   * @generated
+   */
+  public Adapter createAssignmentAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.AnnotatedDef <em>Annotated Def</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.AnnotatedDef
+   * @generated
+   */
+  public Adapter createAnnotatedDefAdapter()
+  {
+    return null;
+  }
+
+  /**
    * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.AbstractDef <em>Abstract Def</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
@@ -352,6 +427,96 @@ public class KronusAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createReferenceableDefsAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.NamedAbstractDef <em>Named Abstract Def</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.NamedAbstractDef
+   * @generated
+   */
+  public Adapter createNamedAbstractDefAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.NamedRuntimeDef <em>Named Runtime Def</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.NamedRuntimeDef
+   * @generated
+   */
+  public Adapter createNamedRuntimeDefAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.TypeInstance <em>Type Instance</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.TypeInstance
+   * @generated
+   */
+  public Adapter createTypeInstanceAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.FunctionDef <em>Function Def</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.FunctionDef
+   * @generated
+   */
+  public Adapter createFunctionDefAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.AnnotationDef <em>Annotation Def</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.AnnotationDef
+   * @generated
+   */
+  public Adapter createAnnotationDefAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.HashtagDef <em>Hashtag Def</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.HashtagDef
+   * @generated
+   */
+  public Adapter createHashtagDefAdapter()
   {
     return null;
   }
@@ -412,6 +577,96 @@ public class KronusAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createIncludeDefAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.ExportDef <em>Export Def</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.ExportDef
+   * @generated
+   */
+  public Adapter createExportDefAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.ExportClause <em>Export Clause</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.ExportClause
+   * @generated
+   */
+  public Adapter createExportClauseAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.ExportSymbol <em>Export Symbol</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.ExportSymbol
+   * @generated
+   */
+  public Adapter createExportSymbolAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.ExportAll <em>Export All</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.ExportAll
+   * @generated
+   */
+  public Adapter createExportAllAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.ExportHashtag <em>Export Hashtag</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.ExportHashtag
+   * @generated
+   */
+  public Adapter createExportHashtagAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.ExportRuntimeName <em>Export Runtime Name</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.kronus.ExportRuntimeName
+   * @generated
+   */
+  public Adapter createExportRuntimeNameAdapter()
   {
     return null;
   }
@@ -487,66 +742,6 @@ public class KronusAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createTypeIdAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.TypeInstance <em>Type Instance</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.ms.qaTools.saturn.kronus.TypeInstance
-   * @generated
-   */
-  public Adapter createTypeInstanceAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.FunctionDef <em>Function Def</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.ms.qaTools.saturn.kronus.FunctionDef
-   * @generated
-   */
-  public Adapter createFunctionDefAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.AnnotationDef <em>Annotation Def</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.ms.qaTools.saturn.kronus.AnnotationDef
-   * @generated
-   */
-  public Adapter createAnnotationDefAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.HashtagDef <em>Hashtag Def</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.ms.qaTools.saturn.kronus.HashtagDef
-   * @generated
-   */
-  public Adapter createHashtagDefAdapter()
   {
     return null;
   }
@@ -787,21 +982,6 @@ public class KronusAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createFunctionCallAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.kronus.IncludeRef <em>Include Ref</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see com.ms.qaTools.saturn.kronus.IncludeRef
-   * @generated
-   */
-  public Adapter createIncludeRefAdapter()
   {
     return null;
   }

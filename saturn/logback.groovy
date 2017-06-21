@@ -10,18 +10,9 @@
 // For professional support please see
 //   http://www.qos.ch/shop/products/professionalSupport
 
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder
-import ch.qos.logback.classic.filter.ThresholdFilter
-import ch.qos.logback.core.ConsoleAppender
-import ch.qos.logback.core.FileAppender
-import ch.qos.logback.core.encoder.LayoutWrappingEncoder
-import ch.qos.logback.core.status.NopStatusListener
-import com.ms.qaTools.saturn.runtime.LoggingFileLayout
-
-import static ch.qos.logback.classic.Level.ERROR
-import static ch.qos.logback.classic.Level.TRACE
-
 import org.slf4j.bridge.SLF4JBridgeHandler
+
+import ch.qos.logback.core.status.NopStatusListener
 
 //redirects all java.util.logging logs to slf4j
 //see: http://www.slf4j.org/api/org/slf4j/bridge/SLF4JBridgeHandler.html
@@ -30,26 +21,12 @@ SLF4JBridgeHandler.install();
 
 context.name = "qaTools/saturn"
 statusListener(NopStatusListener)
-appender("STDERR", ConsoleAppender) {
-  encoder(PatternLayoutEncoder) {
-    pattern = "%msg%n"
-  }
-  target = "System.err"
-}
-appender("FILE", FileAppender) {
-  append = false
-  filter(ThresholdFilter) {
-    level = TRACE
-  }
-  encoder(LayoutWrappingEncoder) {
-    layout(LoggingFileLayout)
-  }
-}
-appender("STDOUT", ConsoleAppender) {
-  encoder(PatternLayoutEncoder) {
-    pattern = "%msg%n"
-  }
-  target = "System.out"
-}
-logger("com.mongodb", ERROR)
-root(ERROR, ["STDOUT", "FILE"])
+
+//appender("FILE", FileAppender) {
+//  file = "debug.log"
+//  append = false
+//  encoder(PatternLayoutEncoder) {
+//    pattern = "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+//  }
+//}
+//root(DEBUG, ["FILE"])

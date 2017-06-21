@@ -8,7 +8,6 @@ import org.jsoup.nodes.Element
 import com.ms.qaTools.saturn.codeGen.IterationResult
 import com.ms.qaTools.saturn.codeGen.notifier.console.printMetaDataContext
 import com.ms.qaTools.saturn.codeGen.notifier.console.printMetaDatas
-import com.ms.qaTools.saturn.result.PassedProcedureCallResult
 import com.ms.qaTools.saturn.result.ProcedureCallResult
 import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.runtime.notifier.html.appendException
@@ -59,7 +58,8 @@ case class ProcedureCallHtmlGenerator(implicit sc: SaturnExecutionContext) exten
       case r => throw new Exception(s"ProcedureCallHtmlGenerator cannot handle this type of result: ${r.getClass.getName}")
     }
   }
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

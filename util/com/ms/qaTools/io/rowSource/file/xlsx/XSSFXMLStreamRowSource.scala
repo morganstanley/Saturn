@@ -4,9 +4,11 @@ import java.io.File
 import java.io.InputStream
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters.asScalaIteratorConverter
-import scala.collection.mutable.{Buffer => MBuffer}
-import scala.collection.mutable.{Map => MMap}
+import scala.collection.AbstractIterator
+import scala.collection.JavaConverters._
+import scala.collection.mutable.{ Buffer => MBuffer }
+import scala.collection.mutable.{ Map => MMap }
+import scala.slick.util.CloseableIterator
 
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.xssf.eventusermodel.XSSFReader
@@ -21,9 +23,6 @@ import javax.xml.stream.XMLInputFactory
 import javax.xml.stream.XMLStreamConstants
 import javax.xml.stream.XMLStreamReader
 
-
-
-
 /*
  * Using StAX to parse the XSSF XML file
  * Schema: http://www.schemacentral.com/sc/ooxml/s-sml-sheet.xsd.html
@@ -33,33 +32,34 @@ class XSSFXMLStreamRowSource(
   stylesTable: StylesTable,
   sharedStringsTable: SharedStringsTable,
   ranges: Seq[CellRange] = Nil,
-  val columnDefinitionAdapter: ColumnDefinitionAdapter) extends Iterator[Seq[String]] with AdapterColumnDefinitions {
+  val columnDefinitionAdapter: ColumnDefinitionAdapter)
+extends AbstractIterator[Seq[String]] with AdapterColumnDefinitions with CloseableIterator[Seq[String]] {
 
   protected val reader = XMLInputFactory.newInstance().createXMLStreamReader(rowsInputStream)
 
   protected[this] var row: MBuffer[String] = MBuffer()
   protected[this] var currentCell: Cell = null
   protected[this] val rangeRefCell: MMap[CellRange,Cell] = MMap.empty
-  
-  private sealed class ProxyNullRowRangeIterator(i: XSSFXMLStreamRowSource) extends Iterator[Seq[String]] with Proxy {
+
+  private class ProxyNullRowRangeIterator(i: this.type) extends AbstractIterator[Seq[String]] with Proxy {
     def self = i
     val nullifyRowCellRange = new Function2[Cell,CellRange,Unit] {
       def apply(c: Cell, r: CellRange): Unit = {
-        if (c.columnIndex == r.startColumn) for (i <- 0 until r.columnLength) row.append(c.value(sharedStringsTable))        
+        if (c.columnIndex == r.startColumn) for (i <- 0 until r.columnLength) row.append(c.value(sharedStringsTable))
       }
     }
-    override def next: Seq[String] = {self.nextWithCellRangeStrategy(nullifyRowCellRange)}
-    override def hasNext = {self.hasNextWithCellRangeStrategy(nullifyRowCellRange)}
-  }  
-  
+    def next = {self.nextWithCellRangeStrategy(nullifyRowCellRange)}
+    def hasNext = {self.hasNextWithCellRangeStrategy(nullifyRowCellRange)}
+  }
+
   columnDefinitionAdapter.extractColDefs(new ProxyNullRowRangeIterator(this))
-  
+
   val repeatCellRange = new Function2[Cell,CellRange,Unit] {
     def apply(c: Cell, r: CellRange): Unit = {
       if (! rangeRefCell.isDefinedAt(r)) rangeRefCell.put(r, c)
       if (c.columnIndex == r.startColumn) {
-        val refRangeCell = rangeRefCell.get(r)
-        for (i <- 0 until r.columnLength) yield row.append(refRangeCell.get.value(sharedStringsTable))
+        val refRangeCell = rangeRefCell(r)
+        for (i <- 0 until r.columnLength) yield row.append(refRangeCell.value(sharedStringsTable))
       }
     }
   }
@@ -107,7 +107,7 @@ class XSSFXMLStreamRowSource(
 
   protected def onCharacters() = {
     val text = new String(reader.getTextCharacters(), reader.getTextStart, reader.getTextLength)
-    if (currentCell != null || !text.trim().isEmpty()) {      
+    if (currentCell != null || !text.trim().isEmpty()) {
       currentCell.appendToValue(text)
     }
   }
@@ -158,7 +158,7 @@ class XSSFXMLStreamRowSource(
       didNext = true
     }
     nextRow.isDefined
-  }  
+  }
 
   def nextWithCellRangeStrategy(f: Function2[Cell,CellRange,Unit]) = {
     if (!didNext) {
@@ -170,10 +170,11 @@ class XSSFXMLStreamRowSource(
       case Some(x) => x
       case None    => throw new Exception("There is no next row!")
     }
-  }  
-  
-  override def next = nextWithCellRangeStrategy(repeatCellRange)
-  override def hasNext = hasNextWithCellRangeStrategy(repeatCellRange)
+  }
+
+  def next = nextWithCellRangeStrategy(repeatCellRange)
+  def hasNext = hasNextWithCellRangeStrategy(repeatCellRange)
+  def close() = rowsInputStream.close()
 }
 
 object XSSFXMLStreamRowSource {
@@ -198,7 +199,8 @@ object XSSFXMLStreamRowSource {
     val rangesSheetInputStream = createSheetInputStream(file, sheetName)
     val pkg = OPCPackage.open(file)
     val r = new XSSFReader(pkg)
-    new XSSFXMLStreamRowSource(rowSheetInputStream, r.getStylesTable, r.getSharedStringsTable, CellRanges(rangesSheetInputStream), columnDefinitionAdapter)
+    val cellRanges = try CellRanges(rangesSheetInputStream) finally rangesSheetInputStream.close()
+    new XSSFXMLStreamRowSource(rowSheetInputStream, r.getStylesTable, r.getSharedStringsTable, cellRanges, columnDefinitionAdapter)
   }
 }
 /*

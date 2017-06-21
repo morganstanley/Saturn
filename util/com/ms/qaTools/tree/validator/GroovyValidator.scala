@@ -3,10 +3,6 @@ package com.ms.qaTools.tree.validator
 import java.util.ArrayList
 import scala.util.matching.Regex
 import scala.collection.JavaConversions._
-import com.ms.qaTools.tree._
-import scala.collection.immutable._
-
-
 
 trait GroovyValidator[NodeType]
 

@@ -1,46 +1,30 @@
 package com.ms.qaTools.tree.mappers
 
-import com.ms.qaTools.tree.TreeNode
 import com.ms.qaTools.tree.XmlNode
-import com.ms.qaTools.tree.validator.XPathNodeLookup
-import com.ms.qaTools.xml.NamespaceContextImpl
-import org.w3c.dom.{ Node, Element }
-import com.sun.xml.internal.stream.events.NamespaceImpl
-import javax.xml.namespace.NamespaceContext
-import com.ms.qaTools.conversions.XmlToTreeNodeConversions._
+import com.ms.qaTools.xml.nodeMap2List
 import com.ms.qaTools.xml.xpath.XPath
-import org.w3c.dom.Attr
 
-case class XmlNodeNamespaceRemoveMapper() extends XmlNodeMapper {
-  override def apply(optionNode: Option[XmlNode]): Option[XmlNode] = {
-    optionNode match {
-      case None => optionNode
-      case Some(node) => {
-          val ownerDocument = node.node.getOwnerDocument
-          val uris = XPath("//namespace::*")(node.nsContext).asNodes(node.node).map(_.getNodeValue).toSet
-          uris.foreach(uri => {
-            val nodesWithUri = XPath("//*[namespace-uri(.) = '" + uri + "']")(node.nsContext).asNodes(node.node)
-            nodesWithUri.foreach(nodeWithUri => {
-              val (nodeName, nodeNamespace, nodePrefix) = (nodeWithUri.getNodeName, nodeWithUri.getNamespaceURI, nodeWithUri.getPrefix)
+case object XmlNodeNamespaceRemoveMapper extends XmlNodeMapper {
+  def apply(optionNode: Option[XmlNode]) = optionNode.map{node =>
+    val ownerDocument = node.node.getOwnerDocument
+    val uris = XPath("//namespace::*")(node.nsContext).asNodes(node.node).map(_.getNodeValue).toSet
+    uris.foreach{uri =>
+      XPath("//*[namespace-uri(.) = '" + uri + "']")(node.nsContext).asNodes(node.node).foreach{nodeWithUri =>
+        val (nodeName, nodeNamespace, nodePrefix) = (nodeWithUri.getNodeName, nodeWithUri.getNamespaceURI, nodeWithUri.getPrefix)
 
-              //remove namespace prefix
-              println("Remove prefix:" + nodePrefix + ":" + nodeName)
-              nodeWithUri.setPrefix("")
+        //remove namespace prefix
+        println("Remove prefix:" + nodePrefix + ":" + nodeName)
+        nodeWithUri.setPrefix("")
 
-              //remove any namespace declaration
-              val attributes = nodeWithUri.getAttributes()
-              for (i <- 0 to attributes.getLength) {
-                val attribute = attributes.item(i)
-                val (name, value) = (attribute.getNodeName, attribute.getNodeValue)
-                if (name.startsWith("xmlns") && value != "http://www.w3.org/2001/XMLSchema-instance") {
-                  println("Remove xmlns attribute: " + name + " => " + value)
-                }
-              }
-            })
-          })
+        //remove any namespace declaration
+        nodeWithUri.getAttributes.foreach{a =>
+          val (name, value) = (a.getNodeName, a.getNodeValue)
+          if (name.startsWith("xmlns") && value != "http://www.w3.org/2001/XMLSchema-instance")
+            println("Remove xmlns attribute: " + name + " => " + value)
         }
-        Option(node)
+      }
     }
+    node
   }
 }
 /*

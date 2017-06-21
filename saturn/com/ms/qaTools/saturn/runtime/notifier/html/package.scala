@@ -1,13 +1,14 @@
 package com.ms.qaTools.saturn.runtime.notifier
 
-import org.jsoup.nodes.Element
-import com.ms.qaTools.saturn.runtime.DEBUG
-import com.ms.qaTools.saturn.runtime.VerbosityLevel
-import com.ms.qaTools.saturn.runtime.NORMAL
-import org.apache.commons.lang.StringEscapeUtils
-import com.ms.qaTools.saturn.runtime.TRACE
 import com.ms.qaTools.exceptions.AggregateException
+import com.ms.qaTools.saturn.runtime.DEBUG
+import com.ms.qaTools.saturn.runtime.NORMAL
+import com.ms.qaTools.saturn.runtime.TRACE
+import com.ms.qaTools.saturn.runtime.VerbosityLevel
 import org.apache.commons.lang.exception.ExceptionUtils
+import org.apache.commons.lang.StringEscapeUtils
+import org.jsoup.nodes.Element
+import scala.language.implicitConversions
 
 trait HTMLColorizedString {
   val s: String
@@ -19,7 +20,6 @@ trait HTMLColorizedString {
 }
 
 package object html {
-
   def htmlSpaces(i: Int, space: String = "&nbsp;&nbsp;") = Array.fill(i)(space).mkString
   def string2Html(s: String) = StringEscapeUtils.escapeHtml(s).replaceAll("\n", "<br/>").replaceAll(" ", "&nbsp;")
   implicit def stringToHtmlColorizedString(str: String) = new HTMLColorizedString { override val s: String = str }
@@ -32,7 +32,7 @@ package object html {
             ae.exceptions.foreach(e => {
               parentElement.append(htmlSpaces(indentLevel + 1) + (e.getClass.getName + ": ").redHtml.boldHtml + e.getMessage.redHtml + "<br/>")
               outputVerbosity match {
-                case TRACE() => parentElement.append(htmlSpaces(indentLevel + 2) + "Trace:".redHtml.boldHtml + "<br/>" + htmlSpaces(indentLevel + 3) + e.getStackTraceString.replaceAll("\n", "<br/>" + htmlSpaces(indentLevel + 3)).redHtml + "<br/>")
+                case TRACE() => parentElement.append(htmlSpaces(indentLevel + 2) + "Trace:".redHtml.boldHtml + "<br/>" + htmlSpaces(indentLevel + 3) + e.getStackTrace.mkString("", "<br/>" + htmlSpaces(indentLevel + 3), "<br/>").redHtml + "<br/>")
                 case _       =>
               }
               if (e.getCause != null) appendMessageStack(e.getCause, indentLevel + 2)
@@ -57,8 +57,8 @@ package object html {
       case _       =>
     }
   }
-
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

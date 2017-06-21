@@ -13,7 +13,7 @@ class RunGroupHtmlGenerator(implicit sc: SaturnExecutionContext) extends BasicHt
   override def generateIterationResult(name: String, fullName: String, result: IterationResult[Any], parentElement: Element, asScenario: Boolean = false, displayIterationNo: Boolean = true): Unit = {
     val childResults = result.moduleResult match {
       case r: RunGroupResult => r.runGroups
-      case r => throw new Exception("Not a RunGroupResult: $r")
+      case r => throw new Exception(s"Not a RunGroupResult: $r")
     }
     for ((fullName, childResultTry) <- childResults) childResultTry match {
       case Success(r) => {
@@ -42,7 +42,8 @@ class SaturnHtmlGenerator(implicit sc: SaturnExecutionContext) extends RunGroupH
 
 object SaturnHtmlGenerator {
   def apply()(implicit sc: SaturnExecutionContext) = new SaturnHtmlGenerator
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

@@ -4,8 +4,6 @@ import scala.annotation.tailrec
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import com.ms.qaTools.Logger
-import com.ms.qaTools.io.DelimitedRow
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.NodeCreator
@@ -13,8 +11,6 @@ import com.ms.qaTools.xml.NamespaceContextImpl
 import com.ms.qaTools.xml.xpath.XPath
 import com.ms.qaTools.xml.xpath.XPath
 import org.w3c.dom.Attr
-
-
 
 class XmlElementCreator(val elem: Element,
                         val childCreators: List[NodeCreator[Document, Node]],
@@ -24,13 +20,12 @@ class XmlElementCreator(val elem: Element,
   require(childCreators != null, "childCreators must not be null")
   require(attrCreators != null, "attrCreators must not be null")
 
-  val logger = Logger(getClass)
   val xmlGenNsUri = "http://www.ms.com/qaTools/xmlGenerator/2007"
   val name = elem.getTagName()
   val nsUri = elem.getNamespaceURI()
   implicit val nsContext = NamespaceContextImpl(Map("x" -> xmlGenNsUri))
-  override val isLocal: Boolean = false
-  
+  def isLocal = false
+
   def cleanUpNode(node: Node): Node = {
     val nodes = XPath("*[namespace-uri()='" + xmlGenNsUri + "'] | @*[namespace-uri()='" + xmlGenNsUri + "'] | namespace::*[. = '" + xmlGenNsUri + "']") asNodes(node)
     nodes.foldLeft(node) {
@@ -40,13 +35,13 @@ class XmlElementCreator(val elem: Element,
           case n: Node => node.removeChild(n)
         }
         node
-    }     
+    }
   }
 
-  def create(data: DelimitedRow)(implicit colMap: Lookupable, colContext: ColContext, doc: Document): Node = {   
+  def create(data: Seq[String])(implicit colMap: Lookupable, colContext: ColContext, doc: Document): Node = {
     def createNewElement0(): Node = {
-      @tailrec 
-      def applyModifiers0(e: Node, row: DelimitedRow, modifiers: Seq[ElementModifier]): Node = {
+      @tailrec
+      def applyModifiers0(e: Node, row: Seq[String], modifiers: Seq[ElementModifier]): Node = {
         if (modifiers.isEmpty) e
         else {
           modifiers.head(e, row, colContext, colMap) match {
@@ -54,7 +49,7 @@ class XmlElementCreator(val elem: Element,
             case None     => e.getOwnerDocument().createDocumentFragment()
           }
         }
-      }      
+      }
       val newElem = doc.createElement(name)
       val (modifiers, elementCreators) = childCreators.partition { _.isInstanceOf[XmlElementModifierCreator] }
       elementCreators map { _.create(data) } foreach { newElem.appendChild(_) }

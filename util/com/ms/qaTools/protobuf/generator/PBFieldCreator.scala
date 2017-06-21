@@ -1,23 +1,17 @@
 package com.ms.qaTools.protobuf.generator
 
-import com.ms.qaTools.io.DelimitedRow
 import com.google.protobuf.Message.Builder
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.ParameterizedText
 import com.ms.qaTools.protobuf.setField
 
-
-
 class PBFieldCreator[T](val field: String, val value: String, val f: String => T) extends PBLeafNodeCreator with ParameterizedText {
+  val isLegacyMode = false
+  val isLocal = true
 
-  override val isLegacyMode = false
-  override val isLocal: Boolean = true
-
-  override def create(row: DelimitedRow)(implicit colMap: Lookupable, colContext: ColContext, builder: Builder): Builder = {
-    //println("Setting field: " + field + ": " + resolveValue(row))
+  def create(row: Seq[String])(implicit colMap: Lookupable, colContext: ColContext, builder: Builder): Builder =
     setField(field, f(resolveValue(row)), builder)
-  }
 }
 /*
 Copyright 2017 Morgan Stanley

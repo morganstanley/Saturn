@@ -1,13 +1,22 @@
 package com.ms.qaTools.io.transports
 
-import java.net.URI
-
 import com.ms.qaTools.io.TCPHandshake
 
 // Canonical representation of various network transports so that we can easily construct and pass them around in Kronus
 abstract class Transport
 
-case class TCP(host: String, port: String, authentication: TCPHandshake) extends Transport
+object TCP {
+  sealed trait Protocol
+
+  object Protocol {
+    case object Plain extends Protocol
+    case object String extends Protocol // message preceded by size
+  }
+}
+
+case class TCP ( host: String, port: String, authentication: TCPHandshake, protocol: TCP.Protocol
+               , gzipped: Boolean = false // for legacy saturn model only
+               ) extends Transport
 
 case class PTCP(host: String, port: String) extends Transport
 
@@ -28,7 +37,7 @@ object HTTP {
   }
 }
 
-case class HTTP(uri: URI, method: HTTP.Method, headers: Map[String, String] = Map.empty, disbableChunkedEncoding:Boolean = false) extends Transport
+case class HTTP(uri: java.net.URI, method: HTTP.Method, headers: Map[String, String] = Map.empty, disableChunkedEncoding: Boolean = false) extends Transport
 
 case class MQ(manager: String, readQueueName: String, writeQueueName: String) extends Transport
 /*

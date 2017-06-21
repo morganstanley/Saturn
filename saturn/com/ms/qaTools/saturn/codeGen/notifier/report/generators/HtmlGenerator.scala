@@ -1,20 +1,20 @@
 package com.ms.qaTools.saturn.codeGen.notifier.report.generators
 
-import com.ms.qaTools.toolkit.Passed
-import com.ms.qaTools.saturn.dsl.annotation.OnAnyResultStatus
-import com.ms.qaTools.saturn.dsl.annotation.ScenarioAnnotation
-import com.ms.qaTools.saturn.codeGen.IteratorResult
 import com.ms.qaTools.saturn.codeGen.IterationResult
-import com.ms.qaTools.saturn.dsl.annotation.OnResultStatus
-import com.ms.qaTools.toolkit.NotRun
-import com.ms.qaTools.saturn.dsl.annotation.OnPassResultStatus
+import com.ms.qaTools.saturn.codeGen.IteratorResult
+import com.ms.qaTools.saturn.dsl.annotation.OnAnyResultStatus
 import com.ms.qaTools.saturn.dsl.annotation.OnFailResultStatus
-import org.jsoup.nodes.Element
-import com.ms.qaTools.toolkit.Result
-import org.jsoup.select.Elements
-import com.ms.qaTools.toolkit.Failed
-import com.ms.qaTools.toolkit.Status
+import com.ms.qaTools.saturn.dsl.annotation.OnPassResultStatus
+import com.ms.qaTools.saturn.dsl.annotation.OnResultStatus
+import com.ms.qaTools.saturn.dsl.annotation.ScenarioAnnotation
 import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
+import com.ms.qaTools.toolkit.Failed
+import com.ms.qaTools.toolkit.NotRun
+import com.ms.qaTools.toolkit.Passed
+import com.ms.qaTools.toolkit.Result
+import com.ms.qaTools.toolkit.Status
+import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 import scala.util.Try
 
 trait HtmlContentGenerator[ResultType <: Result] {
@@ -27,9 +27,9 @@ trait HtmlGenerator {
 
   def getAnnotationByResult(scenarioAnnotations: TraversableOnce[ScenarioAnnotation], status: Status): Option[ScenarioAnnotation] = getAnnotationByResult(scenarioAnnotations.map(a => a.onStatus -> a).toMap, status)
   def getAnnotationByResult(scenarioAnnotationMap: Map[OnResultStatus, ScenarioAnnotation], status: Status): Option[ScenarioAnnotation] = Option(status match {
-    case Passed() => scenarioAnnotationMap.getOrElse(OnPassResultStatus, scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null))
-    case Failed() => scenarioAnnotationMap.getOrElse(OnFailResultStatus, scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null))
-    case NotRun() => scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null)
+    case Passed => scenarioAnnotationMap.getOrElse(OnPassResultStatus, scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null))
+    case Failed => scenarioAnnotationMap.getOrElse(OnFailResultStatus, scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null))
+    case NotRun => scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null)
   })
 
   /*
@@ -69,9 +69,9 @@ trait HtmlGenerator {
 
     def classes(r: Status) = {
       r match {
-        case Passed() => ("iconProp " + iconClass, headerType + "Pass" + headerEnd, headerType + "PassDescription")
-        case Failed() => ("iconProp " + iconClass, headerType + "Fail" + headerEnd, headerType + "FailDescription")
-        case NotRun() => throw new Error("Not run result should not be outputted as HTML.")
+        case Passed => ("iconProp " + iconClass, headerType + "Pass" + headerEnd, headerType + "PassDescription")
+        case Failed => ("iconProp " + iconClass, headerType + "Fail" + headerEnd, headerType + "FailDescription")
+        case NotRun => throw new Error("Not run result should not be outputted as HTML.")
       }
     }
 
@@ -179,8 +179,8 @@ object HtmlGenerator {
   def Basic_HtmlGenerator()(implicit sc: SaturnExecutionContext)             = BasicHtmlGenerator()
   def CometStep_HtmlGenerator(implicit sc: SaturnExecutionContext)           = getGeneratorIfImplemented("CometHtmlGenerator")
   def CpsStep_HtmlGenerator(implicit sc: SaturnExecutionContext)             = Basic_HtmlGenerator()
-  def DSConvertStep_HtmlGenerator(implicit sc: SaturnExecutionContext)       = getGeneratorIfImplemented("DSConvertHtmlGenerator")
-  def DataCompareStep_HtmlGenerator(implicit sc: SaturnExecutionContext)     = getGeneratorIfImplemented("DataCompareHtmlGenerator")
+  def DSConvertStep_HtmlGenerator(implicit sc: SaturnExecutionContext)       = DsConvertHtmlGenerator()
+  def DataCompareStep_HtmlGenerator(implicit sc: SaturnExecutionContext)     = DataCompareHtmlGenerator()
   def KronusStep_HtmlGenerator(implicit sc: SaturnExecutionContext)          = Basic_HtmlGenerator()
   def MQPutOperation_HtmlGenerator(implicit sc: SaturnExecutionContext)      = getGeneratorIfImplemented("MQPutHtmlGenerator")
   def MQGetOperation_HtmlGenerator(implicit sc: SaturnExecutionContext)      = getGeneratorIfImplemented("MQGetHtmlGenerator")

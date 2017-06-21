@@ -1,18 +1,23 @@
 package com.ms.qaTools.io.rowSource.file
-import com.ms.qaTools.io.rowSource.internal.StreamingReader
-import com.ms.qaTools.io.rowSource.NamespaceDefinitions
-import com.ms.qaTools.io.rowSource.Utils.StringUtil
-import com.ms.qaTools.xml.NamespaceContextImpl
-import java.io.Closeable
+
 import java.io.File
 import java.io.FileReader
-import java.io.{Reader => JReader}
+import java.io.{ Reader => JReader }
 import java.io.StringReader
-import org.w3c.dom.Document
+
 import scala.annotation.tailrec
+import scala.collection.AbstractIterator
+import scala.slick.util.CloseableIterator
+
+import org.w3c.dom.Document
+
+import com.ms.qaTools.io.rowSource.NamespaceDefinitions
+import com.ms.qaTools.io.rowSource.Utils.StringUtil
+import com.ms.qaTools.io.rowSource.internal.StreamingReader
+import com.ms.qaTools.xml._
 
 class XmlRowSource(reader: JReader, val namespaceContext: NamespaceContextImpl = NamespaceContextImpl(), bufSize: Int = 4 * 1024)
-extends Iterator[Document] with Closeable with NamespaceDefinitions {
+  extends AbstractIterator[Document] with CloseableIterator[Document] with NamespaceDefinitions {
   val streamingBuffer = new StreamingReader(reader, bufSize)
   def parse: String = {
     val sb = new StringBuilder(bufSize)
@@ -29,9 +34,11 @@ extends Iterator[Document] with Closeable with NamespaceDefinitions {
 
           if (streamingBuffer.headIs(dbldashes)) { //is a comment
             sb.append(streamingBuffer.dropUntil(dbldashes + ">", true))
-          } else if (streamingBuffer.headIs(cDataStart)) { //is a cdata section
+          }
+          else if (streamingBuffer.headIs(cDataStart)) { //is a cdata section
             sb.append(streamingBuffer.dropUntil(cDataEnd + ">", true))
-          } else {
+          }
+          else {
             var declBalanced = 1
             while (declBalanced > 0) {
               sb.append(streamingBuffer.dropUntilRegex("""\<|\>""".r, false))
@@ -55,7 +62,7 @@ extends Iterator[Document] with Closeable with NamespaceDefinitions {
           sb.append(streamingBuffer.dropUntil(">", false))
           if (sb.last == '/') balanced -= 1
           val closingTag = streamingBuffer.drop
-          if (closingTag == StreamingReader.NUL) 
+          if (closingTag == StreamingReader.NUL)
             throw new Exception(s"The xml message '${sb.toString()}' appears to be malformed.")
           else {
             sb.append(closingTag) // the '>'
@@ -72,19 +79,28 @@ extends Iterator[Document] with Closeable with NamespaceDefinitions {
     !streamingBuffer.atEnd
   }
 
-  def next: Document = parse.toDocument
+  def next = parse.toDocument
   def close = reader.close()
+}
+
+class SaxonXmlRowSource(reader: JReader, namespaceContext: NamespaceContextImpl = NamespaceContextImpl(), bufSize: Int = 4 * 1024) extends XmlRowSource(reader, namespaceContext, bufSize) {
+  override def next: Document = {
+    import com.ms.qaTools.io.rowSource.Utils._
+    super.next().toSaxon
+  }
 }
 
 object XmlRowSource {
   def apply(reader: JReader, namespaces: NamespaceContextImpl = NamespaceContextImpl()) =
-    new XmlRowSource(reader, namespaces)
+    if (isSaxon)
+      new SaxonXmlRowSource(reader, namespaces)
+    else
+      new XmlRowSource(reader, namespaces)
 }
 
 object XmlFileRowSource {
   def apply(fileName: String): XmlRowSource = apply(new File(fileName))
-  def apply(file: File, namespaces: NamespaceContextImpl = NamespaceContextImpl()): XmlRowSource =
-    XmlRowSource(new FileReader(file))
+  def apply(file: File, namespaces: NamespaceContextImpl = NamespaceContextImpl()): XmlRowSource = XmlRowSource(new FileReader(file))
 }
 
 object XmlBufferRowSource {

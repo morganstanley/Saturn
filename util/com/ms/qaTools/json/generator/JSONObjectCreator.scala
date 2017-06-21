@@ -1,27 +1,19 @@
 package com.ms.qaTools.json.generator
 
-import scala.util.parsing.json.JSONObject
-import com.ms.qaTools.io.DelimitedRow
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.Lookupable
-import com.ms.qaTools.tree.generator.ParameterizedText
 import com.ms.qaTools.tree.generator.NodeCreator
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.fasterxml.jackson.databind.node.ArrayNode
-import scala.collection.JavaConversions._
-
-
 
 case class JSONObjectCreator(children: List[NodeCreator[JsonNode, JsonNode] with HasName]) extends JSONInnerNodeCreator {
-  override val isLocal: Boolean = false
-  override def creators = children
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): JsonNode = {
+  val isLocal: Boolean = false
+  def creators = children
+  def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): JsonNode = {
     val clocalIterators = this.adjustedIterators
     if (clocalIterators.isEmpty) {
       val obj = JsonNodeFactory.instance.objectNode()
-      children.foreach { c => obj.put(c.name, c.create(data)(colMap, context, doc)) }
+      children.foreach { c => obj.set(c.name, c.create(data)(colMap, context, doc)) }
       obj
     }
     else {
@@ -29,7 +21,7 @@ case class JSONObjectCreator(children: List[NodeCreator[JsonNode, JsonNode] with
       for (iterator <- clocalIterators) context.nextIndex(iterator)
       while (clocalIterators.forall(!context.iteratorIsFinished(_, data))) {
         val obj = JsonNodeFactory.instance.objectNode()
-        children.foreach { c => obj.put(c.name, c.create(data)(colMap, context, doc)) }
+        children.foreach { c => obj.set(c.name, c.create(data)(colMap, context, doc)) }
         arr.add(obj)
         for (iterator <- clocalIterators) context.nextIndex(iterator)
       }

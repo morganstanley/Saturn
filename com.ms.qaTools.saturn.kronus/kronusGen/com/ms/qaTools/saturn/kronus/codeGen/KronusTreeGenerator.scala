@@ -6,6 +6,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable.Buffer
 import scala.compat.Platform.EOL
 import scala.tools.nsc.Global
 import scala.tools.nsc.Settings
@@ -13,12 +14,18 @@ import scala.tools.nsc.ast.TreeDSL
 import scala.tools.nsc.reporters.StoreReporter
 
 import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
 
 import com.ms.qaTools.CompilerClassLoader
+import com.ms.qaTools.ScalaParseException
 import com.ms.qaTools.saturn.{kronus => k}
+import com.ms.qaTools.saturn.kronus.codeGen.Implicits._
+import com.ms.qaTools.saturn.resource.DependencyTrackingEObjectDescription
+
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 object KronusTreeGenerator {
-  def apply(): KronusTreeGenerator = {
+  def compiler = {
     val settings = new Settings
     settings.usejavacp.value = true
     settings.embeddedDefaults(new CompilerClassLoader)
@@ -28,37 +35,37 @@ object KronusTreeGenerator {
       compiler.phase = run.parserPhase
       run.cancel()
     }
-    new KronusTreeGenerator(compiler)
+    compiler
   }
+
+  def apply(): KronusTreeGenerator = new KronusTreeGenerator(compiler)
 
   object ValRefExtractor {
     def unapply(vr: k.ValRef): Option[k.ReferenceableDefs] = Option(vr.getRef)
   }
 
   def sortDefs(defs: Seq[k.AbstractDef]): Seq[k.AbstractDef] = {
-    val (typeDefs, defSeq) = defs.partition(_.isInstanceOf[k.TypeDef])
-    val defSet = defSeq.toSet
-    val deps = defSeq.map { n =>
+    val defSet = defs.toSet
+    val deps = defs.map { n =>
       n -> n.eAllContents.asScala.collect {
-        case ValRefExtractor(vd: k.ValDef) if defSet(vd)      => vd
-        case ValRefExtractor(fd: k.FunctionDef) if defSet(fd) => fd
-        case fc: k.FunctionCall if defSet(fc.getMethod)       => fc.getMethod
-      }.toSet[k.AbstractDef]
+             case ValRefExtractor(vd: k.ValDef)      if defSet(vd)           => vd
+             case ValRefExtractor(fd: k.FunctionDef) if defSet(fd)           => fd
+             case fc: k.FunctionCall                 if defSet(fc.getMethod) => fc.getMethod
+             case GraphRef(graph,_)                                          => graph
+           }.toSet[k.AbstractDef]
     }
     k.topSort(deps) match {
-      case (cycle, xs) if cycle.isEmpty =>
-        typeDefs ++ xs
+      case (Seq(), xs) =>
+        xs
       case (cycle, _) =>
         val msg = {
           Seq("Cyclic dependencies in Kronus file:") ++ cycle.map {
-            case (n, ms) => s"${n.getName} -> ${ms.map(_.getName)}"
+            case (n, ms) => s"${n.name.getOrElse("<unnamed>")} -> ${ms.map(_.name.getOrElse("<unnamed>"))}"
           }
         }.mkString("\n")
         throw new IllegalArgumentException(msg)
     }
   }
-
-  class ScalaParseException(code: String) extends Exception(s"Error parse code: $code")
 }
 
 class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeDSL {
@@ -76,7 +83,77 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
     q"new Location($pkg, $uri, ${l.startLine}, ${l.endLine})"
   }
 
-  def generateFile(topLevel: k.TopLevelKronus, outputDir: Path) = scala.util.Try {
+  def genKronus(kronus: k.Kronus, resultVal: Option[String]): Seq[Tree] = {
+    mutator.materializeGraph(kronus)
+    val imports  = Buffer.empty[Tree]
+    val includes = Buffer.empty[Tree]
+    val typeDefs = Buffer.empty[Tree]
+    val others   = Buffer.empty[k.AbstractDef]
+    kronus.getDefs.asScala.foreach {
+      _.getDef match {
+        case x: k.ImportDef  => imports += parseScala("import " + x.getModule)
+        case x: k.IncludeDef => includes += genInclude(x)
+        case x: k.TypeDef    => if (x.getValue != null) typeDefs += genTypeDef(x)
+        case _: k.HashtagDef =>
+        case _: k.Assignment =>
+        case x               => others += x
+      }
+    }
+    val defs = sortDefs(others).map(genAbstractDef)
+    val builder = Buffer.newBuilder[Tree]
+    builder.sizeHint(imports.length + includes.length + typeDefs.length + others.length + 1)
+    builder ++= imports ++= includes ++= typeDefs ++= defs += genReturn(kronus, resultVal)
+    builder.result()
+  }
+
+  def includedModule(inc: k.IncludeDef): TermName =
+    TermName(Option(inc.getName).getOrElse(inc.getModule.getPackage.getModule))
+
+  def genInclude(inc: k.IncludeDef): ValDef = {
+    val name = includedModule(inc)
+    val value = q"new ${parseType(inc.getModule.getPackage.getModule)}(Some(${Ident(k.GeneratedSymbol.currentScope)}))"
+    val singleton = inc.parent[k.Kronus].fold(false)(_.eContainer.isInstanceOf[k.TopLevelKronus])
+    val rhs = if (singleton) q"implicitly[KronusRunParameters].injector.get($value)" else value
+    q"val $name = $rhs"
+  }
+
+  def qualifier(context: EObject, ref: EReference): Option[RefTree] = context.eAdapters.asScala.collectFirst {
+    case x: DependencyTrackingEObjectDescription.Adapter =>
+      val hd +: tl = x.dependencies(ref).reverseMap(includedModule)
+      tl.foldLeft(Ident(hd): RefTree)(Select.apply)
+  }
+
+  def qualifiedTermName(context: EObject, ref: EReference): RefTree = {
+    val name = TermName(context.eGet(ref).asInstanceOf[k.NamedRuntimeDef].getName)
+    qualifier(context, ref) match {
+      case Some(q) => Select(q, name)
+      case None    => Ident(name)
+    }
+  }
+
+  // Implicit parameters here are unique per run
+  def genClassSignature(cls: String, classBody: Seq[Tree]) =
+    q"""class ${TypeName(cls)}(parentScope: Option[Scope])(implicit __runParams: KronusRunParameters)
+        extends ConstellationDecoration.HighPriorityFromImplicits {
+          implicit def __executor = implicitly[KronusRunParameters].executor
+          implicit def __locale = implicitly[KronusRunParameters].locale
+          implicit def __referenceCounter = implicitly[KronusRunParameters].referenceCounter
+          implicit def __constellationClient = implicitly[KronusRunParameters].constellationClient
+          implicit def __materializer = implicitly[KronusRunParameters].materializer
+          ..$classBody
+        }"""
+
+  // Class members here are unique per script.
+  def genClassDef(topLevel: k.TopLevelKronus, cls: String, resultVal: String) = {
+    val pkgNameDef          = q"val ${TermName(k.GeneratedSymbol.packageName)} = getClass.getName"
+    val uriDef              = q"val ${TermName(k.GeneratedSymbol.sourceURI)} = ${k.Location.getURI(topLevel)}"
+    val scopeDef            = q"val ${TermName(k.GeneratedSymbol.currentScope)} = new ValDefScope(${Ident(k.GeneratedSymbol.packageName)}, parentScope, None, Nil)"
+    val closeablesDef       = q"val __closeables = new Closeables"
+    val classBody:Seq[Tree] = pkgNameDef +: uriDef +: scopeDef +: closeablesDef +: genKronus(topLevel.getKronus, Some(resultVal))
+    genClassSignature(cls, classBody)
+  }
+
+  def generateFile(topLevel: k.TopLevelKronus, outputDir: Path) = {
     val wrappedTL: k.WrappedTopLevelKronus = topLevel
     val pkg = wrappedTL.pkg
     val cls = wrappedTL.clazz
@@ -93,79 +170,57 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
           "import scala.util.Try",
           "import java.util.Locale",
           "import com.ms.qaTools.saturn.kronus.Location",
-          "import com.ms.qaTools.saturn.kronus.runtime._").foreach(writer.println)
+          "import com.ms.qaTools.saturn.kronus.runtime._",
+          "import akka.stream.scaladsl.RunnableGraph",
+          "import akka.stream.scaladsl.GraphDSL").foreach(writer.println)
       writer.println()
-      val classDef = {
-        val pkgNameDef = q"val ${TermName(k.GeneratedSymbol.packageName)} = getClass.getName"
-        val uriDef = q"val ${TermName(k.GeneratedSymbol.sourceURI)} = ${k.Location.getURI(topLevel)}"
-        val scopeDef = q"val ${TermName(k.GeneratedSymbol.currentScope)} = new ValDefScope(${Ident(k.GeneratedSymbol.packageName)}, parentScope, None, Nil)"
-        val closeablesDef = q"val __closeables = new Closeables"
-        val classBody = pkgNameDef +: uriDef +: scopeDef +: closeablesDef +: genKronus(topLevel.getKronus, Some(resultVal))
-        q"""class ${TypeName(cls)}(parentScope: Option[ValDefScope])
-                                  (implicit executor: ExecutionContext,
-                                            locale: Locale,
-                                            referenceCounter: ReferenceCounter,
-                                            constellationClient: IConstellationClient)
-            extends ConstellationDecoration.HighPriorityFromImplicits {..$classBody}"""
-      }
-      writer.println(showCode(classDef))
+      writer.println(showCode(genClassDef(topLevel,cls,resultVal)))
       writer.println()
       writer.println {
         s"""object $app extends App {
-           |  import java.net.URL
-           |  import scala.concurrent.Await, scala.concurrent.duration.Duration
-           |  import ExecutionContext.Implicits.global
-           |  implicit val locale = Locale.US
-           |  implicit val referenceCounter = new ReferenceCounter
-           |  implicit val constellationClient = ConstellationClient(new URL("http://localhost:9090/"))
-           |  val main = new $cls(None)
-           |  val (result, _) = Await.result(main.$resultVal.future, Duration.Inf)
-           |  constellationClient.close()
-           |  val exitCode = if (result.isSuccess) 0 else 1
-           |  if (!args.contains("--noExitCode")) System.exit(exitCode)
+           |  def inner_main(args: Array[String]) = {
+           |    val cmdLine = new KronusCmdLine(args)
+           |    if (cmdLine.options.help) {
+           |      println(KronusCmdLine.HelpMessage)
+           |      scala.util.Success(())
+           |    } else {
+           |      val constellationClient = new NopConstellationClient
+           |      val system = akka.actor.ActorSystem("QATools-Kronus")
+           |      try {
+           |        implicit val runParams = KronusRunParameters(ExecutionContext.global, Locale.US, new ReferenceCounter,
+           |                                                     constellationClient, cmdLine,
+           |                                                     akka.stream.ActorMaterializer()(system),
+           |                                                     new KronusModuleInjector, ConstellationLogNotifier() :: Nil)
+           |        concurrent.Await.result((new $cls(None)).$resultVal.future, concurrent.duration.Duration.Inf)._1
+           |      } finally {
+           |        system.terminate()
+           |        constellationClient.close()
+           |      }
+           |    }
+           |  }
+           |  sys.exit(if(inner_main(args).isSuccess) 0 else 2) // App is meant to exit, JUnit should call inner_main
            |}
            |
            |@org.junit.runner.RunWith(classOf[org.specs2.runner.JUnitRunner])
            |class ${cls}Specs extends org.specs2.mutable.Specification {
-           |  $app.main(Array("--noExitCode"))
            |  "Result should be successful" >> {
-           |    $app.result.recover {case t: Throwable => t.printStackTrace()}
-           |    $app.result must beSuccessfulTry
+           |    val result = $app.inner_main(Array())
+           |    result.recover {case t: Throwable => t.printStackTrace()}
+           |    result must beSuccessfulTry
            |  }
-           |  "Exit code should be 0" >> {$app.exitCode === 0}
            |}""".stripMargin
       }
     } finally writer.close()
     KronusGenerator.Result(scalaFile, wrappedTL.appFQN)
   }
 
-  def genKronus(kronus: k.Kronus, resultVal: Option[String]): Seq[Tree] = {
-    val imports = kronus.getImports.map(i => parseScala("import " + i.getModule))
-    val includes = kronus.getIncludes.flatMap(genInclude)
-    val defs = sortDefs(kronus.getDefs).flatMap(genAbstractDef)
-    imports ++ includes ++ defs :+ genReturn(kronus, resultVal)
-  }
-
-  def genInclude(inc: k.IncludeDef): Seq[Tree] = {
-    val mod = inc.getModule
-    val obj = q"new ${parseType(mod)}(Some(${Ident(k.GeneratedSymbol.currentScope)}))"
-    inc.getName match {
-      case null =>
-        val v = freshTermName(mod + "$")
-        Seq(q"val $v = $obj", q"import $v._")
-      case alias =>
-        Seq(q"val ${TermName(alias)} = $obj")
-    }
-  }
-
-  def genAbstractDef(x: k.AbstractDef): Option[MemberDef] = CompileException.rethrow(x) {
+  def genAbstractDef(x: k.AbstractDef): MemberDef = CompileException.rethrow(x) {
     x match {
-      case x: k.TypeDef if x.getValue != null => Some(genTypeDef(x))
-      case _: k.TypeDef                       => None
-      case _: k.HashtagDef                    => None
-      case x: k.AnnotationDef                 => Some(genAnnotationDef(x))
-      case x: k.FunctionDef                   => Some(genFunctionDef(x))
-      case x: k.ValDef                        => Some(genValDef(x))
+      case a: k.AnnotationDef => genAnnotationDef(a)
+      case f: k.FunctionDef   => genFunctionDef(f)
+      case v: k.ValDef        => genValDef(v)
+      case g: GraphDef        => genGraphDef(g)
+      case o                  => throw new IllegalArgumentException("" + o)
     }
   }
 
@@ -220,13 +275,18 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
     val args = ti.getTypeParameters
     val parmsSize = td.getTypeParameters.size
     assert(args.size == parmsSize, s"Type instance $name has ${args.size} argument(s) but need $parmsSize parameter(s)")
-    tq"${Ident(TypeName(name))}[..${args.map(genTypeInstance)}]"
+    val tn = TypeName(name)
+    val qn = for {
+      _ <- Option(td.getValue)
+      q <- qualifier(ti, k.KronusPackage.eINSTANCE.getTypeInstance_Name)
+    } yield Select(q, tn)
+    tq"${qn.getOrElse(Ident(tn))}[..${args.map(genTypeInstance)}]"
   }
 
   def genFunctionDef(fd: k.FunctionDef): DefDef = {
     val tparams = fd.getTypeParameters.map(genTypeParameter)
     val vparamss = {
-      val pds = fd.getParameterDefs.map(genParameterDef)
+      val pds = fd.getNonStreamParameters.map(genParameterDef)
       val attrsParam = fd.hashtags.collectFirst {
         case k.Attributes(name) => q"${Modifiers(PARAM)} val ${TermName(name)}: Seq[(String, Any)] = Nil" // TODO
       }
@@ -256,7 +316,7 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
         EmptyTree
       case x =>
         flags = flags | DEFAULTPARAM
-        genExpression(x)
+        withScope(q"new ParameterValueScope(${pd.getName}, ${parentScope(x)})", genExpression(x))
     }
     ValDef(Modifiers(flags), TermName(pd.getName), typ, default)
   }
@@ -265,15 +325,17 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
     case scb: k.ScalaCodeBlock =>
       val code = parseScala(scb.getCodeStr)
       assert(!code.exists(_.isInstanceOf[Return]), "Explicit `return` is not allowed in Scala code block")
+
       val fd = Option(cb.eContainer).collect {case fd: k.FunctionDef => fd}
-      val params = fd.map(_.getParameterDefs.toSeq).getOrElse(Nil)
+//      val ad = fd.flatMap{fd => Option(fd.eContainer).collect {case ad: k.AnnotatedDef => ad}}
+      val params = cb.getNonStreamParameters
       val body = scb.getType match {
-        case "for" =>
-          code
+        case "for"   => code
         case "yield" => if (params.isEmpty) q"Context.execute($code)" else {
           val unlifts = params.map(pd => fq"${TermName(pd.getName)} <- ${Ident(pd.getName)}")
           q"for (..$unlifts) yield $code"
         }
+        case other => throw new Exception(s""""$other" is not a valid generate parameter.""")
       }
       fd.flatMap {
         _.hashtags.collectFirst {
@@ -289,7 +351,7 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
   def genReturn(kronus: k.Kronus, resultVal: Option[String]): Tree = {
     val rhs = kronus.getReturn match {
       case null =>
-        val vds = kronus.getDefs.collect {case vd: k.ValDef => Ident(vd.getName)}
+        val vds = kronus.collectDefs[k.ValDef].map(vd => Ident(vd.getName)).toIterable
         q"passIfAllPass(Seq(..$vds))"
       case ret =>
         genExpression(ret)
@@ -299,13 +361,11 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
 
   def parentScope(x: EObject): Tree = {
     import k.EObjectOps
-    def owner(x: EObject): Option[EObject] = x.eContainers.collectFirst {
-      case x@(_: k.ValDef | _: k.FunctionCall | _: k.ParameterDef | _: k.FunctionDef | _: k.ParameterValue) => x
-    }.flatMap {
-      case x: k.ParameterDef => owner(x.eContainer.asInstanceOf[k.FunctionDef])
-      case x: EObject        => Some(x)
+    val owner = x.eContainers.collectFirst {
+      case x: k.ParameterDef => x.eContainer
+      case x@(_: k.ValDef | _: k.FunctionCall | _: k.FunctionDef | _: k.ParameterValue) => x
     }
-    owner(x) match {
+    owner match {
       case Some(_: k.ValDef | _: k.FunctionCall | _: k.ParameterValue) | None =>
         q"Some(${Ident(k.GeneratedSymbol.currentScope)})"
       case Some(_: k.FunctionDef) =>
@@ -321,8 +381,9 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
   }
 
   def genValDef(vd: k.ValDef): ValDef = {
+    val ad = vd.eContainer.asInstanceOf[k.AnnotatedDef]
     val n = vd.getName
-    val annos = vd.getAnnotations.map(genAnnotationCall)
+    val annos = ad.getAnnotations.map(genAnnotationCall)
     val scope = q"new ValDefScope($n, ${parentScope(vd)}, ${k.Location.fromEObject(vd)}, Seq(..$annos))"
     q"val ${TermName(n)} = ${withScope(scope, genExpression(vd.getValue))}"
   }
@@ -334,11 +395,19 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
     case e: k.BooleanLiteral  => q"Context.successful(${e.isValue})"
     case e: k.ValRef          => genValRef(e)
     case e: k.FunctionCall    => genFunctionCall(e)
-    case e: k.IncludeRef      => genExpression(e.getRef)
     case e: k.Sequence        => q"Context.successful(Seq(..${e.getValues.map(genExpression)}))"
     case e: k.UnaryOperation  => q"${genExpression(e.getExpr)}.map(_.${TermName("unary_" + e.getOp)})"
     case e: k.BinaryOperation => genBinaryOperation(e)
     case e: k.CodeBlock       => genCodeBlock(e)
+    case GraphRef(g,s)        => parseScala({
+      val currentSink = s"g._${g.sinkDefs.indexOf(s) + 1 }"
+      val sinkMaterializer =
+        if (g.sinkDefs.size <= 1)
+          s"Await.result($currentSink.future, scala.concurrent.duration.Duration.Inf)"
+        else
+          currentSink
+      s"${g.name}.map { g => $sinkMaterializer }"
+    })
   }
 
   def genBinaryOperation(bop: k.BinaryOperation): Tree = {
@@ -366,31 +435,102 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
   }
 
   def genFunctionCall(fc: k.FunctionCall): Tree = {
-    val qn = qualifiedName(fc.getMethod.getName, fc)
+    val qn = qualifiedTermName(fc, k.KronusPackage.eINSTANCE.getFunctionCall_Method)
     val parent = parentScope(fc)
     val scope = q"new FunctionCallScope(${qn.toString}, $parent, ${k.Location.fromEObject(fc)})"
-    val args = genParameterValues(fc.getParameterValues, fc.getMethod.getParameterDefs)
+    val args = genParameterValues(fc.getParameterValues, fc.getMethod.getNonStreamParameters)
     withScope(scope, q"$qn(...${Seq(Seq(parent, Ident("__closeables")), args)})")
   }
 
   def genAnnotationCall(ac: k.AnnotationCall): Tree = {
-    val name = qualifiedName(ac.getMethod.getName, ac)
+    val name = qualifiedTermName(ac, k.KronusPackage.eINSTANCE.getAnnotationCall_Method)
     val args = genParameterValues(ac.getParameterValues, ac.getMethod.getParameterDefs)
     q"$name(..$args)"
   }
 
   def genValRef(vr: k.ValRef): Tree = {
-    def qualified(name: String) = qualifiedName(name, vr)
+    import k.KronusPackage.eINSTANCE.getValRef_Ref
     vr.getRef match {
-      case r: k.ParameterDef => qualified(r.getName)
-      case r: k.ValDef       => qualified(r.getName)
-      case r: k.FunctionDef  => q"Context.successful(${qualified(r.getName)}(${parentScope(r)}, __closeables) _)"
+      case r: k.ParameterDef => Ident(r.getName)
+      case r: k.ValDef       => qualifiedTermName(vr, getValRef_Ref)
+      case r: k.FunctionDef  => q"Context.successful(${qualifiedTermName(vr, getValRef_Ref)}(${parentScope(r)}, __closeables) _)"
     }
   }
 
-  def qualifiedName(name: String, eObj: EObject): RefTree = eObj.eContainer match {
-    case inc: k.IncludeRef => q"${Ident(inc.getInclude.getName)}.${TermName(name)}"
-    case _                 => Ident(name)
+  def genAssignmentByName(srcName: String, accessor: String, letName: String, defined: Seq[String]) =
+    s""".$accessor.find {_.toString == "${letName.ensuring({defined.contains(_)}, s"'$letName' is not in the stream node definition $accessor: $defined")}"}.getOrElse(throw new NoSuchElementException(s"$letName was not found in $accessor $${$srcName.outlets.map {_.toString}}"))"""
+
+  def genOutletAssignmentByName(srcName: String, outletName: String, definedOutlets: Seq[String] /* from the stream node definition */, outletTypeName: String) =
+    genAssignmentByName(srcName, "outlets", outletName, definedOutlets) + s".asInstanceOf[Outlet[$outletTypeName]]"
+
+  def genInletAssignmentByName(srcName: String, inletName: String, definedInlets: Seq[String] /* from the stream node definition */, inletTypeName: String) =
+    genAssignmentByName(srcName, "inlets", inletName, definedInlets) + s".asInstanceOf[Inlet[$inletTypeName]]"
+
+  def genGraphBodyDef(g:GraphDef): Tree = {
+    val sinks         = g.sinkDefs.map{s => s.getName + "_SHAPE"}.mkString(",")
+    val nonSinks      = g.resolvedNodes.toSeq.filter{ !_.isSinkDef }.map{n => s"""val ${n.getName}_SHAPE = builder.add(${n.getName}.graph)"""}.mkString("\n")
+    val grouppedEdges = g.edges.groupBy{e => (e.getRhs, e.getRhsParameter)}
+    val flowAssignments = (for {
+      ((valDef,parameterName),assignments) <- grouppedEdges
+    } yield {
+      val srcName = s"""${valDef.getName}_SHAPE"""
+      val inletTypeName = assignments.head.getLhs.getStreamNodeDefinition.flatMap {_.getInletType}.map {_.getName}.getOrElse("Any")
+      val outletTypeName = valDef.getStreamNodeDefinition.flatMap{_.getOutletType.map{_.getName}}.getOrElse("Any")
+
+      if(assignments.size > 1) {
+        val broadcastName = s"""${srcName}_BROADCAST_SHAPE"""
+        val broadcastDef  = s"""val $broadcastName = builder.add(Broadcast[$outletTypeName](${assignments.size}))"""
+        val srcBroadcast = s"""$srcName ~> $broadcastName"""
+        val tgtBroadcast = assignments.toList.map{a => s"""$broadcastName ~> ${a.getLhs.getName}_SHAPE"""}
+
+        broadcastDef :: srcBroadcast :: tgtBroadcast
+      }
+      else {
+        val outlets = valDef.getStreamNodeDefinition.map {_.getOutlets}.getOrElse(Nil)
+        val inlets = assignments.head.getLhs.getStreamNodeDefinition.map {_.getInlets}.getOrElse(Nil)
+        val inletType = assignments.head.getLhs.getStreamNodeDefinition.flatMap {_.getInletType}.map {_.getName}.getOrElse("Any")
+        List(s"""$srcName${Option(assignments.head.getRhsParameter).map {genOutletAssignmentByName(srcName,_,outlets,outletTypeName)}.getOrElse("")} ~> ${assignments.head.getLhs.getName}_SHAPE${Option(assignments.head.getLhsParameter).map {genInletAssignmentByName(assignments.head.getLhs.getName + "_SHAPE",_, inlets,inletTypeName)}.getOrElse("")}""")
+      }
+    }).flatten.mkString("\n")
+    val bodyStr = s"""{
+        (builder) => {
+          ($sinks) => {
+          implicit val IMPLICIT_BUILDER = builder
+
+          import akka.stream.scaladsl.GraphDSL.Implicits._
+          import akka.stream.scaladsl.Broadcast
+          import akka.stream.scaladsl.GraphDSL
+          import akka.stream.scaladsl.RunnableGraph
+          import akka.stream.ClosedShape
+          import akka.stream.Outlet
+          import akka.stream.Inlet
+          import akka.stream.FlowShape
+
+          $nonSinks
+          $flowAssignments
+
+          ClosedShape
+  }}}"""
+    parseScala(bodyStr)
+  }
+
+  def genGraphDef(g:GraphDef):ValDef = {
+    val graphNodes  = g.resolvedNodes.map{n => fq"${TermName(n.getName)} <- ${TermName(n.getName)}"}
+    val sinksShapes = g.sinkDefs.map(s => q"${Ident(s.getName)}.graph")
+    val sinkTypes   = g.sinkDefs.flatMap{ sd => sd.getMaterializedType }
+    val graphDslCreate: Tree =
+        if (g.sinkDefs.size <= 1)
+          q"GraphDSL.create(..$sinksShapes)(${genGraphBodyDef(g)})"
+        else {
+          val conversionParameters = sinkTypes.zipWithIndex.map{case (t,i) => q"${Ident(s"ff$i")}:${parseType(s"Future[$t]")}"}
+          val conversionUnpack     = sinkTypes.zipWithIndex.map{case (t,i) => fq"${Ident(s"f$i")} <- ${Ident(s"ff$i")}"}
+          val conversionTuple      = sinkTypes.zipWithIndex.map{case (t,i) => Ident(s"f$i")}
+          val sinkConversionFn     = q"(..$conversionParameters) => for (..$conversionUnpack) yield (..$conversionTuple)"
+          q"GraphDSL.create(..$sinksShapes)($sinkConversionFn)(${genGraphBodyDef(g)})"
+        }
+    val graph = fq"""graph <- Context.fromFuture(RunnableGraph.fromGraph($graphDslCreate).named("graph0").run())"""
+    val rhs = q"for(..$graphNodes;$graph) yield {graph}"
+    q"""val ${TermName(g.name)} = ${if (g.sinkDefs.size <= 1) q"Tuple1($rhs)" else rhs}"""
   }
 
   def genAnnotationDef(ad: k.AnnotationDef): ClassDef = {
@@ -406,7 +546,7 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
     reporter.reset()
     val wrappedCode = "object wrapper {" + EOL + code + EOL + "}"
     val wrappedTree = newUnitParser(wrappedCode, "<kronus-tree-gen>").parse()
-    if (reporter.hasErrors) throw new ScalaParseException(code)
+    if (reporter.hasErrors) throw ScalaParseException.fromReporter(reporter, code)
     val PackageDef(_, List(ModuleDef(_, _, Template(_, _, _ :: parsed)))) = wrappedTree
     parsed match {
       case expr :: Nil   => expr
@@ -415,8 +555,24 @@ class KronusTreeGenerator(val global: Global) extends KronusGenerator with TreeD
   }
 
   def parseType(name: String): Tree = {
-    val q"type $_ = $typ" = parseScala(s"type __T = $name")
-    typ
+    val q"type $_ = $t" = parseScala(s"type __T = $name")
+    t
+  }
+
+  object mutator {
+    def materializeGraph(kronus: k.Kronus) = {
+      val graphDefs = GraphDefs(kronus.collectDefs[k.Assignment].toSeq)
+      graphDefs.foreach { g =>
+        g.sinkDefs.foreach { s =>
+          val matDef = CreateValDef("__MATERIALIZED_" + s.getName, GraphRef(g, s))
+          kronus.getDefs.add(k.KronusFactory.eINSTANCE.newAnnotatedDef(matDef))
+          EcoreUtil.UsageCrossReferencer.find(s, kronus).foreach { setting =>
+            if (!setting.getEObject.isInstanceOf[k.Assignment]) EcoreUtil.replace(setting, s, matDef)
+          }
+        }
+        kronus.getDefs.add(k.KronusFactory.eINSTANCE.newAnnotatedDef(g))
+      }
+    }
   }
 }
 /*

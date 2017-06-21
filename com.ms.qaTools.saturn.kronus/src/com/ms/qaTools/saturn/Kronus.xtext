@@ -11,23 +11,52 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 TopLevelKronus:
   package = PackageDef
+  exports += ExportDef*
   kronus = Kronus
 ;
 
 Kronus: {Kronus}
-  imports += ImportDef*
-  includes += IncludeDef*
-  defs += AbstractDef*
+//  imports += ImportDef*
+//  includes += IncludeDef*
+  defs += AnnotatedDef*  
+//  assignments += Assignment*
+  
   (RETURN return=ValueOperation)?
 ;
 
-AbstractDef: TypeDef | AnnotationDef | HashtagDef | FunctionDef | ValDef;
+Assignment: lhs=[ValDef|QN]('#' lhsParameter=ID)? '<~' rhs=[ValDef|QN] ('#' rhsParameter=ID)?
+          | rhs=[ValDef|QN]('#' rhsParameter=ID)? '~>' lhs=[ValDef|QN] ('#' lhsParameter=ID)?
+          ;
 
-ReferenceableDefs: FunctionDef | ValDef | ParameterDef;
-
-ValDef:
+AnnotatedDef:
   hashtags+=HashtagCall*
   annotations+=AnnotationCall*
+  def=AbstractDef	
+;
+
+AbstractDef: NamedAbstractDef | ImportDef | IncludeDef | Assignment;
+ReferenceableDefs: FunctionDef | ValDef | ParameterDef;
+NamedAbstractDef: NamedRuntimeDef | HashtagDef;
+
+// These names are indistinguishable in Scala runtime, thus user should not have duplicated names among them
+NamedRuntimeDef: TypeDef | AnnotationDef | FunctionDef | ValDef;
+
+// def A(a:String)
+// def A[O](a:List[O]):O
+// def A[O](a:List[List[O]]):O
+TypeInstance: name=[TypeDef|QN] ('[' typeParameters+=TypeInstance (',' typeParameters+=TypeInstance)* ']')?;
+
+FunctionDef:
+  DEF name=CAPITALIZED_ID ('[' typeParameters+=TypeParameter (',' typeParameters+=TypeParameter)* ']')? '(' (parameterDefs+=ParameterDef (',' parameterDefs+=ParameterDef)*)? ')' ':' returnType=TypeInstance value=CodeAssignment?
+;
+
+AnnotationDef:
+  DEF '@' name=CAPITALIZED_ID '(' (parameterDefs+=ParameterDef (',' parameterDefs+=ParameterDef)*)? ')';
+
+HashtagDef:
+  DEF '#' name=CAPITALIZED_ID '(' (parameterDefs+=ParameterDef (',' parameterDefs+=ParameterDef)*)? ')';
+  
+ValDef:
   VAL name=CAPITALIZED_ID KRONUS_ASSIGN value=ValueOperation
 ;
 
@@ -40,8 +69,15 @@ ImportDef:
 ;
 
 IncludeDef:
-    INCLUDE module=ModuleDef (AS name=CAPITALIZED_ID)?
+    INCLUDE module=[TopLevelKronus|ModuleParts] (AS name=CAPITALIZED_ID)? reexport?=EXPORT?
 ;
+
+ExportDef: EXPORT symbols+=ExportClause (',' symbols+=ExportClause)*;
+ExportClause: unexport?='!'? symbol=ExportSymbol;
+ExportSymbol: ExportAll | ExportHashtag | ExportRuntimeName;
+ExportAll: {ExportAll} '_';
+ExportHashtag: '#' ref=[HashtagDef|QN];
+ExportRuntimeName: ref=[NamedRuntimeDef|QN];
 
 ModulePart: ID | Keywords;
 
@@ -52,6 +88,7 @@ ModuleLeafPart hidden(WS): ModulePart ('=>' ModulePart)?;
 
 AS: 'as';
 DEF: 'def';
+EXPORT: 'export';
 FALSE: 'false';
 GENERATE: 'generate';
 IMPORT: 'import';
@@ -66,6 +103,7 @@ WITH: 'with';
 
 Keywords: AS
         | DEF
+        | EXPORT
         | FALSE
         | GENERATE
         | IMPORT
@@ -95,24 +133,8 @@ TypeValueAtomic returns TypeValue: type=TypeId ('[' parms+=TypeValue (',' parms+
 TypeNameStr hidden(): '_' | ID ('.' ID)* ('.' '_')?;
 TypeName: name=TypeNameStr;
 
-TypeRef hidden(): '$' typeRef=[TypeDef];
+TypeRef hidden(): '$' typeRef=[TypeDef|QN];
 TypeId: TypeName | TypeRef;
-
-// def A(a:String)
-// def A[O](a:List[O]):O
-// def A[O](a:List[List[O]]):O
-TypeInstance: name=[TypeDef] ('[' typeParameters+=TypeInstance (',' typeParameters+=TypeInstance)* ']')?;
-
-FunctionDef:
-  hashtags+=HashtagCall*
-  DEF     name=CAPITALIZED_ID ('[' typeParameters+=TypeParameter (',' typeParameters+=TypeParameter)* ']')? '(' (parameterDefs+=ParameterDef (',' parameterDefs+=ParameterDef)*)? ')' ':' returnType=TypeInstance value=CodeAssignment?
-;
-
-AnnotationDef:
-  DEF '@' name=CAPITALIZED_ID '(' (parameterDefs+=ParameterDef (',' parameterDefs+=ParameterDef)*)? ')';
-
-HashtagDef:
-  DEF '#' name=CAPITALIZED_ID '(' (parameterDefs+=ParameterDef (',' parameterDefs+=ParameterDef)*)? ')';
 
 CodeAssignment: KRONUS_ASSIGN CodeBlock;
 CodeBlock: ScalaCodeBlock | KronusCodeBlock;
@@ -124,14 +146,16 @@ SimpleParameterValue:
 ;
 
 HashtagCall: 
-  '#' method=[HashtagDef] '(' (parameterValues+=SimpleParameterValue (',' parameterValues+=SimpleParameterValue)*)? ')'
+  '#' method=[HashtagDef|QN] '(' (parameterValues+=SimpleParameterValue (',' parameterValues+=SimpleParameterValue)*)? ')'
 ;
 
 AnnotationCall: 
-  '@' method=[AnnotationDef] '(' (parameterValues+=ParameterValue (',' parameterValues+=ParameterValue)*)? ')'
+  '@' method=[AnnotationDef|QN] '(' (parameterValues+=ParameterValue (',' parameterValues+=ParameterValue)*)? ')'
 ;
 
 ParameterDef:
+  hashtags+=HashtagCall*
+  annotations+=AnnotationCall*	
   name=ID ':' byName?='=>'? type=TypeInstance list?='*'? (KRONUS_ASSIGN defaultValue=ValueOperation)?
 ;
 
@@ -140,11 +164,10 @@ KeywordParameterValue: name=ID KRONUS_ASSIGN value=ValueOperation;
 PositionParameterValue: value=ValueOperation;
 
 Primary returns Expression: Value | '(' ValueOperation ')';
-Value: Sequence | ValRef | FunctionCall | IncludeRef | StringLiteral | DoubleLiteral | IntegerLiteral | BooleanLiteral | CodeBlock;
+Value: Sequence | ValRef | FunctionCall | StringLiteral | DoubleLiteral | IntegerLiteral | BooleanLiteral | CodeBlock;
 Sequence: {Sequence} '[' (values += ValueOperation (',' values += ValueOperation)*)? ']';
-ValRef: ref=[ReferenceableDefs];
-FunctionCall: method=[FunctionDef] '(' (parameterValues+=ParameterValue (',' parameterValues+=ParameterValue)*)? ')';
-IncludeRef: include=[IncludeDef] '.' ref=(ValRef | FunctionCall);
+ValRef: ref=[ReferenceableDefs|QN];
+FunctionCall: method=[FunctionDef|QN] '(' (parameterValues+=ParameterValue (',' parameterValues+=ParameterValue)*)? ')';
 StringLiteral: value=STRING;
 DoubleLiteral: value=DOUBLE;
 IntegerLiteral: value=INT;
@@ -182,6 +205,7 @@ SCALA_CODE_BLOCK hidden():       SQUIGGLY_BRACKET_BLOCK;
 BOOLEAN returns ecore::EBoolean: TRUE | FALSE;
 DOUBLE returns ecore::EDouble: INT '.' INT;
 ID: CAPITALIZED_ID | OTHER_ID;
+QN: (CAPITALIZED_ID '.')? ID;
 
 terminal KRONUS_ASSIGN: '=';
 

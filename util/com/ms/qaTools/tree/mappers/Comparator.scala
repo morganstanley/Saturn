@@ -7,35 +7,17 @@ import com.ms.qaTools.xml.NamespaceContextImpl
 import org.w3c.dom.{ Node, Element }
 import com.sun.xml.internal.stream.events.NamespaceImpl
 import javax.xml.namespace.NamespaceContext
-import com.ms.qaTools.conversions.XmlToTreeNodeConversions._
 
-
-
-case class XmlNodeXPathComparator(
-  xPaths: Seq[String])
-  extends XmlNodeComparator {
-  override def apply(options: (Option[XmlNode], Option[XmlNode])): Boolean = {
-    if (options._1 == None) false
-    if (options._2 == None) true
-    else {
-      val (a, b) = (options._1.get, options._2.get)
-      val aValues = xPaths.map(x => {
-        val xPathLookup = XPathNodeLookup(x)(a.nsContext)
-        xPathLookup.getValue(a)
-      })
-
-      val bValues = xPaths.map(x => {
-        val xPathLookup = XPathNodeLookup(x)(b.nsContext)
-        xPathLookup.getValue(b)
-      })
-
-      val compares = aValues.zip(bValues).map {
-        case (a, b) => a.compareTo(b)
-      }
-
-      compares.find(_ != 0) match {
-        case None => false // all equal
+case class XmlNodeXPathComparator(xPaths: Seq[String]) extends XmlNodeComparator {
+  def apply(options: (Option[XmlNode], Option[XmlNode])) = options match {
+    case (None, _) => false
+    case (_, None) => true
+    case (Some(a), Some(b)) => {
+      val aValues = xPaths.map(x => XPathNodeLookup(x)(a.nsContext).getValue(a))
+      val bValues = xPaths.map(x => XPathNodeLookup(x)(b.nsContext).getValue(b))
+      aValues.zip(bValues).map{case (a, b) => a.compareTo(b)}.find(_ != 0) match {
         case Some(value) => value < 0
+        case None => false
       }
     }
   }

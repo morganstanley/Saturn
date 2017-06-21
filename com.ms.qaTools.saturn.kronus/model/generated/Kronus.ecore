@@ -4,42 +4,93 @@
   <eClassifiers xsi:type="ecore:EClass" name="TopLevelKronus">
     <eStructuralFeatures xsi:type="ecore:EReference" name="package" eType="#//PackageDef"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="exports" upperBound="-1"
+        eType="#//ExportDef" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="kronus" eType="#//Kronus"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Kronus">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="imports" upperBound="-1"
-        eType="#//ImportDef" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="includes" upperBound="-1"
-        eType="#//IncludeDef" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="defs" upperBound="-1" eType="#//AbstractDef"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="defs" upperBound="-1" eType="#//AnnotatedDef"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="return" eType="#//Expression"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractDef">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Assignment" eSuperTypes="#//AbstractDef">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lhs" eType="#//ValDef"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lhsParameter" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rhs" eType="#//ValDef"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rhsParameter" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ReferenceableDefs"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ValDef" eSuperTypes="#//AbstractDef #//ReferenceableDefs">
+  <eClassifiers xsi:type="ecore:EClass" name="AnnotatedDef">
     <eStructuralFeatures xsi:type="ecore:EReference" name="hashtags" upperBound="-1"
         eType="#//HashtagCall" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="annotations" upperBound="-1"
         eType="#//AnnotationCall" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="def" eType="#//AbstractDef"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractDef"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ReferenceableDefs"/>
+  <eClassifiers xsi:type="ecore:EClass" name="NamedAbstractDef" eSuperTypes="#//AbstractDef">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NamedRuntimeDef" eSuperTypes="#//NamedAbstractDef"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TypeInstance">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="name" eType="#//TypeDef"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typeParameters" upperBound="-1"
+        eType="#//TypeInstance" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FunctionDef" eSuperTypes="#//ReferenceableDefs #//NamedRuntimeDef">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typeParameters" upperBound="-1"
+        eType="#//TypeDef" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefs" upperBound="-1"
+        eType="#//ParameterDef" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="returnType" eType="#//TypeInstance"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//CodeAssignment"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AnnotationDef" eSuperTypes="#//NamedRuntimeDef">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefs" upperBound="-1"
+        eType="#//ParameterDef" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="HashtagDef" eSuperTypes="#//NamedAbstractDef">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefs" upperBound="-1"
+        eType="#//ParameterDef" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ValDef" eSuperTypes="#//ReferenceableDefs #//NamedRuntimeDef">
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//Expression"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="PackageDef">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="module" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ImportDef">
+  <eClassifiers xsi:type="ecore:EClass" name="ImportDef" eSuperTypes="#//AbstractDef">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="module" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IncludeDef">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="module" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  <eClassifiers xsi:type="ecore:EClass" name="IncludeDef" eSuperTypes="#//AbstractDef">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="module" eType="#//TopLevelKronus"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="reexport" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TypeDef" eSuperTypes="#//AbstractDef">
+  <eClassifiers xsi:type="ecore:EClass" name="ExportDef">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="symbols" upperBound="-1"
+        eType="#//ExportClause" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExportClause">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="unexport" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="symbol" eType="#//ExportSymbol"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExportSymbol"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ExportAll" eSuperTypes="#//ExportSymbol"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ExportHashtag" eSuperTypes="#//ExportSymbol">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ref" eType="#//HashtagDef"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExportRuntimeName" eSuperTypes="#//ExportSymbol">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ref" eType="#//NamedRuntimeDef"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TypeDef" eSuperTypes="#//NamedRuntimeDef">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="variance" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="boundsHi" eType="#//TypeInstance"
         containment="true"/>
@@ -63,31 +114,6 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="typeRef" eType="#//TypeDef"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TypeId"/>
-  <eClassifiers xsi:type="ecore:EClass" name="TypeInstance">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="name" eType="#//TypeDef"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="typeParameters" upperBound="-1"
-        eType="#//TypeInstance" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="FunctionDef" eSuperTypes="#//AbstractDef #//ReferenceableDefs">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="hashtags" upperBound="-1"
-        eType="#//HashtagCall" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="typeParameters" upperBound="-1"
-        eType="#//TypeDef" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefs" upperBound="-1"
-        eType="#//ParameterDef" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="returnType" eType="#//TypeInstance"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//CodeAssignment"
-        containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AnnotationDef" eSuperTypes="#//AbstractDef">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefs" upperBound="-1"
-        eType="#//ParameterDef" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="HashtagDef" eSuperTypes="#//AbstractDef">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefs" upperBound="-1"
-        eType="#//ParameterDef" containment="true"/>
-  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CodeAssignment"/>
   <eClassifiers xsi:type="ecore:EClass" name="CodeBlock" eSuperTypes="#//CodeAssignment #//Value">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -114,6 +140,10 @@
         eType="#//ParameterValue" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ParameterDef" eSuperTypes="#//ReferenceableDefs">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hashtags" upperBound="-1"
+        eType="#//HashtagCall" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="annotations" upperBound="-1"
+        eType="#//AnnotationCall" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="byName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//TypeInstance"
@@ -143,10 +173,6 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="method" eType="#//FunctionDef"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameterValues" upperBound="-1"
         eType="#//ParameterValue" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IncludeRef" eSuperTypes="#//Value">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="include" eType="#//IncludeDef"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="ref" eType="#//Value" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="StringLiteral" eSuperTypes="#//Value">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

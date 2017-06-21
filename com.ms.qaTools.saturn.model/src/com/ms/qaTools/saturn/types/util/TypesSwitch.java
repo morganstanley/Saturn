@@ -118,6 +118,13 @@ public class TypesSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
+      case TypesPackage.ALM_ID:
+      {
+        AlmId almId = (AlmId)theEObject;
+        T result = caseAlmId(almId);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
       case TypesPackage.COLUMN:
       {
         Column column = (Column)theEObject;
@@ -339,6 +346,22 @@ public class TypesSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseAbstractRunGroupModifier(AbstractRunGroupModifier object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Alm Id</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Alm Id</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseAlmId(AlmId object)
   {
     return null;
   }

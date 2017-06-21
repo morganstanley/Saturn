@@ -1,8 +1,6 @@
 package com.ms.qaTools.saturn.runtime.notifier.console
 
-import com.ms.qaTools.Logger
 import org.eclipse.emf.ecore.EObject
-import com.ms.qaTools.toolkit.Result
 import com.ms.qaTools.saturn.runtime.EObjectNotifier
 import com.ms.qaTools.saturn.runtime.RunGroupIterationResult
 import com.ms.qaTools.saturn.runtime.RunGroupIteratorResult
@@ -13,31 +11,26 @@ import com.ms.qaTools.saturn.runtime.RunGroupResult
 import com.ms.qaTools.saturn.runtime.RowSourceRunGroupIteratorResult
 import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.runtime.RunGroupIterator
-import com.ms.qaTools.toolkit.Failed
-import com.ms.qaTools.toolkit.Passed
+import com.ms.qaTools.{toolkit => tk}
 import com.ms.qaTools.saturn.runtime.ResourceResultContext
 import com.ms.qaTools.exceptions.AggregateException
-import java.io.PrintStream
 import org.apache.commons.lang.exception.ExceptionUtils
 import com.ms.qaTools.saturn.runtime.VerbosityLevel
 import com.ms.qaTools.saturn.runtime.DEBUG
 import com.ms.qaTools.saturn.runtime.AttributeResult
-import com.ms.qaTools.toolkit.Pass
-import com.ms.qaTools.toolkit.Fail
-import com.ms.qaTools.toolkit.NotRan
 import com.ms.qaTools.saturn.runtime.QUIET
 import com.ms.qaTools.saturn.runtime.DEBUG_ON_PASS
 import com.ms.qaTools.saturn.runtime.DEBUG_ON_FAIL
 import com.ms.qaTools.saturn.runtime.TRACE
 import com.ms.qaTools.saturn.runtime.DEBUG_ON_STATUS
 
-class BasicEObjectConsoleNotifier[IterationResultType <: Result, IteratorResultType <: RunGroupIteratorResult, IteratorType <: RunGroupIterator[IteratorResultType]](eObject: EObject, verbosity: Option[VerbosityLevel] = None)(implicit sc: SaturnExecutionContext)
+class BasicEObjectConsoleNotifier[IterationResultType <: tk.Result, IteratorResultType <: RunGroupIteratorResult, IteratorType <: RunGroupIterator[IteratorResultType]](eObject: EObject, verbosity: Option[VerbosityLevel] = None)(implicit sc: SaturnExecutionContext)
   extends EObjectNotifier[IterationResultType, IteratorResultType, IteratorType](eObject) {
   protected val outputStream = sc.outputStream
   implicit protected val noOutputColor: Boolean = sc.noOutputColor
   protected val verbosityLevel = verbosity.getOrElse(sc.outputVerbosity)
 
-  protected def printException(result: Result, verbosityLevel: VerbosityLevel) = {
+  protected def printException(result: tk.Result, verbosityLevel: VerbosityLevel) = {
       def messageStack(e: Throwable, msg: String = "", indentLevel: Int = 0): String = {
         val newMsg = e match {
           case e: AggregateException => {
@@ -45,7 +38,7 @@ class BasicEObjectConsoleNotifier[IterationResultType <: Result, IteratorResultT
             e.exceptions.foldLeft(aggregateExceptionMsg)((currentMsg, e) => {
               val m = currentMsg + "\n" + spaces(indentLevel + 1) + (e.getClass.getName + ": ").red.bold + e.getMessage.red
               val innerAggregateExceptionMsg = verbosityLevel match {
-                case TRACE() => m + "\n" + spaces(indentLevel + 2) + "Trace:".red.bold + "\n" + spaces(indentLevel + 3) + e.getStackTraceString.replaceAll("\n", "\n" + spaces(indentLevel + 3)).red
+                case TRACE() => m + "\n" + spaces(indentLevel + 2) + "Trace:".red.bold + "\n" + spaces(indentLevel + 3) + e.getStackTrace.mkString("", "\n" + spaces(indentLevel + 3), "\n").red
                 case _       => m
               }
               if (e.getCause != null) messageStack(e.getCause, innerAggregateExceptionMsg + "\n", indentLevel + 2)
@@ -87,26 +80,26 @@ class BasicEObjectConsoleNotifier[IterationResultType <: Result, IteratorResultT
   protected def printAttributes(attributeResults: Seq[AttributeResult]) = {
     if (!attributeResults.isEmpty) sc.logger.debug(spaces(1) + "Attributes:")
     attributeResults.toSeq.sortBy(ar => ar.name).foreach(ar => {
-      ar match {
-        case Pass() => sc.logger.debug(spaces(2) + "%s: %s".format(ar.name, ar.value.getOrElse("No value!".red)))
-        case Fail() => {
+      ar.status match {
+        case tk.Passed => sc.logger.debug(spaces(2) + "%s: %s".format(ar.name, ar.value.getOrElse("No value!".red)))
+        case tk.Failed => {
           val ex = ar.exception match {
             case Some(e) => e.getMessage()
             case None    => "Attribute failed, but no exception set!"
           }
           sc.logger.debug(spaces(2) + "%s: %s".format(ar.name, ex.red))
         }
-        case NotRan() => sc.logger.debug(spaces(2) + "%s: %s".format(ar.name, "Attribute not ran!".yellow))
+        case tk.NotRun => sc.logger.debug(spaces(2) + "%s: %s".format(ar.name, "Attribute not ran!".yellow))
       }
     })
   }
 
-  def debugOutput(result: Result) = verbosityLevel match {
+  def debugOutput(result: tk.Result) = verbosityLevel match {
     case TRACE() => true
     case DEBUG() => true
     case DEBUG_ON_STATUS() => verbosityLevel match {
-      case DEBUG_ON_PASS() => result.passed
-      case DEBUG_ON_FAIL() => result.failed
+      case DEBUG_ON_PASS() => result.status == tk.Passed
+      case DEBUG_ON_FAIL() => result.status == tk.Failed
     }
     case _ => false
   }
@@ -163,7 +156,7 @@ class BasicEObjectConsoleNotifier[IterationResultType <: Result, IteratorResultT
 }
 
 object BasicEObjectConsoleNotifier {
-  def apply[IterationResultType <: Result, IteratorResultType <: RunGroupIteratorResult, IteratorType <: RunGroupIterator[IteratorResultType]](eObject: EObject, verbosity: Option[VerbosityLevel] = None)(implicit sc: SaturnExecutionContext) =
+  def apply[IterationResultType <: tk.Result, IteratorResultType <: RunGroupIteratorResult, IteratorType <: RunGroupIterator[IteratorResultType]](eObject: EObject, verbosity: Option[VerbosityLevel] = None)(implicit sc: SaturnExecutionContext) =
     new BasicEObjectConsoleNotifier[IterationResultType, IteratorResultType, IteratorType](eObject, verbosity)
 }
 

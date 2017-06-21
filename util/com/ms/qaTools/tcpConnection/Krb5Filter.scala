@@ -2,8 +2,6 @@ package com.ms.qaTools.tcpConnection
 
 import java.io.ByteArrayOutputStream
 import java.nio.channels.SocketChannel
-import java.util.ArrayDeque
-import java.util.Deque
 
 import org.ietf.jgss.GSSContext
 import org.ietf.jgss.GSSManager
@@ -37,11 +35,9 @@ class Krb5Filter(connection: Connection, socketChannel: SocketChannel, serviceNa
   private val context: GSSContext = initialise()
   private def createKerberosOid(): Oid = new Oid(kOid)
 
-  var buffer: Deque[Byte] = new ArrayDeque[Byte]
-
-  override def initialise(): GSSContext = {
+  def initialise(): GSSContext = {
     def establishSecurityContext(ctx: GSSContext) = {
-      var token: Array[Byte] = Array[Byte]()
+      var token: Array[Byte] = null
       var offset = 0
       var size = 0
       while (false == ctx.isEstablished()) {
@@ -73,12 +69,10 @@ class Krb5Filter(connection: Connection, socketChannel: SocketChannel, serviceNa
     if (null != connection) { setUpSecurityContext() } else { null }
   }
 
-  override def uninitialise() = {
-    try {
-      if (null != context) context.dispose()
-    } catch {
-      case e: Exception => println("Unable to initialize the Krb5Filter.")
-    }
+  def uninitialise() = try {
+    if (null != context) context.dispose()
+  } catch {
+    case e: Exception => println("Unable to initialize the Krb5Filter.")
   }
 
   private def addMessageSizeToMessage(message: Array[Byte]): Array[Byte] = {
@@ -104,7 +98,7 @@ class Krb5Filter(connection: Connection, socketChannel: SocketChannel, serviceNa
     }
   }
 
-  override def filterIn(): Array[Byte] = {
+  def filterIn() = {
     if (null == connection) throw new Error("Krb5Filter.filterOut(): Connection object was null")
     if (false == connection.isConnected(socketChannel)) throw new Error("Krb5Filter.filterOut(): The provided connection is no longer connected")
     if (null == context || false == context.isEstablished()) throw new Error("Krb5Filter.filterOut(): KRB5 context not initialised")
@@ -114,20 +108,17 @@ class Krb5Filter(connection: Connection, socketChannel: SocketChannel, serviceNa
       val messageSize: Int = readSizeFromMessage(data)
       if (messageSize >= MESSAGE_SIZE_LENGTH) {
         val unwrappedData: Array[Byte] = context.unwrap(data, MESSAGE_SIZE_LENGTH, data.length - MESSAGE_SIZE_LENGTH, messageProperties)
-        if (null == unwrappedData) {
+        if (null == unwrappedData)
           Array[Byte]()
-        } else {
+        else
           unwrappedData
-        }
-      } else {
-        Array[Byte]()
-      }
+      } else Array[Byte]()
     } catch {
       case e: Exception => Array[Byte]()
     }
   }
 
-  override def filterOut(data: Array[Byte]) = {
+  def filterOut(data: Array[Byte]) = {
     if (null == connection) throw new Error("Krb5Filter.filterOut(): Connection object was null")
     if (null == data) throw new Error("Krb5Filter.filterOut(): Data was null")
     if (false == connection.isConnected(socketChannel)) throw new Error("Krb5Filter.filterOut(): The provided connection is no longer connected")

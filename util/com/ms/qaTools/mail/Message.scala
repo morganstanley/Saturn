@@ -1,24 +1,25 @@
 package com.ms.qaTools.mail
-
-import java.io.{ File => JFile }
-
-import scala.xml.Node
-import scala.xml.XML
-
-import com.ms.qaTools._
+import com.ms.qaTools.AnyUtil
+import com.ms.qaTools.MonadSeqUtil
+import com.ms.qaTools.TryUtil
 import com.ms.qaTools.io.BaseFileIO
-import com.ms.qaTools.io.FileAttachmentUtil
-
+import java.io.{ File => JFile }
 import javax.activation.DataHandler
 import javax.activation.FileDataSource
 import javax.mail.{ BodyPart => JBodyPart }
-import javax.mail.{ Part => JPart }
 import javax.mail.internet.{ MimeBodyPart => JMimeBodyPart }
+import javax.mail.{ Part => JPart }
+import scala.util.{Success, Failure}
+import scala.xml.XML
 
 trait AttachmentSupport {
   this: Message =>
   def asFiles(attachments: Seq[BaseFileIO]) = attachments.map(_.file).toTrySeq.getOrElse(throw new Exception("Error creating attachment files."))
-  def asAttachments(attachments: Seq[BaseFileIO]) = attachments.map(_.asAttachment).toTrySeq.map(_.flatten).rethrow("Error attaching files").get
+  def asAttachments(attachments: Seq[BaseFileIO]) =
+    attachments.map(_.asAttachment).toTrySeq.map(_.flatten).rethrow("Error attaching files") match {
+      case Success(v) => v
+      case Failure(e) => throw e
+    }
   def withAttachments(attachments: Seq[BaseFileIO]): Message =
     new Message(to, subject, message, from, this.attachments ++ asAttachments(attachments), cc, bcc)
 }
@@ -47,7 +48,6 @@ class Message(val to: Seq[String],
 
 object MimeBodyPart {
   def apply(text: String) = Text(text)
-  def apply(node: Node) = Xml(node)
 
   def apply(content: Any, mimeType: String): JMimeBodyPart = {
     val mbp = new JMimeBodyPart
@@ -61,8 +61,10 @@ object MimeBodyPart {
   }
 
   object Xml {
-    def apply(node: Node): JMimeBodyPart = MimeBodyPart(node, MessageType.Xml.mimeType)
-    def apply(xmlString: String): JMimeBodyPart = apply(XML.loadString(xmlString))
+    def apply(xmlString: String): JMimeBodyPart = {
+      XML.loadString(xmlString)
+      MimeBodyPart(xmlString, MessageType.Xml.mimeType)
+    }
   }
 
   object Html {

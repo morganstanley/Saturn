@@ -1,6 +1,6 @@
 package com.ms.qaTools.saturn.runtime
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 import org.specs2.execute.{Error => Specs2Error}
 import org.specs2.matcher.Matcher
@@ -10,6 +10,7 @@ import org.specs2.specification.Fragments
 import com.ms.qaTools.saturn.codeGen.{IteratorResult, IterationResult}
 import com.ms.qaTools.saturn.codeGen.Utils._
 import com.ms.qaTools.saturn.dsl.annotation.{ScenarioAnnotation, OnFailResultStatus}
+import com.ms.qaTools.toolkit.Passed
 
 abstract class JUnitReportSpecification(root: Try[IteratorResult[com.ms.qaTools.saturn.codeGen.RunGroupResult]],
                                         rootName: String) extends Specification {
@@ -28,7 +29,7 @@ abstract class JUnitReportSpecification(root: Try[IteratorResult[com.ms.qaTools.
   }
 
   def pass(msg: Option[String]): Matcher[IterationResult[Any]] = { itn: IterationResult[Any] =>
-    (itn.passed, msg.getOrElse("Fail to pass"))
+    (itn.status == Passed, msg.getOrElse("Fail to pass"))
   }
 
   def iterationsPass(relativeName: Seq[String]): Fragments = {
@@ -39,11 +40,12 @@ abstract class JUnitReportSpecification(root: Try[IteratorResult[com.ms.qaTools.
     } yield (Fragments() /: itns) {
       case (frag, (p, itn, msg)) => frag.append(s"$p should pass" ! (itn must pass(msg)))
     }
-  }.recover {
-    case t: Throwable =>
-      val fn = rootName +: relativeName mkString "."
+  } match {
+    case Success(v) => v
+    case Failure(t) =>
+      val fn = (rootName +: relativeName).mkString(".")
       (s"Fail to get iteration results of $fn" ! Specs2Error(t)): Fragments
-  }.get
+  }
 }
 /*
 Copyright 2017 Morgan Stanley

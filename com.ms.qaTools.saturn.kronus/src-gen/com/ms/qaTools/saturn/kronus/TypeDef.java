@@ -23,7 +23,7 @@ import org.eclipse.emf.common.util.EList;
  * @model
  * @generated
  */
-public interface TypeDef extends AbstractDef
+public interface TypeDef extends NamedRuntimeDef
 {
   /**
    * Returns the value of the '<em><b>Variance</b></em>' attribute.

@@ -12,7 +12,7 @@ import com.ms.qaTools.saturn.codeGen.notifier.console.printMetaDatas
 import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.runtime.notifier.html.appendException
 import com.ms.qaTools.saturn.runtime.notifier.html.string2Html
-import com.ms.qaTools.toolkit.xmlGen.XmlGenResult
+import com.ms.qaTools.toolkit.XmlGenResult
 
 case class XmlGenHtmlGenerator(implicit sc: SaturnExecutionContext) extends BasicHtmlGenerator {
   override def runGroupIconClassName: String = "xmlGenIcon"
@@ -34,7 +34,8 @@ case class XmlGenHtmlGenerator(implicit sc: SaturnExecutionContext) extends Basi
 
     }
   }
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

@@ -74,13 +74,18 @@ object XmlManipLogicGenerator {
         case Some(name) => ComplexValueStringGenerator(name).map(OptionExpr(_))
         case _          => Try { ScalaExpr("None") }
       }
+      relativeXPath <- Option(op.getPositionXpath) match {
+        case Some(name) => ComplexValueStringGenerator(name).map(OptionExpr(_))
+        case _          => Try { ScalaExpr("None") }
+      }      
     } yield new TryGen {
       override def generate(): Try[String] = for {
         nodeNameStr <- nodeNameGen.generate
         valueStr <- valueGen.generate
         parentStr <- parentGen.generate
         uriStr <- uriGen.generate
-      } yield s"""XmlAddMapper(context, $nodeNameStr, $valueStr, $parentStr, $uriStr, ${op.isIsAttribute()}, ${op.isIsCData()}, ${op.isIsXml()})"""
+        relativeXPath <- relativeXPath.generate
+      } yield s"""XmlAddMapper(context, $nodeNameStr, $valueStr, $parentStr, $uriStr, ${op.isIsAttribute()}, ${op.isIsCData()}, ${op.isIsXml()}, "${op.getAddPosition.toString}", $relativeXPath)"""
     }
 
   def genXmlManipDeleteOperation(op: DeleteOperation): Try[TryGen] =

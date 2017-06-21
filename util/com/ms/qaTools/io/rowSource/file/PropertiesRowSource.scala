@@ -2,35 +2,34 @@ package com.ms.qaTools.io.rowSource.file
 
 import java.io.File
 import java.io.FileReader
-import java.io.{Reader => JReader}
+import java.io.{ Reader => JReader }
 import java.io.StringReader
-import java.util.{Properties => JProperties}
 
-import scala.collection.JavaConversions._
+import scala.collection.AbstractIterator
+import scala.collection.JavaConversions.asScalaIterator
+import scala.language.implicitConversions
+import scala.slick.util.CloseableIterator
 
+import org.apache.commons.configuration.Configuration
+import org.apache.commons.configuration.PropertiesConfiguration
+
+import com.ms.qaTools.AnyUtil
 import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
 
-class PropertiesRowSource(prop: JProperties) extends Iterator[Seq[String]] with ColumnDefinitions {
-
-  override val colDefs: Seq[ColumnDefinition] = ColumnDefinition.fromColumnNames(prop.stringPropertyNames().toSeq.sorted)
-  protected val row: Seq[String] = colNames.map { name => prop.getProperty(name) }.toSeq
+class PropertiesRowSource(prop: Configuration) extends AbstractIterator[Seq[String]] with ColumnDefinitions {
+  val colDefs = ColumnDefinition.fromColumnNames(prop.getKeys.toIterator.asInstanceOf[Iterator[String]]/* make the compiler happy ... */.toSeq.sorted)
+  protected val row: Seq[String] = colDefs.map{c => prop.getString(c.name)}
   var read = false
   def hasNext = !read
-  def next = {
-    if (hasNext) {
-      read = true;
-      row
-    } else {
-      null
-    }
-  }
+  def next = if (hasNext) {read = true; row} else Iterator.empty.next
 }
 
 object PropertiesRowSource {
-  def apply(reader: JReader): PropertiesRowSource = {
-    new PropertiesRowSource(Properties(reader))
-  }
+  def apply(reader: JReader): PropertiesRowSource =
+    new PropertiesRowSource(Properties(reader)) with CloseableIterator[Seq[String]] {
+      def close() = reader.close()
+    }
 }
 
 object PropertiesFileRowSource {
@@ -43,11 +42,12 @@ object PropertiesBufferRowSource {
 }
 
 object Properties {
-  def apply(reader: JReader): JProperties = {
-    val prop = new JProperties()
-    prop.load(reader)
-    prop
-  }    
+  def apply(reader: JReader): Configuration = {
+    new PropertiesConfiguration().withSideEffect { p =>
+      p.setDelimiterParsingDisabled(true)
+      p.load(reader)
+    }.interpolatedConfiguration
+  }
 }
 /*
 Copyright 2017 Morgan Stanley

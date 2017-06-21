@@ -264,6 +264,7 @@
       <xs:element name="Modifiers"          minOccurs="0" maxOccurs="unbounded"         type="type:AbstractRunGroupModifier"  />
       <xs:element name="Parameters"         minOccurs="0" maxOccurs="unbounded" type="saturn:AbstractParameter" />
       <xs:element name="IncludeFiles" minOccurs="0" maxOccurs="unbounded" type="saturn:IncludeFile" />
+      <xs:element name="AlmId" minOccurs="0" maxOccurs="1" type="type:AlmId" />
     </xs:sequence>      	
     <xs:attribute name="name"            type="xs:string" use="optional" />
     <xs:attribute name="id"              type="xs:string" use="optional" />

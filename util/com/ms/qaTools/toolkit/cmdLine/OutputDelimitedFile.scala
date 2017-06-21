@@ -2,21 +2,29 @@ package com.ms.qaTools.toolkit.cmdLine
 
 import java.io.FileWriter
 import java.util.{List => JList}
+
 import scala.collection.JavaConversions._
+
 import org.kohsuke.args4j.{Option => Args4JOption}
 import org.kohsuke.args4j.spi.StringArrayOptionHandler
-import au.com.bytecode.opencsv.CSVWriter
+
+import com.ms.qaTools.Injector
+import com.ms.qaTools.io.Writer
+import com.ms.qaTools.io.rowSource.DatabaseConnection
 import com.ms.qaTools.io.rowWriter.DsRowWriterCreator
-import com.ms.qaTools.io.rowWriter.file.HtmlTableRowWriter
+import com.ms.qaTools.io.rowWriter.HtmlTableRowWriter
+import com.ms.qaTools.io.rowWriter.JdbcRowWriter
+import com.ms.qaTools.toolkit.DbConnectionFactory
 
-
+import au.com.bytecode.opencsv.CSVWriter
 
 trait OutputDelimitedFile {
   @Args4JOption(name  = "--outFmt",
                 usage = "specify output format: CSV (default) | EXCEL | XLS | XLSX | TSV | PSV | DATA | CUSTOM | HTML-TABLE")
   val outFmt: String = "CSV"
 
-  @Args4JOption(name = "-o", aliases = Array("--outFileName"), usage = "specify an output fileName", required = true)
+  @Args4JOption(name = "-o", aliases = Array("--outFileName", "--outDbTableName"),
+                usage = "specify an output file name or DB table name. Defaults to standard output")
   val outFileName: String = null
 
   @Args4JOption(name = "--outWsName", usage = "specify the output worksheet name")
@@ -33,8 +41,8 @@ trait OutputDelimitedFile {
 
   @Args4JOption(name = "--outLineEndChar", usage = "specify the quote character (default: \"\\n\")")
   val outLineEndChar: String = CSVWriter.DEFAULT_LINE_END
-  
-  @Args4JOption(name = "--outAppend", usage = "Append to the file")
+
+  @Args4JOption(name = "--outAppend", usage = "Append to the file/table")
   val outAppend: Boolean = false
 
   @Args4JOption(name = "--outNoHeader", usage = "whether to prefix the output with a column header row")
@@ -54,20 +62,37 @@ trait OutputDelimitedFile {
                 handler = classOf[StringArrayOptionHandler])
   val outHtmlTableHtmlColumns: JList[String] = null
 
-  def delimitedRowWriter = outFmt.toUpperCase match {
-    case "HTML-TABLE" =>
-      htmlTableRowWriter
-    case _ =>
-      val rowWriterCreator = DsRowWriterCreator(outFileName,
-                                                Option(outWsName),
-                                                outSeparatorChar,
-                                                outQuoteChar,
-                                                outEscapeChar,
-                                                outLineEndChar,
-                                                outAppend,
-                                                withColNames = !outNoHeader,
-                                                nullMarker = outNullMarker)
-      rowWriterCreator.createRowWriter(outFmt)
+  @Args4JOption(name = "--outDbServer")
+  val outDbServer: String = null
+
+  @Args4JOption(name = "--outDbQualifier")
+  val outDbQualifier: String = null
+
+  @Args4JOption(name = "--outDbLogin")
+  val outDbLogin: String = null
+
+  @Args4JOption(name = "--outDbPasswd")
+  val outDbPasswd: String = null
+
+  def delimitedRowWriter: Writer[Iterator[Seq[String]]] = {
+    dbConnection match {
+      case Some(conn) => dbTableRowWriter(conn)
+      case None => outFmt.toUpperCase match {
+        case "HTML-TABLE" =>
+          htmlTableRowWriter
+        case _ =>
+          val rowWriterCreator = DsRowWriterCreator(outFileName,
+                                                    Option(outWsName),
+                                                    outSeparatorChar,
+                                                    outQuoteChar,
+                                                    outEscapeChar,
+                                                    outLineEndChar,
+                                                    outAppend,
+                                                    withColNames = !outNoHeader,
+                                                    nullMarker = outNullMarker)
+          rowWriterCreator.createRowWriter(outFmt)
+      }
+    }
   }
 
   def htmlTableRowWriter = {
@@ -76,6 +101,22 @@ trait OutputDelimitedFile {
     val htmlCols = Option(outHtmlTableHtmlColumns).map(_.map(_.toInt).toSet).getOrElse(default.htmlColumns)
     val config = HtmlTableRowWriter.Config(caption = Option(outHtmlTableCaption), style = style, htmlColumns = htmlCols)
     HtmlTableRowWriter(new FileWriter(outFileName), config)
+  }
+
+  def dbTableRowWriter(conn: DatabaseConnection): Writer[Iterator[Seq[String]]] = {
+    if (!outAppend && conn.hasTable(outFileName)) conn.clear(outFileName)
+    new JdbcRowWriter(conn, outFileName, createTable = true) {
+      override def close() = {
+        super.close()
+        conn.close()
+      }
+    }
+  }
+
+  def dbConnection: Option[DatabaseConnection] = {
+    val dbType = outFmt.toUpperCase
+    val factory = Injector.getInstance[DbConnectionFactory]
+    if (factory.support(dbType)) Some(factory.create(dbType, outDbServer, outDbQualifier, outDbLogin, outDbPasswd)) else None
   }
 }
 /*

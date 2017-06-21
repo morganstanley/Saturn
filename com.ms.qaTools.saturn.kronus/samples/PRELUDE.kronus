@@ -12,6 +12,9 @@ type Long
 type Option[A]
 type String
 type Unit
+type VerifiableCloseable
+
+def #Closeable(dependsOn: String)
 
 def AFTER[A](pre: Any, body: => A): A = generate("for") {pre.flatMap(_ => body)}
 
@@ -21,6 +24,7 @@ def EQUAL_DOUBLE(x: Double, y: Double): Boolean = generate("yield") {math.abs(x 
 def ASSERT_EQUAL[A](x: A, y: A): Unit = {return ASSERT(pred = EQUAL(x = x, y = y))}
 def ASSERT_EQUAL_DOUBLE(x: Double, y: Double): Unit = {return ASSERT(EQUAL_DOUBLE(x, y))}
 def FAIL(): Unit = generate("yield") {sys.error("this should not run")}
+def CLOSED(x: VerifiableCloseable): Boolean = generate("yield") {x.closed}
 /*
 Copyright 2017 Morgan Stanley
 

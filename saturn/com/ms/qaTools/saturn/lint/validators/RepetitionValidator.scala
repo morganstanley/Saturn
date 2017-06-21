@@ -1,30 +1,37 @@
 package com.ms.qaTools.saturn.lint.validators
 
 import org.eclipse.emf.ecore.EObject
+
 import com.ms.qaTools.saturn.lint.SaturnLintRuleResult
 
 object RepetitionValidator extends LintValidator {
-  def validate(eObject:EObject) = ForEachValidator.validate(eObject) ++
-                                  ForEachXPathValidator.validate(eObject) ++
-                                  ForValidator.validate(eObject)
+  val rule = "SAT-OBJECT-NAME-000"
+  val description = "Repetition validation."
+  def validate(eObject: EObject) = ForEachValidator.validate(eObject) ++
+    ForEachXPathValidator.validate(eObject) ++
+    ForValidator.validate(eObject)
 }
 
 object ForEachXPathValidator extends LintValidator {
+  val rule = "SAT-OBJECT-NAME-001"
+  val description = "ForEachXPath-repetition validation."
   // must have a dataSet
   // is mappings present, mappings must be valid:
-  def validate(eObject:EObject):Seq[SaturnLintRuleResult] = Nil
+  def validate(eObject: EObject): Seq[SaturnLintRuleResult] = Nil
 }
 
 object ForEachValidator extends LintValidator {
+  val rule = "SAT-OBJECT-NAME-002"
+  val description = "ForEach-repetition validation."
   // must have a dataSet
   // is mappings present, mappings must be valid:
-  def validate(eObject:EObject):Seq[SaturnLintRuleResult] = Nil
+  def validate(eObject: EObject): Seq[SaturnLintRuleResult] = Nil
 }
 
 object ForValidator extends LintValidator {
-  val rule:String = "SAT-OBJECT-NAME-002"
-  val description:String = "Objects(attributes, resources and runGroups) within a given runGroup must have unique names."
-  def validate(eObject:EObject):Seq[SaturnLintRuleResult] = Nil
+  val rule = "SAT-OBJECT-NAME-003"
+  val description = "For-repetition validation."
+  def validate(eObject: EObject): Seq[SaturnLintRuleResult] = Nil
 }/*
 Copyright 2017 Morgan Stanley
 

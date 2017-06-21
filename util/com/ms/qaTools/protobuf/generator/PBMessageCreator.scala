@@ -2,18 +2,15 @@ package com.ms.qaTools.protobuf.generator
 
 import com.google.protobuf.Message.Builder
 import com.google.protobuf.DynamicMessage
-import com.ms.qaTools.io.DelimitedRow
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.NodeCreator
 import com.ms.qaTools.protobuf.setField
 import com.google.protobuf.Descriptors
 
-
-
 class PBMessageCreator(val field: String, val childCreators: List[NodeCreator[Builder, Builder]] = Nil) extends PBInnerNodeCreator {
-  override val isLocal: Boolean = false
-  override def create(row: DelimitedRow)(implicit colMap: Lookupable, colContext: ColContext, builder: Builder): Builder = {
+  val isLocal = false
+  def create(row: Seq[String])(implicit colMap: Lookupable, colContext: ColContext, builder: Builder) = {
     val cLocalIterators = this.adjustedIterators
 
     if (cLocalIterators.isEmpty) {
@@ -47,7 +44,7 @@ class PBMessageCreator(val field: String, val childCreators: List[NodeCreator[Bu
     builder
   }
 
-  override def creators: Seq[NodeCreator[Builder, Builder]] = childCreators.toSeq
+  def creators: Seq[NodeCreator[Builder, Builder]] = childCreators.toSeq
 }
 /*
 Copyright 2017 Morgan Stanley

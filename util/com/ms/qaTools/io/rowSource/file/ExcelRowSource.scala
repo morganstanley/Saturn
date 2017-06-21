@@ -6,6 +6,9 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
 
+import scala.collection.AbstractIterator
+import scala.slick.util.CloseableIterator
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem
@@ -15,15 +18,12 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.ss.util.CellRangeAddress
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
-import com.ms.qaTools.io.DelimitedRow
 import com.ms.qaTools.io.rowSource._
 import com.ms.qaTools.io.rowSource.file.xlsx.XSSFXMLStreamRowSource
 
-
-
 class HeaderlessExcelCellRowSource(val ws: Sheet) extends Iterator[Seq[Cell]] with ColumnDefinitions {
   require(ws != null)
-  
+
   protected val mergedRegions = for (i <- 0 until ws.getNumMergedRegions()) yield ws.getMergedRegion(i)
   protected var currentRowIdx: Int = 0
   val fromCellRange = new Function2[Cell, CellRangeAddress, Seq[Cell]] {
@@ -35,7 +35,7 @@ class HeaderlessExcelCellRowSource(val ws: Sheet) extends Iterator[Seq[Cell]] wi
       else Seq()
     }
   }
-  override val colDefs = ColumnDefinitionAdapter(getRow(fromCellRange, 0).size, 0).colDefs
+  val colDefs = ColumnDefinitionAdapter(getRow(fromCellRange, 0).size, 0).colDefs
 
   private def getRow(f: (Cell, CellRangeAddress) => Seq[Cell], rowIdx: Int): Seq[Cell] = {
     val row = ws.getRow(rowIdx)
@@ -72,28 +72,31 @@ class ExcelCellRowSource(ws: Sheet, val columnDefinitionAdapter: ColumnDefinitio
         else Seq()
       }
     }
-    override def next: Seq[Cell] = { resize(self.nextWithCellRangeStrategy(nullifyRowCellRange), colDefs) }
-    override def hasNext = self.hasNext
+    def next = { resize(self.nextWithCellRangeStrategy(nullifyRowCellRange), colDefs) }
+    def hasNext = self.hasNext
   }
 
   override val colDefs = columnDefinitionAdapter.extractColDefs(new ProxyNullRowRangeIterator(this))
 }
 
-class ExcelRowSource(excelIterator: Iterator[DelimitedRow] with ColumnDefinitions)
-  extends Iterator[DelimitedRow] with ColumnDefinitions with Resizable[String] {
+class ExcelRowSource(excelIterator: Iterator[Seq[String]] with ColumnDefinitions)
+extends AbstractIterator[Seq[String]] with ColumnDefinitions with Resizable[String] with CloseableIterator[Seq[String]] {
   def colDefs = excelIterator.colDefs
   def next: Seq[String] = resize(excelIterator.next, colDefs)
   def hasNext = excelIterator.hasNext
+  def close() = com.ms.qaTools.closeAny(excelIterator)
 }
 
 class ExcelWorkBook(val wb: Workbook, val os: OutputStream, val isXlsx: Boolean) extends Closeable {
-  def write = wb.write(os)
+  def write() = wb.write(os)
   def close = os.close()
 }
 
 object ExcelWorkBook {
+  import scala.language.implicitConversions
+
   def apply() = new HSSFWorkbook()
-  def apply(file: File): Workbook = WorkbookFactory.create(file)
+  def apply(file: File): Workbook = WorkbookFactory.create(file, null, true)
   def apply(inputStream: InputStream): Workbook = WorkbookFactory.create(inputStream)
   def apply(outputStream: OutputStream, isXlsx: Boolean = false): ExcelWorkBook =
     if (isXlsx) ExcelXmlWorkBook(outputStream)
@@ -150,15 +153,20 @@ object ExcelRowSource {
    * Using file has less memory usage
    */
   def apply(file: File, wsName: String, colNameRows: Int = 1, firstRow: Int = 0, multiPartColNameSep: String = ".", headerless: Boolean = false, columns: Seq[ColumnDefinition] = Nil, transformColDefs: Seq[ColumnDefinition] => Seq[ColumnDefinition] = identity[Seq[ColumnDefinition]]): ExcelRowSource = {
-    def createColDefAdapter = 
+    val colDefAdapter =
       if (! columns.isEmpty)
         new SimpleColumnDefinitionAdapter(columns, firstRow)
       else
         StreamingColumnDefinitionAdapter(colNameRows = colNameRows, multiPartColNameSep = multiPartColNameSep, skipRows = firstRow, transformColDefs = transformColDefs)
-
-    val excelIterator: Iterator[DelimitedRow] with ColumnDefinitions =
-      if (isXlsx(file)) XSSFXMLStreamRowSource(file, wsName, createColDefAdapter) else ExcelCellRowSource(ExcelWorkBook(file), wsName, createColDefAdapter)
-    new ExcelRowSource(excelIterator)
+    if (isXlsx(file)) new ExcelRowSource(XSSFXMLStreamRowSource(file, wsName, colDefAdapter)) else {
+      val wb = ExcelWorkBook(file)
+      new ExcelRowSource(ExcelCellRowSource(wb, wsName, colDefAdapter)) {
+        override def close() = {
+          super.close()
+          wb.close()
+        }
+      }
+    }
   }
 }
 /*

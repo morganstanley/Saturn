@@ -31,7 +31,7 @@ class NullLogger extends Logger {
 }
 
 class Slf4jLogger(clientClass: Class[_]) extends Logger {
-  private lazy val logger = LoggerFactory.getLogger(clientClass)
+  protected lazy val logger = LoggerFactory.getLogger(clientClass)
 
   def debug(msg: => AnyRef, t: => Throwable = null): Unit = {
     if (logger.isDebugEnabled) {

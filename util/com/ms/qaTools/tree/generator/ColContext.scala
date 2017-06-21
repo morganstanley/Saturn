@@ -1,11 +1,9 @@
 package com.ms.qaTools.tree.generator
 
-
 import org.apache.commons.lang.NotImplementedException
 import scala.collection.immutable.Set
 import scala.collection.mutable.Map
-import com.ms.qaTools.io.DelimitedRow
-
+import scala.language.implicitConversions
 
 trait ColContext {
   def lookupValue(q: UnresolvedColQuery)(implicit colMap: Lookupable, data: Seq[String]): String = data(lookupColDef(q).index)
@@ -32,9 +30,9 @@ trait ColContext {
     }
   }
 
-  def iteratorIsFinished(q: UnresolvedColQuery, row: DelimitedRow)(implicit colMap: Lookupable): Boolean = {    
+  def iteratorIsFinished(q: UnresolvedColQuery, row: Seq[String])(implicit colMap: Lookupable): Boolean = {
     val r = resolveQuery(q)
-    val ret = if (!r.isIndex) {      
+    val ret = if (!r.isIndex) {
       false
     }
     else {
@@ -57,10 +55,8 @@ trait ColContext {
 
   def resetAllIters: ColContext
   def resolveQueryParts(parts: Seq[ColQueryPart]): List[ResolvedColQueryPart]
-  implicit def resolveQuery(q: UnresolvedColQuery): ResolvedColQuery = {
-    val resolvedQuery = new ResolvedColQuery(resolveQueryParts(q.parts))
-    resolvedQuery
-  }
+  implicit def resolveQuery(q: UnresolvedColQuery): ResolvedColQuery =
+    new ResolvedColQuery(resolveQueryParts(q.parts))
 
   def lookupName(name: String): ColContext
   def lookupIterator(name: String): (Int, ColContext)
@@ -69,7 +65,7 @@ trait ColContext {
 
 case object EmptyColContext extends ColContext {
   override def resolveQueryParts(parts: Seq[ColQueryPart]): List[ResolvedColQueryPart] = Nil
-  override def nextIndex(q: UnresolvedColQuery)(implicit colMap: Lookupable): Int = throw new Exception("CCC")
+  def nextIndex(q: UnresolvedColQuery)(implicit colMap: Lookupable): Int = throw new Exception("CCC")
   override def resetAllIters: ColContext = this
   override def lookupName(name: String): ColContext = throw new Exception("Cannot lookup name: '" + name + "' in an empty col context.")
   override def lookupIterator(iterator: String): (Int, ColContext) = throw new Exception("Cannot lookup iterator: '" + iterator + "' in an empty col context.")
@@ -108,14 +104,13 @@ case class ColContextDef(name: String,
   override def lookupIterator(iterator: String): (Int, ColContext) = iterators.getOrElse(iterator, throw new Exception("Cannot resolve iterator: " + iterator + " in :" + this))
   override def lookupIterator: (Int, ColContext) = lookupIterator(iterators.keys.head)
 
-  override def nextIndex(q: UnresolvedColQuery)(implicit colMap: Lookupable): Int = {
+  def nextIndex(q: UnresolvedColQuery)(implicit colMap: Lookupable): Int = {
     if (q.isEmpty) throw new Exception("Can't get next index: col query is empty(%s)".format(q.queryString))
     else {
       if (name != q.head.name) throw new Exception("Can't get next index: name %s != query.head.name %s.".format(name, q.head.name))
-      val resolved: Int = q.head match {
+      q.head match {
         case p: ColQueryScalarPart => children.nextIndex(q.tail)
-        case ColQueryIterPart(name, iterator) => {
-
+        case ColQueryIterPart(name, iterator) =>
           val (index, colContext) = iterators.getOrElse(iterator, throw new Exception("Cannot resolve iterator: " + iterator + " in :" + this))
           val i: Int = if (q.parts.length == 1) {
             iterators.remove(iterator)
@@ -123,10 +118,8 @@ case class ColContextDef(name: String,
             index + 1
           } else colContext.nextIndex(q.tail)
           i
-        }
         case p: ColQueryIndexPart => throw new Exception("Can't get next index: col query part should not be a ColQueryIndexPart.")
       }
-      resolved
     }
   }
 }
@@ -141,7 +134,7 @@ case class ColContextMap(var map: Map[String, ColContext]) extends ColContext {
     }
   }
 
-  def nextIndex(q: UnresolvedColQuery)(implicit colMap: Lookupable): Int = {
+  def nextIndex(q: UnresolvedColQuery)(implicit colMap: Lookupable): Int =
     if (q.isEmpty)
       throw new Exception("Cannot call nextIndex on empty colQuery")
     else {
@@ -149,7 +142,6 @@ case class ColContextMap(var map: Map[String, ColContext]) extends ColContext {
       val colContextDef = map.getOrElse(name, throw new Exception("Can't get next index: mapping doesn't exists for %s".format(name)))
       colContextDef.nextIndex(q)
     }
-  }
 
   override def resetAllIters: ColContext = {
     map = map.map { q => val (k, v) = q; (k, v.resetAllIters) }

@@ -1,15 +1,17 @@
 package com.ms.qaTools.xml.generator
 
+import scala.collection.AbstractIterator
+import scala.slick.util.CloseableIterator
+
 import org.w3c.dom.Document
 
-import com.ms.qaTools.io.DelimitedRow
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.ColMap
 
 object XmlGeneratorMapper {
-  def apply(creator: XmlDocumentCreator, colNames: Seq[String]): (DelimitedRow) => Document = {
-    (data: DelimitedRow) =>
+  def apply(creator: XmlDocumentCreator, colNames: Seq[String]): (Seq[String]) => Document = {
+    (data: Seq[String]) =>
       {
         val context = ColContext(creator.extractColQueries)
         val colMap = ColMap(colNames)
@@ -18,29 +20,27 @@ object XmlGeneratorMapper {
   }
 }
 
-class XmlGenerator(creator: XmlDocumentCreator, rowSource: Iterator[Seq[String]] with ColumnDefinitions) extends Iterator[Document] {
-  private val generator = XmlGeneratorMapper(creator, rowSource.colNames)
+class XmlGenerator(creator: XmlDocumentCreator, rowSource: Iterator[Seq[String]] with ColumnDefinitions)
+extends AbstractIterator[Document] with CloseableIterator[Document] {
+  private val generator = XmlGeneratorMapper(creator, rowSource.colDefs.map(_.name))
   private[this] var cached: Iterator[Document] = Iterator.empty
 
-  def next = {
+  def next =
     if (cached.hasNext)
       cached.next
-    else {
-      if (rowSource.hasNext) {
-        cached = rowSource.take(Runtime.getRuntime().availableProcessors()).toList.par.map {generator}.iterator
-        next
-      }
-      else null
-    }
-  }
+    else if (rowSource.hasNext) {
+      cached = rowSource.take(Runtime.getRuntime().availableProcessors()).toList.par.map {generator}.iterator
+      next}
+    else null
+
   def hasNext = rowSource.hasNext || cached.hasNext
+
+  def close() = com.ms.qaTools.closeAny(rowSource)
 }
 
 object XmlGenerator {
-  def apply(template: Document, rowSource: Iterator[Seq[String]] with ColumnDefinitions, isLegacyMode: Boolean = false) = {
-    val creator = XmlDocumentCreator(template, isLegacyMode)
-    new XmlGenerator(creator, rowSource)
-  }
+  def apply(template: Document, rowSource: Iterator[Seq[String]] with ColumnDefinitions, isLegacyMode: Boolean = false) =
+    new XmlGenerator(XmlDocumentCreator(template, isLegacyMode), rowSource)
 }
 /*
 Copyright 2017 Morgan Stanley

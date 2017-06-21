@@ -20,7 +20,7 @@ import com.ms.qaTools.saturn.runtime.TRACE
 import com.ms.qaTools.saturn.runtime.VerbosityLevel
 import com.ms.qaTools.saturn.runtime.notifier.console.spaces
 import com.ms.qaTools.saturn.runtime.notifier.console.stringToAnsiColorString
-import com.ms.qaTools.toolkit.Result
+import com.ms.qaTools.{toolkit => tk}
 
 abstract class ConsoleNotifier[ResultType] extends Notifier[ResultType] {
   def notifyBeforeIterator(name: String, result: PreIteratorResult[ResultType])(implicit sc: SaturnExecutionContext) = {}
@@ -38,7 +38,7 @@ abstract class ConsoleNotifier[ResultType] extends Notifier[ResultType] {
   def notifyException(name: String, t: Throwable)(implicit sc: SaturnExecutionContext) = sc.logger.synchronized {
     implicit val noColor: Boolean = sc.noOutputColor
     t match {
-      case IteratorFutureException(cause) => {
+      case IteratorFutureException(cause, _) => {
         sc.logger.info("%s(%s) - %s".format(name.blue.bold.reset, runGroupType.blue, "FAIL".red))
         sc.logger.trace("Trace:".red.bold)
         sc.logger.trace(spaces(1) + ExceptionUtils.getStackTrace(cause).replaceAll("\n", "\n" + spaces(1)).red)
@@ -47,7 +47,7 @@ abstract class ConsoleNotifier[ResultType] extends Notifier[ResultType] {
           case _       => sc.logger.info(cause.getCauseStackString.red)
         }
       }
-      case IterationFutureException(cause) => {
+      case IterationFutureException(cause, _) => {
         sc.logger.info("%s(%s) - %s".format(name.blue.bold.reset, runGroupType.blue, "FAIL".red))
         sc.logger.trace("Trace:".red.bold)
         sc.logger.trace(spaces(1) + ExceptionUtils.getStackTrace(cause).replaceAll("\n", "\n" + spaces(1)).red)
@@ -60,14 +60,14 @@ abstract class ConsoleNotifier[ResultType] extends Notifier[ResultType] {
     sc.logger.info("")
   }
 
-  def resultShouldShowDetails(result: Result, metaData: Seq[Any])(implicit sc: SaturnExecutionContext) = {
+  def resultShouldShowDetails(result: tk.Result, metaData: Seq[Any])(implicit sc: SaturnExecutionContext) = {
     implicit val noColor: Boolean = sc.noOutputColor
-    def _resultShouldShowDetails(result: Result, verbosityLevel: VerbosityLevel) = verbosityLevel match {
+    def _resultShouldShowDetails(result: tk.Result, verbosityLevel: VerbosityLevel) = verbosityLevel match {
       case TRACE() => true
       case DEBUG() => true
       case DEBUG_ON_STATUS() => verbosityLevel match {
-        case DEBUG_ON_PASS() => result.passed
-        case DEBUG_ON_FAIL() => result.failed
+        case DEBUG_ON_PASS() => result.status == tk.Passed
+        case DEBUG_ON_FAIL() => result.status == tk.Failed
       }
       case _ => false
     }

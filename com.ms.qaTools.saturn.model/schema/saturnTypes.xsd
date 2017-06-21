@@ -361,7 +361,14 @@
         <xs:pattern value="[A-Za-z0-9_]*"/>
     </xs:restriction>    
   </xs:simpleType>
-  
+
+  <xs:complexType name="AlmId">
+    <xs:sequence>
+      <xs:element name="Domain"  type="value:complexValue" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Project" type="value:complexValue" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Id"      type="value:complexValue" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
 </xs:schema>
 <!--
 Copyright 2017 Morgan Stanley

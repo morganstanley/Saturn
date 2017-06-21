@@ -1,22 +1,15 @@
 package com.ms.qaTools.io.rowSource.internal
 
-import org.apache.commons.io.input.Tailer
 import java.io.File
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.SynchronizedBuffer
-import org.apache.commons.io.input.TailerListener
-import java.io.Reader
 import java.io.FileNotFoundException
-import org.slf4j.{ LoggerFactory }
-import java.io.FileInputStream
-import org.apache.commons.io.IOUtils
-import scala.util.Try
-import java.io.IOException
-import java.io.EOFException
 import java.io.FileReader
+import java.io.Reader
+import java.util.concurrent.locks.ReentrantLock
+
 import scala.annotation.tailrec
-import scala.util.Failure
-import com.ms.qaTools._
+import scala.util.Try
+
+import org.slf4j.LoggerFactory
 
 /**
  * This is an extension of the Java Reader, not a RowSource.
@@ -35,19 +28,29 @@ class BufferedFileTailerReader(
   throwIfNotFound: Boolean = false) extends Reader {
 
   val logger = LoggerFactory.getLogger(getClass)
-  val buffer = new StringBuilder()
-  @volatile var closed: Boolean = false
+  protected val buffer = new StringBuilder()
+  protected val bufferLock = new ReentrantLock
+  protected val bufferNonEmpty = bufferLock.newCondition
+  @volatile protected var closed: Boolean = false
 
-  val underlying = new Thread {
-    var reader: Option[Reader] = None
-    var lastPosition: Long = 0
-    def onFileNotFound = if (throwIfNotFound) throw new FileNotFoundException(file.getAbsolutePath()) else Thread.`yield`
+  val underlying = new Thread(toString) {
+    private[this] var reader: Option[Reader] = None
+    private[this] var lastPosition: Long = 0
+
+    setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
+      def uncaughtException(t: Thread, e: Throwable) = logger.error("uncaught exception", e)
+    })
+
+    def onFileNotFound() =
+      if (throwIfNotFound) throw new FileNotFoundException(file.getAbsolutePath()) else Thread.sleep(500)
+
     @tailrec def position: Long =
       location match {
         case End if file.exists()  => file.length()
         case End if !file.exists() => { onFileNotFound; position }
         case Beginning             => 0
       }
+
     @tailrec def obtainReader: Option[Reader] = {
       if (!file.exists()) {
         onFileNotFound
@@ -60,28 +63,52 @@ class BufferedFileTailerReader(
           resolver.resolve().foreach { f =>
             def retryToAppend(n: Int): Try[StringBuilder] =
               Try {
-                buffer.synchronized { buffer.appendAll(f.readFrom(position)) }
+                bufferLock.lock()
+                try {
+                  val s = f.readFrom(position)
+                  if (s.nonEmpty) {
+                    buffer.appendAll(s)
+                    bufferNonEmpty.signal()
+                  }
+                  buffer
+                } finally bufferLock.unlock()
               } recoverWith { case _: Throwable if (n > 0) => retryToAppend(n - 1) }
-            retryToAppend(10)            
+            retryToAppend(10)
           }
           lastPosition = 0
           Option(new FileReader(file))
         }
         else {
-          reader.orElse { Option(new FileReader(file).withSideEffect { _.skip(position) }) }
+          reader.orElse {
+            Option {
+              val r = new FileReader(file)
+              val p = position
+              r.skip(p)
+              logger.info("jump to {} in {}", p, r)
+              r
+            }
+          }
         }
       }
     }
 
     override def run() = {
-      while (true && !closed) {
+      val b = new Array[Char](1024)
+      while (!closed) {
         reader = obtainReader
         reader.foreach { r =>
-          val b = new Array[Char](1024)
-          val read = r.read(b)
-          if (read > 0) {
-            buffer.synchronized { buffer.appendAll(b.take(read)) }
-            lastPosition += read
+          var readMore = true
+          while (readMore) {
+            val read = r.read(b)
+            logger.trace("read {} characters from {}", read, r)
+            if (read > 0) {
+              bufferLock.lock()
+              try {
+                buffer.appendAll(b, 0, read)
+                bufferNonEmpty.signal()
+              } finally bufferLock.unlock()
+              lastPosition += read
+            } else readMore = false
           }
           Thread.sleep(500)
         }
@@ -95,19 +122,14 @@ class BufferedFileTailerReader(
   def close = closed = true
 
   def read(buf: Array[Char], offset: Int, len: Int): Int = {
-    var read: Int = 0
-    while (read != len) {
-      read = buffer.synchronized {
-        if (buffer.size >= offset + len) {
-          buffer.copyToArray(buf, offset, len)
-          buffer.delete(offset, len)
-          len
-        }
-        else 0
-      }
-      if (read != len) Thread.`yield`
-    }
-    read
+    bufferLock.lockInterruptibly()
+    try {
+      while (buffer.isEmpty) bufferNonEmpty.await()
+      val n = buffer.length.min(len).min(buf.length - offset)
+      buffer.copyToArray(buf, offset, len)
+      buffer.delete(0, n)
+      n
+    } finally bufferLock.unlock()
   }
 }
 

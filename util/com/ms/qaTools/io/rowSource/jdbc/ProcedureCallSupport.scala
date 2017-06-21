@@ -15,31 +15,32 @@ trait ProcedureCallSupport {self: DatabaseConnection =>
   }
 
   protected def cardinality(procedure: String): Int
-  
+
   protected def generateProcCall(procName: String): String =
     "{CALL " + procName + (1 to cardinality(procName)).map(_ => "?").mkString("(", ",", ")") + "}"
 
   protected def isProc(sql: String) = {
     val sqlUpper = sql.toUpperCase().trim()
     sqlUpper.startsWith("EXEC") || sqlUpper.startsWith("CALL")
-  } 
+  }
+
+  protected def canonicalize(query: String): String = if (isProc(query)) query else generateProcCall(query)
 
   protected def parameterDefinitions(statement: PreparedStatement) = {
     val meta = statement.getParameterMetaData
     for (i <- 1 to meta.getParameterCount) yield (meta.getParameterMode(i), meta.getParameterType(i))
-  }  
+  }
 
   def call(query: String, parameters: Iterator[Seq[String]] = Iterator.single(Seq())): Iterator[Iterator[ResultSetRowSource] with OutputParameters] with Closeable = {
-    val dbConnection = getConnection
     new AbstractIterator[Iterator[ResultSetRowSource] with OutputParameters] with Closeable {
-      val sql = if (isProc(query)) query else generateProcCall(query)
+      val dbConnection = getConnection
+      val statement = dbConnection.prepareCall(canonicalize(query))
+      val definitions = parameterDefinitions(statement)
       private def isOut(pmode: Int) = pmode == ParameterMetaData.parameterModeInOut || pmode == ParameterMetaData.parameterModeOut
-      def close = dbConnection.close
+      def close = if (!persistent) dbConnection.close
       def hasNext = parameters.hasNext
       def next = {
-        val statement = dbConnection.prepareCall(sql)
         val row = parameters.next
-        val definitions = parameterDefinitions(statement)
         for (i <- 0 until definitions.size) {
           val (pmode, ptype) = definitions(i)
           if (isOut(pmode))
@@ -75,15 +76,20 @@ trait ProcedureCallSupport {self: DatabaseConnection =>
             case ((pmode, ptype), i) if isOut(pmode) => SQLTypeParameter(ptype).get(i + 1, statement).orNull}
 
           def outputParametersAsDelimitedRowIterator: Iterator[Seq[String]] =
-            Iterator.single(outputParameters.map{_.toString})
+            Iterator.single(outputParameters.map{Option(_).map(_.toString).orNull})
         }
       }
     }
   }
 }
 
-trait NoProcedureCallSupport extends ProcedureCallSupport {this: DatabaseConnection =>
-  def cardinality(procedure: String): Int = ???
+trait SemiProcedureCallSupport extends ProcedureCallSupport { this: DatabaseConnection =>
+  protected def cardinality(procedure: String): Int = throw new UnsupportedOperationException
+  override protected def canonicalize(query: String) = query
+}
+
+@deprecated("don't mix in this trait and let it fail at compile time", "2.1.64")
+trait NoProcedureCallSupport extends SemiProcedureCallSupport { this: DatabaseConnection =>
   override def call(query: String, parameters: Iterator[Seq[String]] = Iterator.single(Nil)) =
     throw new Exception("Procedure call not supported.")
 }

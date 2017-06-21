@@ -1,4 +1,5 @@
 package com.ms.qaTools.io.rowSource
+import com.ms.qaTools.closeAny
 import com.ms.qaTools.IteratorProxy
 
 case class MultiRowSource(rowSources: Iterator[Iterator[Seq[String]] with ColumnDefinitions])
@@ -6,16 +7,18 @@ extends IteratorProxy[Seq[String]] with ColumnDefinitions {
   val rowSourcesSeq = rowSources.toSeq
 
   val colDefs =
-    rowSourcesSeq.flatMap { _.colNames }.distinct.zipWithIndex.map{
+    rowSourcesSeq.flatMap{_.colDefs.map(_.name)}.distinct.zipWithIndex.map{
       case (n, i) => ColumnDefinition(name = n, index = i)}
 
   val self = rowSourcesSeq.toIterator.flatMap{rs =>
     val iIndices =
-      for(oCol <- colDefs) yield rs.colMap.get(oCol.name).map(_.index)
+      for(oCol <- colDefs) yield rs.colDefs.find(_.name == oCol.name).map(_.index)
     for(row <- rs) yield
       for(i <- iIndices) yield
         i.map(row(_)).orNull
   }
+
+  override def close() = rowSources.foreach(closeAny)
 }
 /*
 Copyright 2017 Morgan Stanley

@@ -1,4 +1,4 @@
-package com.ms.qaTools.io.rowWriter.jdbc
+package com.ms.qaTools.io.rowWriter
 
 import java.sql.Connection
 
@@ -11,13 +11,15 @@ import com.ms.qaTools.io.rowSource.jdbc.ExecuteSupport
 import com.ms.qaTools.jdbc.SQLTypeParameter
 import com.ms.qaTools.jdbc.SQLTypeParameter.{SQLParameterGetSet, SQLStringParameterGetSet}
 
-class JdbcRowWriter(connection: DatabaseConnection with ExecuteSupport, tableName: String, batchSz: Int = 10000) extends Writer[Iterator[Seq[String]]] {
+class JdbcRowWriter(connection: DatabaseConnection with ExecuteSupport, tableName: String,
+                    batchSz: Int = 10000, createTable: Boolean = false) extends Writer[Iterator[Seq[String]]] {
   require(tableName != null, "Must specify a table name")
   def write(source: Iterator[Seq[String]]) = connection.withConnection { dbConnection =>
     source match {
-      case c: ColumnDefinitions => {
+      case c: ColumnDefinitions =>
+        if (createTable) connection.initTable(tableName, c.colDefs)
         val idQuoteStr = connection.getIdentifierQuoteString
-        val colsStr = c.colNames.map(x => s"$idQuoteStr$x$idQuoteStr").mkString(",")
+        val colsStr = c.colDefs.map(_.name).map(x => s"$idQuoteStr$x$idQuoteStr").mkString(",")
         val statementStr = "insert into " + tableName + "(" +
           colsStr +
           ") values (" +
@@ -38,11 +40,11 @@ class JdbcRowWriter(connection: DatabaseConnection with ExecuteSupport, tableNam
         statement.close()
         dbConnection.commit()
         count
-      }
       case _ => throw new JdbcException("Unhandled type of input")
     }
   }
-  override def close = {}
+
+  def close = ()
 
   protected def columnAccessors(conn: Connection, cols: String): Seq[SQLParameterGetSet[_]] =
     if (cols.isEmpty)

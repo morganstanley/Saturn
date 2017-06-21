@@ -1,31 +1,27 @@
 package com.ms.qaTools.interpreter
 
-import scala.util.{Try, Success, Failure}
-
-import com.ms.qaTools.toolkit.{Status, Passed, Failed}
+import com.ms.qaTools.{toolkit => tk}
 
 import groovy.lang.Binding
 import groovy.lang.GroovyShell
 
-case class GroovyInterpreterResult(override val status: Status,
-                                   command: String,
-                                   resultObj: Option[Any] = None,
-                                   override val exception: Option[Throwable] = None) extends InterpreterResult
+case class GroovyInterpreterResult(status: tk.Status, command: String, resultObj: Option[Any], exception: Option[Throwable])
+extends InterpreterResult
 
 object GroovyInterpreterResult {
-  def fromResult(code: String)(result: => AnyRef): GroovyInterpreterResult = Try(result) match {
-    case Success(r) => GroovyInterpreterResult(Passed(), code, Option(r))
-    case Failure(t) => GroovyInterpreterResult(Failed(), code, exception = Option(t))
-  }
+  def fromResult(code: String)(result: => AnyRef): GroovyInterpreterResult = {
+    val r = util.Try(result)
+    // XXX filter to convert Some(null) into None for backward compatibility
+    GroovyInterpreterResult(if (r.isSuccess) tk.Passed else tk.Failed, code, r.toOption.filter(_ != null), r.failed.toOption)}
 }
 
-case class GroovyInterpreter(val binding: Binding = new Binding) extends Interpreter[String, GroovyInterpreterResult] {
+case class GroovyInterpreter(binding: Binding = new Binding) extends Interpreter[String, GroovyInterpreterResult] {
   val shell = new GroovyShell(getClass().getClassLoader(), binding)
   def run(command: String): GroovyInterpreterResult =
     GroovyInterpreterResult.fromResult(command)(shell.evaluate(command))
 }
 
-case class MemoizedGroovyInterpreter(val groovyCode: String) extends Interpreter[Binding, GroovyInterpreterResult] {
+case class MemoizedGroovyInterpreter(groovyCode: String) extends Interpreter[Binding, GroovyInterpreterResult] {
   val shell = new GroovyShell(getClass().getClassLoader(), new Binding())
   val script = shell.parse(groovyCode)
   def run(binding: Binding): GroovyInterpreterResult = GroovyInterpreterResult.fromResult(groovyCode) {

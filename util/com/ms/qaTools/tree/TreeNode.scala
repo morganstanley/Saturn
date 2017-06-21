@@ -1,27 +1,42 @@
 package com.ms.qaTools.tree
 
+case class PathNode(name: String, idx: Option[Int] = None) {
+  def toString(canonical: Boolean) = if (canonical) s"$name${idx.map {i => s"[$i]"}.getOrElse("")}" else name
+}
 
+trait AsTreeNode[A] {
+  def value(x: A): Option[Any]
+  def detach(x: A): A = x
+}
 
-trait TreeNode[+NodeType] { 
-  val node: NodeType
-  val path: String
-  val name: String
-  val value: Option[Any]
+object TreeNode {
+  implicit def asTreeNode[A] = new AsTreeNode[TreeNode[A]] {
+    def value(x: TreeNode[A]) = x.value
+    override def detach(x: TreeNode[A]) = x.detach
+  }
+}
 
-  def valueAsString: String = if (hasValue) value.get.toString else ""
+trait TreeNode[+NodeType] {
+  def node: NodeType
+  def path(canonical: Boolean): String
+  def name: String
+  def value: Option[Any]
+
+  def valueAsString: String = value.map(_.toString).getOrElse("")
   def hasValue: Boolean = value.isDefined
   def children(filterOut: (NodeType) => Boolean = Function.const(false)): Seq[TreeNode[NodeType]]
   def detach: TreeNode[NodeType] = this
+  def parent: Option[TreeNode[NodeType]] = None
 }
 
 case class TreeNodeProxy[+NodeType](treeNode: TreeNode[NodeType]) extends Proxy with TreeNode[NodeType] {
   def self = treeNode
-  val node = treeNode.node
-  val path = treeNode.path
-  val name = treeNode.name
-  val value = treeNode.value
+  def node = treeNode.node
+  def path(canonical: Boolean): String = treeNode.path(canonical)
+  def name: String = treeNode.name
+  def value: Option[Any] = treeNode.value
   override def hasValue: Boolean = treeNode.hasValue
-  override def children(filterOut: (NodeType) => Boolean = Function.const(false)) = treeNode.children(filterOut)
+  def children(filterOut: (NodeType) => Boolean = Function.const(false)) = treeNode.children(filterOut)
 }
 /*
 Copyright 2017 Morgan Stanley

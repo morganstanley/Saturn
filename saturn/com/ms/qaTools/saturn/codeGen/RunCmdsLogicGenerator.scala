@@ -22,7 +22,11 @@ object RunCmdsLogicGenerator {
       checkStrGen <- ComplexValueStringGenerator(cfg.getCheckStr)
       attributes = Iterator.iterate(runCmds: EObject)(_.eContainer).takeWhile(_ != null).collect {
         case x: MAbstractRunGroup => x
-      }.flatMap(_.getAttributes).map(_.getName).toSet
+      }.foldLeft((Set.empty[String], Set.empty[String])) {
+        case ((as0, rs0), x) =>
+          val rs = rs0 ++ x.getResources.map(_.getName)
+          (as0 ++ x.getAttributes.map(_.getName).filterNot(rs), rs)
+      }._1
       (interpreter, resultType, commandType) <- Try {
         cfg.getInterpreter() match {
           case InterpretersEnum.DML    => ("DmlInterpreter()", "DmlInterpreterResult", "String")

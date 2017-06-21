@@ -1,9 +1,7 @@
 package com.ms.qaTools.io
 
-import java.io.{File => JFile}
-
 object File {
-  def apply(dirName:String) = new JFile(dirName)
+  def apply(f: String) = new java.io.File(f)
 }
 /*
 Copyright 2017 Morgan Stanley

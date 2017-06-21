@@ -1,39 +1,46 @@
 package com.ms.qaTools.tree.extraction
 
-import scala.util.Try
+import scala.collection.mutable
+import scala.collection.parallel.ExecutionContextTaskSupport
+import scala.concurrent.ExecutionContext
 
-import com.ms.qaTools.tree.TreeNode
+import com.ms.qaTools.tree.AsTreeNode
 
+class Extractor[T: AsTreeNode](implicit ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global) {
+  val taskSupport = new ExecutionContextTaskSupport(ec)
 
+  type IndexedTreeDataSet = Seq[Vector[(String, Index)]]
 
-class Extractor[T] {
-  type IndexedTreeDataSet = Seq[Seq[(String, Index)]]
-  def intersect(left: Seq[(String, Index)], right: Seq[(String, Index)]): Boolean =
-    ! (left.map {_._2}.toSet & right.map {_._2}.toSet).isEmpty    
-  def bucketize(results: IndexedTreeDataSet, unionPacks: Seq[IndexedTreeDataSet] = Nil): Seq[IndexedTreeDataSet] =
-    results.foldLeft(unionPacks) {
-      (s, p) =>
-        val heads = s.zipWithIndex.map { u => (u._2, u._1.head) }
-        heads.find { h => intersect(h._2, p) } match {
-          case Some(pack) => s.updated(pack._1, s(pack._1) ++ Seq(p))
-          case None       => s ++ Seq(Seq(p))
+  protected def bucketize(dataSets: Seq[IndexedTreeDataSet]): Seq[IndexedTreeDataSet] = {
+    def intersect: Boolean = {
+      val dataSetByIndex = mutable.Map.empty[Index, IndexedTreeDataSet]
+      for (d <- dataSets; rows <- d; (_, i) <- rows)
+        dataSetByIndex.get(i) match {
+          case Some(old) => if (old != d) return true
+          case None      => dataSetByIndex(i) = d
         }
-    }    
-  def extract(root: ColumnMapping[T], rootContext: TreeNode[T], detach: DetachStrategy[T]): IndexedTreeDataSet = {
-    val value = root.mapping.map { m => (if (rootContext.hasValue) rootContext.valueAsString else null, m) }
+      false
+    }
+    if (intersect) dataSets.iterator.flatten.filter(_.nonEmpty).toBuffer :: Nil else dataSets
+  }
+
+  def extract(root: ColumnMapping[T], rootContext: T, detach: DetachStrategy[T]): IndexedTreeDataSet = {
+    val value = root.mapping.map { m => (implicitly[AsTreeNode[T]].value(rootContext).map(_.toString).orNull, m) }
     val detachVal = detach(root)
-    root.children.foldLeft(Seq(value.toSeq)) {
+    root.children.foldLeft(Seq(value.toVector)) {
       (ref, child) =>
-        val nodes: Seq[TreeNode[T]] = synchronized {
+        val nodes = synchronized {
           child.step resolve {
-            if (detachVal) rootContext.detach else rootContext
+            if (detachVal) implicitly[AsTreeNode[T]].detach(rootContext) else rootContext
           }
         }
-        val results = nodes.par.map {t => extract(child, t, detach)}
-        val right = results.foldLeft(Seq[IndexedTreeDataSet]()) {
-          (refResult, childResult) =>  bucketize(childResult, refResult)
+        val results = {
+          val par = nodes.par
+          par.tasksupport = taskSupport
+          par.map(extract(child, _, detach))
         }
-        (ref +: right).reduceLeft { (r, n) => for (i <- r; j <- n) yield { i ++ j } } //cartesian product
+        val right = bucketize(results.seq)
+        right.foldLeft(ref) { (r, n) => for (i <- r; j <- n) yield i ++ j } //cartesian product
     }
   }
 }

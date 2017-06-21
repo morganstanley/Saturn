@@ -8,11 +8,11 @@ import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.runtime.TRACE
 import com.ms.qaTools.saturn.runtime.notifier.console.spaces
 import com.ms.qaTools.saturn.runtime.notifier.console.stringToAnsiColorString
-import com.ms.qaTools.toolkit.sql.SQLCallResult
-import com.ms.qaTools.toolkit.sql.SQLClearResult
-import com.ms.qaTools.toolkit.sql.SQLExecuteResult
-import com.ms.qaTools.toolkit.sql.SQLFetchResult
-import com.ms.qaTools.toolkit.sql.SQLLoadResult
+import com.ms.qaTools.toolkit.SQLCallResult
+import com.ms.qaTools.toolkit.SQLClearResult
+import com.ms.qaTools.toolkit.SQLExecuteResult
+import com.ms.qaTools.toolkit.SQLFetchResult
+import com.ms.qaTools.toolkit.SQLLoadResult
 
 sealed class SQLStepConsoleNotifier[ResultType] extends ConsoleNotifier[ResultType] {
   override def notifyAfterIteration(name: String, result: IterationResult[ResultType])(implicit sc: SaturnExecutionContext) = sc.logger.synchronized {
@@ -20,7 +20,7 @@ sealed class SQLStepConsoleNotifier[ResultType] extends ConsoleNotifier[ResultTy
     implicit val noColor = sc.noOutputColor
 
     sc.logger.changeLogLevelDuringRuntime(result) {
-      logPrintMetaDatas(result.context.metaDataContexts, Seq("DatabaseResource"), 1)    
+      logPrintMetaDatas(result.context.metaDataContexts, Seq("DatabaseResource"), 1)
     }
   }
 

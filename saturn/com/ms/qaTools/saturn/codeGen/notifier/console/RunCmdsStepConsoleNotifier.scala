@@ -14,10 +14,9 @@ import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.runtime.TRACE
 import com.ms.qaTools.saturn.runtime.notifier.console.spaces
 import com.ms.qaTools.saturn.runtime.notifier.console.stringToAnsiColorString
-import com.ms.qaTools.toolkit.runCmds.RunCmdsResult
+import com.ms.qaTools.toolkit.RunCmdsResult
 
 sealed class RunCmdsConsoleNotifier[ResultType <: InterpreterResult]() extends ConsoleNotifier[RunCmdsResult[ResultType]] {
-
   def print(command: String, message: Option[String], exception: Option[Throwable],
             exitCode: Option[Int])(implicit sc: SaturnExecutionContext) = sc.logger.synchronized {
     implicit val noColor = sc.noOutputColor
@@ -26,11 +25,11 @@ sealed class RunCmdsConsoleNotifier[ResultType <: InterpreterResult]() extends C
     sc.logger.debug(spaces(2) + "Message: ".blue + message.getOrElse("N/A!"))
     exception match {
       case Some(e) => {
-        sc.logger.trace(spaces(2) + "Stack Trace: ".red.bold)
+        sc.logger.trace(spaces(2) + "Stack Trace:".red.bold)
         sc.logger.trace(spaces(2) + ExceptionUtils.getStackTrace(e).red)
         sc.outputVerbosity match {
           case TRACE() =>
-          case _       => sc.logger.debug(spaces(2) + "Error Message: ".blue + { Option(e.getMessage).getOrElse(e.getCause.getMessage) }.red)
+          case _       => sc.logger.debug(spaces(2) + "Error Message: ".blue + { Option(e.getMessage).getOrElse(e.getCause.getMessage).trim }.red)
         }
       }
       case None => sc.logger.debug(spaces(2) + "ErrorMessage: ".blue + "N/A!")
@@ -66,7 +65,7 @@ case object RunCmdsShellConsoleNotifier extends RunCmdsConsoleNotifier[ShellInte
       for {
         c <- result.moduleResult.commands
         r = c.interpreterResult
-        e = firstException(r.exception, r.errorMessage.map(new Exception(_)), c.exception)
+        e = firstException(r.exception, r.stderr.map(new Exception(_)), c.exception)
       } print(r.command, c.message, e, r.exitCode)
       sc.logger.debug("")
     }

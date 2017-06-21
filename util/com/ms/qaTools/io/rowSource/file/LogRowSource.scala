@@ -1,12 +1,11 @@
 package com.ms.qaTools.io.rowSource.file
 
-import java.io.PushbackReader
 import java.io.Reader
+
 import scala.annotation.tailrec
-import scala.util.matching.Regex
+import scala.collection.AbstractIterator
 import scala.collection.mutable.StringBuilder
-
-
+import scala.util.matching.Regex
 
 class LogRowSource(
   reader: Reader,
@@ -14,57 +13,42 @@ class LogRowSource(
   val end: Option[Regex],
   val bufferSize: Int,
   val processIncompleteEntries: Boolean = true)
-  extends Iterator[String] {
+  extends AbstractIterator[String] {
 
-  private[this] var cached: StringBuilder = new StringBuilder()
+  private[this] val cached = new StringBuilder()
   private var currentBlock: Option[String] = None
 
-  def hasNext = currentBlock.orElse{currentBlock = readNextBuffer(); currentBlock}.isDefined
+  def hasNext = currentBlock.orElse{currentBlock = nextMatch(); currentBlock}.isDefined
 
-  def readIntoStringBuilder: StringBuilder = {
-    val buffer: Array[Char] = new Array(bufferSize)
-    val (fromCache, newCache) = cached.splitAt(bufferSize)
-    cached = newCache
-    val fromReader =
-      if (fromCache.size < bufferSize) {
-        val charsRead = reader.read(buffer, 0, bufferSize - fromCache.size)
-        if (charsRead > -1) new String(buffer.take(charsRead)) else ""
-      }
-      else ""
-    fromCache.append(fromReader)
+  private def readMore(): Int = {
+    val buffer = new Array[Char](bufferSize)
+    val charsRead = reader.read(buffer)
+    if (charsRead > 0) cached.appendAll(buffer, 0, charsRead)
+    charsRead
   }
 
-  @tailrec private def readNextBuffer(history: StringBuilder = new StringBuilder(), beginString: Option[String] = None, accu: StringBuilder = new StringBuilder()): Option[String] = {
-    beginString match {
-      case None => {
-        val read = readIntoStringBuilder
-        if (read.size <= 0) None
-        else {
-          val context = history.append(read)
-          begin.findFirstMatchIn(context) match {
-            case Some(m) => readNextBuffer(context.drop(m.end), Option(m.matched), accu)
-            case _       => readNextBuffer(context, beginString, accu)
-          }
-        }
-      }
-      case Some(b) => {
-        val context = accu.append(history)
-        end.getOrElse(begin).findFirstMatchIn(context.mkString) match {
-          case Some(m) => {
-            val fromWhere = if (end.isDefined) m.end else m.start
-            cached = context.drop(fromWhere)
-            Option(b + context.take(fromWhere))
-          }
-          case None => {
-            val nextBuffer = readIntoStringBuilder
-            if (nextBuffer.size <= 0)
-              if (processIncompleteEntries) Option(b + context) else None
-            else
-              readNextBuffer(nextBuffer, beginString, context)
-          }
-        }
-      }
-    }
+  @tailrec private def nextMatch(): Option[String] = begin.findFirstMatchIn(cached) match {
+    case None =>
+      if (readMore() > 0) nextMatch() else None
+    case Some(m) =>
+      val b = m.matched
+      cached.delete(0, m.end)
+      matchEnd().map(b + _)
+  }
+
+  @tailrec private def matchEnd(): Option[String] = end.getOrElse(begin).findFirstMatchIn(cached) match {
+    case None =>
+      if (readMore() > 0) matchEnd()
+      else if (processIncompleteEntries) {
+        val s = cached.result()
+        cached.clear()
+        Some(s)
+      } else None
+    case Some(m) =>
+      val until = if (end.isDefined) m.end else m.start
+      val s = cached.substring(0, until)
+      cached.delete(0, until)
+      Some(s)
   }
 
   def next = {

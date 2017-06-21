@@ -1,17 +1,12 @@
 package com.ms.qaTools.tree.generator
 
-import com.ms.qaTools.io.DelimitedRow
-
-
-
 trait NodeCreator[CreateContextType, +NodeType] {
   def extractColQueries: Set[UnresolvedColQuery]
   def isLocal: Boolean
-  def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, createContext: CreateContextType): NodeType
+  def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, createContext: CreateContextType): NodeType
 }
 
-trait LeafNodeCreator[CreateContextType, NodeType] extends NodeCreator[CreateContextType, NodeType] {
-}
+trait LeafNodeCreator[CreateContextType, NodeType] extends NodeCreator[CreateContextType, NodeType]
 
 trait InnerNodeCreator[CreateContextType, NodeType] extends NodeCreator[CreateContextType, NodeType] {
   type UnresolvedColQueries = Set[UnresolvedColQuery]

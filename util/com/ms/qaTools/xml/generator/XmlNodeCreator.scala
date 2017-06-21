@@ -14,11 +14,9 @@ import com.ms.qaTools.tree.generator.LeafNodeCreator
 import com.ms.qaTools.tree.generator.NodeCreator
 import com.ms.qaTools.xml._
 
-
-
 trait XmlNodeCreator extends NodeCreator[Document, Node]
 trait XmlLeafNodeCreator extends LeafNodeCreator[Document, Node]
-trait XmlInnerNodeCreator extends InnerNodeCreator[Document, Node] 
+trait XmlInnerNodeCreator extends InnerNodeCreator[Document, Node]
 
 object XmlNodeCreator {
   val xmlGenNsUri = "http://www.ms.com/qaTools/xmlGenerator/2007"
@@ -36,22 +34,16 @@ object XmlNodeCreator {
 
   private def isXmlGenNamespace(n: Node) = n.getNamespaceURI() == xmlGenNsUri
   private def isShadowElement(n: Node) = isXmlGenNamespace(n) && n.getLocalName() == "Shadow"
-  private def isCodeNode(n: Node) = isXmlGenNamespace(n) && codeNodes.contains(n.getLocalName())  
-  
+  private def isCodeNode(n: Node) = isXmlGenNamespace(n) && codeNodes.contains(n.getLocalName())
+
   def apply(elem: Element)(implicit isLegacyMode: Boolean): XmlElementCreator = {
+    val childCreators = elem.getChildNodes().iterator.map { n => XmlNodeCreator(n) }.toList
+    val attrCreators = elem.getAttributes().iterator.map {a => XmlNodeCreator(a.asInstanceOf[Attr])}.toList
     if (! isCodeNode(elem)) {
-      val childCreators = elem.getChildNodes().map { n => XmlNodeCreator(n) }.toList
-      val attrCreators = elem.getAttributes().map {a => XmlNodeCreator(a.asInstanceOf[Attr])}.toList
-      if (isShadowElement(elem)) new XmlShadowElementCreator(elem, childCreators, attrCreators) 
+      if (isShadowElement(elem)) new XmlShadowElementCreator(elem, childCreators, attrCreators)
       else new XmlElementCreator(elem, childCreators, attrCreators)
-    }
-    else {
-      new XmlElementModifierCreator(
-        elem,       
-        elem.getChildNodes().par.map { n => XmlNodeCreator(n) }.toList, 
-        elem.getAttributes().par.map {a => XmlNodeCreator(a.asInstanceOf[Attr])}.toList)
-    }
-  }  
+    } else new XmlElementModifierCreator(elem, childCreators, attrCreators)
+  }
 
   def apply(attr: Attr)(implicit isLegacyMode: Boolean): XmlAttributeCreator = new XmlAttributeCreator(attr, isLegacyMode)
   def apply(text: Text)(implicit isLegacyMode: Boolean): XmlTextCreator = new XmlTextCreator(text, isLegacyMode)

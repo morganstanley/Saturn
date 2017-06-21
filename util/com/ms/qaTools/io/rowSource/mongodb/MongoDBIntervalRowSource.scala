@@ -46,7 +46,7 @@ object MongoDBIntervalRetryRowSource {
       MongoDBRowSource(connection, collection, Option(queries.next))
     }
 
-    MaximumRetryIterator(mongoRowSourceCreator, maxRetry, infiniteRetry, retryPeriod) asFuture
+    MaximumRetryIterator(mongoRowSourceCreator, maxRetry, infiniteRetry, retryPeriod).asFuture
   }
 }
 /*

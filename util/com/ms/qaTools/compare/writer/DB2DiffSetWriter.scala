@@ -1,22 +1,19 @@
 package com.ms.qaTools.compare.writer
-import com.ms.qaTools.compare.CompareColDef
+import com.ms.qaTools.compare.CompareColDefs
 import com.ms.qaTools.io.rowSource.DatabaseConnection
 import com.ms.qaTools.io.rowSource.jdbc.ExecuteSupport
 import com.ms.qaTools.io.rowSource.jdbc.FetchSupport
 import com.ms.qaTools.io.rowSource.jdbc.ResultSetRowSource
 import com.ms.qaTools.io.rowSource.Utils._
 
-case class DB2DiffSetWriter(dbConnection: DatabaseConnection with ExecuteSupport with FetchSupport, colDefs: Seq[CompareColDef], tblPrefix: String, dbQualifier: String)
+class DB2DiffSetWriter(dbConnection: DatabaseConnection with ExecuteSupport with FetchSupport, colDefs: CompareColDefs, tblPrefix: String, dbQualifier: String)
 extends DataBaseDiffSetWriter(dbConnection, colDefs, tblPrefix) {
   val prefix = dbQualifier + "." + tblPrefix
   setupDataBaseEnvironment
 
-  /**
-   * Method to create the tables used to insert the info from the DiffSet
-   */
-  private def createTables {
-    create("table", "LEFTTABLE (rowId integer not null primary key, " + orderedColDefs(LEFT).map{_.leftColumnDefinition.name + " varchar(256) "}.mkString(",") + ")")
-    create("table", "RIGHTTABLE (rowId integer not null primary key, " + orderedColDefs(RIGHT).map{_.rightColumnDefinition.name + " varchar(256) "}.mkString(",") + ")")
+  private def createTables() = {
+    create("table", "LEFTTABLE (rowId integer not null primary key, " + sortedLeftColumns.map{_._1.name + " varchar(256) "}.mkString(",") + ")")
+    create("table", "RIGHTTABLE (rowId integer not null primary key, " + sortedRightColumns.map{_._1.name + " varchar(256) "}.mkString(",") + ")")
     create("table", "DIFFS (diffId integer not null primary key, " + "leftId integer, rightId integer, statusId integer, reason varchar(256))")
     create("index", s"diffs_leftId on ${tblPrefix}diffs (leftId)")
     create("index", s"diffs_rightId on ${tblPrefix}diffs (rightId)")
@@ -30,22 +27,16 @@ extends DataBaseDiffSetWriter(dbConnection, colDefs, tblPrefix) {
   private def create(typ: String, statement: String) =
     dbConnection.execute(s"create $typ " + prefix + statement)
 
-  /**
-   * Method used to drop all the tables associated with the dsCompare process
-   */
-  private def cleanTables {
+  private def cleanTables() = {
     dbConnection.fetch("SELECT TABNAME from SYSCAT.TABLES WHERE TABNAME in( 'DIFFS', 'CELLDIFFS', 'XPATHDIFFS', 'STATUS', 'LEFTTABLE', 'RIGHTTABLE') and TABSCHEMA = '" + dbQualifier + "'").foreach(rs =>
       dbConnection.execute("DROP TABLE " + dbQualifier + "." + rs.toSeqString.mkString))
     dbConnection.fetch("SELECT VIEWNAME from SYSCAT.VIEWS WHERE VIEWNAME in( 'summary', 'different', 'inLeftOnly', 'inRightOnly', 'explained', 'identical') and VIEWSCHEMA = '" + dbQualifier + "'").foreach(rs =>
       dbConnection.execute("DROP VIEW " + dbQualifier + "." + rs.toSeqString.mkString))
   }
 
-  /**
-   * Method to create the views used in the data compare process
-   */
-  override def createViews {
-    val genericColumns = (leftColNames.zipWithIndex.map{case (column, index) =>
-      prefix + "leftTable." + column + " AS " + column + "_leftVal,${prefix}rightTable." + column + " AS " + column + "_rightVal," +
+  override def createViews() = {
+    val genericColumns = (sortedLeftColumns.map(_._1.name).zipWithIndex.map{case (column, index) =>
+      prefix + "leftTable." + column + " AS " + column + s"_leftVal,${prefix}rightTable." + column + " AS " + column + "_rightVal," +
       s"CASE WHEN (${prefix}leftTable.$column IS NULL) THEN 3 WHEN (${prefix}rightTable.$column IS NULL) THEN 2" +
       s" ELSE COALESCE((SELECT statusId FROM ${prefix}cellDiffs WHERE diffId = diffs.diffId and leftIdx = " + (index + 1) + "), 0) END AS " + column + "_diffStatus"
     }).mkString(",")
@@ -73,14 +64,7 @@ extends DataBaseDiffSetWriter(dbConnection, colDefs, tblPrefix) {
       + tblPrefix + s"rightTable ON ${prefix}rightTable.rowId = diffs.rightId AND diffs.statusId = 4")
   }
 
-  /**
-   * Method to set up the environment
-   */
-  override def setupDataBaseEnvironment {
-    cleanTables
-    createTables
-    createValidStatus
-  }
+  def setupDataBaseEnvironment() = {cleanTables; createTables; createValidStatus}
 }
 /*
 Copyright 2017 Morgan Stanley

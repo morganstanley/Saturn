@@ -1,74 +1,79 @@
 package com.ms.qaTools.tree.validator
 
-import com.ms.qaTools.AnyUtil
+import java.lang.Thread.UncaughtExceptionHandler
+import java.util.concurrent.ArrayBlockingQueue
+
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.util.Try
+
+import com.ms.qaTools.IteratorProxy
+import com.ms.qaTools.collections.zipWithCondition
 import com.ms.qaTools.compare.AbstractDiff
-import com.ms.qaTools.compare.DiffSet
-import com.ms.qaTools.compare.DiffSetCounter
 import com.ms.qaTools.compare.DifferentTree
-import com.ms.qaTools.compare.HasDiffSetCounter
 import com.ms.qaTools.compare.IdenticalTree
 import com.ms.qaTools.compare.InLeftOnlyTree
 import com.ms.qaTools.compare.InRightOnlyTree
 import com.ms.qaTools.compare.ValidationFailedTree
 import com.ms.qaTools.compare.ValidationPassedTree
+import com.ms.qaTools.io.rowSource.BufferedBlockingRowSource
 import com.ms.qaTools.io.rowSource.IndexedRepresentation
 import com.ms.qaTools.tree.TreeNode
 
-import scalaz.syntax.std.boolean.ToBooleanOpsFromBoolean
+abstract class IndexedDiffSet[R, N] extends IteratorProxy[AbstractDiff] {
+  val left: Iterator[IndexedRepresentation[R]]
+  val right: Iterator[IndexedRepresentation[R]]
 
-trait IndexedDiffSet[R, N] extends DiffSet[IndexedRepresentation[R]] with HasDiffSetCounter {
-  val toNode: R => TreeNode[N]
-  val comparator: Comparator[N]
+  def comparator: Comparator[N]
 
-  private[this] var leftCurrent: Option[IndexedRepresentation[R]] = None
-  private[this] var rightCurrent: Option[IndexedRepresentation[R]] = None
+  def inflateLeft(r: R): Option[TreeNode[N]]
+  def inflateRight(r: R): Option[TreeNode[N]]
 
-  val diffSetCounter: DiffSetCounter = new DiffSetCounter
+  def stringifyKeys(i: IndexedRepresentation[R]) = i.colDefs.map { c => i.indexed(c.index) }.mkString("_")
 
-  private def stringifyKeys(i: IndexedRepresentation[R]) = i.colDefs.map { _.name }.mkString("_")
+  implicit def executor: ExecutionContext = ExecutionContext.global
 
-  def resetLeft = leftCurrent = None
-  def resetRight = rightCurrent = None
-  def resetBoth = { resetLeft; resetRight }
-
-  val compare: PartialFunction[(Option[IndexedRepresentation[R]], Option[IndexedRepresentation[R]]), Option[AbstractDiff]] = {
-    case (Some(l), Some(r)) => {
-      val (eDocStringifiedKeys, aDocStringifiedKeys) = (stringifyKeys(l), stringifyKeys(r))
-      val comparison = eDocStringifiedKeys.compareTo(aDocStringifiedKeys)
-      if (comparison < 0)
-        Option(InLeftOnlyTree(l).withSideEffect { _ => resetLeft })
-      else if (comparison == 0) {
-        val result: TreeResult[N] = comparator.compare(Option(toNode(l.representation)), Option(toNode(r.representation)))
-        val stats = result.statistics
-        stats.isValidatedFail option ValidationFailedTree(l, r, result) orElse {
-          stats.hasDifferences option DifferentTree(l, r, result) orElse {
-            stats.isValidatedPass option ValidationPassedTree(l, r, result) orElse {
-              stats.isIdentical option IdenticalTree(l, r, result)
-            }
-          }
-        } withSideEffect { _ => resetBoth }
-      }
-      else
-        Option(InRightOnlyTree(r).withSideEffect { _ => resetRight })
+  protected lazy val self = {
+    val futures = new BufferedBlockingRowSource[Future[AbstractDiff]] {
+      override val buffer = new ArrayBlockingQueue[BufferedBlockingRowSource.Action[Future[AbstractDiff]]](Runtime.getRuntime.availableProcessors, true)
     }
-    case (Some(l), None) => Option(InLeftOnlyTree(l).withSideEffect { _ => resetLeft })
-    case (None, Some(r)) => Option(InRightOnlyTree(r).withSideEffect { _ => resetRight })
-    case _               => None
+    val th = new Thread(new Runnable {
+      def run() = {
+        zipWithCondition(left.buffered, right.buffered) { (l, r) =>
+          stringifyKeys(l).compareTo(stringifyKeys(r))
+        }.foreach {
+          case (l, r) => futures.put(Future(compare(l, r)))
+        }
+        futures.action(BufferedBlockingRowSource.End)
+      }
+    })
+    th.setUncaughtExceptionHandler(new UncaughtExceptionHandler {
+      def uncaughtException(t: Thread, e: Throwable) = futures.fail(e)
+    })
+    th.start()
+    futures.map(Await.result(_, Duration.Inf))
   }
 
-  def next: AbstractDiff = {
-    leftCurrent = (leftCurrent.isEmpty && left.hasNext) option left.next
-    rightCurrent = (rightCurrent.isEmpty && right.hasNext) option right.next
-    compare(leftCurrent, rightCurrent).withSideEffect { d => d.foreach { diffSetCounter.addDiffCount(_) } }.getOrElse(throw new Exception("Could not get a diff."))
+  def compare(leftIndexRep: Option[IndexedRepresentation[R]], rightIndexRep: Option[IndexedRepresentation[R]]): AbstractDiff = {
+    (leftIndexRep, rightIndexRep) match {
+      case (Some(l), Some(r)) =>
+        val result: TreeResult[N] = comparator.compare(inflateLeft(l.representation), inflateRight(r.representation))
+        val stats = result.statistics
+        if (stats.isValidatedFail)
+          ValidationFailedTree(l, r, result)
+        else if (stats.hasDifferences)
+          DifferentTree(l, r, result)
+        else if (stats.isValidatedPass)
+          ValidationPassedTree(l, r, result)
+        else
+          IdenticalTree(l, r, result)
+      case (Some(l), None) => InLeftOnlyTree(l)
+      case (None, Some(r)) => InRightOnlyTree(r)
+      case _               => throw new Exception("No left representation and no right representation provided.")
+    }
   }
-}
-
-trait HasIndexedDiffSet[T1, T2] {
-  val diffSet: IndexedDiffSet[T1, T2]
-  def isIdentical = (diffCounter.identical == diffCounter.right) && (diffCounter.identical == diffCounter.left)
-  def passes = diffCounter.identical + diffCounter.validationPassed
-  def failures = diffCounter.different + diffCounter.inLeftOnly + diffCounter.inRightOnly + diffCounter.validationFailed
-  def diffCounter = diffSet.diffSetCounter
 }
 /*
 Copyright 2017 Morgan Stanley

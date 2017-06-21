@@ -2,6 +2,8 @@ package com.ms.qaTools.saturn.modules.xmlManipModule;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -129,12 +131,21 @@ public interface XmlManipModulePackage extends EPackage
   int                   ADD_OPERATION__VALUE                      = ABSTRACT_OPERATION_FEATURE_COUNT + 3;
 
   /**
+   * The feature id for the '<em><b>Position Xpath</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ADD_OPERATION__POSITION_XPATH = ABSTRACT_OPERATION_FEATURE_COUNT + 4;
+
+  /**
    * The feature id for the '<em><b>Is Attribute</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int                   ADD_OPERATION__IS_ATTRIBUTE               = ABSTRACT_OPERATION_FEATURE_COUNT + 4;
+  int                   ADD_OPERATION__IS_ATTRIBUTE               = ABSTRACT_OPERATION_FEATURE_COUNT + 5;
 
   /**
    * The feature id for the '<em><b>Is Xml</b></em>' attribute.
@@ -142,7 +153,7 @@ public interface XmlManipModulePackage extends EPackage
    * @generated
    * @ordered
    */
-  int                   ADD_OPERATION__IS_XML                     = ABSTRACT_OPERATION_FEATURE_COUNT + 5;
+  int                   ADD_OPERATION__IS_XML                     = ABSTRACT_OPERATION_FEATURE_COUNT + 6;
 
   /**
    * The feature id for the '<em><b>Is CData</b></em>' attribute.
@@ -150,7 +161,16 @@ public interface XmlManipModulePackage extends EPackage
    * @generated
    * @ordered
    */
-  int                   ADD_OPERATION__IS_CDATA                   = ABSTRACT_OPERATION_FEATURE_COUNT + 6;
+  int                   ADD_OPERATION__IS_CDATA                   = ABSTRACT_OPERATION_FEATURE_COUNT + 7;
+
+  /**
+   * The feature id for the '<em><b>Add Position</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ADD_OPERATION__ADD_POSITION = ABSTRACT_OPERATION_FEATURE_COUNT + 8;
 
   /**
    * The number of structural features of the '<em>Add Operation</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -159,7 +179,7 @@ public interface XmlManipModulePackage extends EPackage
    * @generated
    * @ordered
    */
-  int                   ADD_OPERATION_FEATURE_COUNT               = ABSTRACT_OPERATION_FEATURE_COUNT + 7;
+  int                   ADD_OPERATION_FEATURE_COUNT               = ABSTRACT_OPERATION_FEATURE_COUNT + 9;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.modules.xmlManipModule.impl.CleanNamespacesOperationImpl <em>Clean Namespaces Operation</em>}' class.
@@ -968,6 +988,26 @@ public interface XmlManipModulePackage extends EPackage
   int                   XPATH_FEATURE_COUNT                       = ValuesPackage.COMPLEX_VALUE_FEATURE_COUNT + 1;
 
   /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum <em>Add Position Type Enum</em>}' enum.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.impl.XmlManipModulePackageImpl#getAddPositionTypeEnum()
+   * @generated
+   */
+  int ADD_POSITION_TYPE_ENUM = 18;
+
+  /**
+   * The meta object id for the '<em>Add Position Type Enum Object</em>' data type.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.impl.XmlManipModulePackageImpl#getAddPositionTypeEnumObject()
+   * @generated
+   */
+  int ADD_POSITION_TYPE_ENUM_OBJECT = 19;
+
+  /**
    * Returns the meta object for class '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AbstractOperation <em>Abstract Operation</em>}'.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @return the meta object for class '<em>Abstract Operation</em>'.
@@ -1042,6 +1082,17 @@ public interface XmlManipModulePackage extends EPackage
   EReference getAddOperation_Value();
 
   /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getPositionXpath <em>Position Xpath</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Position Xpath</em>'.
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getPositionXpath()
+   * @see #getAddOperation()
+   * @generated
+   */
+  EReference getAddOperation_PositionXpath();
+
+  /**
    * Returns the meta object for the attribute '
    * {@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#isIsAttribute <em>Is Attribute</em>}'. <!--
    * begin-user-doc --> <!-- end-user-doc -->
@@ -1063,6 +1114,17 @@ public interface XmlManipModulePackage extends EPackage
    * @generated
    */
   EAttribute getAddOperation_IsCData();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getAddPosition <em>Add Position</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Add Position</em>'.
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getAddPosition()
+   * @see #getAddOperation()
+   * @generated
+   */
+  EAttribute getAddOperation_AddPosition();
 
   /**
    * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#isIsXml <em>Is Xml</em>}'.
@@ -1589,6 +1651,28 @@ public interface XmlManipModulePackage extends EPackage
   EAttribute getXPath_Enabled();
 
   /**
+   * Returns the meta object for enum '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum <em>Add Position Type Enum</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for enum '<em>Add Position Type Enum</em>'.
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum
+   * @generated
+   */
+  EEnum getAddPositionTypeEnum();
+
+  /**
+   * Returns the meta object for data type '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum <em>Add Position Type Enum Object</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for data type '<em>Add Position Type Enum Object</em>'.
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum
+   * @model instanceClass="com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum"
+   *        extendedMetaData="name='AddPositionTypeEnum:Object' baseType='AddPositionTypeEnum'"
+   * @generated
+   */
+  EDataType getAddPositionTypeEnumObject();
+
+  /**
    * Returns the factory that creates the instances of the model.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @return the factory that creates the instances of the model.
@@ -1668,6 +1752,14 @@ public interface XmlManipModulePackage extends EPackage
     EReference ADD_OPERATION__VALUE                     = eINSTANCE.getAddOperation_Value();
 
     /**
+     * The meta object literal for the '<em><b>Position Xpath</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ADD_OPERATION__POSITION_XPATH = eINSTANCE.getAddOperation_PositionXpath();
+
+    /**
      * The meta object literal for the '<em><b>Is Attribute</b></em>' attribute feature.
      * <!-- begin-user-doc --> <!--
      * end-user-doc -->
@@ -1682,6 +1774,14 @@ public interface XmlManipModulePackage extends EPackage
      * @generated
      */
     EAttribute ADD_OPERATION__IS_CDATA                  = eINSTANCE.getAddOperation_IsCData();
+
+    /**
+     * The meta object literal for the '<em><b>Add Position</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute ADD_OPERATION__ADD_POSITION = eINSTANCE.getAddOperation_AddPosition();
 
     /**
      * The meta object literal for the '<em><b>Is Xml</b></em>' attribute feature.
@@ -2098,6 +2198,26 @@ public interface XmlManipModulePackage extends EPackage
      * @generated
      */
     EAttribute XPATH__ENABLED                           = eINSTANCE.getXPath_Enabled();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum <em>Add Position Type Enum</em>}' enum.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum
+     * @see com.ms.qaTools.saturn.modules.xmlManipModule.impl.XmlManipModulePackageImpl#getAddPositionTypeEnum()
+     * @generated
+     */
+    EEnum ADD_POSITION_TYPE_ENUM = eINSTANCE.getAddPositionTypeEnum();
+
+    /**
+     * The meta object literal for the '<em>Add Position Type Enum Object</em>' data type.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum
+     * @see com.ms.qaTools.saturn.modules.xmlManipModule.impl.XmlManipModulePackageImpl#getAddPositionTypeEnumObject()
+     * @generated
+     */
+    EDataType ADD_POSITION_TYPE_ENUM_OBJECT = eINSTANCE.getAddPositionTypeEnumObject();
 
   }
 

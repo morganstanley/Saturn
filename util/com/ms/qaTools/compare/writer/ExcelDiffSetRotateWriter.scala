@@ -5,16 +5,26 @@ import java.io.FileOutputStream
 
 import org.apache.poi.ss.SpreadsheetVersion
 
-import com.ms.qaTools.compare.AbstractDiff
-import com.ms.qaTools.compare.CompareColDef
+import com.ms.qaTools.compare.CompareColDefs
 import com.ms.qaTools.compare.DelimitedComparatorCounter
-import com.ms.qaTools.compare.DiffCounter
+import com.ms.qaTools.compare.DelimitedDifferent
+import com.ms.qaTools.compare.DelimitedIdentical
+import com.ms.qaTools.compare.DelimitedInLeftOnly
+import com.ms.qaTools.compare.DelimitedInRightOnly
+import com.ms.qaTools.compare.Diff
 import com.ms.qaTools.io.rowSource.file.ExcelWorkBook
 
-class ExcelDiffSetRotateWriter protected (workbooks: Iterator[ExcelWorkBook],
-                                          colDefs: Seq[CompareColDef],
-                                          config: ExcelDiffSetRotateWriter.Config) extends DiffSetWriter {
-  def writeDiff(diff: AbstractDiff) = synchronized {
+class ExcelDiffSetRotateWriter protected (
+  workbooks: Iterator[ExcelWorkBook],
+  colDefs: CompareColDefs,
+  config: ExcelDiffSetRotateWriter.Config)
+extends DelimitedDiffSetWriter {
+  def writeDifferent(diff: DelimitedDifferent): Unit = writeDiff(diff)
+  def writeIdentical(diff: DelimitedIdentical): Unit = writeDiff(diff)
+  def writeInLeftOnly(diff: DelimitedInLeftOnly): Unit = writeDiff(diff)
+  def writeInRightOnly(diff: DelimitedInRightOnly): Unit = writeDiff(diff)
+
+  override def writeDiff(diff: Diff[Seq[String]]) = synchronized {
     if (row >= config.size) {
       writerAndCounters = (newWriter, newCounter) :: writerAndCounters
       row = 0
@@ -25,7 +35,7 @@ class ExcelDiffSetRotateWriter protected (workbooks: Iterator[ExcelWorkBook],
     row += 1
   }
 
-  def writeSummary(counter: DiffCounter) {
+  def writeSummary(counter: DelimitedComparatorCounter) {
     for ((w, c) <- writerAndCounters) w.writeSummary(if (config.separateSummaries) c else counter)
   }
 
@@ -56,7 +66,7 @@ object ExcelDiffSetRotateWriter {
     require(size > 0)
   }
 
-  def apply(dir: File, colDefs: Seq[CompareColDef], config: Config = Config()) = {
+  def apply(dir: File, colDefs: CompareColDefs, config: Config = Config()) = {
     require(dir.isDirectory || dir.mkdirs, s"Unable to create directory ${dir.getCanonicalPath}")
     val workbooks = config.names() map { i =>
       val suf = config.version match {

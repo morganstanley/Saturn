@@ -1,0 +1,79 @@
+package pipes
+
+type String
+type Stream
+type File
+type Any
+
+
+def PRINTINGPIPES(message: Any, x: Stream): Stream = generate("bash") {
+	echo $message >&2
+	cat $x >&2
+}
+def LSTEST(): Stream = generate("bash") {	
+	ls -l
+}
+def GREPING(x: Stream, find: Any): Stream = generate("bash") {
+        grep $find $x
+
+}
+def PIPETESTING(): Stream = {
+	val Lstest = LSTEST()
+	val Test = GREPING(Lstest, "com")
+	return Test
+	
+}
+def AWKING(x: Stream): Stream = generate("bash") {
+	awk '{print $9}' $x
+}
+def PIPETESTING_2(): Stream = {
+	val Lstesting = LSTEST()
+	return AWKING(Lstesting)
+}
+val Pipes = PIPETESTING()
+val Awks = PIPETESTING_2()
+val T1 = PRINTINGPIPES("Testing named Pipes(ls -> grep Test):",Pipes)
+val T2 = PRINTINGPIPES("Testing named Pipes(Returning with Pipe function):",Awks)
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+Copyright 2017 Morgan Stanley
+
+Licensed under the GNU Lesser General Public License Version 3 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+https://www.gnu.org/licenses/lgpl-3.0.en.html
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+IN ADDITION, THE FOLLOWING DISCLAIMER APPLIES IN CONNECTION WITH THIS PROGRAM:
+
+THIS SOFTWARE IS LICENSED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE AND ANY
+WARRANTY OF NON-INFRINGEMENT, ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGE. THIS SOFTWARE MAY BE REDISTRIBUTED TO OTHERS ONLY BY EFFECTIVELY
+USING THIS OR ANOTHER EQUIVALENT DISCLAIMER IN ADDITION TO ANY OTHER REQUIRED
+LICENSE TERMS.
+*/

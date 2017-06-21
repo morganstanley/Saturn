@@ -3,7 +3,10 @@ package com.ms.qaTools.saturn
 import java.net.URI
 
 import scala.annotation.tailrec
+import scala.collection.AbstractIterator
 import scala.collection.JavaConversions._
+import scala.collection.mutable
+import scala.reflect.ClassTag
 
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.resource.{XtextResource, XtextResourceSet}
@@ -13,11 +16,11 @@ import org.eclipse.xtext.validation.{IResourceValidator, CheckMode}
 package object kronus {
   import scala.language.implicitConversions
 
+  lazy val injector = new KronusStandaloneSetup().createInjectorAndDoEMFRegistration
+
   def deserialize(uris: Seq[URI]): Seq[TopLevelKronus] = {
-    val injector = new KronusStandaloneSetup().createInjectorAndDoEMFRegistration
     val resourceSet = injector.getInstance(classOf[XtextResourceSet])
     val validator = injector.getInstance(classOf[IResourceValidator])
-    resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, true)
     val pairs = uris.map(uri => (uri, resourceSet.getResource(uri, true)))
     if (!pairs.hasDefiniteSize) pairs.length
     for ((uri, resource) <- pairs) yield {
@@ -32,7 +35,7 @@ package object kronus {
     org.eclipse.emf.common.util.URI.createURI(uri.toString)
 
   def topSort[A](nodes: Seq[(A, Set[A])]): (Seq[(A, Set[A])], Seq[A]) = {
-    @tailrec def sort[A](nodes: Seq[(A, Set[A])], soFar: List[A]): (Seq[(A, Set[A])], List[A]) = {
+    @tailrec def sort(nodes: Seq[(A, Set[A])], soFar: List[A]): (Seq[(A, Set[A])], List[A]) = {
       val (leave, nonLeave) = nodes.partition(_._2.isEmpty)
       if (leave.isEmpty) {
         (nonLeave, soFar.reverse)
@@ -47,28 +50,14 @@ package object kronus {
 
   def locationInErrorMessage(loc: Option[Location]): String = loc.fold("")("\n\tin " + _)
 
-  implicit class FunctionDefOps(self: FunctionDef) {
-    def hashtags: Seq[Hashtag] = self.getHashtags.map(Hashtag.apply)
-  }
-
-  implicit class EObjectOps(self: EObject) {
+  implicit class EObjectOps(val self: EObject) extends AnyVal {
     def eContainers: Iterator[EObject] = Iterator.iterate(self.eContainer)(_.eContainer).takeWhile(_ != null)
+    def parent[A: ClassTag]: Option[A] = eContainers.collectFirst { case x: A => x }
   }
 
   implicit def wrapTopLevelKronus(self: TopLevelKronus): WrappedTopLevelKronus = new WrappedTopLevelKronus(self)
 
-  class WrappedTopLevelKronus(val self: TopLevelKronus) extends Proxy {
-    val (pkg: Seq[String], clazz: String) = {
-      val pkg :+ cls = self.getPackage.getModule.split('.').toSeq
-      (pkg, cls)
-    }
-
-    def packageAndClass: (Seq[String], String) = (pkg, clazz)
-    def app: String = clazz + "App"
-    def appFQN: String = (pkg :+ app).mkString(".")
-  }
-
-  implicit class KronusFactoryOps(self: KronusFactory) {
+  implicit class KronusFactoryOps(val self: KronusFactory) extends AnyVal {
     def newParameterValue(name: String, value: Expression): ParameterValue = {
       val pv = self.createKeywordParameterValue
       pv.setName(name)
@@ -124,24 +113,68 @@ package object kronus {
       pd
     }
 
-    def newIncludeDef(module: String, name: Option[String]): IncludeDef = {
+    def newIncludeDef(module: TopLevelKronus, name: Option[String]): IncludeDef = {
       val inc = self.createIncludeDef
       inc.setModule(module)
       inc.setName(name.orNull)
       inc
     }
 
-    def newIncludeRef(inc: IncludeDef, v: Value): IncludeRef = {
-      val iref = self.createIncludeRef
-      iref.setInclude(inc)
-      iref.setRef(v)
-      iref
-    }
-
     def newKronusCodeBlock(code: Kronus): KronusCodeBlock = {
       val blk = self.createKronusCodeBlock
       blk.setCode(code)
       blk
+    }
+
+    def newAnnotatedDef(inner: AbstractDef): AnnotatedDef = {
+      val ad = self.createAnnotatedDef
+      ad.setDef(inner)
+      ad
+    }
+  }
+
+  implicit class AbstractDefOps(protected val self: AbstractDef) extends AnyVal {
+    def name: Option[String] = self match {
+      case self: NamedAbstractDef => Option(self.getName)
+      case _                      => None
+    }
+
+    def hashtags: Seq[Hashtag] = self.eContainer.asInstanceOf[AnnotatedDef].getHashtags.collect(Hashtag.fromString)
+  }
+
+  implicit class NamedAbstractDefOps(protected val self: NamedAbstractDef) extends AnyVal {
+    def isExported: Boolean = self.parent[Kronus]. get.eContainer match {
+      case root: TopLevelKronus => (true /: root.getExports.iterator.flatMap(_.getSymbols)) { (exported, clause) =>
+        clause.getSymbol match {
+          case _: ExportAll                             => !clause.isUnexport
+          case e: ExportHashtag if e.getRef == self     => !clause.isUnexport
+          case e: ExportRuntimeName if e.getRef == self => !clause.isUnexport
+          case _                                        => exported
+        }
+      }
+      case _ => false
+    }
+  }
+
+  implicit class KronusOps(protected val self: Kronus) extends AnyVal {
+    def collectDefs[A <: AbstractDef : ClassTag]: Iterator[A] = self.getDefs.iterator.map(_.getDef).collect {
+      case d: A => d
+    }
+
+    /** Pre-order breadth-first traversal of the inclusion tree
+     *
+     *  @return  Iterator of paths from the root
+     */
+    def allInclusions: Iterator[Seq[IncludeDef]] = new AbstractIterator[List[IncludeDef]] {
+      val queue = self.collectDefs[IncludeDef].map(_ :: Nil).to[mutable.Queue]
+      def hasNext = queue.nonEmpty
+      def next() = {
+        val deps = queue.dequeue()
+        deps.head.getModule.getKronus.collectDefs[IncludeDef].foreach { inc =>
+          if (inc.isReexport && inc.getName == null) queue.enqueue(inc :: deps)
+        }
+        deps
+      }
     }
   }
 }

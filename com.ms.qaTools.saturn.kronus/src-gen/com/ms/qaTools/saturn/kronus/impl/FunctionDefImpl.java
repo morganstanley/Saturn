@@ -2,10 +2,12 @@
  */
 package com.ms.qaTools.saturn.kronus.impl;
 
+import com.ms.qaTools.saturn.kronus.AbstractDef;
 import com.ms.qaTools.saturn.kronus.CodeAssignment;
 import com.ms.qaTools.saturn.kronus.FunctionDef;
-import com.ms.qaTools.saturn.kronus.HashtagCall;
 import com.ms.qaTools.saturn.kronus.KronusPackage;
+import com.ms.qaTools.saturn.kronus.NamedAbstractDef;
+import com.ms.qaTools.saturn.kronus.NamedRuntimeDef;
 import com.ms.qaTools.saturn.kronus.ParameterDef;
 import com.ms.qaTools.saturn.kronus.TypeDef;
 import com.ms.qaTools.saturn.kronus.TypeInstance;
@@ -32,7 +34,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl#getHashtags <em>Hashtags</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl#getName <em>Name</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl#getTypeParameters <em>Type Parameters</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl#getParameterDefs <em>Parameter Defs</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl#getReturnType <em>Return Type</em>}</li>
@@ -42,17 +44,27 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *
  * @generated
  */
-public class FunctionDefImpl extends AbstractDefImpl implements FunctionDef
+public class FunctionDefImpl extends ReferenceableDefsImpl implements FunctionDef
 {
   /**
-   * The cached value of the '{@link #getHashtags() <em>Hashtags</em>}' containment reference list.
+   * The default value of the '{@link #getName() <em>Name</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getHashtags()
+   * @see #getName()
    * @generated
    * @ordered
    */
-  protected EList<HashtagCall> hashtags;
+  protected static final String NAME_EDEFAULT = null;
+
+  /**
+   * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getName()
+   * @generated
+   * @ordered
+   */
+  protected String name = NAME_EDEFAULT;
 
   /**
    * The cached value of the '{@link #getTypeParameters() <em>Type Parameters</em>}' containment reference list.
@@ -120,13 +132,22 @@ public class FunctionDefImpl extends AbstractDefImpl implements FunctionDef
    * <!-- end-user-doc -->
    * @generated
    */
-  public EList<HashtagCall> getHashtags()
+  public String getName()
   {
-    if (hashtags == null)
-    {
-      hashtags = new EObjectContainmentEList<HashtagCall>(HashtagCall.class, this, KronusPackage.FUNCTION_DEF__HASHTAGS);
-    }
-    return hashtags;
+    return name;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setName(String newName)
+  {
+    String oldName = name;
+    name = newName;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, KronusPackage.FUNCTION_DEF__NAME, oldName, name));
   }
 
   /**
@@ -263,8 +284,6 @@ public class FunctionDefImpl extends AbstractDefImpl implements FunctionDef
   {
     switch (featureID)
     {
-      case KronusPackage.FUNCTION_DEF__HASHTAGS:
-        return ((InternalEList<?>)getHashtags()).basicRemove(otherEnd, msgs);
       case KronusPackage.FUNCTION_DEF__TYPE_PARAMETERS:
         return ((InternalEList<?>)getTypeParameters()).basicRemove(otherEnd, msgs);
       case KronusPackage.FUNCTION_DEF__PARAMETER_DEFS:
@@ -287,8 +306,8 @@ public class FunctionDefImpl extends AbstractDefImpl implements FunctionDef
   {
     switch (featureID)
     {
-      case KronusPackage.FUNCTION_DEF__HASHTAGS:
-        return getHashtags();
+      case KronusPackage.FUNCTION_DEF__NAME:
+        return getName();
       case KronusPackage.FUNCTION_DEF__TYPE_PARAMETERS:
         return getTypeParameters();
       case KronusPackage.FUNCTION_DEF__PARAMETER_DEFS:
@@ -312,9 +331,8 @@ public class FunctionDefImpl extends AbstractDefImpl implements FunctionDef
   {
     switch (featureID)
     {
-      case KronusPackage.FUNCTION_DEF__HASHTAGS:
-        getHashtags().clear();
-        getHashtags().addAll((Collection<? extends HashtagCall>)newValue);
+      case KronusPackage.FUNCTION_DEF__NAME:
+        setName((String)newValue);
         return;
       case KronusPackage.FUNCTION_DEF__TYPE_PARAMETERS:
         getTypeParameters().clear();
@@ -344,8 +362,8 @@ public class FunctionDefImpl extends AbstractDefImpl implements FunctionDef
   {
     switch (featureID)
     {
-      case KronusPackage.FUNCTION_DEF__HASHTAGS:
-        getHashtags().clear();
+      case KronusPackage.FUNCTION_DEF__NAME:
+        setName(NAME_EDEFAULT);
         return;
       case KronusPackage.FUNCTION_DEF__TYPE_PARAMETERS:
         getTypeParameters().clear();
@@ -373,8 +391,8 @@ public class FunctionDefImpl extends AbstractDefImpl implements FunctionDef
   {
     switch (featureID)
     {
-      case KronusPackage.FUNCTION_DEF__HASHTAGS:
-        return hashtags != null && !hashtags.isEmpty();
+      case KronusPackage.FUNCTION_DEF__NAME:
+        return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
       case KronusPackage.FUNCTION_DEF__TYPE_PARAMETERS:
         return typeParameters != null && !typeParameters.isEmpty();
       case KronusPackage.FUNCTION_DEF__PARAMETER_DEFS:
@@ -385,6 +403,89 @@ public class FunctionDefImpl extends AbstractDefImpl implements FunctionDef
         return value != null;
     }
     return super.eIsSet(featureID);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public int eBaseStructuralFeatureID(int derivedFeatureID, Class<?> baseClass)
+  {
+    if (baseClass == AbstractDef.class)
+    {
+      switch (derivedFeatureID)
+      {
+        default: return -1;
+      }
+    }
+    if (baseClass == NamedAbstractDef.class)
+    {
+      switch (derivedFeatureID)
+      {
+        case KronusPackage.FUNCTION_DEF__NAME: return KronusPackage.NAMED_ABSTRACT_DEF__NAME;
+        default: return -1;
+      }
+    }
+    if (baseClass == NamedRuntimeDef.class)
+    {
+      switch (derivedFeatureID)
+      {
+        default: return -1;
+      }
+    }
+    return super.eBaseStructuralFeatureID(derivedFeatureID, baseClass);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public int eDerivedStructuralFeatureID(int baseFeatureID, Class<?> baseClass)
+  {
+    if (baseClass == AbstractDef.class)
+    {
+      switch (baseFeatureID)
+      {
+        default: return -1;
+      }
+    }
+    if (baseClass == NamedAbstractDef.class)
+    {
+      switch (baseFeatureID)
+      {
+        case KronusPackage.NAMED_ABSTRACT_DEF__NAME: return KronusPackage.FUNCTION_DEF__NAME;
+        default: return -1;
+      }
+    }
+    if (baseClass == NamedRuntimeDef.class)
+    {
+      switch (baseFeatureID)
+      {
+        default: return -1;
+      }
+    }
+    return super.eDerivedStructuralFeatureID(baseFeatureID, baseClass);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public String toString()
+  {
+    if (eIsProxy()) return super.toString();
+
+    StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (name: ");
+    result.append(name);
+    result.append(')');
+    return result.toString();
   }
 
 } //FunctionDefImpl

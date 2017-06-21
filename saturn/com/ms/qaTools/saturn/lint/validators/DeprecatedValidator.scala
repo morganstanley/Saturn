@@ -11,13 +11,15 @@ import com.ms.qaTools.saturn.lint.SaturnLintRuleResult
 import com.ms.qaTools.saturn.resources.referenceResource.ReferenceResourcePackage
 import com.ms.qaTools.saturn.values.ValuesPackage
 
-object DeprecatedValidator extends LintValidator{
-  def validate(eObject:EObject):Seq[SaturnLintRuleResult] = DeprecatedFeatureValidator.validate(eObject) ++ DeprecatedClassValidator.validate(eObject)
+object DeprecatedValidator extends LintValidator {
+  val rule = "SAT-OBJECTS-DEPRECATED-000"
+  val description = "Deprecated features validation."
+  def validate(eObject: EObject): Seq[SaturnLintRuleResult] = DeprecatedFeatureValidator.validate(eObject) ++ DeprecatedClassValidator.validate(eObject)
 }
 
 object DeprecatedFeatureValidator extends LintValidator {
-  val rule:String = "SAT-OBJECTS-DEPRECATED-001"
-  val description:String = "The following features are deprecated and are either unimplemented or will be decomissioned in a future release."
+  val rule = "SAT-OBJECTS-DEPRECATED-001"
+  val description = "The following features are deprecated and are either unimplemented or will be decomissioned in a future release."
   val deprecatedFeatures = List(
     SaturnPackage.eINSTANCE.getAbstractRunGroup_Imports(),
     ValuesPackage.eINSTANCE.getReferenceComplexValue_ModuleAttribute(),
@@ -27,27 +29,27 @@ object DeprecatedFeatureValidator extends LintValidator {
     ReferenceResourcePackage.eINSTANCE.getReferenceResource_IncludeFileAdv(),
     ReferenceResourcePackage.eINSTANCE.getReferenceResource_ResourceAdv()
   )
-  
-  def validate(eObject:EObject):Seq[SaturnLintRuleResult] = {    
-    val deprecatedEObjects = eObject.eAllContents().filter{eObject => deprecatedFeatures.contains(eObject.eContainingFeature())}.toSeq
-    if(deprecatedEObjects.isEmpty) Seq(ResultOK(rule, description))
-    else                           Seq(ResultWarning(rule, description, deprecatedEObjects))
+
+  def validate(eObject: EObject): Seq[SaturnLintRuleResult] = {
+    val deprecatedEObjects = eObject.eAllContents().filter { eObject => deprecatedFeatures.contains(eObject.eContainingFeature()) }.toSeq
+    if (deprecatedEObjects.isEmpty) Seq(ResultOK(rule, description))
+    else Seq(ResultWarning(rule, description, deprecatedEObjects))
   }
 }
 
 object DeprecatedClassValidator extends LintValidator {
-  val rule:String = "SAT-OBJECTS-DEPRECATED-002"
-  val description:String = "The following classes are deprecated and are either unimplemented or will be decomissioned in a future release."
+  val rule: String = "SAT-OBJECTS-DEPRECATED-002"
+  val description: String = "The following classes are deprecated and are either unimplemented or will be decomissioned in a future release."
   val deprecatedEClasses = List(
     SaturnPackage.eINSTANCE.getReferenceStep(),
     SaturnPackage.eINSTANCE.getXSplitStep(),
     SaturnPackage.eINSTANCE.getXmlDiffStep()
   )
-  
-  def validate(eObject:EObject):Seq[SaturnLintRuleResult] = {    
-    val deprecatedEObjects = eObject.eAllContents().filter{eObject => deprecatedEClasses.exists(eClass => eObject.eClass().isSuperTypeOf(eClass))}.toSeq
-    if(deprecatedEObjects.isEmpty) Seq(ResultOK(rule, description))
-    else                           Seq(ResultWarning(rule, description, deprecatedEObjects))
+
+  def validate(eObject: EObject): Seq[SaturnLintRuleResult] = {
+    val deprecatedEObjects = eObject.eAllContents().filter { eObject => deprecatedEClasses.exists(eClass => eObject.eClass().isSuperTypeOf(eClass)) }.toSeq
+    if (deprecatedEObjects.isEmpty) Seq(ResultOK(rule, description))
+    else Seq(ResultWarning(rule, description, deprecatedEObjects))
   }
 }/*
 Copyright 2017 Morgan Stanley

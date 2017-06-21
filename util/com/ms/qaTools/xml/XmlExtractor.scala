@@ -1,16 +1,17 @@
 package com.ms.qaTools.xml
 
-import scala.Array.fallbackCanBuildFrom
-import com.ms.qaTools.io.rowSource.ColumnDefinitions
-import com.ms.qaTools.io.rowSource.file.XmlRowSource
-import com.ms.qaTools.io.rowSource.file.XPathRowSource
-import com.ms.qaTools.tree.extraction.DetachStrategy
 import org.w3c.dom.{Document,Node}
+
+import com.ms.qaTools.io.rowSource.ColumnDefinitions
+import com.ms.qaTools.io.rowSource.file.XPathRowSource
+import com.ms.qaTools.io.rowSource.file.XmlRowSource
+import com.ms.qaTools.tree.TreeNode
+import com.ms.qaTools.tree.extraction.DetachStrategy
 
 case class XmlExtractor(xmlRowSource: Iterator[Document],
                         xPaths: Seq[(String, String)],
                         namespaces: Map[String, String] = Map(),
-                        detachNodes: DetachStrategy[Node] = DetachStrategy.default)
+                        detachNodes: DetachStrategy[TreeNode[Node]] = DetachStrategy.default)
 extends Iterator[Seq[String]] with ColumnDefinitions {
   protected val nsContext = xmlRowSource match {
     case i: XmlRowSource => i.namespaceContext + namespaces

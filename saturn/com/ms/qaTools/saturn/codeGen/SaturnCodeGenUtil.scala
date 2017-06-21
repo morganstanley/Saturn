@@ -5,16 +5,20 @@ import java.util.{List => JList}
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
+import scala.language.implicitConversions
 import scala.reflect.internal.util.BatchSourceFile
 import scala.tools.nsc.Global
 import scala.tools.nsc.Settings
-import scala.tools.nsc.reporters.ConsoleReporter
-import scala.util.Try
+import scala.tools.nsc.reporters.StoreReporter
+import scala.util.{Failure, Success, Try}
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.eclipse.emf.ecore.EObject
 
 import com.ms.qaTools.CompilerClassLoader
+import com.ms.qaTools.ScalaParseException
+import com.ms.qaTools.TryUtil
 import com.ms.qaTools.ecore.utils.ECoreStringUtils
 import com.ms.qaTools.io.DirIO
 import com.ms.qaTools.io.FileIO
@@ -28,7 +32,6 @@ import com.ms.qaTools.saturn.{RunGroup => MRunGroup}
 import com.ms.qaTools.saturn.{Saturn => MSaturn}
 import com.ms.qaTools.saturn.annotations.saturnVerbosity.SaturnVerbosityConfiguration
 import com.ms.qaTools.saturn.annotations.saturnWeb.{SaturnWebConfiguration => MSaturnWebConfiguration}
-import com.ms.qaTools.saturn.dsl.SaturnDeserializer
 import com.ms.qaTools.saturn.modules.procedureCallModule.ResourceArgument
 import com.ms.qaTools.saturn.modules.xmlGenModule.XmlGenConfiguration
 import com.ms.qaTools.saturn.runtime.SaturnResultContext
@@ -39,12 +42,13 @@ import com.ms.qaTools.saturn.types.ResourceDefinition
 import com.ms.qaTools.saturn.utils.SaturnEObjectUtils.SaturnEObjectHelper
 
 object SaturnCodeGenUtil {
-  def createFromFileName(saturnFileName:String):Try[SaturnCodeGenUtil] = for {
-    saturn             <- SaturnDeserializer.deserialize(saturnFileName.toUri).recoverWith { case t => Try { throw new Error(s"As error occurred while parsing saturn file: '$saturnFileName'.", t) } }
-    includeFiles       <- Try { SaturnDeserializer.extractAllIncludeFiles(saturn) }
-    saturnFullFileName <- Try { new java.io.File(saturnFileName).getAbsolutePath }
-    includeFileMap     <- Try { SaturnDeserializer.genIncludeFileMap(includeFiles, SaturnDeserializer.extractPath(saturnFullFileName)) }
-  } yield SaturnCodeGenUtil(saturn, includeFileMap, saturnFileName = Option(saturnFullFileName))
+  import com.ms.qaTools.saturn.dsl.{SaturnDeserializer => P}
+
+  def createFromFileName(file: String): Try[SaturnCodeGenUtil] = for {
+    s <- Try(P.deserialize(file.toUri)).rethrow(s"An error occurred while parsing saturn file: '$file'.")
+    f = new java.io.File(file).getAbsolutePath
+    m <- P.genIncludeFileMap(P.extractAllIncludeFiles(s), P.extractPath(f))
+  } yield SaturnCodeGenUtil(s, m, saturnFileName = Option(f))
 
   def setUpClassPath(s: Settings, cl: ClassLoader = Thread.currentThread.getContextClassLoader): Unit = cl match {
     case cl: org.apache.tools.ant.AntClassLoader => s.bootclasspath.append(cl.getClasspath)
@@ -63,9 +67,9 @@ case class SaturnCodeGenUtil(saturn:MSaturn,
   val saturnEObjects = includeFiles + saturn
   lazy val allLinks:Seq[MAbstractLink] = saturnEObjects.flatMap{_.getLinks}.toSeq
 
-  lazy val wrappedRunGroups: Map[MAbstractRunGroup, WrappedAbstractRunGroup] = saturnEObjects.flatMap { saturn =>
+  lazy val wrappedRunGroups: Map[MAbstractRunGroup, WrappedAbstractRunGroup] = saturnEObjects.iterator.flatMap { saturn =>
     val canRunExpressionGenerator = CanRunExpressionGenerator(saturn)
-    (saturn :: saturn.eAllContents().toList).collect {
+    (Iterator.single(saturn) ++ saturn.eAllContents).collect {
       case group: MRunGroup => (group, WrappedRunGroup(group, canRunExpressionGenerator.getCanRunExpression(group), allLinks, includeFileMap))
       case step: MStep      => (step, WrappedStep(step, canRunExpressionGenerator.getCanRunExpression(step), allLinks, includeFileMap))
     }
@@ -77,21 +81,35 @@ case class SaturnCodeGenUtil(saturn:MSaturn,
       case None => throw new Exception("Include file not found: " + includeFile)
     }
   }
-  
+
   def copySaturnFiles(outDir: DirIO) = {
-    saturnFileName.foreach(f => 
-      FileUtils.copyFile(new File(f), new File((outDir + FileIO(wrappedRunGroups(saturn).getClassName + ".saturn")).fileName))
-    )
-    includeFileMap.foreach{case (_, (saturn, fileName)) => 
-      FileUtils.copyFile(new File(fileName), new File((outDir + FileIO(wrappedRunGroups(saturn).getClassName + ".saturn")).fileName))
+    saturnFileName.foreach { f =>
+      FileUtils.copyFile(new File(f), new File((outDir + FileIO(FilenameUtils.getName(f))).fileName))
+      val diag = new File(FilenameUtils.removeExtension(f) + ".saturnDiagram")
+      if (diag.exists) FileUtils.copyFile(diag, new File((outDir + FileIO(diag.getName)).fileName))
+    }
+    includeFileMap.foreach{case (_, (saturn, fileName)) =>
+      FileUtils.copyFile(new File(fileName), new File((outDir + FileIO(FilenameUtils.getName(fileName))).fileName))
     }
   }
 
   def getIncludeFiles:Set[MSaturn] = includeFiles
   def getIncludeFileSaturn(includeFile:MIncludeFile):MSaturn = includeFileMap(includeFile)._1
 //  def getLinks(g:MAbstractRunGroup) = allLinks.filter{_.getTarget() == g}
-  def getIncludeFileCodeGenUtil(includeFile:MIncludeFile):SaturnCodeGenUtil = SaturnCodeGenUtil(getIncludeFileSaturn(includeFile), includeFileMap, true)
-  def getIncludeFileCodeGenUtil(includeFileSaturn:MSaturn):SaturnCodeGenUtil = SaturnCodeGenUtil(includeFileSaturn, includeFileMap, true)
+
+  def getIncludeFileCodeGenUtil(includeFile:MIncludeFile):SaturnCodeGenUtil = {
+    val (saturn, path) = includeFileMap(includeFile)
+    SaturnCodeGenUtil(saturn, includeFileMap, true, saturnFileName = Some(path))
+  }
+
+  def getIncludeFileCodeGenUtil(includeFileSaturn:MSaturn):SaturnCodeGenUtil = {
+    val path = includeFileMap.collectFirst {
+      case (_, (saturn, path)) if saturn == includeFileSaturn => path
+    }.getOrElse {
+      throw new NoSuchElementException(s"Cannot find $includeFileSaturn in include files")
+    }
+    SaturnCodeGenUtil(includeFileSaturn, includeFileMap, true, saturnFileName = Some(path))
+  }
 
   implicit def getWrapped(runGroup:MAbstractRunGroup):WrappedAbstractRunGroup= wrappedRunGroups(runGroup)
 
@@ -193,7 +211,10 @@ case class SaturnCodeGenUtil(saturn:MSaturn,
 
   def getHexHashCode(o:Any) = Integer.toHexString(o.hashCode)
   def generateResourceAlias(rg: MAbstractRunGroup): String = generateResourceAlias(wrappedRunGroups(rg))
-  def generateResourceAlias(rg: WrappedAbstractRunGroup): String = "resources/saturn/" + rg.getClassName + ".saturn"
+  val resourceRoot = "resources/saturn"
+  def resource = FilenameUtils.getBaseName(saturnFileName.getOrElse(sys.error("undefined saturnFileName in SaturnCodeGenUtil")))
+  def generateResourceAlias(rg: WrappedAbstractRunGroup) = s"/$resourceRoot/${resource}.saturn"
+  def diagramResource(saturn: MSaturn) = s"/$resourceRoot/${resource}.saturnDiagram"
   def getConsoleOutputAnnotation(rg: MAbstractRunGroup): String = {
     val verbosity = for {
       a <- rg.getAnnotations()
@@ -210,12 +231,12 @@ case class SaturnCodeGenUtil(saturn:MSaturn,
   protected[codeGen] lazy val compiler: Global = {
     val settings = new Settings
     SaturnCodeGenUtil.setUpClassPath(settings)
-    Global(settings, new ConsoleReporter(settings))
+    Global(settings, new StoreReporter)
   }
 
   def parseScala(code: String): (compiler.Tree, compiler.analyzer.Context) = compiler.synchronized {
     import compiler._
-    val wrappedCode = s"${SaturnImports().get}\nobject wrapper {\n$code\n}"
+    val wrappedCode = s"""${SaturnImports() match {case Success(v) => v case Failure(e) => throw new Exception("Failed to generate imports", e)}}\nobject wrapper {\n$code\n}"""
     val unit = new CompilationUnit(new BatchSourceFile("<SaturnCodeGenUtil-parseScala>", wrappedCode))
     val run = new Run
     phase = run.parserPhase
@@ -227,8 +248,9 @@ case class SaturnCodeGenUtil(saturn:MSaturn,
     undoLog.clear()
     val typedTree = analyzer.newTyper(context).typed(parsedTree)
     if (reporter.hasErrors) {
+      val e = ScalaParseException.fromReporter(reporter, code)
       reporter.reset()
-      throw new IllegalArgumentException(code)
+      throw e
     }
     val PackageDef(_, imports :+ ModuleDef(_, _, Template(_, _, _ :: parsed))) = typedTree
     val tree = parsed match {

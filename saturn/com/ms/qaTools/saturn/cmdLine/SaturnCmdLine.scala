@@ -1,9 +1,5 @@
 package com.ms.qaTools.saturn.cmdLine
-
-import java.io.File
-
 import org.kohsuke.args4j.Option
-
 import com.ms.qaTools.toolkit.cmdLine.BasicCmdLine
 
 abstract class SaturnCmdLine extends BasicCmdLine {
@@ -35,9 +31,6 @@ abstract class SaturnCmdLine extends BasicCmdLine {
   val junitOutputDir: String = null
 
   def resolveEnvVars: Seq[(String, String)] = Nil
-  override def parseArguments(args: Array[String]) {
-    super.parseArguments(args)
-  }
 }
 /*
 Copyright 2017 Morgan Stanley

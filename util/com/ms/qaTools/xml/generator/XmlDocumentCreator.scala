@@ -2,8 +2,7 @@ package com.ms.qaTools.xml.generator
 
 import org.w3c.dom.Document
 
-import com.ms.qaTools.io.DelimitedIterator
-import com.ms.qaTools.io.DelimitedRow
+import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.ColMap
 import com.ms.qaTools.tree.generator.Lookupable
@@ -12,13 +11,13 @@ import com.ms.qaTools.tree.generator.UnresolvedColQuery
 import com.ms.qaTools.xml.DocumentBuilderTL
 
 case class XmlDocumentCreator(doc: Document, creator: XmlElementCreator)
-  extends NodeCreator[Document, Document] {
+extends NodeCreator[Document, Document] {
   require(doc != null, "doc node must not be null")
 
-  override val isLocal: Boolean = true
-  protected val builder = DocumentBuilderTL()
+  val isLocal = true
+  protected val builder = DocumentBuilderTL.get()
 
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: Document = builder.newDocument()): Document = {
+  def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: Document = builder.newDocument()) = {
     val rootElem = creator.create(data)
     doc.appendChild(rootElem)
     doc
@@ -30,16 +29,16 @@ case class XmlDocumentCreator(doc: Document, creator: XmlElementCreator)
 }
 
 object XmlDocumentCreator {
-  def apply(doc: Document, isLegacyMode: Boolean = false): XmlDocumentCreator = new XmlDocumentCreator(doc, XmlNodeCreator(doc.getDocumentElement())(isLegacyMode))
+  def apply(doc: Document, isLegacyMode: Boolean = false): XmlDocumentCreator =
+    new XmlDocumentCreator(doc, XmlNodeCreator(doc.getDocumentElement())(isLegacyMode))
 }
 
 object XmlDocument {
-  def apply(doc: Document, rowSource: DelimitedIterator, isLegacyMode: Boolean): Document = {
+  def apply(doc: Document, rowSource: Iterator[Seq[String]] with ColumnDefinitions, isLegacyMode: Boolean): Document = {
     val creator = XmlDocumentCreator(doc, isLegacyMode)
     implicit val colContext = ColContext(creator.extractColQueries)
-    implicit val colMap = ColMap(rowSource.colNames)
-    val data = rowSource.next
-    creator.create(data)
+    implicit val colMap = ColMap(rowSource.colDefs.map(_.name))
+    creator.create(rowSource.next)
   }
 }
 /*

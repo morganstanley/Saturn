@@ -1,34 +1,61 @@
 package com.ms.qaTools.saturn.scoping
 
+import java.util.{List => JList, ArrayList}
 import java.util.Collections
 
-import org.eclipse.emf.ecore.{EObject, EReference}
-import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
 import org.eclipse.xtext.naming.IQualifiedNameConverter
+import org.eclipse.xtext.resource.ISelectable
 import org.eclipse.xtext.scoping.IScope
+import org.eclipse.xtext.scoping.impl.ImportNormalizer
+import org.eclipse.xtext.scoping.impl.ImportScope
 import org.eclipse.xtext.scoping.impl.ImportedNamespaceAwareLocalScopeProvider
 
-import com.ms.qaTools.saturn.kronus.IncludeDef
+import com.google.inject.Inject
+import com.ms.qaTools.saturn.kronus._
 
 class KronusLocalScopeProvider extends ImportedNamespaceAwareLocalScopeProvider {
-  @com.google.inject.Inject protected var qualifiedNameConverter: IQualifiedNameConverter = _
+  @Inject val qualifiedNameConverter: IQualifiedNameConverter = null
+
+  override protected def isRelativeImport = false
 
   def qualifiedNameDelimiter = qualifiedNameConverter.asInstanceOf[IQualifiedNameConverter.DefaultImpl].getDelimiter
   def importAllFrom(namespace: String) = namespace + qualifiedNameDelimiter + getWildCard
 
-  override protected def getImportedNamespace(obj: EObject) = obj match {
-    case inc: IncludeDef if inc.getName == null => importAllFrom(inc.getModule)
-    case _                                      => null
+  override protected def internalGetImportedNamespaceResolvers(context: EObject, ignoreCase: Boolean) = context match {
+    case context: TopLevelKronus => getImportedNamespaceResolvers(context.getKronus, ignoreCase)
+    case context: Kronus         => importKronus(context, ignoreCase)
+    case _                       => Collections.emptyList()
   }
 
-  def namedIncludeScope(res: Resource, namespace: String, reference: EReference): IScope = {
-    val ignoreCase = isIgnoreCase(reference)
-    val normalizer = createImportedNamespaceResolver(importAllFrom(namespace), ignoreCase)
-    createImportScope(getGlobalScope(res, reference),
-                      Collections.singletonList(normalizer),
-                      null,
-                      reference.getEReferenceType,
-                      ignoreCase)
+  protected def importKronus(kronus: Kronus, ignoreCase: Boolean): JList[ImportNormalizer] = {
+    val result = new ArrayList[ImportNormalizer]
+    kronus.allInclusions.foreach { deps =>
+      val modName = deps.head.getModule.getPackage.getModule
+      val imp = deps.last.getName match {
+        case null  => createImportedNamespaceResolver(importAllFrom(modName), ignoreCase)
+        case alias => new AliasingImportNormalizer(qualifiedNameConverter.toQualifiedName(modName), alias, ignoreCase)
+      }
+      result.add(new DependencyAwareImportScope.Normalizer(imp, deps))
+    }
+    result
+  }
+
+  override def getScope(context: EObject, reference: EReference) =
+    if (reference.getEContainingClass.getClassifierID == KronusPackage.INCLUDE_DEF &&
+        reference.getFeatureID == KronusPackage.INCLUDE_DEF__MODULE)
+      getGlobalScope(context.eResource, reference)
+    else super.getScope(context, reference)
+
+  override protected def createImportScope(parent: IScope, namespaceResolvers: JList[ImportNormalizer],
+                                           importFrom: ISelectable, `type`: EClass, ignoreCase: Boolean): ImportScope = {
+    val itr = namespaceResolvers.iterator
+    while (itr.hasNext)
+      if (itr.next().isInstanceOf[DependencyAwareImportScope.Normalizer])
+        return new DependencyAwareImportScope(namespaceResolvers, parent, importFrom, `type`, ignoreCase)
+    super.createImportScope(parent, namespaceResolvers, importFrom, `type`, ignoreCase)
   }
 }
 /*

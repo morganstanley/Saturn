@@ -1,70 +1,49 @@
 package com.ms.qaTools.saturn.dsl
-import scala.collection.JavaConversions.asScalaIterator
-import org.eclipse.emf.ecore.resource.Resource
-import org.eclipse.emf.ecore.xmi.util.XMLProcessor
-import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.ecore.EPackage
-import org.eclipse.emf.ecore.EStructuralFeature
-import com.ms.qaTools.ecore.utils.stringToURI
+import com.ms.qaTools.ecore.utils.ECoreStringUtils
 import com.ms.qaTools.ecore.utils.ECoreXmlDeserializer
-import com.ms.qaTools.saturn.util.SaturnResourceFactoryImpl
-import com.ms.qaTools.saturn.util.SaturnXMLProcessor
-import com.ms.qaTools.saturn.{IncludeFile => MIncludeFile}
+import com.ms.qaTools.saturn.IncludeFile
 import com.ms.qaTools.saturn.{Saturn => MSaturn}
 import com.ms.qaTools.saturn.SaturnPackage
+import com.ms.qaTools.saturn.util.SaturnResourceFactoryImpl
+import com.ms.qaTools.saturn.utils.SaturnEObjectUtils.SaturnEObjectHelper
+import com.ms.qaTools.TryUtil
 import java.io.File
-import java.util.UUID
-import org.apache.commons.io.FilenameUtils
-import com.ms.qaTools.saturn.codeGen.WrappedRunGroup
+import org.eclipse.emf.ecore.EObject
+import scala.collection.JavaConversions.asScalaIterator
+import scala.collection.mutable
+import scala.util.Try
 
 object SaturnDeserializer extends ECoreXmlDeserializer[MSaturn] {
-  val xmlProcessor:XMLProcessor = new SaturnXMLProcessor()
-  val packageInstance:EPackage = SaturnPackage.eINSTANCE
-  val rootFeature:EStructuralFeature = SaturnPackage.eINSTANCE.getDocumentRoot_Saturn()
-  val resourceFactory:Resource.Factory = new SaturnResourceFactoryImpl()
+  val packageInstance = SaturnPackage.eINSTANCE
+  val rootFeature = SaturnPackage.eINSTANCE.getDocumentRoot_Saturn()
+  val resourceFactory = new SaturnResourceFactoryImpl()
 
-  def extractAllIncludeFiles(eObject:EObject):List[MIncludeFile] = eObject.eAllContents().filter{_.isInstanceOf[MIncludeFile]}.map{_.asInstanceOf[MIncludeFile]}.toList
+  def extractAllIncludeFiles(eObject: EObject) =
+    eObject.eAllContents.collect{case v: IncludeFile => v}.toList
 
-  def extractPath(fileName:String,path:Option[String]=None):Option[String] = {
-    val fullFileName = concatPaths(fileName,path)
-    Some(fullFileName.reverse.dropWhile(c => c != File.separatorChar).reverse)
-  }
+  def extractPath(fileName: String, path: Option[String] = None) =
+    Some(concatPaths(fileName, path).reverse.dropWhile(_ != File.separatorChar).reverse)
 
-  def concatPaths(fileName:String,path:Option[String]):String = path match {
-      case Some(p) if !p.isEmpty => p + "/" + fileName
-      case _ => fileName
+  protected def concatPaths(fileName: String, path: Option[String]) =
+    Seq(path.filter(_.nonEmpty), Option(fileName)).flatten.mkString("/")
+
+  def genIncludeFileMap(includeFiles: List[IncludeFile], path: Option[String]): Try[Map[IncludeFile, (MSaturn, String)]] = {
+    def _genIncludeFileMap(files: List[IncludeFile], path: Option[String], m: Map[String, (MSaturn, List[IncludeFile])]): Map[String, (MSaturn, List[IncludeFile])] = files match {
+      case Nil => m
+      case f :: files =>
+        assert(f.getMixed.size == 1 || f.getText.size == 1, s"could not open includeFile: ${f.getName}, fileName must contain only text.")
+        val relative = f.getText.get(0).getText
+        val absolute = new File(if (relative.head != File.separatorChar) concatPaths(relative, path) else relative).getAbsolutePath
+        val newMap = m.get(absolute) match {
+          case Some((saturn, includes)) => m.updated(absolute, (saturn, f :: includes))
+          case None =>
+            val saturn = SaturnDeserializer.deserialize(absolute.toUri)
+            _genIncludeFileMap(extractAllIncludeFiles(saturn), extractPath(absolute), m.updated(absolute, (saturn, List(f))))}
+        _genIncludeFileMap(files, path, newMap)
     }
 
-  def genIncludeFileMap(includeFiles:List[MIncludeFile],
-                        path:Option[String]=None,
-                        saturnFiles:scala.collection.mutable.Map[String,MSaturn]=scala.collection.mutable.Map.empty,
-                        soFar:Map[MIncludeFile, (MSaturn, String)]=Map.empty
-                       ):Map[MIncludeFile, (MSaturn, String)] = {
-    if(includeFiles.isEmpty) soFar
-    else {
-      val includeFile = includeFiles.head
-      if(includeFile.getMixed().size() != 1 && includeFile.getText().size() != 1) throw new Exception("could not open includeFile:" + includeFile.getName() + ", fileName must contain only text.")
-      val includeFilePath = includeFile.getText().get(0).getText()
-      val isAbsolutePath = includeFilePath.head == File.separatorChar
-      val fullIncludeFilePath = new File(if (! isAbsolutePath) concatPaths(includeFilePath, path) else includeFilePath).getAbsolutePath()
-
-      val newMap:Map[MIncludeFile, (MSaturn, String)] = saturnFiles.get(fullIncludeFilePath) match {
-        case Some(saturn) => genIncludeFileMap(includeFiles.tail, path, saturnFiles, soFar + (includeFile -> (saturn, fullIncludeFilePath)))
-        case None         => {
-          val includeFileSaturn = if(saturnFiles.contains(fullIncludeFilePath)) {
-            saturnFiles(fullIncludeFilePath)
-          }
-          else {
-            val newIncludeFileSaturn = SaturnDeserializer.deserialize(fullIncludeFilePath).get
-            saturnFiles += (fullIncludeFilePath -> newIncludeFileSaturn)
-            newIncludeFileSaturn
-          }
-          val newSoFar = soFar +(includeFile -> (includeFileSaturn, fullIncludeFilePath)) ++ genIncludeFileMap(extractAllIncludeFiles(includeFileSaturn), extractPath(fullIncludeFilePath), saturnFiles)
-          genIncludeFileMap(includeFiles.tail, path, saturnFiles, newSoFar)
-        }
-      }
-      newMap
-    }
+    Try(_genIncludeFileMap(includeFiles, path, Map.empty)).map(_.flatMap {
+      case (path, (saturn, includes)) => includes.map(i => (i -> ((saturn, path))))}.toMap)
   }
 }
 /*

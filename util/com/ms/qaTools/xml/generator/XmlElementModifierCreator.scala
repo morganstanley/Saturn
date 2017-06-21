@@ -2,8 +2,6 @@ package com.ms.qaTools.xml.generator
 import org.w3c.dom.Element
 import org.w3c.dom.Document
 import org.w3c.dom.Node
-import com.ms.qaTools.io._
-import com.ms.qaTools.Logger
 import com.ms.qaTools.xml.xpath.XPath
 import com.ms.qaTools.xml.NamespaceContextImpl
 import com.ms.qaTools.tree.generator.Lookupable
@@ -13,15 +11,14 @@ import com.ms.qaTools.tree.generator.NodeCreator
 import scala.annotation.tailrec
 import com.ms.qaTools.tree.generator.ParameterizedText
 
-
-
-class XmlElementModifierCreator(override val elem: Element, override val childCreators: List[NodeCreator[Document, Node]], override val attrCreators: List[XmlAttributeCreator]) extends XmlElementCreator(elem, childCreators, attrCreators) {
+class XmlElementModifierCreator(elem: Element, childCreators: List[NodeCreator[Document, Node]], attrCreators: List[XmlAttributeCreator])
+extends XmlElementCreator(elem, childCreators, attrCreators) {
   override def toString: String = "XmlElementModifierCreator(<" + elem.getTagName() + "/>, (" +
     childCreators.mkString(",") + "))"
 
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, colContext: ColContext, doc: Document): Node = {
+  override def create(data: Seq[String])(implicit colMap: Lookupable, colContext: ColContext, doc: Document): Node = {
     val newElem = super.create(data)
-    if (elem.getAttribute("expandableRefs") == null || elem.getAttribute("expandableRefs").isEmpty() || ! elem.getAttribute("expandableRefs").toBoolean) 
+    if (elem.getAttribute("expandableRefs") == null || elem.getAttribute("expandableRefs").isEmpty() || ! elem.getAttribute("expandableRefs").toBoolean)
       newElem.setTextContent(elem.getTextContent())
     newElem
   }

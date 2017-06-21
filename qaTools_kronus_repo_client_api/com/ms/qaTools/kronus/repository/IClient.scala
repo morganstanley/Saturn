@@ -13,9 +13,7 @@ import scala.collection.mutable.Buffer
 import scala.io.Source
 import scala.util.DynamicVariable
 import scala.util.Properties
-import scala.util.Try
 
-import com.typesafe.config.ConfigException
 import com.typesafe.config.ConfigFactory
 
 import spray.json._
@@ -32,15 +30,17 @@ trait IClient {
 }
 
 object IClient {
-  val fsConfKey = "qaTools.kronus-repo.file-system"
-  protected lazy val conf = ConfigFactory.load()
+  protected lazy val conf = ConfigFactory.load().getConfig("qaTools.kronus-repo")
 
-  lazy val defaultURL: URL = new URL("http://kronusrepo/")
+  def defaultURL: URL = new URL(conf.getString("url"))
+  def defaultFileSystem: Option[Path] =
+    if (conf.hasPath("file-system")) Some(Paths.get(conf.getString("file-system"))) else None
 
   protected lazy val impl: DynamicVariable[URL => IClient] = {
-    def mkClient(url: URL) =
-      Try {conf.getString(fsConfKey)}.map {p => new FileSystemFallbackClient(url, Paths.get(p))}.getOrElse {new Client(url)}
-
+    def mkClient(url: URL) = if (conf.hasPath("use-mdp") && conf.getBoolean("use-mdp"))
+      Class.forName("com.ms.qaTools.kronus.repository.MdpClient").getConstructor(classOf[URL]).newInstance(url).asInstanceOf[IClient]
+    else
+      defaultFileSystem.fold(new Client(url))(new FileSystemFallbackClient(url, _))
     new DynamicVariable(mkClient)
   }
 
@@ -88,6 +88,9 @@ class Client(root: URL) extends IClient {
   }
 
   def add(release: Release) = withHttpURLConnection(root) { conn =>
+    if(Config.Default.publishInfo == release)
+      throw new Exception("Cannot publish because the group/artifact or version is not defined in the project's .yaml configuration file.")
+
     val bs = release.toJson.compactPrint.getBytes
     conn.setDoOutput(true)
     conn.setRequestMethod("POST")
@@ -114,14 +117,16 @@ class FileSystemFallbackClient(url: URL, path: Path) extends Client(url) {
     val start = (path /: searchFilter(groupId, id, version).take(2))(_ resolve _)
     val visitor = new SimpleFileVisitor[Path] {
       override def visitFile(file: Path, attrs: BasicFileAttributes) = {
-        val reader = Files.newBufferedReader(file)
-        try Iterator.continually(reader.readLine()).takeWhile(_ != null).foreach { line =>
-          val r = line.parseJson.convertTo[Release]
-          version match {
-            case Some(v) => if (v == r.version) releases += r
-            case None    => releases += r
-          }
-        } finally reader.close()
+        if(file.toFile.isFile){
+          val reader = Files.newBufferedReader(file)
+          try Iterator.continually(reader.readLine()).takeWhile(_ != null).foreach { line =>
+            val r = line.parseJson.convertTo[Release]
+            version match {
+              case Some(v) => if (v == r.version) releases += r
+              case None    => releases += r
+            }
+          } finally reader.close()
+        }
         super.visitFile(file, attrs)
       }
     }

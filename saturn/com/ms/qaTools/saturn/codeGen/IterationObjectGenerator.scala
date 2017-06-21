@@ -26,13 +26,13 @@ import com.ms.qaTools.saturn.types.{NamedResourceDefinition => MNamedResourceDef
 
 object IterationObjectGenerator {
   def apply(eObject:EObject)(implicit codeGenUtil: SaturnCodeGenUtil):Try[ForAssignment] = {
-    Option(eObject) match {  
-      case Some(namedResource: MNamedResourceDefinition) => ResourceGenerator(namedResource, name = Option(namedResource.getName)).map{ r => 
-        ForAssignment(namedResource.getName(), 
+    Option(eObject) match {
+      case Some(namedResource: MNamedResourceDefinition) => ResourceGenerator(namedResource, name = Option(namedResource.getName)).map{ r =>
+        ForAssignment(namedResource.getName(),
                       r.withRethrow(s"An exception occurred while connecting resource '${namedResource.getName}'."))
       }
-      case Some(attribute: MAttribute)                   => ComplexValueStringGenerator(attribute).map{a => 
-        ForAssignment(attribute.getName(), 
+      case Some(attribute: MAttribute)                   => ComplexValueStringGenerator(attribute).map{a =>
+        ForAssignment(attribute.getName(),
                       AttributeTry(a, attribute.getName()).withRethrow(s"An exception occurred while evaluating attribute complex value '${attribute.getName}'."))
       }
       case Some(forEachRepetition: MForEachRepetition) => ResourceGenerator(forEachRepetition.getDataSetResource()).map { tryGen =>
@@ -42,11 +42,11 @@ object IterationObjectGenerator {
         if(forRepetition.getIterators().isEmpty()) ForAssignment("rows", TryExpr("Nil"))
         else {
           val assignments = forRepetition.getIterators().map{i => s"${Option(i.getAttribute).getOrElse("_")} <- (${i.getStartIndex()} to ${i.getEndIndex()})" }.mkString("\n  ")
-          val yieldExpr = forRepetition.getIterators().map{i => s"${i.getAttribute()}.toString"}.mkString(",")      
+          val yieldExpr = forRepetition.getIterators().map{i => s"${i.getAttribute()}.toString"}.mkString(",")
           ForAssignment("rows", TryExpr(s"{ for {\n  $assignments} yield Seq($yieldExpr) }.toIterator"))
         }
       }
-      case Some(forEachXPathRepetition: MForEachXPathRepetition) => 
+      case Some(forEachXPathRepetition: MForEachXPathRepetition) =>
         for{
           xmlResource      <- ResourceGenerator(forEachXPathRepetition.getXMLResource()).map{tryGen => ConnectTry(tryGen.withFlatMap(TryFnExpr("_.input")), "RepetitionXmlResourceInput", false)}
           xPathMappings    <- Try { ConcatGen(forEachXPathRepetition.getXPathMappings().map { x => ScalaExpr(s"""("${x.getXPath()}", "${x.getAttribute()}")""") }, ",", "Seq(", ")") }
@@ -60,7 +60,7 @@ object IterationObjectGenerator {
                 xmlResourceStr   <- xmlResource.generate
                 xPathMappingsStr <- xPathMappings.generate
                 namespacesStr    <- namspaceResource.generate
-              } yield 
+              } yield
               s"""for{
                 xmlRowSource <- $xmlResourceStr
                 namespace    <- $namespacesStr
@@ -91,9 +91,11 @@ object IterationObjectGenerator {
 object ValDefinitionGenerator {
   def apply(eObject:EObject)(implicit codeGenUtil: SaturnCodeGenUtil):Try[ValDefinition] = {
     import codeGenUtil.getWrapped
-    
+
     Option(eObject) match {
-      case Some(namedResource: MNamedResourceDefinition) => Try{ValDefinition(namedResource.getName(), ResourceGenerator.getMetaData(namedResource).get.abstractType)}
+      case Some(namedResource: MNamedResourceDefinition) => Try{
+        ValDefinition(namedResource.getName(),
+          ResourceGenerator.getMetaData(namedResource).getOrElse(sys.error(s"Could not get metadata for resource $namedResource")).abstractType)}
       case Some(attribute: MAttribute)                   => Try{ValDefinition(attribute.getName(), "String")}
       case Some(includeFile:IncludeFile)                 => Try{ValDefinition(includeFile.getName(), codeGenUtil.getIncludeFileSaturn(includeFile).getClassName)}
       case Some(somethingElse)                           => throw new Exception(s"Couldn't generate ValDefinitionGenerator string for EObject: $somethingElse.")

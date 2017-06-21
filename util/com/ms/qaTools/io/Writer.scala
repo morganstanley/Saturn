@@ -1,9 +1,14 @@
 package com.ms.qaTools.io
+import com.ms.qaTools.compare.Counter
 import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
 
 trait Writer[-T] extends java.io.Closeable {
   def write(source: T): Int
+}
+
+trait CountingWriter[T, U <: Counter[T, U]] extends Writer[Iterator[T]] { // TODO invert dependency, this is more generic than Writer
+  def write(source: Iterator[T], counter: U): U
 }
 
 trait ColDefAwareWriter[-T] extends Writer[T] {

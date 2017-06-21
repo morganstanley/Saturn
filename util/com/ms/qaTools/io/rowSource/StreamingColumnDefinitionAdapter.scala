@@ -2,29 +2,25 @@ package com.ms.qaTools.io.rowSource
 
 case class StreamingColumnDefinitionAdapter(colNameRows: Int = 1, skipRows: Int = 0, multiPartColNameSep: String = ".",
   transformColDefs: (Seq[ColumnDefinition]) => Seq[ColumnDefinition] = identity[Seq[ColumnDefinition]])
-extends ColumnDefinitionAdapter {
+    extends ColumnDefinitionAdapter {
   private[this] var _colDefs: Seq[ColumnDefinition] = Nil
 
   def colDefs = _colDefs
 
-  override def extractColDefs[X <% Seq[String]](rowIterator: Iterator[X]): Seq[ColumnDefinition] = {
-    if (!rowIterator.hasNext) { _colDefs = Nil }
-    else {
+  def extractColDefs[X <% Seq[String]](rowIterator: Iterator[X]): Seq[ColumnDefinition] = {
+    _colDefs = if (!rowIterator.hasNext) Nil else {
       rowIterator.drop(skipRows)
       val colRows = rowIterator.take(colNameRows).toSeq
-      _colDefs = colRows.tail.foldLeft(colRows.head: Seq[String]) {
+      transformColDefs(colRows.tail.foldLeft(colRows.head: Seq[String]) {
         (acc,v) =>
-          val concat = acc.zip(v).map {x =>
-            if (x._1 != null && x._2 != null) x._1 + multiPartColNameSep + x._2
-            else if (x._2 == null) x._1
-            else x._2
-          }
-          if (v.size > concat.size) concat ++ v.slice(concat.size, v.size)
-          else concat
-      }.zipWithIndex map {
-        case (n, i) => ColumnDefinition(name = n, index = i)
-      }
-      _colDefs = transformColDefs(_colDefs)
+        val concat = acc.zip(v).map {x =>
+          if (x._1 != null && x._2 != null) x._1 + multiPartColNameSep + x._2
+          else if (x._2 == null) x._1
+          else x._2
+        }
+        if (v.size > concat.size) concat ++ v.slice(concat.size, v.size)
+        else concat
+      }.zipWithIndex.map{case (n, i) => ColumnDefinition(name = n, index = i)})
     }
     _colDefs
   }

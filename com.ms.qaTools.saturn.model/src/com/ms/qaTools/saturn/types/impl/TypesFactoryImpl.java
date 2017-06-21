@@ -84,6 +84,7 @@ public class TypesFactoryImpl extends EFactoryImpl implements TypesFactory
     {
       case TypesPackage.ABSTRACT_ANNOTATION: return createAbstractAnnotation();
       case TypesPackage.ABSTRACT_REPETITION_HANDLER: return createAbstractRepetitionHandler();
+      case TypesPackage.ALM_ID: return createAlmId();
       case TypesPackage.COLUMN: return createColumn();
       case TypesPackage.COMMENT: return createComment();
       case TypesPackage.COMPLEX_VALUE_MAP: return createComplexValueMap();
@@ -220,6 +221,17 @@ public class TypesFactoryImpl extends EFactoryImpl implements TypesFactory
   {
     AbstractRepetitionHandlerImpl abstractRepetitionHandler = new AbstractRepetitionHandlerImpl();
     return abstractRepetitionHandler;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public AlmId createAlmId()
+  {
+    AlmIdImpl almId = new AlmIdImpl();
+    return almId;
   }
 
   /**

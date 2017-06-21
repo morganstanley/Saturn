@@ -2,6 +2,8 @@ package com.ms.qaTools.saturn.modules.xmlManipModule.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
@@ -67,6 +69,7 @@ import com.ms.qaTools.saturn.modules.xmlGenModule.XmlGenModulePackage;
 import com.ms.qaTools.saturn.modules.xmlGenModule.impl.XmlGenModulePackageImpl;
 import com.ms.qaTools.saturn.modules.xmlManipModule.AbstractOperation;
 import com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation;
+import com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum;
 import com.ms.qaTools.saturn.modules.xmlManipModule.CleanNamespacesOperation;
 import com.ms.qaTools.saturn.modules.xmlManipModule.DeleteOperation;
 import com.ms.qaTools.saturn.modules.xmlManipModule.DocumentRoot;
@@ -267,6 +270,20 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
    * @generated
    */
   private EClass xPathEClass                     = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EEnum addPositionTypeEnumEEnum = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EDataType addPositionTypeEnumObjectEDataType = null;
 
   /**
    * Creates an instance of the model <b>Package</b>, registered with {@link org.eclipse.emf.ecore.EPackage.Registry
@@ -587,12 +604,22 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
   }
 
   /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAddOperation_PositionXpath()
+  {
+    return (EReference)addOperationEClass.getEStructuralFeatures().get(4);
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
    */
   public EAttribute getAddOperation_IsAttribute()
   {
-    return (EAttribute)addOperationEClass.getEStructuralFeatures().get(4);
+    return (EAttribute)addOperationEClass.getEStructuralFeatures().get(5);
   }
 
   /**
@@ -601,7 +628,17 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
    */
   public EAttribute getAddOperation_IsCData()
   {
-    return (EAttribute)addOperationEClass.getEStructuralFeatures().get(6);
+    return (EAttribute)addOperationEClass.getEStructuralFeatures().get(7);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getAddOperation_AddPosition()
+  {
+    return (EAttribute)addOperationEClass.getEStructuralFeatures().get(8);
   }
 
   /**
@@ -610,7 +647,7 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
    */
   public EAttribute getAddOperation_IsXml()
   {
-    return (EAttribute)addOperationEClass.getEStructuralFeatures().get(5);
+    return (EAttribute)addOperationEClass.getEStructuralFeatures().get(6);
   }
 
   /**
@@ -1055,6 +1092,26 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
   }
 
   /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EEnum getAddPositionTypeEnum()
+  {
+    return addPositionTypeEnumEEnum;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EDataType getAddPositionTypeEnumObject()
+  {
+    return addPositionTypeEnumObjectEDataType;
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
    */
@@ -1089,9 +1146,11 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
     createEReference(addOperationEClass, ADD_OPERATION__NODE_NAME);
     createEReference(addOperationEClass, ADD_OPERATION__URI);
     createEReference(addOperationEClass, ADD_OPERATION__VALUE);
+    createEReference(addOperationEClass, ADD_OPERATION__POSITION_XPATH);
     createEAttribute(addOperationEClass, ADD_OPERATION__IS_ATTRIBUTE);
     createEAttribute(addOperationEClass, ADD_OPERATION__IS_XML);
     createEAttribute(addOperationEClass, ADD_OPERATION__IS_CDATA);
+    createEAttribute(addOperationEClass, ADD_OPERATION__ADD_POSITION);
 
     cleanNamespacesOperationEClass = createEClass(CLEAN_NAMESPACES_OPERATION);
 
@@ -1157,6 +1216,12 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
 
     xPathEClass = createEClass(XPATH);
     createEAttribute(xPathEClass, XPATH__ENABLED);
+
+    // Create enums
+    addPositionTypeEnumEEnum = createEEnum(ADD_POSITION_TYPE_ENUM);
+
+    // Create data types
+    addPositionTypeEnumObjectEDataType = createEDataType(ADD_POSITION_TYPE_ENUM_OBJECT);
   }
 
   /**
@@ -1215,9 +1280,11 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
     initEReference(getAddOperation_NodeName(), theValuesPackage.getComplexValue(), null, "nodeName", null, 0, 1, AddOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getAddOperation_Uri(), theValuesPackage.getComplexValue(), null, "uri", null, 0, 1, AddOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getAddOperation_Value(), theValuesPackage.getComplexValue(), null, "value", null, 0, 1, AddOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getAddOperation_PositionXpath(), theValuesPackage.getComplexValue(), null, "positionXpath", null, 0, 1, AddOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getAddOperation_IsAttribute(), theXMLTypePackage.getBoolean(), "isAttribute", "false", 0, 1, AddOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getAddOperation_IsXml(), theXMLTypePackage.getBoolean(), "isXml", "false", 0, 1, AddOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getAddOperation_IsCData(), theXMLTypePackage.getBoolean(), "isCData", "false", 0, 1, AddOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getAddOperation_AddPosition(), this.getAddPositionTypeEnum(), "addPosition", "NONE", 0, 1, AddOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(cleanNamespacesOperationEClass, CleanNamespacesOperation.class, "CleanNamespacesOperation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
@@ -1283,6 +1350,15 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
 
     initEClass(xPathEClass, XPath.class, "XPath", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getXPath_Enabled(), theXMLTypePackage.getBoolean(), "enabled", "true", 0, 1, XPath.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    // Initialize enums and add enum literals
+    initEEnum(addPositionTypeEnumEEnum, AddPositionTypeEnum.class, "AddPositionTypeEnum");
+    addEEnumLiteral(addPositionTypeEnumEEnum, AddPositionTypeEnum.NONE);
+    addEEnumLiteral(addPositionTypeEnumEEnum, AddPositionTypeEnum.BEFORE);
+    addEEnumLiteral(addPositionTypeEnumEEnum, AddPositionTypeEnum.AFTER);
+
+    // Initialize data types
+    initEDataType(addPositionTypeEnumObjectEDataType, AddPositionTypeEnum.class, "AddPositionTypeEnumObject", IS_SERIALIZABLE, IS_GENERATED_INSTANCE_CLASS);
 
     // Create resource
     createResource(eNS_URI);
@@ -1387,6 +1463,15 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
        "namespace", "##targetNamespace"
        });	
     addAnnotation
+      (getAddOperation_PositionXpath(), 
+       source, 
+       new String[] 
+       {
+       "kind", "element",
+       "name", "PositionXpath",
+       "namespace", "##targetNamespace"
+       });	
+    addAnnotation
       (getAddOperation_IsAttribute(), 
        source, 
        new String[] 
@@ -1409,6 +1494,29 @@ public class XmlManipModulePackageImpl extends EPackageImpl implements XmlManipM
        {
        "kind", "attribute",
        "name", "isCData"
+       });	
+    addAnnotation
+      (getAddOperation_AddPosition(), 
+       source, 
+       new String[] 
+       {
+       "kind", "attribute",
+       "name", "addPosition"
+       });	
+    addAnnotation
+      (addPositionTypeEnumEEnum, 
+       source, 
+       new String[] 
+       {
+       "name", "AddPositionTypeEnum"
+       });	
+    addAnnotation
+      (addPositionTypeEnumObjectEDataType, 
+       source, 
+       new String[] 
+       {
+       "name", "AddPositionTypeEnum:Object",
+       "baseType", "AddPositionTypeEnum"
        });	
     addAnnotation
       (cleanNamespacesOperationEClass, 

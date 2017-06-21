@@ -37,6 +37,7 @@ import com.ms.qaTools.saturn.types.NamedResourceDefinition
 import com.ms.qaTools.saturn.types.TypesPackage
 import com.ms.qaTools.saturn.utils.SaturnEObjectUtils._
 import com.ms.qaTools.saturn.values.ValuesPackage
+import com.ms.qaTools.saturn.resources.soapIOResource.SoapIOResourcePackage
 
 object FeatureTypeMapping {
   protected object Internal {
@@ -57,7 +58,7 @@ object FeatureTypeMapping {
     (ValuesPackage.eINSTANCE.getFIXComplexValue_Resource(),                  fixStr),
     (ValuesPackage.eINSTANCE.getPropertyComplexValue_Resource(),             propStr),
     (ValuesPackage.eINSTANCE.getJSONComplexValue_Resource(),                 jsonStr),
-    
+
     (RepetitionPackage.eINSTANCE.getForEachRepetition_DataSetResource(),          dataSetInput),
     (RepetitionPackage.eINSTANCE.getForEachXPathRepetition_XMLResource(),         xmlStr),
     (RepetitionPackage.eINSTANCE.getForEachXPathRepetition_NamespaceDefinition(), dataSetInput),
@@ -68,17 +69,19 @@ object FeatureTypeMapping {
 //    (CpsModulePackage.eINSTANCE.getCpsConfiguration_CpsResource(), "IO3Try[CpsRowSource[_],CpsRowWriter[_],ExcelDiffSetWriter]"),
     (CpsModulePackage.eINSTANCE.getCpsGetOperation_Output(), dataSetStr),
     (CpsModulePackage.eINSTANCE.getCpsPutOperation_Input(),  dataSetInput),
-    
+
     (DatacompareModulePackage.eINSTANCE.getDataSourceDefinition_Left(),      dataSetInput),
     (DatacompareModulePackage.eINSTANCE.getDataSourceDefinition_Right(),     dataSetInput),
     (DatacompareModulePackage.eINSTANCE.getOutput_Resource(),                dataSetStr),
-    
+
     (DsConvertModulePackage.eINSTANCE.getSimpleOperation_Source(),           dataSetInput),
     (DsConvertModulePackage.eINSTANCE.getSimpleOperation_Target(),           dataSetStr),
 
     FileResourcePackage.eINSTANCE.getFixedWidthFile_ConfigFile -> s"Input[${ResourceGenerator.w3cDocumentIterator}]",
 
-    (MqModulePackage.eINSTANCE.getMQConfiguration_MQResource(),              "MQResource"),
+    (SoapIOResourcePackage.eINSTANCE.getMQTransport_MQResource,              "MqResource"),
+
+    (MqModulePackage.eINSTANCE.getMQConfiguration_MQResource(),              "MqResource"),
     (MqModulePackage.eINSTANCE.getMQGetAction_Output(),                      "Writer[Iterator[MqMessage]]"),
     (MqModulePackage.eINSTANCE.getMQPutAction_Input(),                       "Iterator[Iterator[javax.jms.Message]]"),
     (MqModulePackage.eINSTANCE.getMQGetOperation_OutputResource(),           fileDeviceStr),
@@ -89,9 +92,9 @@ object FeatureTypeMapping {
     (SoapIOModulePackage.eINSTANCE.getSoapIOPutAndGetOperation_Input(),      xmlStr),
     (SoapIOModulePackage.eINSTANCE.getSoapIOPutAndGetOperation_Output(),     xmlStr),
     (SoapIOModulePackage.eINSTANCE.getSoapIOPutOperation_Input(),            xmlStr),
-    
+
     (SqlModulePackage.eINSTANCE.getExecuteCommand_ParameterFile(),           dataSetInput),
-    (SqlModulePackage.eINSTANCE.getFetchQuery_Output(),                      dataSetStr),    
+    (SqlModulePackage.eINSTANCE.getFetchQuery_Output(),                      dataSetStr),
     (SqlModulePackage.eINSTANCE.getFetchQuery_ParameterFile(),               dataSetInput),
     (SqlModulePackage.eINSTANCE.getLoadTable_Input(),                        dataSetInput),
     (SqlModulePackage.eINSTANCE.getProcCallDefinition_Output(),              dataSetStr),
@@ -103,25 +106,25 @@ object FeatureTypeMapping {
     (SqlModulePackage.eINSTANCE.getSQLLoadOperation_InputResource(),         fileDeviceStr),
     (SqlModulePackage.eINSTANCE.getSQLFetchOperation_OutputResource(),       fileDeviceStr),
     (SqlModulePackage.eINSTANCE.getSQLFetchOperation_ParameterResource(),    fileDeviceStr),
-    
+
     (Xml2csvModulePackage.eINSTANCE.getXml2CsvConfiguration_ConfigFile(),    "XML2CSV_CFG"),
     (Xml2csvModulePackage.eINSTANCE.getXml2CsvConfiguration_CSVFile(),       dataSetStr),
     (Xml2csvModulePackage.eINSTANCE.getXml2CsvConfiguration_NamespaceFile(), dataSetInput),
     (Xml2csvModulePackage.eINSTANCE.getXml2CsvConfiguration_XMLFile(),       xmlStr),
-    
+
     (XmlGenModulePackage.eINSTANCE.getDataSet_File(),                        dataSetInput),
     (XmlGenModulePackage.eINSTANCE.getXmlGenConfiguration_OutputResource(),  xmlStr),
     (XmlGenModulePackage.eINSTANCE.getXmlGenConfiguration_TemplateFile(),    xmlStr)
-  ).map{pair => 
-    val(feature,typeStr)=pair; 
+  ).map{pair =>
+    val(feature,typeStr)=pair;
     (feature,Map[EClass,String]().withDefaultValue(typeStr))
   }.toMap
- 
+
   val featureTypeHierarchy:Map[EReference,Map[EClass,String]] = Map(
     TypesPackage.eINSTANCE.getDataSetResourceDefinition_DeviceResource() -> Map(
       FileResourcePackage.eINSTANCE.getCSVFile()         -> fileDeviceStr,
       FileResourcePackage.eINSTANCE.getCustomFile()      -> fileDeviceStr,
-      FileResourcePackage.eINSTANCE.getDataFile()        -> fileDeviceStr,      
+      FileResourcePackage.eINSTANCE.getDataFile()        -> fileDeviceStr,
       FileResourcePackage.eINSTANCE.getExcelWorkSheet()  -> "IO3[Workbook,ExcelWorkBook,ExcelDiffSetWriterFactory]",
       FileResourcePackage.eINSTANCE.getFixedWidthFile()  -> fileDeviceStr,
       FileResourcePackage.eINSTANCE.getJsonFile()        -> fileDeviceStr,
@@ -131,8 +134,8 @@ object FeatureTypeMapping {
       FileResourcePackage.eINSTANCE.getXMLFile()         -> fileDeviceStr,
       QueryResourcePackage.eINSTANCE.getQueryResource()  -> databaseDeviceStr
     )
-  ) 
-  
+  )
+
   val featureTypeMap = featureTypeHierarchy ++ featureTypePairs
   }
 
@@ -171,7 +174,10 @@ class ParameterTypeInferencer protected (procs: List[MAbstractRunGroup],
         }
         procedure = resolveProcedureIncludeAndName(call) if !(procs contains procedure)
       } yield {
-        val param = procedure.getParameters.find(_.getName == arg.getName).get.asInstanceOf[MResourceParameter]
+        val param = procedure.getParameters.find(_.getName == arg.getName) match {
+          case Some(p) => p.asInstanceOf[MResourceParameter]
+          case None    => sys.error(s"parameter ${arg.getName} not found")
+        }
         new ParameterTypeInferencer(procedure :: procs, includeFileMap).getParameterType(param)
       }
 
@@ -195,41 +201,24 @@ class ParameterTypeInferencer protected (procs: List[MAbstractRunGroup],
     case r: MResourceParameter  => parameterLeafFeatureMap.getOrElse(r, AnyType)
     case a: MAttributeParameter => StringType
   }
-  
-  def resolveProcedure(startRunGroup:EObject, procedureName:String):Option[MAbstractRunGroup] =
-    startRunGroup match {
-      case s:MSaturn   => s.getRunGroups().filter{_.isProcedure()}.find{_.getName() == procedureName}
-      case r:MRunGroup => r.getRunGroups().filter{_.isProcedure()}.find{_.getName() == procedureName} match {
-        case Some(i) => Some(i)
-        case None    => resolveProcedure(r.eContainer(), procedureName)
-      }
-      case p:ProcedureCallStep => resolveProcedure(p.eContainer(),procedureName)
-      case _ => None
+
+  def resolveProcedure(rungroup: EObject, p: String): MAbstractRunGroup = rungroup match {
+    case r: MSaturn => r.getRunGroups.find(rg => rg.isProcedure && rg.getName == p).getOrElse(
+      sys.error(s"Failed to resolve procedure `$p`"))
+    case r: MRunGroup => r.getRunGroups.find(rg => rg.isProcedure && rg.getName == p).getOrElse(
+      resolveProcedure(r.eContainer, p))
+    case r: ProcedureCallStep => resolveProcedure(r.eContainer, p)
+    case _ => sys.error(s"Failed to resolve procedure `$p`")
   }
-  
-  def resolveProcedureIncludeAndName(procedureCall:ProcedureCallConfiguration):MAbstractRunGroup = {
-    val fullProcedureName = procedureCall.getRunGroup().getText().map{_.getText()}.mkString
-    
-    val (rootEObject,procedureName) = if(fullProcedureName.contains(".")) {
-      val parts = fullProcedureName.split("\\.")
-      val includeName = parts(0)
-      
-      resolveInclude(procedureCall,includeName) match {
-        case Some(i) => (includeFileMap(i)._1, parts(1))
-        case None    => throw new Exception("Count not resolve include file: '" + includeName + "'")
-      }
-    } 
-    else { 
-      (procedureCall.eContainer(),fullProcedureName) 
+
+  def resolveProcedureIncludeAndName(procedureCall: ProcedureCallConfiguration): MAbstractRunGroup =
+    procedureCall.getRunGroup.getText.map{_.getText}.mkString.split("\\.") match {
+      case Array(include, proc) =>
+        resolveProcedure(includeFileMap(procedureCall.resolveInclude(include))._1, proc)
+      case Array(proc) =>
+        resolveProcedure(procedureCall.eContainer, proc)
+      case parts => sys.error(s"Malformed procedure name: ${parts.mkString("")} ")
     }
-    
-//    println("RESOLVING PROCEDURE: (" + rootEObject + ", " + procedureName + ")")
-    
-    resolveProcedure(rootEObject,procedureName) match {
-      case Some(p) => p
-      case None    => throw new Exception("Cound not resolve procedure: '" + fullProcedureName + "'")
-    }
-  }
 }
 
 object ParameterTypeInferencer {
@@ -329,7 +318,7 @@ object ParameterTypeInferencer {
       def nonCompoundType: Parser[TypeTree] = tuple | ordinary
 
       def ordinary: Parser[TypeTree] = typIdent ~ ("[" ~> rep1sep(typeTree, ",") <~ "]").? ^^ {
-        case name ~ None if tparams(name) => TypeParameter(name, owner.get)
+        case name ~ None if tparams(name) => TypeParameter(name, owner.getOrElse(sys.error(s"Undefined owner for type parameter $name")))
         case name ~ args                  => AppliedType(name, args.getOrElse(Nil))
       }
 
@@ -364,11 +353,10 @@ object ParameterTypeInferencer {
         }
       }.next
     case r =>
-      ResourceGenerator.getMetaData(r).get.getTypeTree
+      ResourceGenerator.getMetaData(r).getOrElse(sys.error(s"Could not get metadata for resource $r")).getTypeTree
   }
-
-  def resolveInclude(startRunGroup: EObject, includeName: String) = startRunGroup.resolveInclude(includeName)
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

@@ -1,11 +1,6 @@
 package com.ms.qaTools.tree.validator
 
 import com.ms.qaTools.tree._
-import org.w3c.dom.Node
-import com.ms.qaTools.xml.xpath.XPath
-import com.ms.qaTools.conversions.XPathConversions._
-
-
 
 trait Mapper[NodeType] {
   def mapNodes(expectedLookup: TreeNode[NodeType], actualLookup: TreeNode[NodeType]): MappedNodes[NodeType]

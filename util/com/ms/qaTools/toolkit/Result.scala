@@ -1,78 +1,77 @@
 package com.ms.qaTools.toolkit
 
-import java.io.ByteArrayOutputStream
-import java.io.PrintStream
-
-
-
-trait Status {
-  def passed: Boolean
-  def failed: Boolean
-  def notRun: Boolean
+sealed trait Status {
+  @deprecated("Match on type instead", "qaTools/util/2.1.80") def passed: Boolean = false
+  @deprecated("Match on type instead", "qaTools/util/2.1.80") def failed: Boolean = false
+  @deprecated("Match on type instead", "qaTools/util/2.1.80") def notRun: Boolean = false
+  def apply(): this.type = this
 }
 
-case class Passed() extends Status {
-  def passed: Boolean = true
-  def failed: Boolean = false
-  def notRun: Boolean = false
-}
-
-case class Failed() extends Status {
-  def passed: Boolean = false
-  def failed: Boolean = true
-  def notRun: Boolean = false
-}
-
-case class NotRun() extends Status {
-  def passed: Boolean = false
-  def failed: Boolean = false
-  def notRun: Boolean = true
-}
+case object Passed extends Status {@deprecated("Match on type instead", "qaTools/util/2.1.80") override def passed = true}
+case object Failed extends Status {@deprecated("Match on type instead", "qaTools/util/2.1.80") override def failed = true}
+case object NotRun extends Status {@deprecated("Match on type instead", "qaTools/util/2.1.80") override def notRun = true}
 
 case class Timings(startDate: Option[Long] = None, endDate: Option[Long] = None) {
-  def start = Timings(Some(System.currentTimeMillis()))
-  def stop = Timings(startDate, Some(System.currentTimeMillis()))
+  def start = Timings(Some(System.currentTimeMillis))
+  def stop = Timings(startDate, Some(System.currentTimeMillis))
 
-  def duration: Option[Long] = (startDate, endDate) match {
-    case (Some(s), Some(e)) => Option(e - s)
-    case _ => None
-  }
+  def duration: Option[Long] =
+    for (s <- startDate; e <- endDate) yield e - s
 }
 
 trait Result {
-  def status: Status = NotRun()
-  def passed: Boolean = status.passed
-  def failed: Boolean = status.failed
-  def notRun: Boolean = status.notRun
+  def status: Status
+  @deprecated("Match on value of `.status` instead", "qaTools/util/2.1.80")
+  def passed: Boolean = status == Passed
+  @deprecated("Match on value of `.status` instead", "qaTools/util/2.1.80")
+  def failed: Boolean = status == Failed
+  @deprecated("Match on value of `.status` instead", "qaTools/util/2.1.80")
+  def notRun: Boolean = status == NotRun
+  @deprecated("Match on value of `.status` instead", "qaTools/util/2.1.80")
   def finished: Boolean = !notRun
 
   def timings: Timings = Timings()
   def duration = timings.duration
 
-  val exception: Option[Throwable] = None
-  val errorMessage: Option[String] = None
+  val exception: Option[Throwable]
+  def errorMessage: Option[String] = exception.map(_.getMessage)
+  def rethrow(message: String): this.type = (exception, status) match {
+    case (Some(e), _) => throw e
+    case (_, Failed)  => sys.error(message)
+    case _ => this}
+}
+
+object Result {
+  def apply(s: Status, e: Option[Throwable] = None): Result =
+    new Result{val status = s; val exception = e}
 }
 
 object Pass {
+  @deprecated("Use `Result(Passed [, exception])` instead", "qaTools/util/2.1.80")
   def apply(e: Option[Throwable] = None): Result = new Result() {
-    override val status: Status = Passed()
-    override val exception: Option[Throwable] = e
+    val status = Passed
+    val exception = e
   }
+
+  @deprecated("Match against object `Passed` instead", "qaTools/util/2.1.80")
   def unapply(r: Result): Boolean = {
     r.passed
   }
 }
 
 object Fail {
+  @deprecated("Use `Result(Failed [, exception])` directly instead", "qaTools/util/2.1.80")
   def apply(e: Option[Throwable] = None): Result = new Result() {
-    override val status: Status = Failed()
-    override val exception: Option[Throwable] = e
+    val status: Status = Failed
+    val exception: Option[Throwable] = e
   }
 
+  @deprecated("Match against object `Failed` instead", "qaTools/util/2.1.80")
   def unapply(r: Result): Boolean = r.failed
 }
 
 object NotRan {
+  @deprecated("Match against object `NotRun` instead", "qaTools/util/2.1.80")
   def unapply(r: Result): Boolean = r.notRun
 }
 /*

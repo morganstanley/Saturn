@@ -2,53 +2,49 @@ package com.ms.qaTools.saturn.lint
 
 import org.eclipse.emf.ecore.EObject
 import com.ms.qaTools.saturn.utils.SaturnEObjectUtils._
-import com.ms.qaTools.toolkit.Result
-import com.ms.qaTools.toolkit.Status
+import com.ms.qaTools.{toolkit => tk}
 
-case class SaturnLintResult(override val status:Status, validationResults:Seq[SaturnLintRuleResult]) extends Result
+case class SaturnLintResult(status: tk.Status, validationResults:Seq[SaturnLintRuleResult], exception: Option[Throwable] = None) extends tk.Result
 
 sealed trait SaturnLintRuleResult {
-  def rule:String
-  def description:String
-  
-  def status:String
-  def isOk:Boolean
-  def isWarning:Boolean
-  def isError:Boolean
+  def rule: String
+  def description: String
+  def status: String
+  def isOk: Boolean = status == "OK"
+  def isWarning: Boolean = status == "WARNING"
+  def isError: Boolean = status == "ERROR"
   def level: Int
-  
-  def eObjects:Seq[EObject] = Nil
-
+  def eObjects: Seq[EObject]
   def fullDescription: Seq[String] = Seq(rule, description, eObjects.map(_.eObjectToPath).mkString(","))
 }
 
 object SaturnLintRuleResult extends Ordering.ExtraImplicits {
   implicit val saturnLintRuleResultOrdering: Ordering[SaturnLintRuleResult] = Ordering.by(_.level)
+
+  def parse(level: String) = level match {
+    case "WARNING" => ResultWarning("DUMMY", "DUMMY", Nil)
+    case "ERROR"   => ResultError("DUMMY", "DUMMY", Nil)
+    case other     =>
+      sys.error(s"Unsupported Saturn Lint fail level: $other, valid options are: WARNING, ERROR")
+  }
 }
 
-case class ResultOK(rule:String, description:String) extends SaturnLintRuleResult {
-  override val status = "OK"
-  override val isOk = true
-  override val isWarning = false
-  override val isError = false
+case class ResultOK(rule: String, description: String) extends SaturnLintRuleResult {
+  val status = "OK"
   def level = 0
+  def eObjects = Nil
 }
 
-case class ResultWarning(rule:String, description:String, override val eObjects:Seq[EObject]) extends SaturnLintRuleResult {
-  override val status = "WARNING"
-  override val isOk = false
-  override val isWarning = true
-  override val isError = false
+case class ResultWarning(rule: String, description: String, eObjects: Seq[EObject]) extends SaturnLintRuleResult {
+  val status = "WARNING"
   def level = 1
 }
 
-case class ResultError(rule:String, description:String, override val eObjects:Seq[EObject]) extends SaturnLintRuleResult {
-  override val status = "ERROR"
-  override val isOk = false
-  override val isWarning = false
-  override val isError = true
+case class ResultError(rule: String, description: String, eObjects: Seq[EObject]) extends SaturnLintRuleResult {
+  val status = "ERROR"
   def level = 2
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

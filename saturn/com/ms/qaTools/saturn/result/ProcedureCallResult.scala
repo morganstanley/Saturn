@@ -1,31 +1,36 @@
 package com.ms.qaTools.saturn.result
 
-import scala.util.Failure
-import scala.util.Success
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import scala.util.Try
 
 import com.ms.qaTools.saturn.codeGen.IteratorResult
-import com.ms.qaTools.toolkit.Failed
-import com.ms.qaTools.toolkit.Passed
-import com.ms.qaTools.toolkit.Result
+import com.ms.qaTools.saturn.codeGen.IterationContext
+import com.ms.qaTools.saturn.codeGen.IterationResult
+import com.ms.qaTools.{toolkit => tk}
 
-sealed trait ProcedureCallResult extends Result {
-  val referentName: String
-  val iteratorResult: Try[IteratorResult[Result]]
-}
-
-case class PassedProcedureCallResult(val referentName: String, val iteratorResult: Try[IteratorResult[Result]]) extends ProcedureCallResult { override val status = Passed() }
-case class FailedProcedureCallResult(val referentName: String, val iteratorResult: Try[IteratorResult[Result]], override val exception: Option[Throwable]) extends ProcedureCallResult { override val status = Failed() }
+case class ProcedureCallResult(status: tk.Status, referentName: String, iteratorResult: Try[IteratorResult[tk.Result]], exception: Option[Throwable] = None) extends tk.Result
 
 object ProcedureCallResult {
-  def apply(referentName: String, result: Try[IteratorResult[Result]]): ProcedureCallResult = {
-    (result map { iteratorResult =>
-      if (iteratorResult.status.passed) PassedProcedureCallResult(referentName, result)
-      else FailedProcedureCallResult(referentName, result, iteratorResult.exception)
-    }) match {
-      case Success(r) => r
-      case Failure(t) => FailedProcedureCallResult(referentName, result, Option(t))
+  def apply(referentName: String, result: Try[IteratorResult[tk.Result]]): ProcedureCallResult =
+    result.map{ iteratorResult =>
+      if (iteratorResult.status == tk.Passed) ProcedureCallResult(tk.Passed, referentName, result)
+      else ProcedureCallResult(tk.Failed, referentName, result, iteratorResult.exception)
+    } match {
+      case scala.util.Success(v) => v
+      case scala.util.Failure(t) => ProcedureCallResult(tk.Failed, referentName, result, Option(t))
     }
+
+  def fromIteratorResult
+    [A <: tk.Result]
+    (name: String,
+     result: Future[Try[IteratorResult[A]]],
+     context: IterationContext,
+     metaData: Seq[Any],
+     iterationNo: Int)
+    (implicit executor: ExecutionContext): Future[IterationResult[ProcedureCallResult]] = result.map { result =>
+    val r = ProcedureCallResult(name, result)
+    IterationResult(r.status, context, metaData, r, iterationNo)
   }
 }
 /*

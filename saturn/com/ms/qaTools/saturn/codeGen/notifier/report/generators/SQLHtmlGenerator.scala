@@ -11,11 +11,11 @@ import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.runtime.notifier.html.appendException
 import com.ms.qaTools.saturn.runtime.notifier.html.htmlSpaces
 import com.ms.qaTools.saturn.runtime.notifier.html.string2Html
-import com.ms.qaTools.toolkit.sql.SQLCallResult
-import com.ms.qaTools.toolkit.sql.SQLClearResult
-import com.ms.qaTools.toolkit.sql.SQLExecuteResult
-import com.ms.qaTools.toolkit.sql.SQLFetchResult
-import com.ms.qaTools.toolkit.sql.SQLLoadResult
+import com.ms.qaTools.toolkit.SQLCallResult
+import com.ms.qaTools.toolkit.SQLClearResult
+import com.ms.qaTools.toolkit.SQLExecuteResult
+import com.ms.qaTools.toolkit.SQLFetchResult
+import com.ms.qaTools.toolkit.SQLLoadResult
 
 sealed trait SQLHtmlGenerator extends BasicHtmlGenerator {
   override def runGroupIconClassName: String = "sqlIcon"
@@ -37,7 +37,7 @@ case class SQLFetchHtmlGenerator(implicit sc: SaturnExecutionContext) extends SQ
   override def generateIterationResult(name: String, fullName: String, result: IterationResult[Any], parentElement: Element, asScenario: Boolean = false, displayIterationNo: Boolean = true): Unit = {
     super.generateIterationResult(name, fullName, result, parentElement, asScenario, displayIterationNo)
     result.moduleResult match {
-      case SQLFetchResult(status, queries) =>
+      case SQLFetchResult(status, queries, _) =>
         parentElement.append("<b><u>SQL Fetch Operation</u></b><br/>")
         for (e <- result.exception) appendException(parentElement, e, 0)(sc.outputVerbosity)
 
@@ -46,14 +46,13 @@ case class SQLFetchHtmlGenerator(implicit sc: SaturnExecutionContext) extends SQ
 
         parentElement.append("Queries:<br/>")
         queries.zipWithIndex.foreach {
-          case (q, i) => {
+          case (q, i) =>
             parentElement.append(htmlSpaces(1) + "Query #%s: <br/>".format(i))
             parentElement.append(htmlSpaces(2) + "Sql: " + q.query + "<br/>")
             printMetaDatas(metaDataContexts, Seq(s"Output_$i"), 2, new PrintStream(outputStream))(true)
             parentElement.append(string2Html(new String(outputStream.toByteArray)))
             outputStream.reset
             for (e <- q.exception) appendException(parentElement, e, 1)(sc.outputVerbosity)
-          }
         }
       case r => throw new Exception(s"SQLFetchHtmlGenerator cannot handle this type of result: ${r.getClass.getName}")
     }
@@ -66,16 +65,15 @@ case class SQLExecuteHtmlGenerator(implicit sc: SaturnExecutionContext) extends 
   override def generateIterationResult(name: String, fullName: String, result: IterationResult[Any], parentElement: Element, asScenario: Boolean = false, displayIterationNo: Boolean = true): Unit = {
     super.generateIterationResult(name, fullName, result, parentElement, asScenario, displayIterationNo)
     result.moduleResult match {
-      case SQLExecuteResult(status, statements) =>
+      case SQLExecuteResult(status, statements, _) =>
         parentElement.append("<b><u>SQL Execute Operation</u></b><br/>")
         for (e <- result.exception) appendException(parentElement, e, 0)(sc.outputVerbosity)
 
         parentElement.append("Queries:<br/>")
         statements.zipWithIndex.foreach {
-          case (q, i) => {
+          case (q, i) =>
             parentElement.append(htmlSpaces(1) + "Sql command #%s: %s".format(i, q.statement) + "<br/>")
             for (e <- q.exception) appendException(parentElement, e, 1)(sc.outputVerbosity)
-          }
         }
       case r => throw new Exception(s"SQLExecuteHtmlGenerator cannot handle this type of result: ${r.getClass.getName}")
     }
@@ -88,16 +86,15 @@ case class SQLClearHtmlGenerator(implicit sc: SaturnExecutionContext) extends SQ
   override def generateIterationResult(name: String, fullName: String, result: IterationResult[Any], parentElement: Element, asScenario: Boolean = false, displayIterationNo: Boolean = true): Unit = {
     super.generateIterationResult(name, fullName, result, parentElement, asScenario, displayIterationNo)
     result.moduleResult match {
-      case SQLClearResult(status, actions) =>
+      case SQLClearResult(status, actions, _) =>
         parentElement.append("<b><u>SQL Clear Operation</u></b><br/>")
         for (e <- result.exception) appendException(parentElement, e, 0)(sc.outputVerbosity)
 
         parentElement.append("Tables:<br/>")
         actions.zipWithIndex.foreach {
-          case (q, i) => {
+          case (q, i) =>
             parentElement.append(htmlSpaces(1) + "Table #%s: %s".format(i, q.table) + "<br/>")
             for (e <- q.exception) appendException(parentElement, e, 1)(sc.outputVerbosity)
-          }
         }
       case r => throw new Exception(s"SQLClearHtmlGenerator cannot handle this type of result: ${r.getClass.getName}")
     }
@@ -110,7 +107,7 @@ case class SQLCallHtmlGenerator(implicit sc: SaturnExecutionContext) extends SQL
   override def generateIterationResult(name: String, fullName: String, result: IterationResult[Any], parentElement: Element, asScenario: Boolean = false, displayIterationNo: Boolean = true): Unit = {
     super.generateIterationResult(name, fullName, result, parentElement, asScenario, displayIterationNo)
     result.moduleResult match {
-      case SQLCallResult(status, calls) =>
+      case SQLCallResult(status, calls, _) =>
         parentElement.append("<b><u>SQL Call Operation</u></b><br/>")
         for (e <- result.exception) appendException(parentElement, e, 0)(sc.outputVerbosity)
 
@@ -138,7 +135,7 @@ case class SQLLoadHtmlGenerator(implicit sc: SaturnExecutionContext) extends SQL
   override def generateIterationResult(name: String, fullName: String, result: IterationResult[Any], parentElement: Element, asScenario: Boolean = false, displayIterationNo: Boolean = true): Unit = {
     super.generateIterationResult(name, fullName, result, parentElement, asScenario, displayIterationNo)
     result.moduleResult match {
-      case SQLLoadResult(status, actions) =>
+      case SQLLoadResult(status, actions, _) =>
         parentElement.append("<b><u>SQL Load Operation</u></b><br/>")
         for (e <- result.exception) appendException(parentElement, e, 0)(sc.outputVerbosity)
 
@@ -147,18 +144,18 @@ case class SQLLoadHtmlGenerator(implicit sc: SaturnExecutionContext) extends SQL
 
         parentElement.append("Tables:<br/>")
         actions.zipWithIndex.foreach {
-          case (q, i) => {
+          case (q, i) =>
             parentElement.append(htmlSpaces(1) + "Table %s: %s<br/>".format(i, q.table))
             printMetaDatas(metaDataContexts, Seq(s"Input_$i"), 2, new PrintStream(outputStream))(true)
             parentElement.append(string2Html(new String(outputStream.toByteArray)))
             outputStream.reset
             for (e <- q.exception) appendException(parentElement, e, 1)(sc.outputVerbosity)
-          }
         }
       case r => throw new Exception(s"SQLLoadHtmlGenerator cannot handle this type of result: ${r.getClass.getName}")
     }
   }
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

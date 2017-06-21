@@ -1,12 +1,8 @@
 package com.ms.qaTools.io.rowSource.file
 
 import java.io.File
-import scala.collection.JavaConversions._
-
-
 
 class DirectoryFilesRowSource(directory: File, recursive: Boolean) extends Iterator[File] {
-  
   protected val filesIterator = {
     if(!directory.isDirectory()) throw new Exception("File path is not a directory: " + directory.getAbsolutePath())
     val files = directory.listFiles.filterNot(f => f.getName == "." || f.getName == "..").toIterator

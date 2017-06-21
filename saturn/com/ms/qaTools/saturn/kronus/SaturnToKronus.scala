@@ -8,25 +8,25 @@ import scala.collection.mutable
 import scala.util.parsing.combinator.RegexParsers
 
 import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
 import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.emf.ecore.util.FeatureMap
 
 import com.ms.qaTools.io.rowSource.ColumnDefinition
-import com.ms.qaTools.io.rowWriter.file.CsvRowWriter
+import com.ms.qaTools.io.rowWriter.CsvRowWriter
 import com.ms.qaTools.saturn._
 import com.ms.qaTools.saturn.codeGen.{SaturnCodeGenUtil, DependencyExtractor, ProcedureGenerator}
 import com.ms.qaTools.saturn.codeGen.{ParameterTypeInferencer => PTI}
 import com.ms.qaTools.saturn.kronus._
 import com.ms.qaTools.saturn.modules.procedureCallModule._
+import com.ms.qaTools.saturn.modules
 import com.ms.qaTools.saturn.repetition._
-import com.ms.qaTools.saturn.resources.fileResource._
-import com.ms.qaTools.saturn.resources.nullResource.NullDevice
-import com.ms.qaTools.saturn.resources.referenceResource.ReferenceResource
+import com.ms.qaTools.saturn.resources
 import com.ms.qaTools.saturn.types._
 import com.ms.qaTools.saturn.values._
 
 object SaturnToKronus {
-  def apply(config: Config): Dependency = new SaturnToKronus(config.codeGenUtil.saturn)(config).toTopLevel
+  def apply(config: Config): Dependency = new SaturnToKronus.TopLevel(config.codeGenUtil.saturn)(config).toTopLevel
 
   class Config(val codeGenUtil: SaturnCodeGenUtil,
                val backport: Backport,
@@ -65,7 +65,7 @@ object SaturnToKronus {
     def iterator = Iterator(topLevel) ++ children.flatMap(_.iterator)
   }
 
-  def getSaturn(x: EObject): Saturn = (Iterator(x) ++ x.eContainers).collectFirst {case s: Saturn => s}.get
+  def getSaturn(x: EObject): Saturn = (Iterator(x) ++ x.eContainers).collect{case s: Saturn => s}.next
 
   def complexValueToString(cv: ComplexValue): String = cv.getMixed.map {
     _.getValue match {
@@ -73,37 +73,113 @@ object SaturnToKronus {
     }
   }.mkString
 
+  def hasConfiguredReturn(s: SaturnStatusEnum, c: SaturnStatusConditionEnum) = {
+    import SaturnStatusEnum._, SaturnStatusConditionEnum._
+    (s, c) match {
+      case (PASS, ALLPASS) | (FAIL, ANYFAIL) => false
+      case _ => true}}
+
+  def createWrapper(step: AbstractStep): RunGroup = {
+    val wrapper = SaturnFactory.eINSTANCE.createRunGroup
+    wrapper.setName(step.getName)
+    wrapper.setEnabled(step.isEnabled)
+    wrapper.setProcedure(step.isProcedure)
+    wrapper.setRepetitionHandler(EcoreUtil.copy(step.getRepetitionHandler))
+    step.getParameters.foreach(x => wrapper.getParameters.add(EcoreUtil.copy(x)))
+    step.getAttributes.foreach(x => wrapper.getAttributes.add(EcoreUtil.copy(x)))
+    step.getResources.foreach(x => wrapper.getResources.add(EcoreUtil.copy(x)))
+    wrapper.setWaitBefore(step.getWaitBefore)
+    wrapper.setWaitAfter(step.getWaitAfter)
+    wrapper
+  }
+
   def sanitize(saturn: Saturn) {
-    def replace(x: EObject, y: EObject) {
-      EcoreUtil.UsageCrossReferencer.find(x, saturn).filterNot { usage =>
-        SaturnPackage.eINSTANCE.getAbstractResourceLink.isSuperTypeOf(usage.getEStructuralFeature.getEContainingClass)
-      }.foreach(EcoreUtil.replace(_, x, y))
-      EcoreUtil.replace(x, y)
+    saturn.eAllContents.collect { // hack
+      case step: AbstractRunGroup if hasConfiguredReturn(step.getDefaultStatus, step.getStatusCondition) && step.isEnabled => step
+    }.toList.foreach { step =>
+      val wrapper = SaturnFactory.eINSTANCE.createRunGroup
+      SaturnToKronus.replace(step, wrapper, saturn)
+      wrapper.getRunGroups.add(step)
+      wrapper.setName(step.getName + "_wrapper")
+      wrapper.getAttributes.addAll(step.getAttributes)
+      wrapper.getResources.addAll(step.getResources)
+      step.getResources.clear
+      step.getAttributes.clear
     }
+
     saturn.eAllContents.collect {
       case step: AbstractStep if step.isProcedure
                               || !step.getAttributes.isEmpty
                               || !step.getResources.isEmpty
+                              || step.getRepetitionHandler != null
                               || step.getWaitBefore.intValue > 0
                               || step.getWaitAfter.intValue > 0
                               => step
     }.toList.foreach { step =>
-      val wrapper = SaturnFactory.eINSTANCE.createRunGroup
-      replace(step, wrapper)
+      val wrapper = createWrapper(step)
+      SaturnToKronus.replace(step, wrapper, saturn)
       wrapper.getRunGroups.add(step)
-      wrapper.setName(step.getName)
-      wrapper.setProcedure(step.isProcedure)
-      wrapper.getParameters.addAll(step.getParameters)
-      wrapper.getAttributes.addAll(step.getAttributes)
-      wrapper.getResources.addAll(step.getResources)
-      wrapper.setWaitBefore(step.getWaitBefore)
-      wrapper.setWaitAfter(step.getWaitAfter)
+      step.unsetProcedure()
+      step.setRepetitionHandler(null)
+      step.getParameters.clear()
+      step.getAttributes.clear()
+      step.getResources.clear()
+      step.unsetWaitBefore()
+      step.unsetWaitAfter()
     }
     saturn.eAllContents.collect {case x: AbstractRunGroup if !x.isEnabled => x}.toList.foreach { x =>
       val noop = SaturnFactory.eINSTANCE.createNoopTerminal
       noop.setName(x.getName)
-      replace(x, noop)
+      SaturnToKronus.replace(x, noop, saturn)
     }
+  }
+
+  protected class TopLevel(runGroup: Saturn)(implicit config: SaturnToKronus.Config) extends SaturnToKronus(runGroup) {
+    import KronusFactory.{eINSTANCE => Factory}
+
+    backport.imports.foreach(i => kronus.getDefs.add(Factory.newAnnotatedDef(EcoreUtil.copy(i))))
+    backport.packages.foreach(mod => kronus.getDefs.add(Factory.newAnnotatedDef(Factory.newIncludeDef(mod, None))))
+    for ((n, d) <- includeFiles)
+      kronus.getDefs.add(Factory.newAnnotatedDef(Factory.newIncludeDef(d.topLevel, Some(n))))
+
+    def toTopLevel: Dependency = {
+      populateKronus()
+      val topLvl = Factory.createTopLevelKronus
+      topLvl.setKronus(kronus)
+      val pkgDef = Factory.createPackageDef
+      pkgDef.setModule(Seq(config.pkg, Some(runGroup.getName)).flatten.mkString("."))
+      topLvl.setPackage(pkgDef)
+      addDependenciesToCalls()
+      Dependency(topLvl, includeFiles.values)
+    }
+
+    def addDependenciesToCalls(): Unit = {
+      import KronusPackage.eINSTANCE._
+      kronus.eAllContents.foreach {
+        case call: FunctionCall => addDependenciesToCall(call, getFunctionCall_Method)
+        case call: ValRef       => addDependenciesToCall(call, getValRef_Ref)
+        case call: TypeInstance => addDependenciesToCall(call, getTypeInstance_Name)
+        case _                  =>
+      }
+    }
+
+    def addDependenciesToCall(call: EObject, ref: EReference): Unit = {
+      val target = call.eGet(ref).asInstanceOf[EObject]
+      if (!EcoreUtil.isAncestor(kronus, target)) {
+        val deps = kronus.allInclusions.find(deps => EcoreUtil.isAncestor(deps.head.getModule, target)).getOrElse {
+          val mod = kronus.eContainer.asInstanceOf[TopLevelKronus].getPackage.getModule
+          throw new NoSuchElementException(s"Cannot find ${ref.getName} in $call from $mod")
+        }
+        resource.DependencyTrackingEObjectDescription.Adapter.attach(call, ref, deps)
+      }
+    }
+  }
+
+  def replace(x: EObject, y: EObject, saturn: Saturn) {
+    EcoreUtil.UsageCrossReferencer.find(x, saturn).filterNot { usage =>
+      SaturnPackage.eINSTANCE.getAbstractResourceLink.isSuperTypeOf(usage.getEStructuralFeature.getEContainingClass)
+    }.foreach(EcoreUtil.replace(_, x, y))
+    EcoreUtil.replace(x, y)
   }
 }
 
@@ -120,25 +196,7 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
     val incs = config.includesBySaturn.getOrElse(getSaturn(runGroup), Set.empty)
     codeGenUtil.includeFileMap.collect {
       case (inc, (s, _)) if incs(inc) => inc.getName -> s
-    }.mapValues(s => config.includeFileMap.getOrElseUpdate(s, new SaturnToKronus(s).toTopLevel))
-  }
-
-  if (runGroup.isInstanceOf[Saturn]) {
-    backport.imports.foreach(i => kronus.getImports.add(EcoreUtil.copy(i)))
-    backport.packages.foreach(mod => kronus.getIncludes.add(Factory.newIncludeDef(mod, None)))
-    for ((n, d) <- includeFiles)
-      kronus.getIncludes.add(Factory.newIncludeDef(d.topLevel.getPackage.getModule, Some(n)))
-  }
-
-  def toTopLevel: Dependency = {
-    require(runGroup.isInstanceOf[Saturn])
-    populateKronus()
-    val topLvl = Factory.createTopLevelKronus
-    topLvl.setKronus(kronus)
-    val pkgDef = Factory.createPackageDef
-    pkgDef.setModule(Seq(config.pkg, Some(runGroup.getName)).flatten.mkString("."))
-    topLvl.setPackage(pkgDef)
-    Dependency(topLvl, includeFiles.values)
+    }.mapValues(s => config.includeFileMap.getOrElseUpdate(s, new SaturnToKronus.TopLevel(s).toTopLevel))
   }
 
   def addRunGroup(rg: RunGroup) {
@@ -149,7 +207,10 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
   }
 
   def addProcFunctionDef(rg: RunGroup, rhs: KronusCodeBlock) {
-    val fd = addNewFunctionDef(rg.getName)
+    val fd = Factory.createFunctionDef
+    fd.setName(rg.getName)
+    val ad = Factory.newAnnotatedDef(fd)
+    kronus.getDefs.add(ad)
     val generator = new ProcedureGenerator(rg)(codeGenUtil)
     val tparamMap = generator.typeParamRename.mapValues { tp =>
       val td = Factory.createTypeDef
@@ -165,7 +226,7 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
       val hc = Factory.createHashtagCall
       hc.setMethod(backport.hashtags("Implicit"))
       hc.getParameterValues.add(pv)
-      fd.getHashtags.add(hc)
+      ad.getHashtags.add(hc)
     }
     fd.setReturnType(kronusType)
     fd.setValue(rhs)
@@ -214,6 +275,9 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
     rep.fold(populatePostRepetitionDependencies())(addRepetition)
   }
 
+  def linkExpressions(s: Seq[Expression]): Expression =
+    s.reduce((a, b) => callWhen(callOnFinish(a), b))
+
   def populatePostRepetitionDependencies() {
     codeGenUtil.getWrapped(runGroup).dependencyExtractor.postRepetitionDependencies.foreach(addAttributeOrResource)
     sortedRunGroups.foreach {
@@ -223,9 +287,10 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
       case x: ProcedureCallStep => addProcCallStep(x)
       case x: AbstractTerminal  => addAbstractRunGroup(x, convAbstractTerminal(x))
       case x: DataCompareStep   => addAbstractRunGroup(x, convDataCompareStep(x))
+      case x: DSConvertStep     => addAbstractRunGroup(x, linkExpressions(convDsConvertStep(x)))
     }
     if (runGroup.getRunGroups.exists(x => x.isInstanceOf[PassTerminal] || x.isInstanceOf[FailTerminal])) {
-      val results = kronus.getDefs.collect {case vd: ValDef => Factory.newValRef(vd)}
+      val results = kronus.getDefs.map(_.getDef).collect {case vd: ValDef => Factory.newValRef(vd)}
       kronus.setReturn(backport.functionCall("TerminalResult", Seq("results" -> Factory.newSequence(results))))
     }
   }
@@ -274,9 +339,9 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
 
   def addScalaRunCmds(runCmds: RunCmdsStep) {
     val conf = runCmds.getRunCmdsConfiguration
-    require(conf.getInterpreter == InterpretersEnum.SCALA)
+    require(conf.getInterpreter == InterpretersEnum.SCALA) // FIXME
     require(conf.getCommands.size == 1)
-    val cmd = conf.getCommands.get(0)
+    val cmd = conf.getCommands.get(0) // FIXME
     val res = new ScalaCode(cmd)
     val fc = backport.functionCall("ScalaCommand", Seq("result" -> res.value, "code" -> Factory.newLiteral(res.code)))
     addAbstractRunGroup(runCmds, toolkitResult(fc))
@@ -288,13 +353,12 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
     val args = conf.getArguments.map(convArgument)
     val fc = {
       fullName.split('.') match {
-        case Array(fdName) => parents.flatMap(_.getDefs).collectFirst {
+        case Array(fdName) => parents.flatMap(_.getDefs).map(_.getDef).collectFirst {
           case fd: FunctionDef if fd.getName == fdName =>
             Factory.newFunctionCall(fd, args: _*)
         }
-        case Array(inc, fdName) => includeFiles(inc).topLevel.getKronus.getDefs.collectFirst {
-          case fd: FunctionDef if fd.getName == fdName =>
-            Factory.newIncludeRef(findInclude(inc), Factory.newFunctionCall(fd, args: _*))
+        case Array(inc, fdName) => includeFiles(inc).topLevel.getKronus.collectDefs[FunctionDef].collectFirst {
+          case fd if fd.getName == fdName => Factory.newFunctionCall(fd, args: _*)
         }
       }
     }.getOrElse(sys.error(s"Unable to find FunctionDef $fullName"))
@@ -313,7 +377,7 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
     val output = conf.getOutput
     val Seq(l, r, o) = Seq(inputs.getLeft, inputs.getRight, output.getResource).map(convResource)
     val cols = toInlineCsv(inputs.getColumns.iterator.map(c => Seq(c.getName, c.getMappingColumn, c.isIgnored.toString)),
-                           Some(Seq("COLUMN", "MAPPING", "IGNORED").map(ColumnDefinition(_))))
+                           Some(Seq("COLUMN", "MAPPING", "IGNORED").zipWithIndex.map{case (n, i) => ColumnDefinition(n, index = i)}))
     val pages = {
       import com.ms.qaTools.compare.writer._
       val ps = Option(output.getPages).map { ps =>
@@ -329,11 +393,22 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
                 )
       }.getOrElse(Iterator.empty).filter(_._1 != null)
       toInlineCsv(ps.map {case (p, name) => Seq(name, p.getName, p.isOmit.toString)},
-                  Some(Seq("PAGE", "NAME", "OMITTED").map(ColumnDefinition(_))))
+                  Some(Seq("PAGE", "NAME", "OMITTED").zipWithIndex.map{case (n, i) => ColumnDefinition(n, index = i)}))
     }
-    backport.functionCall("DataCompareStep", Seq("left" -> l, "right" -> r, "columns" -> cols,
-                                                 "output" -> o, "pageConfig" -> pages))
+    stepCall("DataCompareStep", Seq(
+      "left" -> l, "right" -> r, "columns" -> cols, "output" -> o, "pageConfig" -> pages))
   }
+
+  def convDsConvertStep(step: DSConvertStep): Seq[Expression] =
+    // TODO make sure headers are printed/not printed depending on output type
+    step.getDSConvertConfiguration.getOperations.collect {
+      case o: modules.dsConvertModule.SimpleOperation if o.isEnabled=>
+        stepCall("Write", Seq(
+          "input" -> resourceCall("FilterOutColumns", Seq(
+            "input"   -> convResource(o.getSource),
+            "columns" -> toInlineCsv(scala.util.Try(Seq(o.getIgnoreCols.toList.map(complexValueToString))).getOrElse(Nil).iterator, None))),
+          "output" -> convResource(o.getTarget)))
+    }
 
   def addAttribute(attr: com.ms.qaTools.saturn.Attribute) {
     val rhs = convComplexValue(attr)
@@ -438,6 +513,9 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
         Factory.newTypeInstance(backport.typeDefs(name), args.map(convTypeTree(_, tparamMap)): _*)
       case tp: PTI.TypeParameter =>
         Factory.newTypeInstance(tparamMap(tp))
+      case _ => tt.toString match {
+        case "Iterator[Seq[String]] with ColumnDefinitions" => Factory.newTypeInstance(backport.typeDefs("DataSets"))
+      }
     }
   }
 
@@ -450,32 +528,109 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
   }
 
   def convResource(res: ResourceDefinition): Expression = res match {
-    case res: ReferenceResource =>
+    case res: resources.referenceResource.ReferenceResource =>
       convReference(res.getResource, Option(res.getIncludeFile))
     case res: InlineDeviceResourceDefinition =>
       resourceCall("InlineDevice", Seq("contents" -> convComplexValue(res.getValue)))
-    case res: XMLFile =>
+    case res: resources.fileResource.XMLFile =>
       resourceCall("XmlIO", Seq("device" -> convResource(res.getDeviceResource)))
-    case res: JsonFile =>
+    case res: resources.fileResource.JsonFile =>
       resourceCall("JsonFile", Seq("device" -> convResource(res.getDeviceResource)))
-    case res: LineFile =>
+    case res: resources.fileResource.LineFile =>
       resourceCall("LineFile", Seq("device" -> convResource(res.getDeviceResource)))
-    case res: DeviceFile =>
-      resourceCall("DeviceFile", Seq("fileName" -> convComplexValue(res.getFileName),
-                                     "append"   -> Factory.newLiteral(res.isAppend)))
-    case res: CSVFile =>
+    case res: resources.fileResource.ExcelWorkBook =>
+      import com.ms.qaTools.saturn.resources.fileResource.ExcelVersions._
+      resourceCall("ExcelWorkBook", Seq(
+        "fileName" -> convComplexValue(res.getFileName),
+        "version"  -> Factory.newLiteral(res.getVersion.getLiteral)))
+    case res: resources.fileResource.DeviceFile =>
+      resourceCall("DeviceFile", Seq(
+        "fileName" -> convComplexValue(res.getFileName),
+        "append"   -> Factory.newLiteral(res.isAppend)))
+    case res: resources.fileResource.CSVFile =>
       resourceCall("CsvFile", Seq("device" -> convResource(res.getDeviceResource)))
+    case res: resources.fileResource.PropertiesFile =>
+      resourceCall("PropertiesFile", Seq("device" -> convResource(res.getDeviceResource)))
+    case res: resources.fileResource.SlurpFile =>
+      resourceCall("SlurpFile", Seq("device" -> convResource(res.getDeviceResource)))
     case res: KronusResource =>
       val call = res.getKronusCallConfiguration
       Factory.newFunctionCall(backport.resourceDefs(call.getDef), call.getArguments.map(convArgument): _*)
-    case res: NullDevice =>
-      resourceCall("NullDevice", Seq())
+    case res: resources.nullResource.NullDevice =>
+      resourceCall("NullDevice", Nil)
+    case res: resources.sqliteResource.SQLiteResource =>
+      val db = Option(res.getDatabase) match {
+        case Some(mem: resources.sqliteResource.MemoryDatabase)  =>
+          resourceCall("Sqlite", Nil)
+        case Some(file: resources.sqliteResource.SQLiteDatabase) =>
+          resourceCall("SqliteFromFile", Seq("file" -> convResource(file.getDBResource.ensuring(_ != null))))
+        case db => sys.error("Unsupported database for SQLite: " + db.toString)}
+      Option(res.getDDLResource).map{query =>
+        val name = s"__${res.getName}_db"
+        addNewValDef(name).setValue(db)
+        callWhen(callOnFinish(stepCall("Write", Seq(
+          "input"  -> resourceCall("QueryIO", Seq(
+            "connection"   -> convReference(name, None),
+            "ignoreResult" -> Factory.newLiteral("TRUE"), // FIXME no Boolean literal in Kronus
+            "query"        -> backport.functionCall("GetNext", Seq("i" -> convResource(query))))),
+          "output" -> resourceCall("KNullWriter", Nil)))),
+          convReference(name, None))}.getOrElse(db)
+    case res: resources.db2Resource.DB2Resource =>
+      resourceCall("DB2Resource", Seq(
+        "server" -> convComplexValue(res.getServer),
+        "schema" -> convComplexValue(res.getQualifier),
+        "login"  -> convComplexValue(res.getLogin),
+        "passwd" -> convComplexValue(res.getPassword)))
+    case res: resources.sybaseResource.SybaseResource =>
+      resourceCall("Sybase", Seq(
+        "server"   -> convComplexValue(res.getServer),
+        "database" -> convComplexValue(res.getDatabase),
+        "login"    -> Option(res.getLogin).map(convComplexValue).getOrElse(backport.functionCall("Null", Nil)),
+        "passwd"   -> Option(res.getPassword).map(convComplexValue).getOrElse(backport.functionCall("Null", Nil))))
+    case res: resources.udbResource.UDBResource =>
+      resourceCall("Udb", Seq(
+        "server" -> convComplexValue(res.getServer),
+        "schema" -> convComplexValue(res.getQualifier)))
+    case res: resources.h2Resource.H2Resource =>
+      val db = Option(res.getDatabase) match {
+        case Some(mem: resources.h2Resource.MemoryDatabase) =>
+          resourceCall("H2", Nil)
+        case Some(file: resources.h2Resource.FileDatabase) =>
+          resourceCall("H2FromFile", Seq("file" -> convResource(file.getDBResource)))
+        case db => sys.error("Unsupported database for H2: " + db.toString)}
+      Option(res.getDDLResource).map{query =>
+        val name = s"__${res.getName}_db"
+        addNewValDef(name).setValue(db)
+        callWhen(callOnFinish(stepCall("Write", Seq(
+          "input"  -> resourceCall("QueryIO", Seq(
+            "connection"   -> convReference(name, None),
+            "ignoreResult" -> Factory.newLiteral("TRUE"), // FIXME no Boolean literal in Kronus
+            "query"        -> backport.functionCall("GetNext", Seq("i" -> convResource(query))))),
+          "output" -> resourceCall("KNullWriter", Nil)))),
+          convReference(name, None))}.getOrElse(db)
+    case res: resources.fileResource.StandardIO =>
+      if (res.isUseStdErr) resourceCall("StdErr", Nil)
+      else resourceCall("StdOut", Nil)
+    case res: resources.queryResource.QueryResource =>
+      resourceCall("QueryIO", Seq(
+        "connection" -> convResource(res.getDeviceResource.ensuring(_ != null)),
+        "query"      -> Option(res.getQuery).map(convComplexValue).getOrElse(Factory.newLiteral(""))))
+    case res: resources.queryResource.TableResource =>
+      resourceCall("TableIO", Seq(
+        "connection" -> convResource(res.getDeviceResource.ensuring(_ != null)),
+        "table"      -> convComplexValue(res.getTable)))
+    case res: resources.shadowDirectResource.ShadowDirectResource =>
+      resourceCall("ShadowDirect", Seq(
+        "server" -> convComplexValue(res.getServer),
+        "login"  -> convComplexValue(res.getLogin),
+        "passwd" -> convComplexValue(res.getPassword)))
+    case res => sys.error(s"${Option(res).map(_.getClass.getName).orNull}: cannot convert resource")
   }
 
   def convReference(name: String, includeFile: Option[String]): Value = includeFile match {
     case None =>
       object ValDefExtractor {
-        def unapply(k: Kronus) = k.getDefs.collectFirst {case vd: ValDef if vd.getName == name => vd}
+        def unapply(k: Kronus) = k.getDefs.map(_.getDef).collectFirst {case vd: ValDef if vd.getName == name => vd}
       }
       object ParameterDefExtractor {
         def unapply(fd: FunctionDef) = fd.getParameterDefs.find(_.getName == name)
@@ -485,30 +640,35 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
         case ParameterDefExtractor(pd) => pd
       }.fold(sys.error(s"Fail to find ValDef or ParameterDef $name"))(Factory.newValRef)
     case Some(inc) =>
-      includeFiles(inc).topLevel.getKronus.getDefs.collectFirst {
-        case vd: ValDef if vd.getName == name => Factory.newIncludeRef(findInclude(inc), Factory.newValRef(vd))
+      includeFiles(inc).topLevel.getKronus.getDefs.map(_.getDef).collectFirst {
+        case vd: ValDef if vd.getName == name => Factory.newValRef(vd)
       }.getOrElse(sys.error(s"Fail to find ValDef $name"))
   }
 
-  def addNewAbstractDef[A <: AbstractDef](name: String, builder: => A): A = {
-    val ad = builder
-    ad.setName(name)
-    kronus.getDefs.add(ad)
-    ad
+  def addNewAbstractDef[A <: AbstractDef](d: A): A = {
+    kronus.getDefs.add(Factory.newAnnotatedDef(d))
+    d
   }
 
-  def addNewValDef(name: String): ValDef = addNewAbstractDef(name, Factory.createValDef)
-  def addNewFunctionDef(name: String): FunctionDef = addNewAbstractDef(name, Factory.createFunctionDef)
+  def addNewValDef(name: String): ValDef = {
+    val vd = Factory.createValDef
+    vd.setName(name)
+    addNewAbstractDef(vd)
+  }
 
-  def addAbstractRunGroup(step: AbstractRunGroup, rhs: Expression) {
+  def addNewFunctionDef(name: String): FunctionDef = {
+    val fd = Factory.createFunctionDef
+    fd.setName(name)
+    addNewAbstractDef(fd)
+  }
+
+  def addAbstractRunGroup(step: AbstractRunGroup, rhs: Expression) = {
     val vd = addNewValDef(step.getName)
     vd.setValue(new CanRunExpressionDecoder.Target(step).decode().fold(rhs)(callWhen(_, rhs)))
     children += step.getName -> vd
   }
 
   def parents: Iterator[Kronus] = (Iterator(kronus) ++ kronus.eContainers).collect {case k: Kronus => k}
-
-  def findInclude(name: String): IncludeDef = parents.flatMap(_.getIncludes).find(_.getName == name).get
 
   def toolkitResult(e: Expression) = backport.functionCall("ToolkitResult", Seq("result" -> e))
 
@@ -520,6 +680,7 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
   }
 
   def resourceCall(name: String, args: Seq[(String, Expression)]) = backport.functionCall(name, args, backport.resourceDefs)
+  def stepCall(name: String, args: Seq[(String, Expression)]) = backport.functionCall(name, args, backport.stepDefs)
 
   def callWhen(pred: Expression, body: Expression) = backport.functionCall("When", Seq("pred" -> pred, "body" -> body))
   def callOnPass(result: Expression) = backport.functionCall("OnPass", Seq("result" -> result))
@@ -542,14 +703,14 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
     val onPass = "runGroupPassed(_" ~> "\\w+".r <~ ")" ^^ {src => callOnPass(Factory.newValRef(children(src)))}
     val onFail = "runGroupFailed(_" ~> "\\w+".r <~ ")" ^^ {src => callOnFail(Factory.newValRef(children(src)))}
     val onFinish = "runGroupFinished(_" ~> "\\w+".r <~ ")" ^^ genOnFinish
-    val onCustomRegex = """(\w+)2([a-zA-Z_]\w*)Satisfied_\d+""".r
+    val onCustomRegex = """__(\w+)2([a-zA-Z_]\w*)Satisfied""".r
 
     def genOnFinish(src: String) = callOnFinish(Factory.newValRef(children(src)))
 
     class Target(target: AbstractRunGroup) {
       val onCustom = onCustomRegex ^^ {
         case onCustomRegex(src, dest) if dest == target.getName =>
-          val pred = new ScalaCode(config.customLinks(src, target).getCode, BooleanType).value
+          val pred = new ScalaCode(config.customLinks((src, target)).getCode, BooleanType).value
           backport.functionCall("OnCustom", Seq("result" -> genOnFinish(src), "pred" -> pred))
       }
 
@@ -656,7 +817,7 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
                                                           "namespaces" -> ns))
       }
       val mappings = toInlineCsv(rep.getXPathMappings.iterator.map(m => Seq(m.getXPath, m.getAttribute)),
-                                 Some(Seq("XPATH", "ATTR").map(ColumnDefinition(_))))
+                                 Some(Seq("XPATH", "ATTR").zipWithIndex.map{case (n, i) => ColumnDefinition(n, index = i)}))
       resourceCall("Extractor", Seq("trees" -> xml, "mappings" -> mappings))
     }
 
@@ -671,7 +832,7 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
       cv.getMixed.foreach {
         convComplexValueEntry(_) match {
           case x: StringLiteral =>
-            code ++= x.getValue
+            code ++= x.getValue + System.getProperty("line.separator")
           case x =>
             val p = paramNames.next
             params += p -> x
@@ -698,18 +859,54 @@ class SaturnToKronus protected (runGroup: RunGroup)(implicit config: SaturnToKro
   }
 }
 
-object SaturnToKronusTest extends App {
-  import java.io.File
-  val codeGenUtil = SaturnCodeGenUtil.createFromFileName("tests-rfb/features/runGroup.status.saturn").get
-  val backport = Backport()
-  val r = SaturnToKronus(new SaturnToKronus.Config(codeGenUtil, backport, None)).map { k =>
-    val uri = File.createTempFile("dummy", ".kronus").toURI
-    val r = backport.resourceSet.createResource(uri)
-    r.getContents.add(k)
-    r
-  }.head
-  r.save(java.util.Collections.EMPTY_MAP)
-  io.Source.fromFile(java.net.URI.create(r.getURI.toString)).getLines.foreach(println)
+
+import com.ms.qaTools.toolkit
+
+class SaturnToKronusCmdLine extends toolkit.cmdLine.BasicCmdLine {
+  @org.kohsuke.args4j.Option(name = "--target", usage = "Generate code for this Saturn version (default: 4)")
+  val target: String = "4"
+
+  @org.kohsuke.args4j.Argument(usage = "INPUT", index = 0, required = true)
+  val input: String = null
+
+  @org.kohsuke.args4j.Argument(usage = "[OUTPUT]", index = 1)
+  val output: String = null
+}
+
+object SaturnToKronusApp extends toolkit.ToolkitApp[toolkit.Result] {
+  val APP_NAME = "saturn2kronus"
+  val cmdLine = new SaturnToKronusCmdLine
+
+  import com.ms.qaTools.AnyUtil
+
+  exit(scala.util.Try {
+    parseArguments
+
+    val codeGenUtil = SaturnCodeGenUtil.createFromFileName(cmdLine.input). get
+
+    cmdLine.target match {
+      case "4" =>
+        val backport = Backport()
+        SaturnToKronus(new SaturnToKronus.Config(codeGenUtil, backport, None)).map { k =>
+          val out = new java.io.File(Option(cmdLine.output).getOrElse(cmdLine.input.replace("saturn", "kronus")))
+          val uri = out.ensuring(_.getName.matches(".*\\.kronus"), s"$out: Destination files must end with .kronus").toURI
+          backport.resourceSet.createResource(uri).withSideEffect(_.getContents.add(k))
+        }.head.save(java.util.Collections.EMPTY_MAP)
+      case "3" =>
+        val uri = new java.io.File(Option(cmdLine.output).getOrElse(cmdLine.input.replace("saturn", "saturn33"))).toURI
+        import org.eclipse.emf.ecore.resource
+
+        (new resource.impl.ResourceSetImpl).withSideEffect{rs =>
+          rs.getResourceFactoryRegistry.getExtensionToFactoryMap.put(
+            resource.Resource.Factory.Registry.DEFAULT_EXTENSION,
+            new com.ms.qaTools.saturn.util.SaturnResourceFactoryImpl)
+          rs.createResource(uri).withSideEffect{r =>
+            r.getContents.add(SaturnFactory.eINSTANCE.createDocumentRoot.withSideEffect(_.setSaturn(SaturnToKronus33(codeGenUtil))))
+            r.save(null)}}
+      case v => sys.error(s"Unsupported target Saturn version: `$v`")
+    }
+    toolkit.Result(toolkit.Passed)
+  })
 }
 /*
 Copyright 2017 Morgan Stanley

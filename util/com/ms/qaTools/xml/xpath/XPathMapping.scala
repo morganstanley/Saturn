@@ -40,20 +40,17 @@ import javax.xml.namespace.NamespaceContext
  * XPathMappings for extraction
  */
 
-case class XMLStep(private val step: JaxStep)(implicit nsContext: NamespaceContext) extends Step[Node] {
+case class XMLStep(private val step: JaxStep)(implicit nsContext: NamespaceContext) extends Step[TreeNode[Node]] {
   def getText(): String = step.getText()
   def hasPredicates = !step.getPredicates.isEmpty
-  def resolve(context: TreeNode[Node]): Seq[TreeNode[Node]] = 
+  def resolve(context: TreeNode[Node]): Seq[TreeNode[Node]] =
     XPath(getText, context.node).map {x => XmlNode(x)}
 }
 
-case class XMLExprStep(private val expr: Expr)(implicit nsContext: NamespaceContext) extends Step[Node] {
+case class XMLExprStep(private val expr: Expr)(implicit nsContext: NamespaceContext) extends Step[TreeNode[Node]] {
   private val contextSupport = new ContextSupport(nsContext.asInstanceOf[NamespaceContextImpl], new XPathFunctionContext(true), new SimpleVariableContext(), new DocumentNavigator())
 
-  private val dummyDocument = {
-    import scala.language.reflectiveCalls
-    DocumentBuilderTL().newDocument()
-  }
+  private val dummyDocument = DocumentBuilderTL.get().newDocument
 
   def hasPredicates = Option(expr) collect {case p: Predicated => !p.getPredicates.isEmpty} getOrElse false
 
@@ -64,60 +61,34 @@ case class XMLExprStep(private val expr: Expr)(implicit nsContext: NamespaceCont
     expr.evaluate(execContext) match {
       case s: String => Seq(XmlNode(dummyDocument.createTextNode(s)))
       case d: Double => Seq(XmlNode(dummyDocument.createTextNode(d.toString())))
-      case b: Boolean => Seq(XmlNode(dummyDocument.createTextNode(b.toString())))      
+      case b: Boolean => Seq(XmlNode(dummyDocument.createTextNode(b.toString())))
       case l: NodeList => l.map {XmlNode(_)}
       case l: JList[_] => l.asInstanceOf[JList[Node]].map {XmlNode(_)}
     }
   }
 }
 
-case class SimpleXPathMappingNode(step: Step[Node], children: Seq[ColumnMapping[Node]] = Nil, mapping: Option[Index] = None) extends ColumnMapping[Node] {
-  def +(that: ColumnMapping[Node]): ColumnMapping[Node] = {
-    val thatstep = that.step
-    if (step.getText == thatstep.getText) {
-      val zipped = zipWithCondition(children.sortWith(sf), that.children.sortWith(sf))(cf)
-      new SimpleXPathMappingNode(step, zipped.map(mf), mapping.orElse(that.mapping))
-    }
-    else throw new Error("Cannot add two different XPathMappings: '%s' and '%s'".format(step.getText, thatstep.getText))
-  }
-}
-
-case class RootXPathMappingNode(children: Seq[ColumnMapping[Node]] = Nil) extends ColumnMapping[Node] {
-  lazy val step = throw new Error("No step in an empty xpath mapping.") 
-  val mapping: Option[Index] = None
-  def +(that: ColumnMapping[Node]): ColumnMapping[Node] = {
-    that match {
-      case RootXPathMappingNode(c) => {
-        val zipped = zipWithCondition(children.sortWith(sf), c.sortWith(sf))(cf)
-        RootXPathMappingNode(zipped.map(mf))
-      }
-      case _ => throw new Error("Can't add a non-root mapping with a root mapping")
-    }
-  }
-  override def toString = "/ -> None"  
-}
-
 object XPathMappingNode {
-  def apply(domXPath: DOMXPath, index: Index)(implicit nsContext: NamespaceContext): ColumnMapping[Node] = {
+  def apply(domXPath: DOMXPath, index: Index)(implicit nsContext: NamespaceContext): ColumnMapping[TreeNode[Node]] = {
     val rootExpr = domXPath.getRootExpr()
     val paths = locationPathsIn(rootExpr)
     val (commonSteps, branches) = findCommon(paths)
     val (Seq(), leafExpr) = paths2branch(rootExpr)(branches)
 
-    val leave: List[SimpleXPathMappingNode] = leafExpr match {
+    val leave = leafExpr match {
       case e: LocationPath =>
         require(e.getSteps.isEmpty)
         Nil
       case e =>
-        List(SimpleXPathMappingNode(XMLExprStep(e), mapping = Option(index)))
+        List(new ColumnMapping(XMLExprStep(e), Option(index), Nil))
     }
 
     val children = commonSteps.foldRight(leave) { (x, xs) =>
       val m = if (xs.isEmpty) Option(index) else None
-      List(SimpleXPathMappingNode(XMLStep(x), xs, m))
+      List(new ColumnMapping(XMLStep(x), m, xs))
     }
 
-    RootXPathMappingNode(children)
+    ColumnMapping.root(children)
   }
 
   def locationPathsIn(expr: Expr): Seq[LocationPath] = expr match {
@@ -193,13 +164,13 @@ object XPathMappingNode {
 }
 
 object XPathMappingNodeTree {
-  def apply(xPaths: Seq[(String,String)])(implicit nsContext: NamespaceContext): ColumnMapping[Node]= {
-    val root: ColumnMapping[Node] = RootXPathMappingNode()
+  def apply(xPaths: Seq[(String,String)])(implicit nsContext: NamespaceContext): ColumnMapping[TreeNode[Node]]= {
+    val root: ColumnMapping[TreeNode[Node]] = ColumnMapping.root(Nil)
     xPaths.zipWithIndex.foldLeft(root) {
       case (ref, (xpath, i)) =>
         ref + XPathMappingNode(new DOMXPath(xpath._1), new ColumnIndex(i))
     }
-  }  
+  }
 }
 /*
 Copyright 2017 Morgan Stanley

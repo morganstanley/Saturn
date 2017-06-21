@@ -10,19 +10,20 @@ import com.ms.qaTools.saturn.annotations.saturnVerbosity.VerbosityEnum
 object VerbosityAnnotationGenerator {
   def apply(annotation: SaturnVerbosityConfiguration): Try[TryGen] = {
     Try {
-      Option(annotation) map { annotation =>
-        val verbosity = annotation.getVerbosity() match {
+      val verbosity = Option(annotation).fold("") {
+        _.getVerbosity() match {
           case VerbosityEnum.QUIET       => "QUIET()"
           case VerbosityEnum.NORMAL      => "NORMAL()"
           case VerbosityEnum.DEBUG       => "DEBUG()"
           case VerbosityEnum.DEBUGONPASS => "DEBUG_ON_PASS()"
           case VerbosityEnum.DEBUGONFAIL => "DEBUG_ON_FAIL()"
         }
-        TryExpr(verbosity)
-      } getOrElse (TryExpr(""))
+      }
+      TryExpr(verbosity, true)
     }
   }
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

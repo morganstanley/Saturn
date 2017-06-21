@@ -8,44 +8,34 @@ import java.util.{List => JList}
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
+import scala.language.implicitConversions
 import scala.util.Try
+import scala.util.control.NonFatal
 
 import org.apache.http.NameValuePair
 
-import com.ms.qaTools.io.BaseFileIO
-import com.ms.qaTools.io.IO3
 import com.ms.qaTools.io.Writer
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.io.rowSource.ExternalSort
-import com.ms.qaTools.io.rowWriter.file.CsvRowWriter
-import com.ms.qaTools.io.rowWriter.file.ExcelRowWriter
-import com.ms.qaTools.io.rowWriter.file.PsvRowWriter
-import com.ms.qaTools.io.rowWriter.file.TsvRowWriter
+import com.ms.qaTools.io.rowWriter.CsvRowWriter
+import com.ms.qaTools.io.rowWriter.ExcelRowWriter
+import com.ms.qaTools.io.rowWriter.PsvRowWriter
+import com.ms.qaTools.io.rowWriter.TsvRowWriter
 
 import au.com.bytecode.opencsv.CSVWriter
 import javax.mail.internet.{MimeBodyPart => JMimeBodyPart}
 
 package object io {
-  @deprecated type DelimitedRow = Seq[String]
-  type DelimitedIteratorNoColDefs = Iterator[DelimitedRow]
-  type DelimitedIterator = Iterator[DelimitedRow] with ColumnDefinitions
-  type SortedDelimitedIteratorNoColDefs = ExternalSort[DelimitedRow]
-  type SortedDelimitedIterator = ExternalSort[DelimitedRow] with ColumnDefinitions
+  implicit def externalSortToIterator(i: ExternalSort[Seq[String]]): Iterator[Seq[String]] =
+    if (i.isInstanceOf[Iterator[Seq[String]]]) i.asInstanceOf[Iterator[Seq[String]]]
+    else throw new Error("Can't convert from sorted iterator to iterator.")
 
-  implicit def sortedDelimitedIteratorNoColDefsToDelimitedIteratorNoColDefs(i: SortedDelimitedIteratorNoColDefs): DelimitedIteratorNoColDefs =
-    if (i.isInstanceOf[DelimitedIteratorNoColDefs]) i.asInstanceOf[DelimitedIteratorNoColDefs]
-    else throw new Error("Can't convert from sorted delimited iterator no col defs type to delimited iterator type no col defs.")
-
-  implicit def sortedDelimitedIteratorToDelimitedIterator(i: SortedDelimitedIterator): DelimitedIterator =
-    if (i.isInstanceOf[DelimitedIterator]) i.asInstanceOf[DelimitedIterator]
-    else throw new Error("Can't convert from sorted delimited iterator type to delimited iterator type .")
+  implicit def externalSortToIteratorColdef(i: ExternalSort[Seq[String]] with ColumnDefinitions): Iterator[Seq[String]] with ColumnDefinitions =
+    if (i.isInstanceOf[Iterator[Seq[String]] with ColumnDefinitions]) i.asInstanceOf[Iterator[Seq[String]] with ColumnDefinitions]
+    else throw new Error("Can't convert from sorted iterator to iterator (with ColumnDefinitions)")
 
   implicit def writerFromFileName(fileName: String): JWriter = new JFileWriter(fileName)
   implicit def writerFromFile(file: JFile): JWriter = new JFileWriter(file)
-
-  implicit def io3ToI[I](i: IO3[I, _, _]): I = i.input
-  implicit def io3ToO[O](i: IO3[_, O, _]): O = i.output
-  implicit def io3ToD[D](i: IO3[_, _, D]): D = i.diffWriter
 
   def getFileWriter(
     fmt: String,
@@ -87,6 +77,22 @@ package object io {
       for {
         files <- fileIO.files
       } yield asAttachment0(files.toList).reverse
+    }
+  }
+
+  implicit class SqlConnectionOps(protected val self: java.sql.Connection) extends AnyVal {
+    def withTransaction[A](thunk: => A): A = {
+      val autoCommit = self.getAutoCommit
+      self.setAutoCommit(false)
+      try {
+        val x = thunk
+        self.commit()
+        x
+      } catch {
+        case NonFatal(t) =>
+          self.rollback()
+          throw t
+      } finally self.setAutoCommit(autoCommit)
     }
   }
 }

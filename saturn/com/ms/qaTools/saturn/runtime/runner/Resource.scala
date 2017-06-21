@@ -7,7 +7,7 @@ import com.ms.qaTools.io.definition.DataIO
 import com.ms.qaTools.io.definition.ExcelWsIO
 import com.ms.qaTools.io.definition.ExtractorIO
 import com.ms.qaTools.io.definition.FixedWidthIO
-import com.ms.qaTools.io.definition.FIXIO
+import com.ms.qaTools.io.definition.FixIO
 import com.ms.qaTools.io.definition.GeneratorIO
 import com.ms.qaTools.io.definition.GoogleProtoBufIO
 import com.ms.qaTools.io.definition.JsonIO
@@ -24,11 +24,12 @@ import com.ms.qaTools.io.ExcelIO
 import com.ms.qaTools.io.FileIO
 import com.ms.qaTools.io.Input
 import com.ms.qaTools.io.Output
+import com.ms.qaTools.io.QueueIO
 import com.ms.qaTools.io.rowSource.AsTemplateOf
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.io.rowSource.DatabaseConnection
 import com.ms.qaTools.io.rowSource.ExtractRows
-import com.ms.qaTools.io.rowSource.file.FIXRowSource
+import com.ms.qaTools.io.rowSource.file.FixRowSource
 import com.ms.qaTools.io.rowSource.Initializable
 import com.ms.qaTools.io.rowSource.LdapQueryRowSource
 import com.ms.qaTools.io.rowSource.mongodb.MongoDBConnection
@@ -38,7 +39,7 @@ import com.ms.qaTools.io.rowSource.Utils._
 import com.ms.qaTools.io.rowSource.Utils.byteArrayAsString
 import com.ms.qaTools.io.rowSource.Utils.ByteArrayUtil
 import com.ms.qaTools.io.rowSource.Utils.StringSeqIteratorWithColumnDefinitionsUtil
-import com.ms.qaTools.io.rowWriter.file.ByteArrayRowWriter
+import com.ms.qaTools.io.rowWriter.ByteArrayRowWriter
 import com.ms.qaTools.io.StandardIO
 import com.ms.qaTools.io.StringIO
 import com.ms.qaTools.io.{ TCPHandshake, NONE }
@@ -46,6 +47,7 @@ import com.ms.qaTools.io.transports._
 import com.ms.qaTools.ldap.Ldap
 import com.ms.qaTools.MonadSeqUtil
 import com.ms.qaTools.saturn.codeGen.AbstractContext
+import com.ms.qaTools.saturn.dsl.{ MqResource => DslMqResource }
 import com.ms.qaTools.saturn.resources.mongoDbResource.{ AuthentificationEnums => MongoAuthentificationEnums }
 import com.ms.qaTools.TryUtil
 import java.io.File
@@ -92,7 +94,7 @@ abstract class FileDbResource[A <: DatabaseConnection with Initializable] {
       }.getOrElse(connection)
     }
 }
- 
+
 object BinaryFileResource extends AbstractDataIO[ByteArrayIO] {
   def create = ByteArrayIO.apply
 }
@@ -229,7 +231,7 @@ object LdapResource {
     } yield {
       context.appendMetaDataContext("Host", host)
       context.appendMetaDataContext("Domain", domain)
-      Ldap("simple", host, domain, password)
+      new Ldap("simple", host, domain, password)
     }
 }
 
@@ -287,6 +289,18 @@ object MongoDBResource {
     }
 }
 
+object MQResource {
+  def apply(managerTry: Try[String])(context: AbstractContext): Try[DslMqResource] = {
+    for {
+      manager <- managerTry.rethrow("An exception occurred while generating manager name for MQ resource.")
+      session <- Try{QueueIO.session(manager)}.rethrow("An exception occurred while generating Queue session for MQ resource.")
+    } yield {
+      context.appendMetaDataContext("Manager", manager)
+      DslMqResource(manager, session)
+    }
+  }.rethrow("An exception occurred while generating MQ resource.")
+}
+
 object PropertiesFileResource extends AbstractDataIO[PropertiesIO] {
   def create = PropertiesIO.apply
 }
@@ -339,7 +353,7 @@ object XMLFileResource extends AbstractDataIO[XmlIO] {
   def create = XmlIO.apply(_)
 }
 
-object FIXFileResource {
+object FixFileResource {
   def apply(deviceTry: Try[DeviceIO], dataDictionaryDeviceTryOption: Option[Try[DeviceIO]], doValidation: Boolean, separatorTryOption: Option[Try[String]])(context: AbstractContext) = {
     for {
       device <- deviceTry.rethrow("An exception occurred while connecting device resource to FIX resource.")
@@ -352,16 +366,15 @@ object FIXFileResource {
         separatorTry.map(s => s.charAt(0))).getOrElse(Try { '\u0001' })
     } yield {
       /*
-       * This should really return a FIXIO, but the output doesn't need to reparse the FIX message object again
+       * This should really return a FixIO, but the output doesn't need to reparse the FIX message object again
        * Also, passing the dictionary to the output is not easy with the saturn implementation of SOAPIO (we need mapper resource instead)
        */
-      new Input[FIXRowSource] with Output[ByteArrayRowWriter] {
-        override def input = device.reader.map(reader => FIXRowSource(reader, dataDictionary, doValidation, Option(separator)))
-        override def output = Try {
-          new ByteArrayRowWriter(device.outputStream.get) {
-            override def write(source: Iterator[Array[Byte]]) = {
+      new Input[FixRowSource] with Output[ByteArrayRowWriter] {
+        override def input = device.reader.map(reader => FixRowSource(reader, dataDictionary, doValidation, Option(separator)))
+        override def output = device.outputStream.map{os =>
+          new ByteArrayRowWriter(os) {
+            override def write(source: Iterator[Array[Byte]]) =
               super.write(source.map(ab => (ab.replaceAll("\u0001", separator.toString) + sys.props("line.separator")).getBytes))
-            }
           }
         }
       }

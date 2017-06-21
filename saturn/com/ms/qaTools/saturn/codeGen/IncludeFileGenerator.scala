@@ -1,6 +1,7 @@
 package com.ms.qaTools.saturn.codeGen
 
-import scala.collection.JavaConversions.asScalaBuffer
+import scala.collection.JavaConversions._
+import scala.reflect.runtime.universe._
 import scala.util.Try
 
 import com.ms.qaTools.MonadSeqUtil
@@ -10,36 +11,45 @@ import com.ms.qaTools.codeGen.scala.ForAssignment
 import com.ms.qaTools.codeGen.scala.ForTryExpr
 import com.ms.qaTools.codeGen.scala.ScalaExpr
 import com.ms.qaTools.codeGen.scala.ScalaGen
+import com.ms.qaTools.codeGen.scala.TryExpr
 import com.ms.qaTools.codeGen.scala.TryFnExpr
-import com.ms.qaTools.codeGen.scala.TryGen
 import com.ms.qaTools.saturn.{IncludeFile => MIncludeFile}
 import com.ms.qaTools.saturn.{Saturn => MSaturn}
 
 object IncludeFileInstanceGenerator {
   def apply(includeFile:MIncludeFile)(implicit parentCodeGenUtil:SaturnCodeGenUtil):Try[ForAssignment] = {
-    implicit val codeGenUtil:SaturnCodeGenUtil = parentCodeGenUtil.getIncludeFileCodeGenUtil(includeFile)
+    val singleton = includeFile.eContainer.isInstanceOf[MSaturn]
+    val codeGenUtil = parentCodeGenUtil.getIncludeFileCodeGenUtil(includeFile)
     import codeGenUtil.getWrapped
     val includeFileSaturn:MSaturn = codeGenUtil.saturn
-    Try { ForAssignment(includeFile.getName(), ConnectTry(TryFnExpr(includeFileSaturn.getClassName + "()(context)"), includeFileSaturn.getName, false)) }
+    val included = s"${includeFileSaturn.getClassName}(${Literal(Constant(includeFile.getName))}, context)"
+    Try {
+      ForAssignment(includeFile.getName(),
+                    ConnectTry(if (singleton) TryExpr(s"sc.kronusModules.get($included. get)") else TryFnExpr(included),
+                               includeFile.getName,
+                               false))
+    }
   }
 }
 
 object ProcedureMethodGenerator {
-  
+
 }
 
 //procedure call logic...
 //val after = P.P0("B")
-//val procRes = after.map{result => Try{ IterationResult(Passed(), context, iterationMetaData, result.asInstanceOf[Try[IteratorResult[Result]]]) } }
-//procRes 
+//val procRes = after.map{result => Try{ IterationResult(Passed, context, iterationMetaData, result.asInstanceOf[Try[IteratorResult[Result]]]) } }
+//procRes
 
 object IncludeFileClassGenerator {
+  val implicitParams = "(implicit sc: SaturnExecutionContext, ec: ExecutionContext, locale: java.util.Locale)"
+
   def apply(includeFileSaturn:MSaturn)(implicit parentCodeGenUtil:SaturnCodeGenUtil):Try[ScalaGen] = {
     implicit val codeGenUtil:SaturnCodeGenUtil = parentCodeGenUtil.getIncludeFileCodeGenUtil(includeFileSaturn)
     import codeGenUtil.getWrapped
     val preIterationObjects = {includeFileSaturn.getIncludeFiles() ++ includeFileSaturn.getPreIterationObjects}.toSeq
     val preIterationObjectForAssignmentsTry = preIterationObjects.map{o => IterationObjectGenerator(o)(codeGenUtil) }.toTrySeq
-    
+
     val procedures = includeFileSaturn.getRunGroups().filter{_.isProcedure()}
 
     val classGenTry = for {
@@ -49,26 +59,27 @@ object IncludeFileClassGenerator {
       def generate:Try[String] = for {
         parametersStr <- parametersGen.generate()
         proceduresStr <- proceduresGen.generate()
-        classParmStr  <- Try{ (Seq("context: IterationContext") ++ Option(parametersStr).filter(_.nonEmpty)).mkString(", ") }
-      } yield s"""class ${includeFileSaturn.getClassName}($classParmStr)(implicit sc: SaturnExecutionContext) extends java.io.Closeable {
-          implicit val ec = sc.executionContext
-          implicit val locale = java.util.Locale.US
-
-          def close() = context.closeAll
+        classParmStr  <- Try{ (Seq("lexicalContext: " + classOf[IncludeFileContext].getName) ++ Option(parametersStr).filter(_.nonEmpty)).mkString(", ") }
+      } yield s"""class ${includeFileSaturn.getClassName}($classParmStr)$implicitParams extends java.io.Closeable {
+          def close() = lexicalContext.closeAll
 
           $proceduresStr
         }"""
-    }    
-    
+    }
+
     val objectGenTry = for {
-      preIterationObjectForAssignments <- preIterationObjectForAssignmentsTry      
+      preIterationObjectForAssignments <- preIterationObjectForAssignmentsTry
     } yield new ScalaGen() {
-      val parms = preIterationObjectForAssignments.map{_.name}.mkString(", ")
-      val iterContextString = s"""IterationContext("${includeFileSaturn.getName}", Some(context), None)"""      
-      val classParms = (Seq(iterContextString) ++ Option(parms).filter(_.nonEmpty)).mkString(", ")
-      val applyGen = ForTryExpr(preIterationObjectForAssignments, ScalaExpr(s"new ${includeFileSaturn.getClassName}($classParms)"))
+      val applyGen = {
+        val modelUrl = s"getClass.getResource(${Literal(Constant(codeGenUtil.generateResourceAlias(includeFileSaturn)))})"
+        val viewUrl = s"Option(getClass.getResource(${Literal(Constant(codeGenUtil.diagramResource(includeFileSaturn)))}))"
+        val assigns = ForAssignment("context", TryExpr(s"parentContext.includeFile(name, $modelUrl, $viewUrl)")) +: preIterationObjectForAssignments
+        ForTryExpr(assigns, ScalaExpr(s"new ${includeFileSaturn.getClassName}(${assigns.map(_.name).mkString(", ")})"))
+      }
       def generate:Try[String] = applyGen.generate().map{applyStr => s"""object ${includeFileSaturn.getClassName} {
-        def apply()(context: IteratorContext)(implicit sc: SaturnExecutionContext):Try[${includeFileSaturn.getClassName}] = $applyStr
+        def apply(name: String, parentContext: ${classOf[AIteratorContext].getName})$implicitParams: Try[${includeFileSaturn.getClassName}] = {
+          $applyStr
+        }
       }"""}
     }
 
@@ -77,7 +88,8 @@ object IncludeFileClassGenerator {
       objectGen <- objectGenTry
     } yield ConcatGen(Seq(classGen, objectGen), "\n")
   }
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

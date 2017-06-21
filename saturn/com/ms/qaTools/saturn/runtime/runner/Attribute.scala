@@ -1,18 +1,19 @@
 package com.ms.qaTools.saturn.runtime.runner
 import com.fasterxml.jackson.databind.JsonNode
 import com.ms.qaTools.complexValues.getXPathValue
-import com.ms.qaTools.io.definition.FIXIO
+import com.ms.qaTools.io.definition.FixIO
 import com.ms.qaTools.io.definition.JsonIO
 import com.ms.qaTools.io.Input
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
-import com.ms.qaTools.io.rowSource.file.FIXRowSource
-import com.ms.qaTools.io.rowSource.json.JSONPathRowSource
+import com.ms.qaTools.io.rowSource.file.FixRowSource
+import com.ms.qaTools.io.rowSource.JsonPathRowSource
 import com.ms.qaTools.io.rowSource.Utils.ToW3cDocument
 import com.ms.qaTools.IteratorUtil
 import com.ms.qaTools.MonadSeqUtil
 import com.ms.qaTools.saturn.codeGen.ComplexValueGenerator
 import com.ms.qaTools.saturn.codeGen.Context
 import com.ms.qaTools.saturn.codeGen.Utils.connectTry
+import com.ms.qaTools.saturn.runtime.Dml
 import com.ms.qaTools.saturn.runtime.EnvVar
 import com.ms.qaTools.saturn.runtime.File
 import com.ms.qaTools.saturn.runtime.Groovy
@@ -21,6 +22,8 @@ import com.ms.qaTools.saturn.runtime.Shell
 import com.ms.qaTools.saturn.types.{InterpretersEnum => MInterpretersEnum}
 import com.ms.qaTools.TryUtil
 import com.ms.qaTools.xml.NamespaceContextImpl
+import com.ms.qaTools.xml.xpath.FixPath
+import com.ms.qaTools.xml.xpath.XPathAware
 import javax.xml.namespace.QName
 import scala.util.Try
 
@@ -35,7 +38,7 @@ object ComplexValueMap {
 }
 
 object CellValueTry {
-  def apply(context: Context, 
+  def apply(context: Context,
             resourceIOTry: Try[Input[Iterator[Seq[String]] with ColumnDefinitions]],
             indexTry: Try[String],
             columnNameTry: Try[String]): Try[String] = {
@@ -45,7 +48,7 @@ object CellValueTry {
       index <- indexTry.rethrow("An exception occurred while generating cell value index.")
       columnName <- columnNameTry.rethrow("An exception occurred while generating cell value column name.")
       row <- Try { resource(index.toInt) }.rethrow(s"Row $index does not exist in the data set.")
-    } yield resource.getColDefByName(columnName).map { colDef =>
+    } yield resource.colDefs.find(_.name == columnName).map { colDef =>
       Option(row(colDef.index)).getOrElse(ComplexValueGenerator.nullStr)
     }.getOrElse(throw new Exception("No column named or wrong column name specified '%s' inside the value".format(columnName)))
   }.rethrow("An exception occurred while building cell value.")
@@ -78,6 +81,28 @@ object FileValueTry {
   }.rethrow("An exception occurred while building file value.")
 }
 
+object FixPathValueTry {
+  def apply(context: Context,
+            resourceIOTry: Try[Input[FixRowSource]],
+            rowTry: Try[String],
+            fixPathTry: Try[String],
+            messageTypeTry: Try[String],
+            returnType: QName): Try[String] = {
+    for {
+      resourceIO <- resourceIOTry.rethrow("An exception occurred while connecting fixPath value resource IO.")
+      fixRowSource <- connectTry(context, resourceIO.input, "FixPathValueResource", false).rethrow("An exception occurred while connecting fixPath value resource.")
+      row <- rowTry.rethrow("An exception occurred while generating xPath value row.")
+      fixPathStr <- fixPathTry.rethrow("An exception occurred while generating fixPath value fixPath.")
+      messageType <- messageTypeTry.rethrow("An exception occurred while generating fixPath value message type.")
+    } yield {
+      val fixXmlRowSource = fixRowSource.toDocumentIterator
+      val fixPath = new FixPath(fixPathStr)(fixRowSource.dataDictionary) with XPathAware
+      val xPath = fixPath asXPath (messageType)
+      getXPathValue(fixXmlRowSource, NamespaceContextImpl(), xPath.toString, row.toInt, true, returnType)
+    }
+  }.rethrow("An exception occurred while building fixPath value.")
+}
+
 object JSONValueTry {
   def apply(context: Context,
             resourceIOTry: Try[Input[Iterator[JsonNode]]],
@@ -89,7 +114,7 @@ object JSONValueTry {
       row <- rowTry.rethrow("An exception occurred while generating JSON value row.")
       jsonPath <- jsonPathTry.rethrow("An exception occurred while generating JSON value jsonPath.")
     } yield {
-      val jsonPathRs = JSONPathRowSource(Seq((jsonPath, "")), resource)
+      val jsonPathRs = JsonPathRowSource(resource, Seq((jsonPath, "")))
       jsonPathRs.asDelimitedRowIterator(row.toInt).ensuring(_.size == 1).head
     }
   }.rethrow("An exception occurred while building JSON value.")
@@ -104,7 +129,7 @@ object PropertyValueTry {
       resource <- connectTry(context, resourceIO.input, "PropertyValueResource", false).rethrow("An exception occurred while connecting property value resource.")
       propertyName <- propertyTry.rethrow("An exception occurred while generating property name.")
       properties <- Try { resource.next }.rethrow("An exception occurred while getting properties from resource.")
-    } yield resource.getColDefByName(propertyName).map { colDef =>
+    } yield resource.colDefs.find(_.name == propertyName).map { colDef =>
       properties(colDef.index)
     }.getOrElse(throw new Exception("No property named '%s'".format(propertyName)))
   }.rethrow("An exception occurred while building property value.")
@@ -142,11 +167,7 @@ object CodeValueTry {
     for {
       code <- codeTry.rethrow("An exception occurred while generating code value code string.")
     } yield interpreterType match {
-      case MInterpretersEnum.DML    => {
-        val c = Class.forName("com.ms.qaTools.saturn.runtime.Dml")
-        c.getMethod("apply", classOf[String]).invoke(c.getConstructor().newInstance(), code).asInstanceOf[String]
-        // FIXME Dml(code)
-      }
+      case MInterpretersEnum.DML    => Dml(code)
       case MInterpretersEnum.GROOVY => Groovy(code)
       case MInterpretersEnum.SHELL  => Shell(code)
       case MInterpretersEnum.PERL   => throw new Exception("Scala code complex value should not be handled here.")

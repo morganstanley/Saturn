@@ -983,46 +983,20 @@ public class SaturnPackageImpl extends EPackageImpl implements SaturnPackage
   }
 
   /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAbstractRunGroup_AlmId()
+  {
+    return (EReference)abstractRunGroupEClass.getEStructuralFeatures().get(9);
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
    */
   public EAttribute getAbstractRunGroup_CanMultiplex()
-  {
-    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(18);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * @generated
-   */
-  public EAttribute getAbstractRunGroup_DefaultStatus()
-  {
-    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(15);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * @generated
-   */
-  public EAttribute getAbstractRunGroup_Enabled()
-  {
-    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(11);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * @generated
-   */
-  public EAttribute getAbstractRunGroup_Id()
-  {
-    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(10);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * @generated
-   */
-  public EAttribute getAbstractRunGroup_MaxSimultaneousIterations()
   {
     return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(19);
   }
@@ -1031,25 +1005,7 @@ public class SaturnPackageImpl extends EPackageImpl implements SaturnPackage
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getAbstractRunGroup_Name()
-  {
-    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(9);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * @generated
-   */
-  public EAttribute getAbstractRunGroup_Procedure()
-  {
-    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(17);
-  }
-
-  /**
-   * <!-- begin-user-doc --> <!-- end-user-doc -->
-   * @generated
-   */
-  public EAttribute getAbstractRunGroup_StatusCondition()
+  public EAttribute getAbstractRunGroup_DefaultStatus()
   {
     return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(16);
   }
@@ -1058,9 +1014,63 @@ public class SaturnPackageImpl extends EPackageImpl implements SaturnPackage
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
    */
+  public EAttribute getAbstractRunGroup_Enabled()
+  {
+    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(12);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getAbstractRunGroup_Id()
+  {
+    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(11);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getAbstractRunGroup_MaxSimultaneousIterations()
+  {
+    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(20);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getAbstractRunGroup_Name()
+  {
+    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(10);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getAbstractRunGroup_Procedure()
+  {
+    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(18);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getAbstractRunGroup_StatusCondition()
+  {
+    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(17);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   * @generated
+   */
   public EAttribute getAbstractRunGroup_WaitAfter()
   {
-    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(14);
+    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(15);
   }
 
   /**
@@ -1069,7 +1079,7 @@ public class SaturnPackageImpl extends EPackageImpl implements SaturnPackage
    */
   public EAttribute getAbstractRunGroup_WaitBefore()
   {
-    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(13);
+    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(14);
   }
 
   /**
@@ -1078,7 +1088,7 @@ public class SaturnPackageImpl extends EPackageImpl implements SaturnPackage
    */
   public EAttribute getAbstractRunGroup_WarnOnFailure()
   {
-    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(12);
+    return (EAttribute)abstractRunGroupEClass.getEStructuralFeatures().get(13);
   }
 
   /**
@@ -2201,6 +2211,7 @@ public class SaturnPackageImpl extends EPackageImpl implements SaturnPackage
     createEReference(abstractRunGroupEClass, ABSTRACT_RUN_GROUP__MODIFIERS);
     createEReference(abstractRunGroupEClass, ABSTRACT_RUN_GROUP__PARAMETERS);
     createEReference(abstractRunGroupEClass, ABSTRACT_RUN_GROUP__INCLUDE_FILES);
+    createEReference(abstractRunGroupEClass, ABSTRACT_RUN_GROUP__ALM_ID);
     createEAttribute(abstractRunGroupEClass, ABSTRACT_RUN_GROUP__NAME);
     createEAttribute(abstractRunGroupEClass, ABSTRACT_RUN_GROUP__ID);
     createEAttribute(abstractRunGroupEClass, ABSTRACT_RUN_GROUP__ENABLED);
@@ -2519,6 +2530,7 @@ public class SaturnPackageImpl extends EPackageImpl implements SaturnPackage
     initEReference(getAbstractRunGroup_Modifiers(), theTypesPackage.getAbstractRunGroupModifier(), null, "modifiers", null, 0, -1, AbstractRunGroup.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getAbstractRunGroup_Parameters(), this.getAbstractParameter(), null, "parameters", null, 0, -1, AbstractRunGroup.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getAbstractRunGroup_IncludeFiles(), this.getIncludeFile(), null, "includeFiles", null, 0, -1, AbstractRunGroup.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getAbstractRunGroup_AlmId(), theTypesPackage.getAlmId(), null, "almId", null, 0, 1, AbstractRunGroup.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getAbstractRunGroup_Name(), theXMLTypePackage.getString(), "name", null, 0, 1, AbstractRunGroup.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getAbstractRunGroup_Id(), theXMLTypePackage.getString(), "id", null, 0, 1, AbstractRunGroup.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getAbstractRunGroup_Enabled(), theXMLTypePackage.getBoolean(), "enabled", "true", 0, 1, AbstractRunGroup.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -2927,6 +2939,15 @@ public class SaturnPackageImpl extends EPackageImpl implements SaturnPackage
        {
        "kind", "element",
        "name", "IncludeFiles",
+       "namespace", "##targetNamespace"
+       });	
+    addAnnotation
+      (getAbstractRunGroup_AlmId(), 
+       source, 
+       new String[] 
+       {
+       "kind", "element",
+       "name", "AlmId",
        "namespace", "##targetNamespace"
        });	
     addAnnotation

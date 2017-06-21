@@ -5,22 +5,19 @@ import java.io.{InputStream => JInputStream}
 import java.io.{SequenceInputStream => JSequenceInputStream}
 
 import org.apache.commons.io.input.NullInputStream
+import scala.language.implicitConversions
 
-
-
-class Directory(dir:JFile) {
-  def listFilesExt(ext:String):Seq[JFile] = {
+class Directory(dir: JFile) {
+  def listFilesExt(ext: String): Seq[JFile] = {
     val extRegExp = (".*."+ext).r
-    dir.listFiles().filter{file =>
-                             val fileName = file.getName()
-                             val in = fileName match {
-                               case extRegExp() => true
-                               case _          => false
-                             }
-                             in
-                           }
+    dir.listFiles().filter{
+      _.getName() match {
+        case extRegExp() => true
+        case _           => false
+      }
+    }
   }
-  
+
   def catFiles:JInputStream = catFiles(dir.listFiles)
   def catFilesExt(ext:String) = catFiles(listFilesExt(ext))
   def catFiles(files:Seq[JFile]):JInputStream = files.foldLeft[JInputStream](new NullInputStream(0)){(a,b) => new JSequenceInputStream(a,new JFileInputStream(b))}
@@ -28,7 +25,7 @@ class Directory(dir:JFile) {
 
 object Directory {
   implicit def jFileToDirectory(file:JFile):Directory = new Directory(file)
-  
+
   def apply(dirName:String) = new JFile(dirName)
 }
 /*

@@ -1,5 +1,7 @@
 package com.ms.qaTools.compare.writer
 
+import scala.collection.immutable.SortedMap
+
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.io.rowSource.Utils._
 
@@ -16,9 +18,13 @@ object RightPage extends Page
 
 object PageNames {
   val order = List(SummaryPage, NotesPage, DifferencesPage, ExplainedPage, InLeftOnlyPage, InRightOnlyPage, IdenticalPage, LeftPage, RightPage)
-  implicit def ordering :Ordering[Page] = Ordering.by(order.indexOf(_))
 
-  def apply(): Map[Page, String] = collection.immutable.TreeMap(
+  implicit def ordering: Ordering[Page] = {
+    val ordMap = order.zipWithIndex.toMap // `ordering.compare` is hot, cannot afford slow implementation like `indexOf`
+    Ordering.by(ordMap)
+  }
+
+  def apply(): Map[Page, String] = SortedMap(
     SummaryPage -> "summary",
     NotesPage -> "notes",
     DifferencesPage -> "differences",
@@ -28,6 +34,8 @@ object PageNames {
     IdenticalPage -> "identical",
     LeftPage -> "left",
     RightPage -> "right")
+
+  def nWay: Map[Page, String] = apply().filterKeys(Set(SummaryPage, IdenticalPage, DifferencesPage, ExplainedPage))
 }
 
 case class PageConfig(names: Map[Page, String] = PageNames(), omitted: Seq[Page] = Nil)
@@ -37,7 +45,7 @@ object PageConfig {
     val name2page = PageNames().map(_.swap).toMap
     (PageConfig() /: data.toRowMaps) {
       case (PageConfig(names, omitted), r) =>
-        val p = name2page(r("PAGE").get)
+        val p = name2page(r("PAGE").getOrElse(sys.error(s"PAGE not found in `$r`")))
         val n = r.get("NAME").flatten.map(p -> _)
         val o = r.get("OMITTED").flatten.map(_.toBoolean).getOrElse(false)
         val ns = n match {

@@ -1,59 +1,43 @@
 package com.ms.qaTools.tree.mappers
 
 import com.ms.qaTools.tree.TreeNode
-import com.ms.qaTools.tree.XmlNode
 import com.ms.qaTools.tree.validator.XPathNodeLookup
-import org.w3c.dom.{ Node, Element }
-import com.ms.qaTools.conversions.XmlToTreeNodeConversions._
+import com.ms.qaTools.tree.XmlNode
+import com.ms.qaTools.xml.nodeList2List
 import org.w3c.dom.Attr
-
-
+import org.w3c.dom.{ Node, Element }
 
 case class XmlNodeReplaceMapper(
   search: String,
   replace: String,
   isCDATA: Boolean = false)
-  extends XmlNodeMapper {
-  override def apply(optionNode: Option[XmlNode]): Option[XmlNode] = {
-    optionNode match {
-      case None => optionNode
-      case Some(node) => {
-        val ownerDocument = node.node.getOwnerDocument
-        val retrievedNodes = {
-          val xPathLookup = XPathNodeLookup(search)(node.nsContext)
-          xPathLookup.getNodes(node)
-        }
-
-        retrievedNodes.foreach(n => {
-          val value = {
-            val xPathLookup = XPathNodeLookup(replace)(node.nsContext)
-            xPathLookup.getValue(n)
-          }
-
-          n.node match {
-            case a: Attr => a.setValue(value)
-            case _ => {
-              if (isCDATA) {
-                // Remove text content or CDATA section
-                val childNodeList = n.node.getChildNodes()
-
-                (0 until childNodeList.getLength).foldLeft(Seq[Node]())((nodesToRemove, index) => {
-                  val child = childNodeList.item(index)
-                  if (child.getNodeType() == Node.TEXT_NODE ||
-                    child.getNodeType() == Node.CDATA_SECTION_NODE) nodesToRemove :+ child
-                  else nodesToRemove
-                }).foreach(childNode => n.node.removeChild(childNode))
-
-                val cdata = ownerDocument.createCDATASection(value)
-                n.node.appendChild(cdata)
-              } else n.node.setTextContent(value)
-            }
-          }
-        })
-
-        Option(node)
+extends XmlNodeMapper {
+  def apply(optionNode: Option[XmlNode]): Option[XmlNode] = optionNode match {
+    case None => optionNode
+    case Some(node) =>
+      val ownerDocument = node.node.getOwnerDocument
+      val retrievedNodes = {
+        val xPathLookup = XPathNodeLookup(search)(node.nsContext)
+        xPathLookup.getNodes(node)
       }
-    }
+
+      retrievedNodes.foreach{n =>
+        val value = XPathNodeLookup(replace)(node.nsContext).getValue(n)
+        n.node match {
+          case a: Attr => a.setValue(value)
+          case _ =>
+            if (isCDATA) {
+              // Remove text content or CDATA section
+              n.node.getChildNodes.foldLeft(Seq[Node]())((nodesToRemove, child) =>
+                if (child.getNodeType == Node.TEXT_NODE || child.getNodeType == Node.CDATA_SECTION_NODE)
+                  nodesToRemove :+ child
+                else nodesToRemove
+              ).foreach(childNode => n.node.removeChild(childNode))
+              n.node.appendChild(ownerDocument.createCDATASection(value))
+            } else n.node.setTextContent(value)
+        }
+      }
+      Option(node)
   }
 }
 /*

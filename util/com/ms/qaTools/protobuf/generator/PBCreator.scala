@@ -1,30 +1,24 @@
 package com.ms.qaTools.protobuf.generator
 
-import com.ms.qaTools.tree.generator.ColMap
-import com.ms.qaTools.tree.generator.NodeCreator
-import com.ms.qaTools.tree.generator.ColContext
-import com.ms.qaTools.tree.generator.Lookupable
+import com.google.protobuf.Descriptors.Descriptor
+import com.google.protobuf.DynamicMessage
+import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.Message
 import com.google.protobuf.Message.Builder
-import com.google.protobuf.DynamicMessage
-import com.google.protobuf.Descriptors.Descriptor
-import com.google.protobuf.ExtensionRegistry
+import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.protobuf.DescriptorBuilder
+import com.ms.qaTools.tree.generator.ColContext
+import com.ms.qaTools.tree.generator.ColMap
+import com.ms.qaTools.tree.generator.Lookupable
+import com.ms.qaTools.tree.generator.NodeCreator
 import com.ms.qaTools.tree.generator.UnresolvedColQuery
-import com.ms.qaTools.io.DelimitedRow
-import com.ms.qaTools.io.DelimitedIterator
-
-
 
 case class PBCreator(descriptor: Descriptor, creator: PBMessageCreator) extends NodeCreator[Builder, Message] {
-
-  override val isLocal: Boolean = true
+  val isLocal = true
   protected val builder: Builder = DynamicMessage.getDefaultInstance(descriptor).toBuilder()
 
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, builder: Builder = builder): Message = {
-    val msgBuilder = creator.create(data)
-    msgBuilder.build()
-  }
+  def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, builder: Builder = builder): Message =
+    creator.create(data).build()
 
   def extractColQueries: Set[UnresolvedColQuery] = creator.extractColQueries.flatMap { _.hierarchy }
 
@@ -32,19 +26,16 @@ case class PBCreator(descriptor: Descriptor, creator: PBMessageCreator) extends 
 }
 
 object PBCreator {
-  def apply(descriptor: Descriptor, template: DynamicMessage)(implicit extensionRegistry: ExtensionRegistry): PBCreator = {
+  def apply(descriptor: Descriptor, template: DynamicMessage)(implicit extensionRegistry: ExtensionRegistry): PBCreator =
     new PBCreator(descriptor, PBNodeCreator(template, descriptor))
-  }
 }
 
 object ProtoBufCreator {
-  def apply(descriptor: Descriptor, template: DynamicMessage, rowSource: DelimitedIterator)(implicit extensionRegistry: ExtensionRegistry): Message = {
+  def apply(descriptor: Descriptor, template: DynamicMessage, rowSource: Iterator[Seq[String]] with ColumnDefinitions)(implicit extensionRegistry: ExtensionRegistry): Message = {
     val creator = PBCreator(descriptor, template)
     implicit val colContext = ColContext(creator.extractColQueries)
-    implicit val colMap = ColMap(rowSource.colNames)
-
-    val data = rowSource.next
-    creator.create(data)
+    implicit val colMap = ColMap(rowSource.colDefs.map(_.name))
+    creator.create(rowSource.next)
   }
 }
 /*

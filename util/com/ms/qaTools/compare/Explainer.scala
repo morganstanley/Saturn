@@ -1,17 +1,17 @@
 package com.ms.qaTools.compare
+
 import com.ms.qaTools.interpreter.ScalaInterpreter
 import com.ms.qaTools.io.rowSource.ColumnDefinition
-import com.ms.qaTools.io.rowSource.NumericColumnDefinition
-import com.ms.qaTools.toolkit.Result
+import com.ms.qaTools.io.rowSource.NumericColumnType
 
-trait Explainable {
-  val explanation: Option[String]
+trait Explainable[+This <: Explainable[This]] extends Any {
+  def explanation: Option[String]
   def isExplained = explanation.isDefined
-  def explain(explanation: String): Explainable
+  def explain(explanation: String): This
 }
 
 trait Explainer[E <: AbstractDiff] extends PartialFunction[E, E] {
-  val explain: E => E
+  def explain: E => E
   val contextObject: ExplainerContextObject = new ExplainerContextObject
 
   def apply(x: E) = explain(x)
@@ -23,41 +23,39 @@ trait Explainer[E <: AbstractDiff] extends PartialFunction[E, E] {
 
 case class CodedExplainer[E <: AbstractDiff](explain: E => E) extends Explainer[E]
 
-case object IdentityExplainer extends Explainer[AbstractDiff]{val explain = identity[AbstractDiff] _}
+case class IdentityExplainer[A <: AbstractDiff]() extends Explainer[A]{val explain = identity[A] _}
 
 case class StringExplainer[E <: AbstractDiff](code: String, debug: Boolean = false, imports: Iterable[String] = Nil) extends Explainer[E] {
-  lazy val explain = {
-    val baseImports = Seq("io.rowSource._", "compare._", "tree.validator._", "io._").map("com.ms.qaTools." + _)
-    ScalaInterpreter(debug, imports ++ baseImports).run(s"(expl: Explainable) => {$code}") match {
-      case r: Result if r.failed => throw new Error("Could not interpret explainer: " +
-          Seq(r.errorMessage, r.exception.map(_.getMessage)).flatten.mkString(", "))
-      case r: Result if r.passed => r.resultObj match {
-        case Some(e: Function1[E, E]) => e
-        case Some(_) => throw new Error("Scala explainer code didn't return an object which takes an Explainable and returns an Explainable.")
-        case None => throw new Error("Scala interpreter didn't return a result object.")
-      }
+  @transient private[this] var _explain: E => E = null
+  explain
+
+  def explain = {
+    if (_explain == null) _explain = {
+      val baseImports = Seq("io.rowSource._", "compare._", "tree.validator._", "io._").map("com.ms.qaTools." + _)
+      ScalaInterpreter(debug, imports ++ baseImports).eval[E => E](s"(expl: AbstractDiff) => {$code}")
     }
+    _explain
   }
 }
 
-class ExplainerContextObject {
+class ExplainerContextObject extends Serializable {
   var value: Any = null
 }
 
-class NumericThresholdExplainer(columns: Either[Seq[(Int, Double)], Seq[(String, Double)]]) extends Explainer[AbstractDiff] {
+class NumericThresholdExplainer(columns: Either[Seq[(Int, Double)], Seq[(String, Double)]]) extends Explainer[Diff[Seq[String]]] {
   def inThreshold[T <: Either[Int, String]](id: ColumnDefinition => T, errStr: String, lookup: T)(d: DelimitedDifferent, threshold: Double) =
-    d.compareColDefs.find(id(_) == lookup) match {
-      case Some(NumericColumnDefinition(c: CompareColDef)) => {
-        val l = d.left(c.leftIndex).toDouble
-        val r = d.right(c.rightIndex).toDouble
-        if (math.abs(l - r) <= threshold) Some(id(c) -> ("Numeric column within threshold: " + threshold))
+    d.compareColDefs.find(c => id(c.left) == lookup) match {
+      case Some(c) if c.left.colType.isInstanceOf[NumericColumnType] => {
+        val l = d.left(c.left.index).toDouble
+        val r = d.right(c.right.index).toDouble
+        if (math.abs(l - r) <= threshold) Some(id(c.left) -> ("Numeric column within threshold: " + threshold))
         else None
       }
       case None => None
       case _    => throw new Error(errStr.format(lookup.merge) + ": not numeric")
     }
 
-  val explain: AbstractDiff => AbstractDiff = {
+  val explain: Diff[Seq[String]] => Diff[Seq[String]] = {
     case d: DelimitedDifferent => {
       (columns match {
         case Left(columns) => columns.toList.flatMap {
@@ -68,8 +66,8 @@ class NumericThresholdExplainer(columns: Either[Seq[(Int, Double)], Seq[(String,
           case (name, threshold) =>
             inThreshold(c => Right(c.name), "Column %s", Right(name))(d, threshold)}
       }) match {
-        case c @ ((Right(_), _) :: _) => d.explainColumnsByName(c.map{case (Right(r), s) => (r, s)}: _*)
-        case c @ ((Left(_), _) :: _)  => d.explainColumnsByIdx(c.map{case (Left(i), s) => (i, s)}: _*)
+        case c @ ((Right(_), _) :: _) => d.explainColumnsByName(c.collect{case (Right(r), s) => (r, s)}: _*)
+        case c @ ((Left(_), _) :: _)  => d.explainColumnsByIdx(c.collect{case (Left(i), s) => (i, s)}: _*)
         case Nil                      => d
       }
     }

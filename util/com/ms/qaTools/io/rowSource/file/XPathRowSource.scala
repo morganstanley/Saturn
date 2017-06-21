@@ -2,26 +2,29 @@ package com.ms.qaTools.io.rowSource.file
 
 import org.w3c.dom.Document
 import org.w3c.dom.Node
+
 import com.ms.qaTools.io.rowSource.PathRowSource
+import com.ms.qaTools.tree.TreeNode
 import com.ms.qaTools.tree.XmlNode
 import com.ms.qaTools.tree.extraction.ColumnMapping
 import com.ms.qaTools.tree.extraction.DetachStrategy
 import com.ms.qaTools.xml.xpath.XPathMappingNodeTree
+
 import javax.xml.namespace.NamespaceContext
 
 class XPathRowSource(
-  val mappingNode: ColumnMapping[Node], 
+  val mappingNode: ColumnMapping[TreeNode[Node]],
   val rowSource: Iterator[Document], 
   val pathMappings: Seq[(String, String)],
-  val detachNodes: DetachStrategy[Node])
-  (implicit val nsContext: NamespaceContext) extends PathRowSource[Node,Document] {
+  val detachNodes: DetachStrategy[TreeNode[Node]])
+  (implicit val nsContext: NamespaceContext) extends PathRowSource[TreeNode[Node], Document] {
   val nodeCreator: Node => XmlNode = {case n: Node => XmlNode(n)}
 }
 
 object XPathRowSource {
   def apply(xPathMappings: Seq[(String, String)],
             xmlRowSource: Iterator[Document],
-            detachNodes: DetachStrategy[Node] = DetachStrategy.default)
+            detachNodes: DetachStrategy[TreeNode[Node]] = DetachStrategy.default)
            (implicit nsContext: NamespaceContext): XPathRowSource =
     new XPathRowSource(XPathMappingNodeTree(xPathMappings), xmlRowSource, xPathMappings, detachNodes)
 
@@ -30,7 +33,7 @@ object XPathRowSource {
             xmlRowSource: Iterator[Document],
             detachNodes: Boolean)
            (implicit nsContext: NamespaceContext): XPathRowSource =
-    apply(xPathMappings, xmlRowSource, DetachStrategy.fromBool[Node](detachNodes))
+    apply(xPathMappings, xmlRowSource, DetachStrategy.fromBool[TreeNode[Node]](detachNodes))
 }
 /*
 Copyright 2017 Morgan Stanley

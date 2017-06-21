@@ -1,34 +1,37 @@
 package com.ms.qaTools.json
+
 import com.fasterxml.jackson.databind.JsonNode
+import com.ms.qaTools.Validator
 import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.IndexedRepresentation
-import com.ms.qaTools.io.rowSource.json.JSONPathRowSource
-import com.ms.qaTools.tree.JSONNode
-import com.ms.qaTools.tree.TreeNode
+import com.ms.qaTools.io.rowSource.JsonPathRowSource
+import com.ms.qaTools.tree
 import com.ms.qaTools.tree.validator.Comparator
 import com.ms.qaTools.tree.validator.ComparatorWithKeys
 import com.ms.qaTools.tree.validator.IndexedDiffSet
-import com.ms.qaTools.Validator
 
 case class JsonValidateComparator(comparator: Comparator[JsonNode] = new Comparator(), keys: Seq[String] = Nil)
-extends ComparatorWithKeys[JsonNode]
+  extends ComparatorWithKeys[JsonNode]
 
 case class JsonValidator(expected: Iterator[JsonNode], actual: Iterator[JsonNode])
-extends Validator[JsonNode, JsonNode](expected, actual, JsonValidateComparator()) {
-  def pathRowSourceBuilder(x: Seq[(String, String)], y: Iterator[JsonNode]) =
-    JSONPathRowSource.apply(x, y)
-
-  def toSeqString(r: IndexedRepresentation[JsonNode]) = r.representation.toString() :: r.indexed.toList
-
-  def fromSeqString(r: Seq[String]) = new IndexedRepresentation[JsonNode] {
-    val representation: JsonNode = r(0)
-    def colDefs = ColumnDefinition.fromColumnNames(keys)
-    val indexed = r.tail
+  extends Validator[JsonNode, JsonNode](expected, actual, JsonValidateComparator()) {
+  protected def asPathRowSource(i: Iterator[JsonNode]) = JsonPathRowSource(i, keysAsCols).asIndexedRepresentationIterator()
+  protected val fromSeqString = (r: Seq[String]) =>
+    new IndexedRepresentation[JsonNode] {
+      val indexed = r.tail
+      val colDefs = ColumnDefinition.fromColumnNames(keys)
+      val representation: JsonNode = r(0)
+      def prettyPrint = representation.toString
+    }
+  protected val toSeqString = (r: IndexedRepresentation[JsonNode]) => r.representation.toString() :: r.indexed.toList
+  val self = new IndexedDiffSet[JsonNode, JsonNode] {
+    val Seq(left, right) = for (i <- Seq(expected, actual)) yield sort(asPathRowSource(i), fromSeqString, toSeqString)
+    def inflate(r: JsonNode) = Some(tree.JsonNode(r))
+    def inflateLeft(r: JsonNode) = inflate(r)
+    def inflateRight(r: JsonNode) = inflate(r)
+    def comparator = validator.comparator
   }
-
-  def toNode(x: JsonNode) = JSONNode(x)
-}
-/*
+}/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

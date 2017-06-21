@@ -6,7 +6,6 @@ import java.lang.reflect.Method
 import java.net.URL
 
 import scala.collection.mutable
-import scala.runtime.AbstractFunction2
 
 import org.apache.ivy.core.module.descriptor.{ModuleDescriptor, DefaultModuleDescriptor}
 import org.apache.ivy.core.module.descriptor.Configuration
@@ -23,14 +22,15 @@ import com.ms.qaTools.kronus.repository._
 
 case class UserIvyConfig(userIvy: URL, configurationInheritance: Map[String, Seq[String]])
 
-object CreateModuleDescriptor extends AbstractFunction2[Config, Option[UserIvyConfig], ModuleDescriptor] {
+object CreateModuleDescriptor {
   val saturnVersionProp = "qaTools.saturn.version"
   val scalaVersionProp = "scala.version"
   val saturnCompileMasterConf = "saturn-compile"
-  val saturnCompileDepConf = "runtime"
+  val defaultSaturnCompileDepConf = "runtime"
 
-  def apply(config: Config, userIvyConf: Option[UserIvyConfig]) = {
-    val repoMD = repoModuleDescriptor(config)
+  def apply(config: Config, userIvyConf: Option[UserIvyConfig],
+            saturnCompileDepConf: String = defaultSaturnCompileDepConf) = {
+    val repoMD = repoModuleDescriptor(config, saturnCompileDepConf)
     userIvyConf.fold(repoMD) {
       case UserIvyConfig(userIvy, confInherit) =>
         val userMD = parse(userIvy).asInstanceOf[DefaultModuleDescriptor]
@@ -42,13 +42,16 @@ object CreateModuleDescriptor extends AbstractFunction2[Config, Option[UserIvyCo
           conf <- repoMD.getConfigurationsNames
           artifact <- repoMD.getArtifacts(conf)
         } userMD.addArtifact(conf, artifact)
-        repoMD.getDependencies.foreach(userMD.addDependency)
+        ; {
+          val userDeps = userMD.getDependencies.map(_.getDependencyId).toSet
+          repoMD.getDependencies.foreach(d => if (!userDeps(d.getDependencyId)) userMD.addDependency(d))
+        }
         userMD.check()
         newProxyInstance[ModuleDescriptor](new ModuleDescriptorInvocationHandler(userMD))
     }
   }
 
-  def repoModuleDescriptor(config: Config): ModuleDescriptor = {
+  def repoModuleDescriptor(config: Config, saturnCompileDepConf: String): ModuleDescriptor = {
     val mrid = moduleRevisionId(config.publishInfo)
     val md = new DefaultModuleDescriptor(mrid, "release", null)
     val deps = mutable.LinkedHashMap.empty[ModuleRevisionId, DefaultDependencyDescriptor]
@@ -64,7 +67,9 @@ object CreateModuleDescriptor extends AbstractFunction2[Config, Option[UserIvyCo
     addDep("ossjava", "scala", s"$${$scalaVersionProp}", Seq("scala-compile" -> "*"))
     addDep("qaTools", "saturn", s"$${$saturnVersionProp}", Seq(saturnCompileMasterConf -> saturnCompileDepConf))
     config.components.foreach { comp =>
-      md.addConfiguration(newConf(comp.name, Configuration.Visibility.PUBLIC, Array(saturnCompileMasterConf)))
+      md.addConfiguration(newConf(comp.name,
+                                  if (comp.`private`) Configuration.Visibility.PRIVATE else Configuration.Visibility.PUBLIC,
+                                  Array(saturnCompileMasterConf)))
       md.addConfiguration(newConf("build-" + comp.name, Configuration.Visibility.PRIVATE, Array(comp.name)))
       if (comp.sources.nonEmpty) {
         val artifact = new MDArtifact(md, artifactName(config, comp), "jar", "jar")
@@ -110,9 +115,12 @@ object CreateModuleDescriptor extends AbstractFunction2[Config, Option[UserIvyCo
     protected val cache = mutable.HashMap.empty[(Option[String], Option[String], Option[String]), Release]
 
     def search(release: Release): Release = {
-      import scala.math.Ordering.Implicits._
       val key = (Some(release.group), Some(release.artifact), Some(release.version).filterNot(_ == "*"))
-      cache.getOrElseUpdate(key, (client.search _).tupled(key).maxBy(_.version.split('.').toSeq.map(_.toInt)))
+      cache.getOrElseUpdate(key, {
+        val rs = (client.search _).tupled(key)
+        if (rs.isEmpty) throw new NoSuchElementException(release.toString)
+        rs.max
+      })
     }
   }
 
@@ -123,7 +131,7 @@ object CreateModuleDescriptor extends AbstractFunction2[Config, Option[UserIvyCo
         XmlModuleDescriptorWriter.write(self, ivyFile)
         null
       case _ =>
-        method.invoke(self, args)
+        method.invoke(self, args: _*)
     }
   }
 }

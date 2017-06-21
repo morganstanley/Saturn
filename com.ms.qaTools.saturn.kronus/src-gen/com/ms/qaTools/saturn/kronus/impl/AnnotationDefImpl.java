@@ -31,7 +31,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *
  * @generated
  */
-public class AnnotationDefImpl extends AbstractDefImpl implements AnnotationDef
+public class AnnotationDefImpl extends NamedRuntimeDefImpl implements AnnotationDef
 {
   /**
    * The cached value of the '{@link #getParameterDefs() <em>Parameter Defs</em>}' containment reference list.

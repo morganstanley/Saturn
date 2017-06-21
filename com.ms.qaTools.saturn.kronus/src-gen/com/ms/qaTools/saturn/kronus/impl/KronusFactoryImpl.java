@@ -66,21 +66,31 @@ public class KronusFactoryImpl extends EFactoryImpl implements KronusFactory
     {
       case KronusPackage.TOP_LEVEL_KRONUS: return createTopLevelKronus();
       case KronusPackage.KRONUS: return createKronus();
+      case KronusPackage.ASSIGNMENT: return createAssignment();
+      case KronusPackage.ANNOTATED_DEF: return createAnnotatedDef();
       case KronusPackage.ABSTRACT_DEF: return createAbstractDef();
       case KronusPackage.REFERENCEABLE_DEFS: return createReferenceableDefs();
+      case KronusPackage.NAMED_ABSTRACT_DEF: return createNamedAbstractDef();
+      case KronusPackage.NAMED_RUNTIME_DEF: return createNamedRuntimeDef();
+      case KronusPackage.TYPE_INSTANCE: return createTypeInstance();
+      case KronusPackage.FUNCTION_DEF: return createFunctionDef();
+      case KronusPackage.ANNOTATION_DEF: return createAnnotationDef();
+      case KronusPackage.HASHTAG_DEF: return createHashtagDef();
       case KronusPackage.VAL_DEF: return createValDef();
       case KronusPackage.PACKAGE_DEF: return createPackageDef();
       case KronusPackage.IMPORT_DEF: return createImportDef();
       case KronusPackage.INCLUDE_DEF: return createIncludeDef();
+      case KronusPackage.EXPORT_DEF: return createExportDef();
+      case KronusPackage.EXPORT_CLAUSE: return createExportClause();
+      case KronusPackage.EXPORT_SYMBOL: return createExportSymbol();
+      case KronusPackage.EXPORT_ALL: return createExportAll();
+      case KronusPackage.EXPORT_HASHTAG: return createExportHashtag();
+      case KronusPackage.EXPORT_RUNTIME_NAME: return createExportRuntimeName();
       case KronusPackage.TYPE_DEF: return createTypeDef();
       case KronusPackage.TYPE_VALUE: return createTypeValue();
       case KronusPackage.TYPE_NAME: return createTypeName();
       case KronusPackage.TYPE_REF: return createTypeRef();
       case KronusPackage.TYPE_ID: return createTypeId();
-      case KronusPackage.TYPE_INSTANCE: return createTypeInstance();
-      case KronusPackage.FUNCTION_DEF: return createFunctionDef();
-      case KronusPackage.ANNOTATION_DEF: return createAnnotationDef();
-      case KronusPackage.HASHTAG_DEF: return createHashtagDef();
       case KronusPackage.CODE_ASSIGNMENT: return createCodeAssignment();
       case KronusPackage.CODE_BLOCK: return createCodeBlock();
       case KronusPackage.SCALA_CODE_BLOCK: return createScalaCodeBlock();
@@ -97,7 +107,6 @@ public class KronusFactoryImpl extends EFactoryImpl implements KronusFactory
       case KronusPackage.SEQUENCE: return createSequence();
       case KronusPackage.VAL_REF: return createValRef();
       case KronusPackage.FUNCTION_CALL: return createFunctionCall();
-      case KronusPackage.INCLUDE_REF: return createIncludeRef();
       case KronusPackage.STRING_LITERAL: return createStringLiteral();
       case KronusPackage.DOUBLE_LITERAL: return createDoubleLiteral();
       case KronusPackage.INTEGER_LITERAL: return createIntegerLiteral();
@@ -136,6 +145,28 @@ public class KronusFactoryImpl extends EFactoryImpl implements KronusFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  public Assignment createAssignment()
+  {
+    AssignmentImpl assignment = new AssignmentImpl();
+    return assignment;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public AnnotatedDef createAnnotatedDef()
+  {
+    AnnotatedDefImpl annotatedDef = new AnnotatedDefImpl();
+    return annotatedDef;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public AbstractDef createAbstractDef()
   {
     AbstractDefImpl abstractDef = new AbstractDefImpl();
@@ -151,6 +182,72 @@ public class KronusFactoryImpl extends EFactoryImpl implements KronusFactory
   {
     ReferenceableDefsImpl referenceableDefs = new ReferenceableDefsImpl();
     return referenceableDefs;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public NamedAbstractDef createNamedAbstractDef()
+  {
+    NamedAbstractDefImpl namedAbstractDef = new NamedAbstractDefImpl();
+    return namedAbstractDef;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public NamedRuntimeDef createNamedRuntimeDef()
+  {
+    NamedRuntimeDefImpl namedRuntimeDef = new NamedRuntimeDefImpl();
+    return namedRuntimeDef;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public TypeInstance createTypeInstance()
+  {
+    TypeInstanceImpl typeInstance = new TypeInstanceImpl();
+    return typeInstance;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public FunctionDef createFunctionDef()
+  {
+    FunctionDefImpl functionDef = new FunctionDefImpl();
+    return functionDef;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public AnnotationDef createAnnotationDef()
+  {
+    AnnotationDefImpl annotationDef = new AnnotationDefImpl();
+    return annotationDef;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public HashtagDef createHashtagDef()
+  {
+    HashtagDefImpl hashtagDef = new HashtagDefImpl();
+    return hashtagDef;
   }
 
   /**
@@ -195,6 +292,72 @@ public class KronusFactoryImpl extends EFactoryImpl implements KronusFactory
   {
     IncludeDefImpl includeDef = new IncludeDefImpl();
     return includeDef;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public ExportDef createExportDef()
+  {
+    ExportDefImpl exportDef = new ExportDefImpl();
+    return exportDef;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public ExportClause createExportClause()
+  {
+    ExportClauseImpl exportClause = new ExportClauseImpl();
+    return exportClause;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public ExportSymbol createExportSymbol()
+  {
+    ExportSymbolImpl exportSymbol = new ExportSymbolImpl();
+    return exportSymbol;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public ExportAll createExportAll()
+  {
+    ExportAllImpl exportAll = new ExportAllImpl();
+    return exportAll;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public ExportHashtag createExportHashtag()
+  {
+    ExportHashtagImpl exportHashtag = new ExportHashtagImpl();
+    return exportHashtag;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public ExportRuntimeName createExportRuntimeName()
+  {
+    ExportRuntimeNameImpl exportRuntimeName = new ExportRuntimeNameImpl();
+    return exportRuntimeName;
   }
 
   /**
@@ -250,50 +413,6 @@ public class KronusFactoryImpl extends EFactoryImpl implements KronusFactory
   {
     TypeIdImpl typeId = new TypeIdImpl();
     return typeId;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public TypeInstance createTypeInstance()
-  {
-    TypeInstanceImpl typeInstance = new TypeInstanceImpl();
-    return typeInstance;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public FunctionDef createFunctionDef()
-  {
-    FunctionDefImpl functionDef = new FunctionDefImpl();
-    return functionDef;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public AnnotationDef createAnnotationDef()
-  {
-    AnnotationDefImpl annotationDef = new AnnotationDefImpl();
-    return annotationDef;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public HashtagDef createHashtagDef()
-  {
-    HashtagDefImpl hashtagDef = new HashtagDefImpl();
-    return hashtagDef;
   }
 
   /**
@@ -470,17 +589,6 @@ public class KronusFactoryImpl extends EFactoryImpl implements KronusFactory
   {
     FunctionCallImpl functionCall = new FunctionCallImpl();
     return functionCall;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public IncludeRef createIncludeRef()
-  {
-    IncludeRefImpl includeRef = new IncludeRefImpl();
-    return includeRef;
   }
 
   /**

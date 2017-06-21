@@ -58,7 +58,7 @@ case class Cell(
       case _ => "(TODO: Unexpected type: " + dataType + ")"
     }
   }
-  def reset = _value.setLength(0)
+  def reset() = _value.setLength(0)
 }
 
 object Cell {

@@ -1,35 +1,28 @@
 package com.ms.qaTools.io.rowSource
 
-import com.ms.qaTools.io.DelimitedRow
-import com.ms.qaTools.io.DelimitedIterator
-import com.ms.qaTools.io.DelimitedIteratorNoColDefs
-
-
-
-class SeqRowSourceNoColDefs(rows: Seq[DelimitedRow])
-  extends DelimitedIteratorNoColDefs {
+class SeqRowSourceNoColDefs(rows: Seq[Seq[String]]) extends Iterator[Seq[String]] {
   val iterator = rows.iterator
   def next = iterator.next
   def hasNext = iterator.hasNext
 
-  def withColNames: SeqRowSource = new SeqRowSource(iterator, next.map { ColumnDefinition(_) })
+  def withColNames = new SeqRowSource(iterator, next.zipWithIndex.map{case (n, i) => ColumnDefinition(name = n, index = i)})
 }
 
-class SeqRowSource(iterator: Iterator[DelimitedRow], override val colDefs: Seq[ColumnDefinition])
-  extends Iterator[DelimitedRow] with ColumnDefinitions with Resizable[String] {
+class SeqRowSource(iterator: Iterator[Seq[String]], val colDefs: Seq[ColumnDefinition])
+extends Iterator[Seq[String]] with ColumnDefinitions with Resizable[String] {
   def next = resize(iterator.next, colDefs)
   def hasNext = iterator.hasNext
 }
 
-class SortedSeqRowSource(iterator: Iterator[Seq[String]], override val colDefs: Seq[ColumnDefinition])
-    extends SeqRowSource(iterator, colDefs) with ExternalSortable[Seq[String]] {
+class SortedSeqRowSource(iterator: Iterator[Seq[String]], colDefs: Seq[ColumnDefinition])
+extends SeqRowSource(iterator, colDefs) with ExternalSortable[Seq[String]] {
   def sortExternal(implicit ord: Ordering[Seq[String]]) =
     ExternalSort.SeqStringRowSourceToExternalSortable(this).sortExternal
 }
 
 object SeqRowSource {
-  def apply(rows: Seq[DelimitedRow]): SeqRowSourceNoColDefs = new SeqRowSourceNoColDefs(rows)
-  def apply(rows: Seq[DelimitedRow], colDefs: Seq[ColumnDefinition]): SeqRowSource = new SeqRowSource(rows.iterator, colDefs)
+  def apply(rows: Seq[Seq[String]]): SeqRowSourceNoColDefs = new SeqRowSourceNoColDefs(rows)
+  def apply(rows: Seq[Seq[String]], colDefs: Seq[ColumnDefinition]): SeqRowSource = new SeqRowSource(rows.iterator, colDefs)
 }
 /*
 Copyright 2017 Morgan Stanley

@@ -1,43 +1,28 @@
 package com.ms.qaTools.protobuf.generator
 
-import com.google.protobuf.Message
-import com.ms.qaTools.tree.generator.ColMap
-import com.ms.qaTools.tree.generator.ColContext
-import com.ms.qaTools.io.rowSource.SeqRowSource
-import com.google.protobuf.ExtensionRegistry
-import com.ms.qaTools.io.DelimitedRow
-import com.ms.qaTools.io.DelimitedIterator
-import com.google.protobuf.DynamicMessage
 import com.google.protobuf.Descriptors.Descriptor
-
-
+import com.google.protobuf.DynamicMessage
+import com.google.protobuf.ExtensionRegistry
+import com.google.protobuf.Message
+import com.ms.qaTools.io.rowSource.ColumnDefinitions
+import com.ms.qaTools.IteratorProxy
+import com.ms.qaTools.tree.generator.ColContext
+import com.ms.qaTools.tree.generator.ColMap
 
 object PBGeneratorMapper {
-  def apply(creator: PBCreator, colNames: Seq[String]): (DelimitedRow) => Message = {
-    (data: DelimitedRow) =>
-      {
-        val context = ColContext(creator.extractColQueries)
-        val colMap = ColMap(colNames)
-        creator.create(data)(colMap, context)
-      }
-  }
+  def apply(creator: PBCreator, colNames: Seq[String]): (Seq[String]) => Message =
+    (data: Seq[String]) => creator.create(data)(ColMap(colNames), ColContext(creator.extractColQueries))
 }
 
-class PBGenerator(creator: PBCreator, rowSource: DelimitedIterator) extends Iterator[Message] {
-
-  private val generator = PBGeneratorMapper(creator, rowSource.colNames)
-  private val pbRowSource: Iterator[Message] = rowSource.map(generator)
-
-  def next = pbRowSource.next
-  def hasNext = pbRowSource.hasNext
+class PBGenerator(creator: PBCreator, rowSource: Iterator[Seq[String]] with ColumnDefinitions) extends IteratorProxy[Message] {
+  val self = rowSource.map(PBGeneratorMapper(creator, rowSource.colDefs.map(_.name)))
 }
 
 object PBGenerator {
-  def apply(descriptor: Descriptor, template: DynamicMessage, rowSource: DelimitedIterator)(implicit extensionRegistry: ExtensionRegistry) = {
+  def apply(descriptor: Descriptor, template: DynamicMessage, rowSource: Iterator[Seq[String]] with ColumnDefinitions)(implicit extensionRegistry: ExtensionRegistry) = {
     val creator = PBCreator(descriptor, template)
     implicit val colContext = ColContext(creator.extractColQueries)
-    implicit val colMap = ColMap(rowSource.colNames)
-
+    implicit val colMap = ColMap(rowSource.colDefs.map(_.name))
     new PBGenerator(creator, rowSource)
   }
 }

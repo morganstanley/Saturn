@@ -197,6 +197,11 @@
     <genClasses image="false" ecoreClass="types.ecore#//AbstractRunGroupModifier">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute types.ecore#//AbstractRunGroupModifier/enabled"/>
     </genClasses>
+    <genClasses ecoreClass="types.ecore#//AlmId">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference types.ecore#//AlmId/domain"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference types.ecore#//AlmId/project"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference types.ecore#//AlmId/id"/>
+    </genClasses>
     <genClasses ecoreClass="types.ecore#//Column">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute types.ecore#//Column/name"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute types.ecore#//Column/type"/>
@@ -1164,6 +1169,12 @@
   </genPackages>
   <genPackages prefix="XmlManipModule" basePackage="com.ms.qaTools.saturn.modules"
       resource="XML" disposableProviderFactory="true" ecorePackage="xmlManipModule.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="xmlManipModule.ecore#//AddPositionTypeEnum">
+      <genEnumLiterals ecoreEnumLiteral="xmlManipModule.ecore#//AddPositionTypeEnum/NONE"/>
+      <genEnumLiterals ecoreEnumLiteral="xmlManipModule.ecore#//AddPositionTypeEnum/BEFORE"/>
+      <genEnumLiterals ecoreEnumLiteral="xmlManipModule.ecore#//AddPositionTypeEnum/AFTER"/>
+    </genEnums>
+    <genDataTypes ecoreDataType="xmlManipModule.ecore#//AddPositionTypeEnumObject"/>
     <genClasses image="false" ecoreClass="xmlManipModule.ecore#//AbstractOperation">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute xmlManipModule.ecore#//AbstractOperation/enabled"/>
     </genClasses>
@@ -1172,9 +1183,11 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference xmlManipModule.ecore#//AddOperation/nodeName"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference xmlManipModule.ecore#//AddOperation/uri"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference xmlManipModule.ecore#//AddOperation/value"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference xmlManipModule.ecore#//AddOperation/positionXpath"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute xmlManipModule.ecore#//AddOperation/isAttribute"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute xmlManipModule.ecore#//AddOperation/isXml"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute xmlManipModule.ecore#//AddOperation/isCData"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute xmlManipModule.ecore#//AddOperation/addPosition"/>
     </genClasses>
     <genClasses ecoreClass="xmlManipModule.ecore#//CleanNamespacesOperation"/>
     <genClasses ecoreClass="xmlManipModule.ecore#//DeleteOperation">
@@ -1389,6 +1402,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference saturn.ecore#//AbstractRunGroup/modifiers"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference saturn.ecore#//AbstractRunGroup/parameters"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference saturn.ecore#//AbstractRunGroup/includeFiles"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference saturn.ecore#//AbstractRunGroup/almId"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute saturn.ecore#//AbstractRunGroup/name"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute saturn.ecore#//AbstractRunGroup/id"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute saturn.ecore#//AbstractRunGroup/enabled"/>

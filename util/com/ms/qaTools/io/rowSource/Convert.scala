@@ -1,13 +1,10 @@
 package com.ms.qaTools.io.rowSource
-
-import java.sql.ResultSet
-
-import scala.annotation.implicitNotFound
-
-import org.w3c.dom.Document
-
 import com.fasterxml.jackson.databind.JsonNode
 import com.ms.qaTools.xml.NamespaceContextImpl
+import java.sql.ResultSet
+import javax.jms.Message
+import org.w3c.dom.Document
+import scala.annotation.implicitNotFound
 
 @implicitNotFound(msg = "Unable to convert ${A} to ${B}")
 abstract class Convert[-A, +B] {
@@ -25,6 +22,10 @@ trait DefaultConverts extends LowPriorityConverts {
 
   implicit object ConvertStringToBytes extends Convert[String, Array[Byte]] {
     def convert(s: String) = s.getBytes
+  }
+
+  implicit object DocumentToBytes extends Convert[Document, Array[Byte]] {
+    def convert(doc: Document) = doc.toByteArray
   }
 
   implicit object ConvertBytesToString extends Convert[Array[Byte], String] {
@@ -53,6 +54,22 @@ trait DefaultConverts extends LowPriorityConverts {
 
   implicit object JsonsToExtractRows extends ToExtractRows[Iterator[JsonNode]] {
     def convert(xs: Iterator[JsonNode]) = new JsonIteratorUtil(xs)
+  }
+
+  implicit object W3cDocumentsAsTemplateOf extends Convert[Iterator[Document], AsTemplateOf[Iterator[Document]]] {
+    def convert(xs: Iterator[Document]) = new W3CDocumentIteratorUtil(xs)
+  }
+
+  implicit object MessageToDocument extends Convert[Message, Document] {
+    def convert(x: Message) = x.toDocument
+  }
+
+  implicit object MessageToByteArray extends Convert[Message, Array[Byte]] {
+    def convert(x: Message) = x.toByteArray
+  }
+
+  implicit object MessateToString extends Convert[Message, String] {
+    def convert(x: Message) = x.toMessageString
   }
 }
 

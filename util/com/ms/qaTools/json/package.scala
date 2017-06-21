@@ -9,11 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonParser
 import java.io.StringReader
-
-
+import scala.language.implicitConversions
 
 package object json {
-
   private def createJsonParser() = {
     new ObjectMapper() {
       configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)

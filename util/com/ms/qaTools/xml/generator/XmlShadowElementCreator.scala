@@ -4,24 +4,18 @@ import org.w3c.dom.Document
 import org.w3c.dom.DocumentFragment
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import com.ms.qaTools.io.DelimitedRow
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.NodeCreator
 import com.ms.qaTools.xml.nodeList2List
-import com.ms.qaTools.Logger
 import org.w3c.dom.Text
-
-
 
 class XmlShadowElementCreator(elem: Element,
   childCreators: List[NodeCreator[Document, Node]],
   attrCreators: List[XmlAttributeCreator])
   extends XmlElementCreator(elem, childCreators, attrCreators) {
 
-  override val logger = Logger(getClass)
-
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: Document): DocumentFragment = {
+  override def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: Document): DocumentFragment = {
     val node = super.create(data)
     require(node.isInstanceOf[DocumentFragment], "Shadow elements only work off document fragments.")
     val fragment = doc.createDocumentFragment

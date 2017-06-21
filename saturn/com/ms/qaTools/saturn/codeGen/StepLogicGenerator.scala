@@ -53,8 +53,8 @@ import com.ms.qaTools.saturn.types.{ RepetitionActionsEnum => MRepetitionActions
 case class NotImplementedException(message: String) extends Exception(message)
 
 object StepLogicGenerator {
-  def modifierGen(runnerGen: ScalaGen, 
-                  rg: MAbstractRunGroup, 
+  def modifierGen(runnerGen: ScalaGen,
+                  rg: MAbstractRunGroup,
                   runnableType: String)(implicit codeGenUtil: SaturnCodeGenUtil) = new FutureGen {
     val iterationNo = codeGenUtil.getDefaultIterationNo(rg)
     def generate() = rg.getModifiers.collect {case m: MPerlRunGroupModifier if m.isEnabled => m}.toSeq match {
@@ -89,15 +89,15 @@ object StepLogicGenerator {
       case dsConvert: MDSConvertStep                   => DsConvertLogicGenerator(dsConvert)
       case dsValidator: MDSValidatorStep               => throw new NotImplementedException("Generator for dsValidator not implemented")
       case extractDDL: MExtractDDLStep                 => throw new NotImplementedException("Generator for extractDDL not implemented")
-      case failTerminal: MFailTerminal                 => Try { FutureExpr(TryExpr(s"""IterationResult(Passed(), context,  iterationMetaData, TerminalResult(Some(Failed()), ${failTerminal.getRepetitionAction() == MRepetitionActionsEnum.BREAK}), ${codeGenUtil.getDefaultIterationNo(runGroup)})""")) }
+      case failTerminal: MFailTerminal                 => Try { FutureExpr(TryExpr(s"""IterationResult(Passed, context,  iterationMetaData, TerminalResult(Some(Failed), ${failTerminal.getRepetitionAction() == MRepetitionActionsEnum.BREAK}), ${codeGenUtil.getDefaultIterationNo(runGroup)})""", true), true) }
       case fixManip: MFixManipStep                     => throw new NotImplementedException("Generator for fixManip not implemented")
       case jira: MJiraStep                             => throw new NotImplementedException("Generator for jira not implemented")
       case kronus: MKronusStep                         => KronusCodeGen(Backport()).genStep(kronus)
       case mail: MMailStep                             => MailLogicGenerator(mail)
       case mq: MMQStep                                 => MQLogicGenerator(mq)
-      case noopTerminal: MNoopTerminal                 => Try { FutureExpr(TryExpr(s"""IterationResult(Passed(), context,  iterationMetaData, TerminalResult(None, ${noopTerminal.getRepetitionAction() == MRepetitionActionsEnum.BREAK}),${codeGenUtil.getDefaultIterationNo(runGroup)})""")) }
+      case noopTerminal: MNoopTerminal                 => Try { FutureExpr(TryExpr(s"""IterationResult(Passed, context,  iterationMetaData, TerminalResult(None, ${noopTerminal.getRepetitionAction() == MRepetitionActionsEnum.BREAK}),${codeGenUtil.getDefaultIterationNo(runGroup)})""", true), true) }
       case p4: MP4Step                                 => throw new NotImplementedException("Generator for p4 not implemented")
-      case passTerminal: MPassTerminal                 => Try { FutureExpr(TryExpr(s"""IterationResult(Passed(), context,  iterationMetaData, TerminalResult(Some(Passed()), ${passTerminal.getRepetitionAction() == MRepetitionActionsEnum.BREAK}), ${codeGenUtil.getDefaultIterationNo(runGroup)})""")) }
+      case passTerminal: MPassTerminal                 => Try { FutureExpr(TryExpr(s"""IterationResult(Passed, context,  iterationMetaData, TerminalResult(Some(Passed), ${passTerminal.getRepetitionAction() == MRepetitionActionsEnum.BREAK}), ${codeGenUtil.getDefaultIterationNo(runGroup)})""", true), true) }
       case procedureCall: MProcedureCallStep           => ProcedureCallLogicGenerator(procedureCall)
       case psManager: MPsManagerStep                   => throw new NotImplementedException("Generator for psManager not implemented")
       case reference: MReferenceStep                   => throw new NotImplementedException("Generator for reference not implemented")
@@ -116,7 +116,8 @@ object StepLogicGenerator {
       case xSplit: MXSplitStep                         => throw new NotImplementedException("Generator for xSplit not implemented")
       case invalid: MAbstractStep                      => throw new NotImplementedException(s"Unkown step $invalid is not implemented.")
     }
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

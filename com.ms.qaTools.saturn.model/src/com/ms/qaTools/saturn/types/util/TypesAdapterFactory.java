@@ -112,6 +112,11 @@ public class TypesAdapterFactory extends AdapterFactoryImpl
         return createAbstractRunGroupModifierAdapter();
       }
       @Override
+      public Adapter caseAlmId(AlmId object)
+      {
+        return createAlmIdAdapter();
+      }
+      @Override
       public Adapter caseColumn(Column object)
       {
         return createColumnAdapter();
@@ -287,6 +292,21 @@ public class TypesAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createAbstractRunGroupModifierAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ms.qaTools.saturn.types.AlmId <em>Alm Id</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ms.qaTools.saturn.types.AlmId
+   * @generated
+   */
+  public Adapter createAlmIdAdapter()
   {
     return null;
   }

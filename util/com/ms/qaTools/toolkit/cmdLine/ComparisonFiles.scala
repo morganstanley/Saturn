@@ -1,8 +1,5 @@
 package com.ms.qaTools.toolkit.cmdLine
-
 import org.kohsuke.args4j.Option
-
-
 
 trait ComparisonFiles {
   @Option(name = "-e", aliases = Array("--expectedFileName"), usage = "specify the expected data fileName", required = true)

@@ -86,6 +86,21 @@ public class KronusSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
+      case KronusPackage.ASSIGNMENT:
+      {
+        Assignment assignment = (Assignment)theEObject;
+        T result = caseAssignment(assignment);
+        if (result == null) result = caseAbstractDef(assignment);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.ANNOTATED_DEF:
+      {
+        AnnotatedDef annotatedDef = (AnnotatedDef)theEObject;
+        T result = caseAnnotatedDef(annotatedDef);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
       case KronusPackage.ABSTRACT_DEF:
       {
         AbstractDef abstractDef = (AbstractDef)theEObject;
@@ -100,12 +115,68 @@ public class KronusSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
+      case KronusPackage.NAMED_ABSTRACT_DEF:
+      {
+        NamedAbstractDef namedAbstractDef = (NamedAbstractDef)theEObject;
+        T result = caseNamedAbstractDef(namedAbstractDef);
+        if (result == null) result = caseAbstractDef(namedAbstractDef);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.NAMED_RUNTIME_DEF:
+      {
+        NamedRuntimeDef namedRuntimeDef = (NamedRuntimeDef)theEObject;
+        T result = caseNamedRuntimeDef(namedRuntimeDef);
+        if (result == null) result = caseNamedAbstractDef(namedRuntimeDef);
+        if (result == null) result = caseAbstractDef(namedRuntimeDef);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.TYPE_INSTANCE:
+      {
+        TypeInstance typeInstance = (TypeInstance)theEObject;
+        T result = caseTypeInstance(typeInstance);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.FUNCTION_DEF:
+      {
+        FunctionDef functionDef = (FunctionDef)theEObject;
+        T result = caseFunctionDef(functionDef);
+        if (result == null) result = caseReferenceableDefs(functionDef);
+        if (result == null) result = caseNamedRuntimeDef(functionDef);
+        if (result == null) result = caseNamedAbstractDef(functionDef);
+        if (result == null) result = caseAbstractDef(functionDef);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.ANNOTATION_DEF:
+      {
+        AnnotationDef annotationDef = (AnnotationDef)theEObject;
+        T result = caseAnnotationDef(annotationDef);
+        if (result == null) result = caseNamedRuntimeDef(annotationDef);
+        if (result == null) result = caseNamedAbstractDef(annotationDef);
+        if (result == null) result = caseAbstractDef(annotationDef);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.HASHTAG_DEF:
+      {
+        HashtagDef hashtagDef = (HashtagDef)theEObject;
+        T result = caseHashtagDef(hashtagDef);
+        if (result == null) result = caseNamedAbstractDef(hashtagDef);
+        if (result == null) result = caseAbstractDef(hashtagDef);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
       case KronusPackage.VAL_DEF:
       {
         ValDef valDef = (ValDef)theEObject;
         T result = caseValDef(valDef);
-        if (result == null) result = caseAbstractDef(valDef);
         if (result == null) result = caseReferenceableDefs(valDef);
+        if (result == null) result = caseNamedRuntimeDef(valDef);
+        if (result == null) result = caseNamedAbstractDef(valDef);
+        if (result == null) result = caseAbstractDef(valDef);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -120,6 +191,7 @@ public class KronusSwitch<T> extends Switch<T>
       {
         ImportDef importDef = (ImportDef)theEObject;
         T result = caseImportDef(importDef);
+        if (result == null) result = caseAbstractDef(importDef);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -127,6 +199,52 @@ public class KronusSwitch<T> extends Switch<T>
       {
         IncludeDef includeDef = (IncludeDef)theEObject;
         T result = caseIncludeDef(includeDef);
+        if (result == null) result = caseAbstractDef(includeDef);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.EXPORT_DEF:
+      {
+        ExportDef exportDef = (ExportDef)theEObject;
+        T result = caseExportDef(exportDef);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.EXPORT_CLAUSE:
+      {
+        ExportClause exportClause = (ExportClause)theEObject;
+        T result = caseExportClause(exportClause);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.EXPORT_SYMBOL:
+      {
+        ExportSymbol exportSymbol = (ExportSymbol)theEObject;
+        T result = caseExportSymbol(exportSymbol);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.EXPORT_ALL:
+      {
+        ExportAll exportAll = (ExportAll)theEObject;
+        T result = caseExportAll(exportAll);
+        if (result == null) result = caseExportSymbol(exportAll);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.EXPORT_HASHTAG:
+      {
+        ExportHashtag exportHashtag = (ExportHashtag)theEObject;
+        T result = caseExportHashtag(exportHashtag);
+        if (result == null) result = caseExportSymbol(exportHashtag);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case KronusPackage.EXPORT_RUNTIME_NAME:
+      {
+        ExportRuntimeName exportRuntimeName = (ExportRuntimeName)theEObject;
+        T result = caseExportRuntimeName(exportRuntimeName);
+        if (result == null) result = caseExportSymbol(exportRuntimeName);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -134,6 +252,8 @@ public class KronusSwitch<T> extends Switch<T>
       {
         TypeDef typeDef = (TypeDef)theEObject;
         T result = caseTypeDef(typeDef);
+        if (result == null) result = caseNamedRuntimeDef(typeDef);
+        if (result == null) result = caseNamedAbstractDef(typeDef);
         if (result == null) result = caseAbstractDef(typeDef);
         if (result == null) result = defaultCase(theEObject);
         return result;
@@ -165,38 +285,6 @@ public class KronusSwitch<T> extends Switch<T>
       {
         TypeId typeId = (TypeId)theEObject;
         T result = caseTypeId(typeId);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case KronusPackage.TYPE_INSTANCE:
-      {
-        TypeInstance typeInstance = (TypeInstance)theEObject;
-        T result = caseTypeInstance(typeInstance);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case KronusPackage.FUNCTION_DEF:
-      {
-        FunctionDef functionDef = (FunctionDef)theEObject;
-        T result = caseFunctionDef(functionDef);
-        if (result == null) result = caseAbstractDef(functionDef);
-        if (result == null) result = caseReferenceableDefs(functionDef);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case KronusPackage.ANNOTATION_DEF:
-      {
-        AnnotationDef annotationDef = (AnnotationDef)theEObject;
-        T result = caseAnnotationDef(annotationDef);
-        if (result == null) result = caseAbstractDef(annotationDef);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case KronusPackage.HASHTAG_DEF:
-      {
-        HashtagDef hashtagDef = (HashtagDef)theEObject;
-        T result = caseHashtagDef(hashtagDef);
-        if (result == null) result = caseAbstractDef(hashtagDef);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -333,15 +421,6 @@ public class KronusSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case KronusPackage.INCLUDE_REF:
-      {
-        IncludeRef includeRef = (IncludeRef)theEObject;
-        T result = caseIncludeRef(includeRef);
-        if (result == null) result = caseValue(includeRef);
-        if (result == null) result = caseExpression(includeRef);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
       case KronusPackage.STRING_LITERAL:
       {
         StringLiteral stringLiteral = (StringLiteral)theEObject;
@@ -431,6 +510,38 @@ public class KronusSwitch<T> extends Switch<T>
   }
 
   /**
+   * Returns the result of interpreting the object as an instance of '<em>Assignment</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Assignment</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseAssignment(Assignment object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Annotated Def</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Annotated Def</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseAnnotatedDef(AnnotatedDef object)
+  {
+    return null;
+  }
+
+  /**
    * Returns the result of interpreting the object as an instance of '<em>Abstract Def</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
@@ -458,6 +569,102 @@ public class KronusSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseReferenceableDefs(ReferenceableDefs object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Named Abstract Def</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Named Abstract Def</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseNamedAbstractDef(NamedAbstractDef object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Named Runtime Def</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Named Runtime Def</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseNamedRuntimeDef(NamedRuntimeDef object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Type Instance</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Type Instance</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseTypeInstance(TypeInstance object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Function Def</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Function Def</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseFunctionDef(FunctionDef object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Annotation Def</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Annotation Def</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseAnnotationDef(AnnotationDef object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Hashtag Def</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Hashtag Def</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseHashtagDef(HashtagDef object)
   {
     return null;
   }
@@ -522,6 +729,102 @@ public class KronusSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseIncludeDef(IncludeDef object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Export Def</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Export Def</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseExportDef(ExportDef object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Export Clause</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Export Clause</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseExportClause(ExportClause object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Export Symbol</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Export Symbol</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseExportSymbol(ExportSymbol object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Export All</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Export All</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseExportAll(ExportAll object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Export Hashtag</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Export Hashtag</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseExportHashtag(ExportHashtag object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Export Runtime Name</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Export Runtime Name</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseExportRuntimeName(ExportRuntimeName object)
   {
     return null;
   }
@@ -602,70 +905,6 @@ public class KronusSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseTypeId(TypeId object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Type Instance</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Type Instance</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseTypeInstance(TypeInstance object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Function Def</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Function Def</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseFunctionDef(FunctionDef object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Annotation Def</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Annotation Def</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseAnnotationDef(AnnotationDef object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Hashtag Def</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Hashtag Def</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseHashtagDef(HashtagDef object)
   {
     return null;
   }
@@ -922,22 +1161,6 @@ public class KronusSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseFunctionCall(FunctionCall object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Include Ref</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Include Ref</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseIncludeRef(IncludeRef object)
   {
     return null;
   }

@@ -1,14 +1,15 @@
 package com.ms.qaTools.toolkit
 
-import scala.util.Try
-import scala.concurrent.Future
+trait Runnable[+A] { self =>
+  def run: util.Try[A]
 
-trait Runnable[+Result] {
-  def run: Try[Result]
+  def onComplete(thunk: => Unit) = new Runnable[A] {
+    def run = try self.run finally thunk
+  }
 }
 
-trait FutureRunnable[+Result] {
-  def runFuture:Future[Try[Result]]
+trait FutureRunnable[+A] {
+  def runFuture: concurrent.Future[util.Try[A]]
 }
 /*
 Copyright 2017 Morgan Stanley

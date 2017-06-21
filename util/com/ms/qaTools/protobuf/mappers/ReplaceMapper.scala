@@ -1,27 +1,15 @@
 package com.ms.qaTools.protobuf.mappers
-
-import com.google.protobuf.Message
-import com.ms.qaTools.protobuf.getField
-import com.ms.qaTools.protobuf.setField
-import com.ms.qaTools.protobuf.string2FieldDescriptorType
-
-import ognl.Ognl
-import ognl.OgnlContext
-
-
+import com.ms.qaTools.protobuf
 
 case class PBReplaceMapper(search: String, replace: String, isOgnlExp: Boolean = true) extends PBMessageReplaceMapper {
-  override def apply(inMessage: Message): Message = {
-    val replaceValue = if (!isOgnlExp) replace else {
-      val ctx = new OgnlContext
-      val exp = Ognl.parseExpression(replace)
-      Ognl.getValue(exp, ctx, inMessage).toString()
-    }
-    val field = getField(search, inMessage.toBuilder())
-    val value = string2FieldDescriptorType(replaceValue, field._2)
-    val builder = setField(search, value, inMessage.toBuilder())
-    val outMessage = builder.build()
-    outMessage
+  def apply(inMessage: com.google.protobuf.Message) = {
+    val replaceValue =
+      if (!isOgnlExp) replace
+      else ognl.Ognl.getValue(ognl.Ognl.parseExpression(replace), new ognl.OgnlContext, inMessage).toString
+    protobuf.setField(
+      search,
+      protobuf.string2FieldDescriptorType(replaceValue, protobuf.getField(search, inMessage.toBuilder())._2),
+      inMessage.toBuilder).build
   }
 }
 /*

@@ -9,7 +9,7 @@ import com.ms.qaTools.interpreter.ShellInterpreterResult
 import com.ms.qaTools.saturn.codeGen.IterationResult
 import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.runtime.notifier.html.stringToHtmlColorizedString
-import com.ms.qaTools.toolkit.runCmds.RunCmdsResult
+import com.ms.qaTools.toolkit.RunCmdsResult
 
 case class RunCmdsHtmlGenerator(implicit sc: SaturnExecutionContext) extends BasicHtmlGenerator {
   override def runGroupIconClassName: String = "runCmdIcon"
@@ -53,7 +53,8 @@ case class RunCmdsHtmlGenerator(implicit sc: SaturnExecutionContext) extends Bas
     row.appendElement("td").appendText(msg).append(errorMsg.redHtml)
     row.appendElement("td").text(exitCode.getOrElse("N/A!").toString)
   }
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

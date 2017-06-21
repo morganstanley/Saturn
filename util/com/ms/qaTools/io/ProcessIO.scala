@@ -7,16 +7,20 @@ import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
 import scala.sys.process.ProcessBuilder
+import scala.util.Try
 
-abstract class ProcessIO extends DeviceIO with Closeable
+case class ProcessIO(builder: ProcessBuilder, timeout: Long = 2000) extends DeviceIO with Closeable {
+  protected val outputPromise = Promise[OutputStream]()
+  protected val inputPromise  = Promise[InputStream]()
+  protected var closed = false
+  protected val sleepInterval = 100
 
-object ProcessIO {
-  def apply(builder: ProcessBuilder, timeout: Long = 2000): ProcessIO = new ProcessIOImpl(builder, timeout)
-
-  def copyAvailable(in: InputStream, out: OutputStream) {
+  def copyAvailable(in: InputStream, out: OutputStream) = {
     val n = in.available
     if (n > 0) {
       val buf = Array.ofDim[Byte](n)
@@ -26,24 +30,6 @@ object ProcessIO {
     }
   }
 
-  val sleepInterval = 100
-}
-
-class ProcessIOImpl(builder: ProcessBuilder, timeout: Long) extends ProcessIO {
-  import ProcessIO._
-
-  protected val outputPromise = Promise[OutputStream]()
-  protected val inputPromise  = Promise[InputStream]()
-  protected var closed = false
-
-  def writeInput(out: OutputStream) {
-    outputPromise.success(out)
-  }
-
-  def processOutput(in: InputStream) {
-    inputPromise.success(new TimeoutInputStream(in, timeout, sleepInterval))
-  }
-
   def processError(err: InputStream) {
     try while (!closed) {
       copyAvailable(err, System.err)
@@ -51,10 +37,12 @@ class ProcessIOImpl(builder: ProcessBuilder, timeout: Long) extends ProcessIO {
     } finally err.close()
   }
 
-  val process = builder.run(new scala.sys.process.ProcessIO(writeInput, processOutput, processError))
-  while (!(inputPromise.isCompleted && outputPromise.isCompleted)) Thread.sleep(sleepInterval)
-  val input  = inputPromise.future.value.get
-  val output = outputPromise.future.value.get
+  val process = builder.run(new scala.sys.process.ProcessIO(
+    outputPromise.success _,
+    (in: InputStream) => inputPromise.success(new TimeoutInputStream(in, timeout, sleepInterval)),
+    processError))
+  val input  = Try(Await.result(inputPromise.future,  Duration.Inf))
+  val output = Try(Await.result(outputPromise.future, Duration.Inf))
 
   def inputStreams  = input.map(Iterator(_))
   def outputStreams = output.map(Iterator(_))

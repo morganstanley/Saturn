@@ -42,7 +42,7 @@ case class RotatedFile(val file: File) extends Uncompress {
   def readFrom(pos: Long) = {
     val is = asStream
     is.skip(pos)
-    IOUtils.toString(is)
+    IOUtils.toString(is, java.nio.charset.Charset.defaultCharset)
   }
 }
 /*

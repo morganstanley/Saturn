@@ -20,7 +20,7 @@ import org.eclipse.emf.common.util.EList;
  * @model
  * @generated
  */
-public interface HashtagDef extends AbstractDef
+public interface HashtagDef extends NamedAbstractDef
 {
   /**
    * Returns the value of the '<em><b>Parameter Defs</b></em>' containment reference list.

@@ -1,51 +1,41 @@
 package com.ms.qaTools.conversions
-
-import org.w3c.dom.Document
-import org.w3c.dom.Node
-
 import com.ms.qaTools.tree.TreeNode
 import com.ms.qaTools.tree.XmlNode
 import com.ms.qaTools.xml._
 import com.ms.qaTools.xml.NamespaceContextImpl
-
 import javax.xml.namespace.NamespaceContext
-
-
+import org.w3c.dom.Document
+import org.w3c.dom.Node
+import scala.language.implicitConversions
 
 object XmlToTreeNodeConversions {
-  implicit def xmlDocsToTreeNodes(docs: Iterator[Document])(implicit nsContext: NamespaceContext): Iterator[Option[XmlNode]] = {
+  implicit def xmlDocsToTreeNodes(docs: Iterator[Document])(implicit nsContext: NamespaceContext): Iterator[Option[XmlNode]] =
     docs.map { d =>
-      {
-        val nodeNsContext = nsContext match {
-          case n: NamespaceContextImpl => NamespaceContextImpl(d) + n
-          case _ => NamespaceContextImpl(d)
-        }
-        Option(XmlNode(d.getDocumentElement)(nodeNsContext))
+      val nodeNsContext = nsContext match {
+        case n: NamespaceContextImpl => NamespaceContextImpl(d) + n
+        case _ => NamespaceContextImpl(d)
       }
+      Option(XmlNode(d.getDocumentElement)(nodeNsContext))
     }
-  }
+
   implicit def xmlNodeToNode(treeNode: XmlNode): Node = treeNode.node
 
   implicit def xmlNodeToDocument(xmlNode: TreeNode[Node]): Document = {
-    val builder = DocumentBuilderTL()
-    val doc = builder.newDocument()
+    val doc = DocumentBuilderTL.get().newDocument()
     doc.adoptNode(xmlNode.node)
     doc.appendChild(xmlNode.node)
     doc
   }
 
-  implicit def nodeToDocument(node: Node): Document = {
-    if (node.getNodeType() == Node.DOCUMENT_NODE) {
-      val d = node.asInstanceOf[Document]
-      d
-    } else {
-      val builder = DocumentBuilderTL()
-      val doc = builder.newDocument()
+  implicit def nodeToDocument(node: Node): Document =
+    if (node.getNodeType() == Node.DOCUMENT_NODE)
+      node.asInstanceOf[Document]
+    else {
+      val doc = DocumentBuilderTL.get().newDocument()
       doc.adoptNode(node)
       doc.appendChild(node)
       doc
     }
-  }
 }
 /*
 Copyright 2017 Morgan Stanley

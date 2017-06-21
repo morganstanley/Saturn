@@ -4,8 +4,8 @@ import com.google.protobuf.Descriptors.Descriptor
 import com.google.protobuf.DynamicMessage
 import com.google.protobuf.Message
 import com.ms.qaTools.compare.AbstractDiff
+import com.ms.qaTools.fix.FixValidator
 import com.ms.qaTools.io.rowSource.ColumnDefinition
-import com.ms.qaTools.io.rowSource.ExternalSortable
 import com.ms.qaTools.io.rowSource.ExternalSortableViaCsv
 import com.ms.qaTools.io.rowSource.IndexedRepresentation
 import com.ms.qaTools.io.rowSource.PathRowSource
@@ -14,13 +14,13 @@ import com.ms.qaTools.protobuf.PbValidator
 import com.ms.qaTools.tree.TreeNode
 import com.ms.qaTools.tree.validator.Comparator
 import com.ms.qaTools.tree.validator.ComparatorWithKeys
-import com.ms.qaTools.tree.validator.HasIndexedDiffSet
 import com.ms.qaTools.tree.validator.IndexedDiffSet
 import com.ms.qaTools.xml.XmlValidator
 import org.w3c.dom.Document
+import quickfix.DataDictionary
+import scala.concurrent.ExecutionContext
 
-abstract class Validator[A, B](expected: Iterator[A], actual: Iterator[A], val validator: ComparatorWithKeys[B])
-extends IteratorProxy[AbstractDiff] with HasIndexedDiffSet[A, B]{v =>
+abstract class Validator[A, B](expected: Iterator[A], actual: Iterator[A], val validator: ComparatorWithKeys[B]) extends IteratorProxy[AbstractDiff] {v =>
   private val logger = Logger(getClass)
   val keys = validator.keys
   if (!keys.isEmpty) logger.debug("Using document keys: " + keys.mkString("[", ",", "]"))
@@ -28,34 +28,27 @@ extends IteratorProxy[AbstractDiff] with HasIndexedDiffSet[A, B]{v =>
   require(expected != null, "Null expected row source in Validator")
   require(actual != null, "Null actual row source in Validator")
 
-  def self = diffSet
-
-  def pathRowSourceBuilder(x: Seq[(String, String)], y: Iterator[A]): PathRowSource[B, A]
-  def toSeqString(r: IndexedRepresentation[A]): Seq[String]
-  def fromSeqString(r: Seq[String]): IndexedRepresentation[A]
-
   implicit val ordering = IndexedRepresentation.ordering[A]
-  def sort(rowSource: Iterator[A]) =
+  def keysAsCols = keys.zipWithIndex.map {z => (z._1,"COL" + z._2)}
+
+  def sort(rowSource: Iterator[IndexedRepresentation[A]], fromSeqString: Seq[String] => IndexedRepresentation[A], toSeqString: IndexedRepresentation[A] => Seq[String]): Iterator[IndexedRepresentation[A]] =
     (new IteratorProxy[IndexedRepresentation[A]] with ExternalSortableViaCsv[IndexedRepresentation[A]] {
-      def self = pathRowSourceBuilder(keys.zipWithIndex.map {z => (z._1,"COL" + z._2)}, rowSource).asIndexedRepresentationIterator
+      def self = rowSource
       def colDefs = ColumnDefinition.fromColumnNames(keys)
       def toSeqStringIterator(xs: Iterator[IndexedRepresentation[A]]) = xs.map(toSeqString)
       def fromSeqStringIterator(yss: Iterator[Seq[String]]) = yss.map(fromSeqString)
     }).sortExternal
-
-  def toNode(x: A): TreeNode[B]
-
-  val diffSet = new IndexedDiffSet[A, B] {
-    val toNode = (x: A) => v.toNode(x)
-    val left = sort(expected)
-    val right = sort(actual)
-    val comparator = validator.comparator
-  }
- }
+}
 
 object Validator {
+
   trait Config[A, B] {
     def createValidator(expected: Iterator[A], actual: Iterator[A]): Validator[A, B]
+  }
+
+  case class FixConfig(dataDictionary: DataDictionary, separator: Option[String] = None) extends Config[Document, org.w3c.dom.Node] {
+    def createValidator(expected: Iterator[Document], actual: Iterator[Document]) =
+      FixValidator(expected, actual, dataDictionary)
   }
 
   case class XmlConfig(configFileName: Option[String]) extends Config[Document, org.w3c.dom.Node] {

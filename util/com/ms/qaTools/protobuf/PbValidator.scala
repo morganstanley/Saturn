@@ -7,34 +7,39 @@ import com.google.protobuf.TextFormat
 import com.ms.qaTools.AnyUtil
 import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.IndexedRepresentation
-import com.ms.qaTools.io.rowSource.protobuf.ProtoBufPathRowSource
-import com.ms.qaTools.toolkit.pbValidate.PBValidateComparator
+import com.ms.qaTools.io.rowSource.ProtoBufPathRowSource
+import com.ms.qaTools.toolkit.PBValidateComparator
 import com.ms.qaTools.tree.PBNode
 import com.ms.qaTools.tree.TreeNode
 import com.ms.qaTools.tree.validator.Comparator
 import com.ms.qaTools.tree.validator.IndexedDiffSet
 import com.ms.qaTools.Validator
 import org.apache.commons.codec.binary.Base64
+import com.ms.qaTools.IteratorProxy
 
 case class PbValidator(configTemplate: Option[DynamicMessage], expected: Iterator[Message], actual: Iterator[Message], descriptor: Descriptor)
-extends Validator[Message, FieldDescriptor](expected, actual, configTemplate.map{PBValidateComparator(_, descriptor)}.getOrElse(PBValidateComparator())) {
-  def pathRowSourceBuilder(a: Seq[(String, String)], b: Iterator[Message]) =
-    ProtoBufPathRowSource.apply(a, b)
-
-  def toSeqString(r: IndexedRepresentation[Message]) =
-    Base64.encodeBase64(r.representation.toString.getBytes).map(_.toChar).mkString :: r.indexed.toList
-
-  def fromSeqString(r: Seq[String]) = new IndexedRepresentation[Message] {
-    val indexed = r.tail
-    val colDefs = ColumnDefinition.fromColumnNames(keys)
-    val representation = {
-      val b = DynamicMessage.newBuilder(descriptor)
-      TextFormat.merge(Base64.decodeBase64(r.head.getBytes).map(_.toChar).mkString, b)
-      b.build
+  extends Validator[Message, FieldDescriptor](expected, actual, configTemplate.map { PBValidateComparator(_, descriptor) }.getOrElse(PBValidateComparator())) {
+  protected def asPathRowSource(i: Iterator[Message]) = ProtoBufPathRowSource(keys.zipWithIndex.map { z => (z._1, "COL" + z._2) }, i).asIndexedRepresentationIterator()
+  protected val fromSeqString = (r: Seq[String]) =>
+    new IndexedRepresentation[Message] {
+      val indexed = r.tail
+      val colDefs = ColumnDefinition.fromColumnNames(keys)
+      val representation = {
+        val b = DynamicMessage.newBuilder(descriptor)
+        TextFormat.merge(Base64.decodeBase64(r.head.getBytes).map(_.toChar).mkString, b)
+        b.build
+      }
+      def prettyPrint = Base64.encodeBase64(representation.toString.getBytes).map(_.toChar).mkString
     }
+  protected val toSeqString =
+    (r: IndexedRepresentation[Message]) => Base64.encodeBase64(r.representation.toString.getBytes).map(_.toChar).mkString :: r.indexed.toList
+  val self = new IndexedDiffSet[Message, FieldDescriptor] {
+    val Seq(left, right) = for (i <- Seq(expected, actual)) yield sort(asPathRowSource(i), fromSeqString, toSeqString)
+    def inflate(x: Message) = Option(PBNode(x))
+    def inflateLeft(x: Message) = inflate(x)
+    def inflateRight(x: Message) = inflate(x)
+    def comparator = validator.comparator
   }
-
-  def toNode(m: Message) = PBNode(m)
 }
 /*
 Copyright 2017 Morgan Stanley

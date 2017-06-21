@@ -1,41 +1,26 @@
 package com.ms.qaTools.compare.writer.tree
-import java.lang.Boolean
-import scala.annotation.tailrec
+
+import com.ms.qaTools.compare.{HasLeft, HasRight}
+import com.ms.qaTools.compare.AbstractDiff
 import com.ms.qaTools.compare.writer.DiffSetWriter
-import com.ms.qaTools.tree.validator._
+import com.ms.qaTools.io.rowSource.IndexedRepresentation
+import com.ms.qaTools.tree.validator.TreeNodeCounter
 
-trait TreeDiffSetWriter[D] extends DiffSetWriter {
-  val serializer: D => String
-
-  type AllDiffsTuple5 = (Seq[DifferentTreeNodeDiff[D]], Seq[InLeftTreeNodeDiff[D]], Seq[InRightTreeNodeDiff[D]], Seq[ValidationPassedTreeNodeDiff[D]], Seq[ValidationFailedTreeNodeDiff[D]])
-
-  def sort(a: AbstractTreeNodeDiff, b: AbstractTreeNodeDiff): Boolean =
-    (a, b) match {
-      case (j: HasExpected[_], k: HasExpected[_]) => j.expected.path < k.expected.path
-      case (j: HasActual[_], k: HasActual[_]) => j.actual.path < k.actual.path
+trait TreeDiffSetWriter[D] extends DiffSetWriter[AbstractDiff, TreeNodeCounter] {
+  def leftIndexedRepresentation(d: AbstractDiff): Option[IndexedRepresentation[D]] = d match {
+    case l: HasLeft[_] => l.left match {
+      case l: IndexedRepresentation[D] => Some(l)
+      case _                           => None
     }
+    case _ => None
+  }
 
-  def emptyAllDiffsTuple5 = (Seq(), Seq(), Seq(), Seq(), Seq())
-
-  @tailrec
-  final def buildLists(diffs: Seq[AbstractTreeNodeDiff], lists: AllDiffsTuple5 = emptyAllDiffsTuple5): AllDiffsTuple5 = {
-    if (diffs.isEmpty) lists
-    else {
-      diffs.head match {
-        case d: DifferentTreeNodeDiff[D] =>
-          buildLists(diffs.tail, (lists._1 :+ d, lists._2, lists._3, lists._4, lists._5))
-        case d: InLeftTreeNodeDiff[D] =>
-          buildLists(diffs.tail, (lists._1, lists._2 :+ d, lists._3, lists._4, lists._5))
-        case d: InRightTreeNodeDiff[D] =>
-          buildLists(diffs.tail, (lists._1, lists._2, lists._3 :+ d, lists._4, lists._5))
-        case d: ValidationPassedTreeNodeDiff[D] =>
-          buildLists(diffs.tail, (lists._1, lists._2, lists._3, lists._4 :+ d, lists._5))
-        case d: ValidationFailedTreeNodeDiff[D] =>
-          buildLists(diffs.tail, (lists._1, lists._2, lists._3, lists._4, lists._5 :+ d))
-        case d: IdenticalTreeNodeDiff[D] =>
-          buildLists(diffs.tail, (lists._1, lists._2, lists._3, lists._4, lists._5))
-      }
+  def rightIndexedRepresentation(d: AbstractDiff): Option[IndexedRepresentation[D]] = d match {
+    case r: HasRight[_] => r.right match {
+      case r: IndexedRepresentation[D] => Some(r)
+      case _                           => None
     }
+    case _ => None
   }
 }
 /*

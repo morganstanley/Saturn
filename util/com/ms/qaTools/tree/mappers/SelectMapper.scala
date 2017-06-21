@@ -1,36 +1,17 @@
 package com.ms.qaTools.tree.mappers
 
-import com.ms.qaTools.tree.TreeNode
 import com.ms.qaTools.tree.XmlNode
 import com.ms.qaTools.tree.validator.XPathNodeLookup
-import com.ms.qaTools.xml.NamespaceContextImpl
-import org.w3c.dom.{ Node, Element }
-import com.sun.xml.internal.stream.events.NamespaceImpl
-import javax.xml.namespace.NamespaceContext
-import com.ms.qaTools.conversions.XmlToTreeNodeConversions._
-import com.ms.qaTools.io.rowWriter.file.XmlRowWriter
-import com.ms.qaTools.io._
-import com.ms.qaTools.conversions.JavaIOConversions._
-import org.w3c.dom.Document
-import com.ms.qaTools.tree._
-import com.ms.qaTools.xml._
+import com.ms.qaTools.conversions.XmlToTreeNodeConversions.xmlNodeToDocument
+import com.ms.qaTools.tree.XmlNode
 
-
-
-case class XmlNodeSelectMapper(xPath: String)
-  extends XmlNodeManyMapper {
-  override def apply(optionNode: Option[XmlNode]): Seq[Option[XmlNode]] = {
-    optionNode match {
-      case None => Seq(optionNode)
-      case Some(node) => {
-        implicit val nsContext = node.nsContext
-        val xPathLookup = XPathNodeLookup(xPath)
-        (xPathLookup.getNodes(node)).foldLeft(Seq[Option[XmlNode]]())((xmlNodes, retrievedNode) => {
-          xmlNodes :+ Option(XmlNode(xmlNodeToDocument(retrievedNode)))
-        })
-
-      }
-    }
+case class XmlNodeSelectMapper(xPath: String) extends XmlNodeManyMapper {
+  def apply(optionNode: Option[XmlNode]) = optionNode match {
+    case None => Seq(optionNode)
+    case Some(node) =>
+      implicit val nsContext = node.nsContext
+      XPathNodeLookup(xPath).getNodes(node).foldLeft(Seq[Option[XmlNode]]())((ns, n) =>
+        ns :+ Option(XmlNode(xmlNodeToDocument(n))))
   }
 }
 /*

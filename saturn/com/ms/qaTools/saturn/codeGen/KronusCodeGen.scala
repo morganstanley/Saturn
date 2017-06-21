@@ -38,26 +38,34 @@ class KronusCodeGenImpl(kronus: Backport) extends KronusCodeGen {
   def genStep(step: KronusStep) = {
     val c = step.getKronusCallConfiguration
     genFun(step, kronus.stepDefs(c.getDef), c.getArguments, true) map { tg =>
-      FutureExpr(tg.withMap(ScalaExpr(s"""{
-        case (r, m) =>
-          val kr = KronusResult(r, m)
-          IterationResult(kr.status, context, iterationMetaData, kr)
-      }""")).withRethrow(s"Error while evaluating Kronus Step ${step.getName}"))
+      FutureExpr {
+        tg.withMap(ScalaExpr(s"""{ r =>
+                                |  val kr = KronusResult(r, Nil)
+                                |  IterationResult(kr.status, context, iterationMetaData, kr)
+                                |}""".stripMargin)).withRethrow(s"Error while evaluating Kronus Step ${step.getName}")
+      }
     }
   }.rethrow(s"Error while generating Kronus Step ${step.getName}")
 
-  def genFun(caller: EObject, fd: FunctionDef, args: Seq[AbstractArgument], withMeta: Boolean) = {
-    val parmArgs = fd.getParameterDefs.map(parm => (parm, args.find(_.getName == parm.getName)))
-    val suppliedParmArgs = parmArgs collect {case (parm, Some(arg)) => (parm, arg)}
-    val defaultArgs      = parmArgs collect {case (parm, None)      => parm}
-    def addMeta(body: ScalaGen) = if (withMeta) {
-      val meta = (args.flatMap(genArgMeta) ++ defaultArgs.map(genParmMeta)).mkString("Seq(", ", ", ")")
-      Tuple2Expr(body, ScalaExpr(meta))
-    } else {
-      body
-    }
-    (suppliedParmArgs.map((genArg _).tupled) ++ defaultArgs.map(genDefaultArg)).toTrySeq map { forArgs =>
-      val funCall: TryGen = genFunCall(fd, forArgs, addMeta)
+  def genFun(caller: EObject, fd: FunctionDef, args: Seq[AbstractArgument], asResult: Boolean) = {
+    val argsByName = args.groupBy(_.getName)
+    fd.getParameterDefs.map { p =>
+      val name = p.getName
+      val pVal = argsByName.getOrElse(name, Nil) match {
+        case args if p.isList => args.map(genArg(_, p.getType)).toTrySeq.map { args =>
+          SeqTryExpr(args.map(_.withMap(ScalaExpr("com.ms.qaTools.saturn.kronus.runtime.Context.successful")))).toTryGen
+        }
+        case Seq(arg) =>
+          genArg(arg, p.getType)
+        case Nil =>
+          require(p.getDefaultValue != null, s"no default value for parameter $name")
+          Try(genExpression(p.getDefaultValue))
+        case args =>
+          throw new IllegalArgumentException(s"more than one argument supplied for parameter $name")
+      }
+      pVal.map(tg => ForAssignment(name, tg.withRethrow(s"An exception occurred while evaluating argument: `$name'.")))
+    }.toTrySeq.map { forArgs =>
+      val funCall: TryGen = genFunCall(fd, forArgs, asResult)
       genAttributes(caller, fd).fold(funCall) { attrs =>
         TryFnExpr(ConcatGen(Seq(attrs, funCall), "\n", "{", "}"))
       }.withRethrow {
@@ -66,40 +74,44 @@ class KronusCodeGenImpl(kronus: Backport) extends KronusCodeGen {
     }
   }.rethrow(s"Error while generating Kronus def ${fd.getName}")
 
-  def genFunCall(fd: FunctionDef, args: Seq[ForAssignment], addMeta: ScalaGen => ScalaGen) = {
-    fd.getValue match {
-      case code: ScalaCodeBlock =>
-        val body = ScalaExpr(code.getCodeStr)
-        code.getType match {
-          case "for"   => throw new Error("`for' scala code block is not supported")
-          case "yield" => ForTryExpr(args, addMeta(body))
-        }
+  def genFunCall(fd: FunctionDef, args: Seq[ForAssignment], coalesceToResult: Boolean) = {
+    val packageName = fd.eContainers.collectFirst {
+      case topLevel: TopLevelKronus => topLevel.getPackage.getModule
+    }.getOrElse(throw new Error(s"fail to get package of $fd"))
+    val kronusArgs = {
+      fd.getParameterDefs.map { pd =>
+        val name = pd.getName
+        s"$name = com.ms.qaTools.saturn.kronus.runtime.Context.successful($name)"
+      } ++ fd.hashtags.collectFirst { case Attributes(v) => s"$v = $v"}
+    }.mkString("(", ",", ")")
+    def resultExpr(r: String) =
+      if (coalesceToResult) s"$r match { case r: Result => r; case _ => Result(Passed)}" else r
+    val body = ScalaExpr {
+      s"""import com.ms.qaTools.saturn.kronus.runtime.Closeables
+         |import com.ms.qaTools.toolkit.{Result, Passed, Failed}
+         |val kronus = sc.kronusModules.get(new $packageName(Some(context.root))(sc.toKronusRunParameters))
+         |val result = kronus.${fd.getName}(Some(context), new Closeables)$kronusArgs
+         |${resultExpr("Await.result(result.future, Duration.Inf)._1. get")}""".stripMargin
     }
+    ForTryExpr(args, body)
   }
 
-  def genArg(parm: ParameterDef, 
-             arg: AbstractArgument) = {
-    require(parm.getName == arg.getName, s"${parm.getName} != ${arg.getName}")
-    val name = arg.getName
-    val tryGen = arg match {
-      case a: AttributeArgument =>
-        val str = ComplexValueStringGenerator(a.getValue)
-        if (parm.getType.getName == kronus.typeDefs("Int")) str.map(_.withMap(ScalaExpr("_.toInt")))
-        else str
-      case r: ResourceArgument  =>
-        ResourceGenerator(r.getResource)(appendOptions = ContextAppendOptions(true, Function.const(name.capitalize)))
-    }
-    tryGen.map(tg => ForAssignment(name, tg.withRethrow(s"An exception occurred while evaluating argument: `$name'.")))
-  }
-
-  def genDefaultArg(parm: ParameterDef) = Try {
-    require(parm.getDefaultValue != null, "parm.getDefaultValue == null")
-    ForAssignment(parm.getName, genExpression(parm.getDefaultValue))
+  protected def genArg(arg: AbstractArgument, typ: TypeInstance): Try[TryGen] = arg match {
+    case a: AttributeArgument =>
+      val str = ComplexValueStringGenerator(a.getValue).map(AttributeTry(_, a.getName))
+      typ.getName.getName match {
+        case t@("Int" | "Double" | "Boolean") => str.map(_.withMap(ScalaExpr("_.to" + t)))
+        case _                                => str
+      }
+    case r: ResourceArgument =>
+      ResourceGenerator(r.getResource)(appendOptions = ContextAppendOptions(true, Function.const(r.getName.capitalize)))
   }
 
   def genExpression(expr: Expression): TryGen = try expr match {
     case s: StringLiteral  => TryExpr(StringExpr(s.getValue), guaranteedSuccess = true)
     case n: IntegerLiteral => TryExpr(ScalaExpr(n.getValue.toString), guaranteedSuccess = true)
+    case x: DoubleLiteral  => TryExpr(ScalaExpr(x.getValue.toString), guaranteedSuccess = true)
+    case p: BooleanLiteral => TryExpr(ScalaExpr(p.isValue.toString), guaranteedSuccess = true)
     case fc: FunctionCall  =>
       val fd = fc.getMethod
       val params = {
@@ -125,13 +137,15 @@ class KronusCodeGenImpl(kronus: Backport) extends KronusCodeGen {
                 s"Mandatory parameter $pn in Kronus function ${fd.getName} is missing")
         ForAssignment(pn, genExpression(p.getDefaultValue))
       }
-      genFunCall(fd, argsAssign ++ defaultArgsAssign, identity)
+      genFunCall(fd, argsAssign ++ defaultArgsAssign, false)
   } catch {
     case e: Exception => throw new Exception(s"Exception while generating $expr", e)
   }
 
   def genAttributes(obj: EObject, fd: FunctionDef) =
-    fd.getHashtags.find(_.getMethod == kronus.hashtags("Attributes")) map { attrsCall =>
+    fd.eContainer.asInstanceOf[AnnotatedDef].getHashtags.find {
+      _.getMethod == kronus.hashtags("Attributes")
+    }.map { attrsCall =>
       val Seq(varName) = attrsCall.getParameterValues.map(_.ensuring(_.getName == "varName").getValue)
       val attrs = Iterator.iterate(obj)(_.eContainer).takeWhile(_ != null).collect {
         case x: AbstractRunGroup => x
@@ -178,19 +192,31 @@ class KronusCodeGenImpl(kronus: Backport) extends KronusCodeGen {
     genTypeInstance(typIns, funDef, call.eContainer)
   }
 
-  def genTypeInstance(ti: TypeInstance, fd: FunctionDef, owner: EObject): ParameterTypeInferencer.TypeTree = {
-    import ParameterTypeInferencer._
-    val name = genTypeDefName(ti.getName)
-    if (fd.getTypeParameters.map(_.getName).contains(name)) TypeParameter(name, TypeParameterOwner(owner))
-    else AppliedType(name, ti.getTypeParameters.map(genTypeInstance(_, fd, owner)))
-  }
+  def genTypeInstance(ti: TypeInstance, fd: FunctionDef, owner: EObject) = new TypeInstanceGenerator(fd, owner).gen(ti)
 
-  def genTypeDefName(td: TypeDef): String = Option(td.getValue).map {
-    _.getType match {
-      case tn: TypeName => tn.getName
-      case tr: TypeRef  => genTypeDefName(tr.getTypeRef)
+  class TypeInstanceGenerator(fd: FunctionDef, owner: EObject) {
+    import ParameterTypeInferencer._
+
+    val tparams = fd.getTypeParameters.toSet
+
+    def genTypeValue(tv: TypeValue, tparamsMapping: Map[TypeDef, TypeTree]): TypeTree = {
+      val targs = tv.getParms.map(genTypeValue(_, tparamsMapping))
+      tv.getType match {
+        case tn: TypeName => AppliedType(tn.getName, targs)
+        case tr: TypeRef  => tparamsMapping.getOrElse(tr.getTypeRef, genTypeDef(tr.getTypeRef, targs))
+      }
     }
-  }.getOrElse(td.getName)
+
+    def genTypeDef(td: TypeDef, targs: Seq[TypeTree]): TypeTree = {
+      require(td.getTypeParameters.size == targs.length,
+              s"Type ${td.getName} requires ${td.getTypeParameters.size} type parameters but ${targs.length} supplied")
+      if (tparams(td)) TypeParameter(td.getName, TypeParameterOwner(owner))
+      else if (td.getValue == null) AppliedType(td.getName, targs)
+      else genTypeValue(td.getValue, (td.getTypeParameters, targs).zipped.toMap)
+    }
+
+    def gen(ti: TypeInstance): TypeTree = genTypeDef(ti.getName, ti.getTypeParameters.map(gen))
+  }
 }
 /*
 Copyright 2017 Morgan Stanley

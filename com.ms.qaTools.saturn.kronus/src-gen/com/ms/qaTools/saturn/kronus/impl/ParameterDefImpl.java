@@ -2,18 +2,27 @@
  */
 package com.ms.qaTools.saturn.kronus.impl;
 
+import com.ms.qaTools.saturn.kronus.AnnotationCall;
 import com.ms.qaTools.saturn.kronus.Expression;
+import com.ms.qaTools.saturn.kronus.HashtagCall;
 import com.ms.qaTools.saturn.kronus.KronusPackage;
 import com.ms.qaTools.saturn.kronus.ParameterDef;
 import com.ms.qaTools.saturn.kronus.TypeInstance;
 
+import java.util.Collection;
+
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
+import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 
 /**
  * <!-- begin-user-doc -->
@@ -22,6 +31,8 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <p>
  * The following features are implemented:
  * <ul>
+ *   <li>{@link com.ms.qaTools.saturn.kronus.impl.ParameterDefImpl#getHashtags <em>Hashtags</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.kronus.impl.ParameterDefImpl#getAnnotations <em>Annotations</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.ParameterDefImpl#getName <em>Name</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.ParameterDefImpl#isByName <em>By Name</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.ParameterDefImpl#getType <em>Type</em>}</li>
@@ -34,6 +45,26 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  */
 public class ParameterDefImpl extends ReferenceableDefsImpl implements ParameterDef
 {
+  /**
+   * The cached value of the '{@link #getHashtags() <em>Hashtags</em>}' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getHashtags()
+   * @generated
+   * @ordered
+   */
+  protected EList<HashtagCall> hashtags;
+
+  /**
+   * The cached value of the '{@link #getAnnotations() <em>Annotations</em>}' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getAnnotations()
+   * @generated
+   * @ordered
+   */
+  protected EList<AnnotationCall> annotations;
+
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute.
    * <!-- begin-user-doc -->
@@ -133,6 +164,34 @@ public class ParameterDefImpl extends ReferenceableDefsImpl implements Parameter
   protected EClass eStaticClass()
   {
     return KronusPackage.Literals.PARAMETER_DEF;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EList<HashtagCall> getHashtags()
+  {
+    if (hashtags == null)
+    {
+      hashtags = new EObjectContainmentEList<HashtagCall>(HashtagCall.class, this, KronusPackage.PARAMETER_DEF__HASHTAGS);
+    }
+    return hashtags;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EList<AnnotationCall> getAnnotations()
+  {
+    if (annotations == null)
+    {
+      annotations = new EObjectContainmentEList<AnnotationCall>(AnnotationCall.class, this, KronusPackage.PARAMETER_DEF__ANNOTATIONS);
+    }
+    return annotations;
   }
 
   /**
@@ -310,6 +369,10 @@ public class ParameterDefImpl extends ReferenceableDefsImpl implements Parameter
   {
     switch (featureID)
     {
+      case KronusPackage.PARAMETER_DEF__HASHTAGS:
+        return ((InternalEList<?>)getHashtags()).basicRemove(otherEnd, msgs);
+      case KronusPackage.PARAMETER_DEF__ANNOTATIONS:
+        return ((InternalEList<?>)getAnnotations()).basicRemove(otherEnd, msgs);
       case KronusPackage.PARAMETER_DEF__TYPE:
         return basicSetType(null, msgs);
       case KronusPackage.PARAMETER_DEF__DEFAULT_VALUE:
@@ -328,6 +391,10 @@ public class ParameterDefImpl extends ReferenceableDefsImpl implements Parameter
   {
     switch (featureID)
     {
+      case KronusPackage.PARAMETER_DEF__HASHTAGS:
+        return getHashtags();
+      case KronusPackage.PARAMETER_DEF__ANNOTATIONS:
+        return getAnnotations();
       case KronusPackage.PARAMETER_DEF__NAME:
         return getName();
       case KronusPackage.PARAMETER_DEF__BY_NAME:
@@ -347,11 +414,20 @@ public class ParameterDefImpl extends ReferenceableDefsImpl implements Parameter
    * <!-- end-user-doc -->
    * @generated
    */
+  @SuppressWarnings("unchecked")
   @Override
   public void eSet(int featureID, Object newValue)
   {
     switch (featureID)
     {
+      case KronusPackage.PARAMETER_DEF__HASHTAGS:
+        getHashtags().clear();
+        getHashtags().addAll((Collection<? extends HashtagCall>)newValue);
+        return;
+      case KronusPackage.PARAMETER_DEF__ANNOTATIONS:
+        getAnnotations().clear();
+        getAnnotations().addAll((Collection<? extends AnnotationCall>)newValue);
+        return;
       case KronusPackage.PARAMETER_DEF__NAME:
         setName((String)newValue);
         return;
@@ -381,6 +457,12 @@ public class ParameterDefImpl extends ReferenceableDefsImpl implements Parameter
   {
     switch (featureID)
     {
+      case KronusPackage.PARAMETER_DEF__HASHTAGS:
+        getHashtags().clear();
+        return;
+      case KronusPackage.PARAMETER_DEF__ANNOTATIONS:
+        getAnnotations().clear();
+        return;
       case KronusPackage.PARAMETER_DEF__NAME:
         setName(NAME_EDEFAULT);
         return;
@@ -410,6 +492,10 @@ public class ParameterDefImpl extends ReferenceableDefsImpl implements Parameter
   {
     switch (featureID)
     {
+      case KronusPackage.PARAMETER_DEF__HASHTAGS:
+        return hashtags != null && !hashtags.isEmpty();
+      case KronusPackage.PARAMETER_DEF__ANNOTATIONS:
+        return annotations != null && !annotations.isEmpty();
       case KronusPackage.PARAMETER_DEF__NAME:
         return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
       case KronusPackage.PARAMETER_DEF__BY_NAME:

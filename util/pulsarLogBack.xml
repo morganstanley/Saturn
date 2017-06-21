@@ -3,7 +3,7 @@
   <contextName>pulsar</contextName>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-      <pattern>%d{HH:mm:ss.SSS} %-5level :::: %logger{36}  %msg%n </pattern>
+      <pattern>%d{YYYYMMdd}T%d{HHmmss,UTC}Z %level %logger{36} %msg%n</pattern>
     </encoder>
     <target>System.out</target>
   </appender>
@@ -11,9 +11,6 @@
     <level value="ERROR" />
   </logger>
   <logger name="com.sun">
-    <level value="ERROR" />
-  </logger>
-  <logger name="javax.xml">
     <level value="ERROR" />
   </logger>
   <logger name="javax">

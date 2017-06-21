@@ -1,6 +1,5 @@
 package com.ms.qaTools.json.generator
 
-import com.ms.qaTools.io.DelimitedRow
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.ParameterizedText
@@ -11,27 +10,25 @@ import com.fasterxml.jackson.databind.node.NumericNode
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.fasterxml.jackson.databind.JsonNode
 
-
-
 trait JSONValueCreator extends JSONLeafNodeCreator with ParameterizedText {
   val value: String
   val jsonNodeFactory = JsonNodeFactory.instance
-  override val isLegacyMode: Boolean = false
-  override val isLocal: Boolean = true
+  val isLegacyMode: Boolean = false
+  val isLocal: Boolean = true
 }
 
 case class JSONTextValueCreator(value: String) extends JSONValueCreator {
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): TextNode =
+  def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): TextNode =
     jsonNodeFactory.textNode(resolveValue(data))
 }
 
 case class JSONNumericValueCreator(value: String) extends JSONValueCreator {
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): NumericNode =
+  def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): NumericNode =
     jsonNodeFactory.numberNode(resolveValue(data).toDouble)
 }
 
 case class JSONBooleanValueCreator(value: String) extends JSONValueCreator {
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): BooleanNode =
+  def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): BooleanNode =
     jsonNodeFactory.booleanNode(resolveValue(data).toBoolean)
 }
 /*

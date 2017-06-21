@@ -1,26 +1,12 @@
 package com.ms.qaTools.io.rowSource
 
-import scala.annotation.tailrec
-import com.ms.qaTools.io.DelimitedRow
-
-
-
 trait ColumnDefinitions {
   def colDefs: Seq[ColumnDefinition]
-  def keyColDefs: Seq[ColumnDefinition] = colDefs.filter(_.isKey).sortBy(_.keyOrder)
-  def colNames: Seq[String] = colDefs map (_.name)
-  lazy val colMap: Map[String, ColumnDefinition] = colDefs.map { c => (c.name, c) }.toMap
-  def getColDefByName(colName: String): Option[ColumnDefinition] = colMap.get(colName)
-
-  class ColumnDefinitionsException(val colDefs: List[ColumnDefinition], message: String = null)
-    extends Throwable(message)
-
-  def keyColOrdering: Ordering[Seq[String]] = keyColOrdering(keyColDefs)
-  def keyColOrdering(keyColDefs: Seq[ColumnDefinition]): Ordering[Seq[String]] = ColumnOrdering(keyColDefs)
 }
 
 class ColumnOrdering(colIdxTyps: Seq[(Int, ColumnType)]) extends Ordering[Seq[String]] {
   require(colIdxTyps.nonEmpty, "No columns are defined as key to generate the key columns sort function.")
+
   def compare(xs: Seq[String], ys: Seq[String]) = colIdxTyps.foldLeft(0) {
     case (0, (idx, typ)) => typ.compare(xs(idx), ys(idx))
     case (res, _)        => res

@@ -3,76 +3,27 @@ package com.ms.qaTools.protobuf.mappers
 import com.google.protobuf.Message
 import com.ms.qaTools.protobuf.getField
 import com.google.protobuf.Descriptors.EnumValueDescriptor
+import com.google.protobuf.Descriptors.FieldDescriptor
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType
 
+case class PBComparatorMapper(field: Seq[String]) extends PBMessageComparatorMapper {
+  def apply(options: (Message, Message)) = {
+    val (m1, m2) = options
 
-
-case class PBComparatorMapper(
-  field: Seq[String])
-  extends PBMessageComparatorMapper {
-  override def apply(options: (Message, Message)): Boolean = {
-    val (inMessage1, inMessage2) = (options._1, options._2)
-
-    val aValues = field.map(x => {
-      val field1 = getField(x, inMessage1.toBuilder())
-      field1._2.getJavaType() match {
-        case JavaType.DOUBLE => {
-          val value = field1._3.asInstanceOf[Double]
-          value
-        }
-        case JavaType.ENUM => {
-          val value = field1._3.asInstanceOf[EnumValueDescriptor].getIndex()
-          value
-        }
-        case JavaType.FLOAT => {
-          val value = field1._3.asInstanceOf[Float]
-          value
-        }
-        case JavaType.INT => {
-          val value = field1._3.asInstanceOf[Int]
-          value
-        }
-        case JavaType.LONG => {
-          val value = field1._3.asInstanceOf[Long]
-          value
-        }
-      }
-    })
-
-    val bValues = field.map(x => {
-      val field1 = getField(x, inMessage2.toBuilder())
-      field1._2.getJavaType() match {
-        case JavaType.DOUBLE => {
-          val value = field1._3.asInstanceOf[Double]
-          value
-        }
-        case JavaType.ENUM => {
-          val value = field1._3.asInstanceOf[EnumValueDescriptor].getIndex()
-          value
-        }
-        case JavaType.FLOAT => {
-          val value = field1._3.asInstanceOf[Float]
-          value
-        }
-        case JavaType.INT => {
-          val value = field1._3.asInstanceOf[Int]
-          value
-        }
-        case JavaType.LONG => {
-          val value = field1._3.asInstanceOf[Long]
-          value
-        }
-      }
-    })
-
-    val compares = aValues.zip(bValues).map {
-      case (x, y) => x.compareTo(y)
+    def compare(fd: FieldDescriptor, u: Any, v: Any) = (fd.getJavaType, u, v) match {
+      case (JavaType.DOUBLE, u: Double,              v: Double)              => u.compareTo(v)
+      case (JavaType.ENUM,   u: EnumValueDescriptor, v: EnumValueDescriptor) => u.getIndex.compareTo(v.getIndex)
+      case (JavaType.FLOAT,  u: Float,               v: Float)               => u.compareTo(v)
+      case (JavaType.INT,    u: Int,                 v: Int)                 => u.compareTo(v)
+      case (JavaType.LONG,   u: Long,                v: Long)                => u.compareTo(v)
+      case _                                                                 => ???
     }
 
-    compares.find(_ != 0) match {
-      case None => false
-      case Some(value) => value < 0
-    }
+    field.map{f =>
+      val (_, fd1, v1) = getField(f, m1.toBuilder)
+      val (_, fd2, v2) = getField(f, m2.toBuilder)
+      compare(fd1, v1, v2).ensuring(fd1.getJavaType == fd2.getJavaType)
+    }.find(_ != 0).filter(_ > 0).nonEmpty
   }
 }
 /*

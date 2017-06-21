@@ -3,17 +3,14 @@ package com.ms.qaTools.protobuf
 import com.google.protobuf.Message
 import com.ms.qaTools.protobuf.mappers._
 
-
-
-class PBManipulator(pbRowSource: Iterator[Message],
-  manipulators: Seq[PBMessageManipulator[_, _]])
-  extends Iterator[Message] {
+class PBManipulator(pbRowSource: Iterator[Message], manipulators: Seq[PBMessageManipulator[_, _]])
+extends Iterator[Message] {
   val manipulatedIterator = {
     manipulators.foldLeft(pbRowSource)((resultRowSource, mapper) => {
       mapper match {
         case m: PBMessageReplaceMapper => resultRowSource.map(m(_))
         case f: PBMessageFilterMapper => resultRowSource.filter(f(_))
-        case c: PBMessageComparatorMapper => resultRowSource.toSeq.sortWith(c(_, _)).toIterator
+        case c: PBMessageComparatorMapper => resultRowSource.toSeq.sortWith(Function.untupled(c)).toIterator
       }
     })
   }
@@ -23,10 +20,8 @@ class PBManipulator(pbRowSource: Iterator[Message],
 }
 
 object PBManipulator {
-  def apply(pbRowSource: Iterator[Message],
-    manipulators: Seq[PBMessageManipulator[_, _]]): Iterator[Message] = {
+  def apply(pbRowSource: Iterator[Message], manipulators: Seq[PBMessageManipulator[_, _]]): Iterator[Message] =
     new PBManipulator(pbRowSource, manipulators)
-  }
 }
 /*
 Copyright 2017 Morgan Stanley

@@ -4,7 +4,6 @@ import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
 
 import scala.collection.AbstractIterator
 import scala.concurrent.duration.Duration
-import scala.util.{Try, Success, Failure}
 
 trait BlockingRowSource[+A] extends Iterator[A] { self =>
   /**
@@ -19,17 +18,35 @@ trait BlockingRowSource[+A] extends Iterator[A] { self =>
     def hasNext = self.waitHasNext(Duration.Zero)
     def next = if (hasNext) self.next() else Iterator.empty.next()
   }
+
+  override def toString = (if (waitHasNext(Duration.Zero)) "non-empty" else "empty") + " iterator"
+}
+
+object BufferedBlockingRowSource {
+  sealed trait Action[+A]
+  case class Put[A](x: A) extends Action[A]
+  case class Fail(exception: Throwable) extends Action[Nothing]
+  case object End extends Action[Nothing]
 }
 
 class BufferedBlockingRowSource[A] extends AbstractIterator[A] with BlockingRowSource[A] {
-  protected val buffer: BlockingQueue[Try[A]] = new LinkedBlockingQueue[Try[A]]()
+  import BufferedBlockingRowSource._
+
+  protected val buffer: BlockingQueue[Action[A]] = new LinkedBlockingQueue[Action[A]]()
   protected var _next: Option[A] = None
+  protected var _end: Boolean = false
 
   def waitHasNext(timeout: Duration) = synchronized {
-    _next.nonEmpty || {
-      _next = timeout match {
-        case Duration(n, unit)            => Option(buffer.poll(n, unit)).map(_.get)
-        case _ if timeout == Duration.Inf => Some(buffer.take().get)
+    _next.nonEmpty || !_end && {
+      val action = timeout match {
+        case Duration(n, unit)            => buffer.poll(n, unit)
+        case _ if timeout == Duration.Inf => buffer.take
+      }
+      action match {
+        case Put(x)  => _next = Some(x)
+        case null    => // _next is None
+        case Fail(e) => throw e
+        case End     => _end = true
       }
       _next.nonEmpty
     }
@@ -42,8 +59,11 @@ class BufferedBlockingRowSource[A] extends AbstractIterator[A] with BlockingRowS
     x
   }
 
-  def put(x: A) = buffer.put(Success(x))
-  def fail(t: Throwable) = buffer.put(Failure(t))
+  def action(a: Action[A]): Unit =
+    if (_end && a != End) throw new IllegalStateException("row source already closed") else buffer.put(a)
+
+  def put(x: A) = action(Put(x))
+  def fail(t: Throwable) = action(Fail(t))
 }
 /*
 Copyright 2017 Morgan Stanley

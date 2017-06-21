@@ -3,12 +3,11 @@ import com.mongodb.DBCursor
 import com.mongodb.DBObject
 import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
-import java.io.Closeable
 import scala.collection.JavaConversions.asScalaSet
 
-class MongoDBRowSource(val cursor: DBCursor) extends Iterator[DBObject] with ColumnDefinitions with Closeable {
+class MongoDBRowSource(val cursor: DBCursor) extends Iterator[DBObject] with ColumnDefinitions with java.io.Closeable {
   val columns = cursor.getQuery.keySet.toSeq
-  override val colDefs = columns.zipWithIndex.map{case (n, i) => ColumnDefinition(name = n, index = i)}
+  val colDefs = columns.zipWithIndex.map{case (n, i) => ColumnDefinition(name = n, index = i)}
   def hasNext = cursor.hasNext
   def next = cursor.next
   def close = cursor.close

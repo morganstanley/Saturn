@@ -1,18 +1,11 @@
 package com.ms.qaTools.tree
-
-import org.w3c.dom.NodeList
-import org.w3c.dom.Node
-import org.w3c.dom.NamedNodeMap
 import javax.xml.namespace.NamespaceContext
-import org.w3c.dom.Attr
-
-
+import scala.language.implicitConversions
 
 package object validator {
-  
   implicit def lookup2ImplicitMapper[NodeType](l: Lookup[NodeType]): Mapper[NodeType] = ImplicitMapper(l)
-  
-  implicit def string2XPathLookup(x: String)(implicit nsContext: NamespaceContext): XPathNodeLookup = 
+
+  implicit def string2XPathLookup(x: String)(implicit nsContext: NamespaceContext): XPathNodeLookup =
     XPathNodeLookup(x)
 }
 /*

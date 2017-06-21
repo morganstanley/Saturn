@@ -1,5 +1,6 @@
 package com.ms.qaTools.saturn.runtime.runner.module
 
+import scala.language.reflectiveCalls
 import scala.util.Try
 
 import com.ms.qaTools.io.DeviceIO
@@ -9,26 +10,27 @@ import com.ms.qaTools.io.Output
 import com.ms.qaTools.io.Writer
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.io.rowSource.DatabaseConnection
+import com.ms.qaTools.io.rowSource.jdbc.ProcedureCallSupport
 import com.ms.qaTools.saturn.codeGen.Context
 import com.ms.qaTools.saturn.codeGen.Utils.connectTry
-import com.ms.qaTools.toolkit.sql.SQLCall
-import com.ms.qaTools.toolkit.sql.SQLClear
-import com.ms.qaTools.toolkit.sql.SQLExecute
-import com.ms.qaTools.toolkit.sql.SQLFetch
-import com.ms.qaTools.toolkit.sql.SQLLoad
+import com.ms.qaTools.toolkit.SQLCall
+import com.ms.qaTools.toolkit.SQLClear
+import com.ms.qaTools.toolkit.SQLExecute
+import com.ms.qaTools.toolkit.SQLFetch
+import com.ms.qaTools.toolkit.SQLLoad
 
 object SQLCallRunner {
   def apply(context: Context,
-            dbResourceTry: Try[DatabaseConnection],
+            dbResourceTry: Try[DatabaseConnection with ProcedureCallSupport],
             sqlExprsTry: Seq[Try[String]],
-            outputFilenamesTry: Seq[Option[Try[String]]],
+            outputs: Seq[Try[String => Try[Writer[Iterator[Seq[String]]]]]],
             parameterIOsTry: Seq[Option[Try[Input[Iterator[Seq[String]]]]]]): Try[SQLCall] =
     SQLCall(dbResourceTry,
       sqlExprsTry,
-      outputFilenamesTry,
+      outputs,
       parameterIOsTry.zipWithIndex.map {
         case (option, i) =>
-                option.map(_.flatMap(input => connectTry(context, input.input, s"ParameterFile_$i", false)))
+          option.map(_.flatMap(input => connectTry(context, input.input, s"ParameterFile_$i", false)))
       }).rethrow("An exception occurred while running SQLCall.")
 }
 
@@ -85,7 +87,7 @@ object SQLLoadRunner {
     dbResource <- dbResourceTry.rethrow("An exception occurred while connection database resource.")
     tables <- tablesTry.toTrySeq.rethrow("An exception occurred while generating table strings.")
     inputs <- tables.zipWithIndex.map {
-      case ((name, input, cleanLoad), i) => Try { SQLLoad.Input(name, connectTry(context, input.input, s"Input_$i", false).get, cleanLoad) }.rethrow("An exception occurred while connecting input resources.")
+      case ((name, input, cleanLoad), i) => connectTry(context, input.input, s"Input_$i", false).map(SQLLoad.Input(name, _, cleanLoad)).rethrow("An exception occurred while connecting input resources.")
     }.toTrySeq
   } yield {
     SQLLoad(dbResource, inputs)

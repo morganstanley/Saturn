@@ -27,12 +27,12 @@ object SQLTypeParameter {
     def get(i: Int, s: CallableStatement): Option[T]
     def get(i: Int, s: ResultSet): Option[T]
 
-    def set(i: Int, value: String, s: PreparedStatement) {
-      if (value == null) s.setNull(i, Types.VARCHAR) else _set(i, value, s)
-    }
+    def set(i: Int, value: String, s: PreparedStatement) =
+      if (value == null) s.setNull(i, s.getParameterMetaData.getParameterType(i))
+      else _set(i, value, s)
   }
 
-  case object SQLBlobParameterGetSet extends SQLParameterGetSet[Blob] {    
+  case object SQLBlobParameterGetSet extends SQLParameterGetSet[Blob] {
     def _set(i: Int, value: String, s: PreparedStatement) = ???
     def get(i: Int, s: CallableStatement) = optGetter(s, s.getBlob(i))
     def get(i: Int, r: ResultSet) = optGetter(r, r.getBlob(i))
@@ -143,7 +143,7 @@ object SQLTypeParameter {
   case object SQLBigIntegerParameterGetSet extends SQLParameterGetSet[BigInt] {
     def _set(i: Int, value: String, s: PreparedStatement) = s.setLong(i, value.toLong)
     def get(i: Int, s: CallableStatement) = optGetter(s, s.getLong(i))
-    def get(i: Int, r: ResultSet) = optGetter(r, r.getLong(i))  
+    def get(i: Int, r: ResultSet) = optGetter(r, r.getLong(i))
   }
 
   def apply(sqlType: Int): SQLParameterGetSet[_ >: Null <: AnyRef] = sqlType match {

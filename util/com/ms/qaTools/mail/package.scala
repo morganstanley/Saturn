@@ -9,6 +9,7 @@ import javax.mail.internet.{ MimeBodyPart => JMimeBodyPart }
 import javax.mail.internet.{ MimeMessage => JMimeMessage }
 import javax.mail.internet.{ MimeMultipart => JMimeMultipart }
 import com.ms.qaTools.mail.Message
+import scala.language.implicitConversions
 
 package object mail {
   implicit def toMimeMessage(message: Message)(implicit session: JSession) = {
@@ -24,7 +25,7 @@ package object mail {
     m.setContent(content)
     m
   }
-  
+
   implicit def toMailMessage(msg: javax.mail.Message): Message = {
     def getRecipients0(t: JMessage.RecipientType) = Option(msg.getRecipients(t)).fold(Seq[String]()) {_ map {_.toString}}
     val to = getRecipients0(JMessage.RecipientType.TO)
@@ -34,9 +35,9 @@ package object mail {
     val (messageBodyPart, attachments) = msg.getContent() match {
         case m: JMimeMultipart => (m.getBodyPart(0), (1 until m.getCount()).map {m.getBodyPart(_)})
         case m: JMimeBodyPart => (m, Nil)
-      }    
+      }
     new Message(to, msg.getSubject(), messageBodyPart, from, attachments, cc, bcc)
-  }  
+  }
 }
 /*
 Copyright 2017 Morgan Stanley

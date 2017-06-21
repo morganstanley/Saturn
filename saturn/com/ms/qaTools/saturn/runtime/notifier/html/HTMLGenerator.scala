@@ -1,6 +1,6 @@
 package com.ms.qaTools.saturn.runtime.notifier.html
 
-import com.ms.qaTools.toolkit.Result
+import com.ms.qaTools.{toolkit => tk}
 import com.ms.qaTools.saturn.runtime.RunGroupIteratorResult
 import org.eclipse.emf.ecore.EObject
 import com.ms.qaTools.saturn.runtime.RunGroupIterator
@@ -8,7 +8,6 @@ import com.ms.qaTools.saturn.runtime.ScalarRunGroupIteratorResult
 import com.ms.qaTools.saturn.runtime.RowSourceRunGroupIteratorResult
 import com.ms.qaTools.saturn.runtime.RunGroupResult
 import org.jsoup.nodes.Element
-import com.ms.qaTools.toolkit._
 import com.ms.qaTools.saturn.dsl.annotation.ScenarioAnnotation
 import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.dsl.annotation.OnResultStatus
@@ -27,18 +26,18 @@ object HTMLCSS {
   def PANEL_CLASS(isExpanded: Boolean) = if(isExpanded) PANEL else PANEL_COLLAPSED
 }
 
-abstract class HTMLGenerator[IteratorResultType <: RunGroupIteratorResult, IterationResultType <: Result](eObject: EObject,
+abstract class HTMLGenerator[IteratorResultType <: RunGroupIteratorResult, IterationResultType <: tk.Result](eObject: EObject,
                                                                            iter: RunGroupIterator[IteratorResultType],
                                                                            resultContext: SaturnResultContext,
                                                                            verbosity: Option[VerbosityLevel] = None)(implicit sc: SaturnExecutionContext) {
 
   protected val verbosityLevel = verbosity.getOrElse(sc.outputVerbosity)
 
-  def getAnnotationByResult(scenarioAnnotations: TraversableOnce[ScenarioAnnotation], status: Status): Option[ScenarioAnnotation] = getAnnotationByResult(scenarioAnnotations.map(a => a.onStatus -> a).toMap, status)
-  def getAnnotationByResult(scenarioAnnotationMap: Map[OnResultStatus, ScenarioAnnotation], status: Status): Option[ScenarioAnnotation] = Option(status match {
-    case Passed() => scenarioAnnotationMap.getOrElse(OnPassResultStatus, scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null))
-    case Failed() => scenarioAnnotationMap.getOrElse(OnFailResultStatus, scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null))
-    case NotRun() => scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null)
+  def getAnnotationByResult(scenarioAnnotations: TraversableOnce[ScenarioAnnotation], status: tk.Status): Option[ScenarioAnnotation] = getAnnotationByResult(scenarioAnnotations.map(a => a.onStatus -> a).toMap, status)
+  def getAnnotationByResult(scenarioAnnotationMap: Map[OnResultStatus, ScenarioAnnotation], status: tk.Status): Option[ScenarioAnnotation] = Option(status match {
+    case tk.Passed => scenarioAnnotationMap.getOrElse(OnPassResultStatus, scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null))
+    case tk.Failed => scenarioAnnotationMap.getOrElse(OnFailResultStatus, scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null))
+    case tk.NotRun => scenarioAnnotationMap.getOrElse(OnAnyResultStatus, null)
   })
 
   def createPanel(parentElement: Element, result: IteratorResultType, asScenario: Boolean = false): Unit
@@ -50,7 +49,7 @@ abstract class HTMLGenerator[IteratorResultType <: RunGroupIteratorResult, Itera
 
   protected def createHeaderPanel(
     parentElement: Element,
-    result: Result,
+    result: tk.Result,
     iconClass: String,
     title: String,
     description: String,
@@ -64,11 +63,11 @@ abstract class HTMLGenerator[IteratorResultType <: RunGroupIteratorResult, Itera
     val headerType = if (asScenario && isEObjectScenario(scenarioAnnotations)) "scenario" else "step"
     val headerEnd = if (asScenario && isEObjectScenario(scenarioAnnotations)) "" else "Name"
 
-    def classes(r: Status) = {
+    def classes(r: tk.Status) = {
         r match {
-          case Passed() => ("iconProp " + iconClass, headerType + "Pass" + headerEnd, headerType + "PassDescription")
-          case Failed() => ("iconProp " + iconClass, headerType + "Fail" + headerEnd, headerType + "FailDescription")
-          case NotRun() => throw new Error("Not executed scenario should not be outputted as HTML.")
+          case tk.Passed => ("iconProp " + iconClass, headerType + "Pass" + headerEnd, headerType + "PassDescription")
+          case tk.Failed => ("iconProp " + iconClass, headerType + "Fail" + headerEnd, headerType + "FailDescription")
+          case tk.NotRun => throw new Error("Not executed scenario should not be outputted as HTML.")
         }
     }
 
@@ -112,7 +111,7 @@ abstract class HTMLGenerator[IteratorResultType <: RunGroupIteratorResult, Itera
    * If the header is a wrapping header group for a repetition handler then display the title field
    * Else Display the title in the far right section
    */
-  protected def getHeaderTitleAndDescription(result: Result, displayRepetitionTitle: Boolean = false, scenarioAnnotations: Seq[ScenarioAnnotation] = Nil) = {
+  protected def getHeaderTitleAndDescription(result: tk.Result, displayRepetitionTitle: Boolean = false, scenarioAnnotations: Seq[ScenarioAnnotation] = Nil) = {
     scenarioAnnotations match {
       case Nil => (iter.name, "")
       case xs => {
@@ -125,7 +124,7 @@ abstract class HTMLGenerator[IteratorResultType <: RunGroupIteratorResult, Itera
   }
 
   def createScalarResultHeaderPanel(parentElement: Element,
-                                    result: Result,
+                                    result: tk.Result,
                                     iterationNo: Option[Int] = None,
                                     asScenario: Boolean = false,
                                     scenarioAnnotations: Seq[ScenarioAnnotation] = Nil,

@@ -47,11 +47,6 @@ package object repository {
 
     implicit def readSeqDepResolverJsonProtocolFormat(resolvers: JsValue) = resolvers match { case a: JsArray => a.elements.map { depResolverJsonProtocolFormat.read _ } }
     implicit def writeseqDepResolverJsonProtocolFormat(resolvers: Seq[DependencyResolver]) = JsArray(resolvers.map {depResolverJsonProtocolFormat.write _}.toVector)
-
-    implicit val releaseJsonProtocolFormat = jsonFormat4(Release.apply)
-
-    implicit def jsValueToReleases(v: JsValue): Seq[Release] = v match { case a: JsArray => a.elements.map { releaseJsonProtocolFormat.read(_) } }
-    implicit def releasesToJsValue(r: Seq[Release]): JsValue = JsArray(r.map { releaseJsonProtocolFormat.write(_) }.toVector)
   }
 
 }/*

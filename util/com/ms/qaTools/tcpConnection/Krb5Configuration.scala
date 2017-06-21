@@ -73,28 +73,28 @@ class Krb5Configuration {
       }
     }
 
-    val conf: Configuration = new Configuration() {
+    val conf = new Configuration() {
       def getAppConfigurationEntry(name: String): Array[AppConfigurationEntry] = {
-        var options: HashMap[String, String] = new HashMap[String, String];
+        var options: HashMap[String, String] = null
         synchronized {
-          options = clientOptions;
+          options = clientOptions
         }
         // "useTicketCache" and "doNotPrompt" both are true. This combination results into
         // checking the default cache for TGT and populate the Subject with the principal
         // and TGT. If the TGT is not available, do not prompt the user, instead fail the
         // authentication.
-        options.put(JAVA_KRB_OPT_DO_NOT_PROMPT, "true");
+        options.put(JAVA_KRB_OPT_DO_NOT_PROMPT, "true")
 
         // This class represents a single LoginModule entry configured for the application.
         // Each respective AppConfigurationEntry contains a LoginModule name, a control flag
         // and LoginModule-specific options.
-        var configurations: Array[AppConfigurationEntry] = new Array[AppConfigurationEntry](1)
+        val configurations = new Array[AppConfigurationEntry](1)
         configurations.update(0, new AppConfigurationEntry(JAVA_KRB_LOGIN_MODULE, AppConfigurationEntry.LoginModuleControlFlag.REQUIRED, options))
-        configurations;
+        configurations
       }
     }
 
-    Configuration.setConfiguration(conf);
+    Configuration.setConfiguration(conf)
   }
 }
 /*

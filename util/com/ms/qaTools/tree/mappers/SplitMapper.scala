@@ -1,35 +1,17 @@
 package com.ms.qaTools.tree.mappers
 
-import com.ms.qaTools.tree.TreeNode
 import com.ms.qaTools.tree.XmlNode
 import com.ms.qaTools.tree.validator.XPathNodeLookup
-import com.ms.qaTools.xml.NamespaceContextImpl
-import org.w3c.dom.{ Node, Element }
-import com.sun.xml.internal.stream.events.NamespaceImpl
-import javax.xml.namespace.NamespaceContext
-import com.ms.qaTools.conversions.XmlToTreeNodeConversions._
-import com.ms.qaTools.io.rowWriter.file.XmlRowWriter
+import com.ms.qaTools.io.rowWriter.XmlRowWriter
 import com.ms.qaTools.io.rowSource.Utils._
-import com.ms.qaTools.io._
-import com.ms.qaTools.conversions.JavaIOConversions._
-import org.w3c.dom.Document
-import com.ms.qaTools.tree._
-import com.ms.qaTools.xml._
 import java.io.FileWriter
 
-case class XmlNodeSplitMapper(
-  keys: Seq[String] = Seq(),
-  outputDir: String = ".")
-  extends XmlNodeManyToManyMapper {
-  override def apply(optionNodes: Seq[Option[XmlNode]]): Seq[Option[XmlNode]] = {
-    optionNodes.foldLeft(Seq[XmlNode]())((xmlNodes, option) =>
-      if (option == None) xmlNodes else xmlNodes :+ option.get).groupBy(xmlNode =>
+case class XmlNodeSplitMapper(keys: Seq[String] = Seq(), outputDir: String = ".") extends XmlNodeManyToManyMapper {
+  def apply(optionNodes: Seq[Option[XmlNode]]): Seq[Option[XmlNode]] = {
+    optionNodes.flatten.groupBy(xmlNode =>
       keys.map(XPathNodeLookup(_)(xmlNode.nsContext).getValue(xmlNode))).foreach {
-      case (keys, xmlNodes) => {
-        val fileName = keys.mkString(".") + ".xml"
-        val xmlRowWriter = new XmlRowWriter(new FileWriter(outputDir + "/" + fileName))
-        xmlRowWriter.write(xmlNodes.map{_.node.toDocument}.toIterator)
-      }
+      case (keys, xmlNodes) =>
+        XmlRowWriter(new FileWriter(outputDir + "/" + keys.mkString(".") + ".xml")).write(xmlNodes.map{_.node.toDocument}.toIterator)
     }
     Seq()
   }

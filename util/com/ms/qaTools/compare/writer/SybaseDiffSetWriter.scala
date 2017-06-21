@@ -1,5 +1,5 @@
 package com.ms.qaTools.compare.writer
-import com.ms.qaTools.compare.CompareColDef
+import com.ms.qaTools.compare.CompareColDefs
 import com.ms.qaTools.io.rowSource.DatabaseConnection
 import com.ms.qaTools.io.rowSource.jdbc.ExecuteSupport
 import com.ms.qaTools.io.rowSource.jdbc.FetchSupport
@@ -7,17 +7,14 @@ import com.ms.qaTools.io.rowSource.jdbc.ResultSetRowSource
 import com.ms.qaTools.io.rowSource.Utils._
 import com.ms.qaTools.Logger
 
-case class SybaseDiffSetWriter(dbConnection: DatabaseConnection with ExecuteSupport with FetchSupport, colDefs: Seq[CompareColDef], tblPrefix: String)
+class SybaseDiffSetWriter(dbConnection: DatabaseConnection with ExecuteSupport with FetchSupport, colDefs: CompareColDefs, tblPrefix: String)
 extends DataBaseDiffSetWriter(dbConnection, colDefs, tblPrefix) {
-  val logger = Logger(this.getClass)
+  val logger = Logger(getClass)
   setupDataBaseEnvironment
 
-  /**
-   * Method to create the tables used to insert the info from the DiffSet
-   */
-  private def createTables {
-    create("table", "leftTable (rowId varchar(12) not null primary key, " + orderedColDefs(LEFT).map{_.leftColumnDefinition.name + " varchar(256) null "}.toList.mkString(",") + ")")
-    create("table", "rightTable (rowId varchar(12) not null primary key, " + orderedColDefs(RIGHT).map{_.rightColumnDefinition.name + " varchar(256) null "}.toList.mkString(",") + ")")
+  private def createTables() = {
+    create("table", "leftTable (rowId varchar(12) not null primary key, " + sortedLeftColumns.map{_._1.name + " varchar(256) null "}.toList.mkString(",") + ")")
+    create("table", "rightTable (rowId varchar(12) not null primary key, " + sortedRightColumns.map{_._1.name + " varchar(256) null "}.toList.mkString(",") + ")")
     create("table", "diffs (diffId varchar(12) not null primary key, leftId varchar(12) null, rightId varchar(12) null, statusId varchar(12) null, reason varchar(256) null)")
     create("index", s"diffs_leftId on ${tblPrefix}diffs (leftId)")
     create("index", s"diffs_rightId on ${tblPrefix}diffs (rightId)")
@@ -34,10 +31,7 @@ extends DataBaseDiffSetWriter(dbConnection, colDefs, tblPrefix) {
     dbConnection.execute(q)
   }
 
-  /**
-   * Method used to drop all the tables associated with the dsCompare process
-   */
-  private def cleanTables {
+  private def cleanTables() = {
     dbConnection.fetch("SELECT name from sysobjects WHERE type='U' AND name IN ('diffs', 'cellDiffs', 'xPathDiffs', 'status', 'leftTable', 'rightTable')").foreach(rs => {
       val dropQuery = "DROP TABLE " + rs.toSeqString.mkString
       logger.debug("Clean Sybase Diffset tables: " + dropQuery)
@@ -51,78 +45,65 @@ extends DataBaseDiffSetWriter(dbConnection, colDefs, tblPrefix) {
     })
   }
 
-  /**
-   * Method to create the views used in the data compare process
-   */
-  override def createViews {
-    val genericColumns = leftColNames.zipWithIndex.map{case (column, index) =>
+  override def createViews() = {
+    val genericColumns = sortedLeftColumns.map(_._1.name).zipWithIndex.map{case (column, index) =>
       tblPrefix + "leftTable." + column + " AS " + column + "_leftVal," +
         tblPrefix + "rightTable." + column + " AS " + column + "_rightVal," +
         "CASE WHEN (" + tblPrefix + "leftTable." + column + " IS NULL) THEN '3' WHEN (" + tblPrefix + "rightTable." + column + " IS NULL) THEN '2'" +
         " ELSE COALESCE((SELECT statusId FROM " + tblPrefix + "cellDiffs WHERE diffId = diffs.diffId and leftIdx = '" + (index + 1) + "'), '0') END AS " + column + "_diffStatus"
     }.toList.mkString(",")
 
-    val createQueries = Seq(
-        // Create view summary
-        "CREATE VIEW summary AS SELECT * FROM " +
-      "(SELECT COUNT(0) AS leftDsNumRows FROM " + tblPrefix + "leftTable) leftDsNumRows," +
-      "(SELECT COUNT(0) AS rightDsNumRows FROM " + tblPrefix + "rightTable) rightDsNumRows," +
-      "(SELECT COUNT(statusId) AS different FROM " + tblPrefix + "diffs WHERE statusId = '1') different," +
-      "(SELECT COUNT(statusId) AS inLeftOnly FROM " + tblPrefix + "diffs WHERE statusId = '2') inLeftOnly," +
-      "(SELECT COUNT(statusId) AS inRightOnly FROM " + tblPrefix + "diffs WHERE statusId = '3') inRightOnly," +
-      "(SELECT COUNT(statusId) AS explained FROM " + tblPrefix + "diffs WHERE statusId = '4') explained," +
-      "(SELECT COUNT(statusId) AS identical FROM " + tblPrefix + "diffs WHERE statusId = '0') identical," +
-      "(SELECT COUNT(statusId) AS validatePass FROM " + tblPrefix + "diffs WHERE statusId = '5') validatePass," +
-      "(SELECT COUNT(statusId) AS validateFail FROM " + tblPrefix + "diffs WHERE statusId = '6') validateFail" +
-      "",
+    Seq(
+      // Create view summary
+      "CREATE VIEW summary AS SELECT * FROM " +
+        "(SELECT COUNT(0) AS leftDsNumRows FROM " + tblPrefix + "leftTable) leftDsNumRows," +
+        "(SELECT COUNT(0) AS rightDsNumRows FROM " + tblPrefix + "rightTable) rightDsNumRows," +
+        "(SELECT COUNT(statusId) AS different FROM " + tblPrefix + "diffs WHERE statusId = '1') different," +
+        "(SELECT COUNT(statusId) AS inLeftOnly FROM " + tblPrefix + "diffs WHERE statusId = '2') inLeftOnly," +
+        "(SELECT COUNT(statusId) AS inRightOnly FROM " + tblPrefix + "diffs WHERE statusId = '3') inRightOnly," +
+        "(SELECT COUNT(statusId) AS explained FROM " + tblPrefix + "diffs WHERE statusId = '4') explained," +
+        "(SELECT COUNT(statusId) AS identical FROM " + tblPrefix + "diffs WHERE statusId = '0') identical," +
+        "(SELECT COUNT(statusId) AS validatePass FROM " + tblPrefix + "diffs WHERE statusId = '5') validatePass," +
+        "(SELECT COUNT(statusId) AS validateFail FROM " + tblPrefix + "diffs WHERE statusId = '6') validateFail",
       // Create view inLeftOnly
       "CREATE VIEW inLeftOnly AS SELECT " + tblPrefix + "leftTable.* " +
-      "from " + tblPrefix + "diffs AS diffs JOIN " + tblPrefix + "leftTable ON " +
-      "leftTable.rowId = diffs.leftId AND diffs.statusId = '2'",
+        "from " + tblPrefix + "diffs AS diffs JOIN " + tblPrefix + "leftTable ON " +
+        "leftTable.rowId = diffs.leftId AND diffs.statusId = '2'",
       // Create view inRightOnly
       "CREATE VIEW inRightOnly AS SELECT " + tblPrefix + "rightTable.* " +
-      "from " + tblPrefix + "diffs AS diffs JOIN " + tblPrefix + "rightTable ON " +
-      "rightTable.rowId = diffs.rightId AND diffs.statusId = '3'",
+        "from " + tblPrefix + "diffs AS diffs JOIN " + tblPrefix + "rightTable ON " +
+        "rightTable.rowId = diffs.rightId AND diffs.statusId = '3'",
       // Create view identical
       "CREATE VIEW identical AS SELECT " + tblPrefix + "leftTable.rowId AS leftRowId," +
-      tblPrefix + "rightTable.rowId AS rightRowId," +
-      tblPrefix + "diffs.statusId AS statusId," +
-      // Create dynamically the name of the columns
-      genericColumns +
-      " FROM " + tblPrefix + "diffs AS diffs JOIN " + tblPrefix + "leftTable ON leftTable.rowId = diffs.leftId " +
-      " JOIN " + tblPrefix + "rightTable ON rightTable.rowId = diffs.rightId AND diffs.statusId = '0'",
+        tblPrefix + "rightTable.rowId AS rightRowId," +
+        tblPrefix + "diffs.statusId AS statusId," +
+        // Create dynamically the name of the columns
+        genericColumns +
+        " FROM " + tblPrefix + "diffs AS diffs JOIN " + tblPrefix + "leftTable ON leftTable.rowId = diffs.leftId " +
+        " JOIN " + tblPrefix + "rightTable ON rightTable.rowId = diffs.rightId AND diffs.statusId = '0'",
       // Create view different
       "CREATE VIEW different AS SELECT " + tblPrefix + "leftTable.rowId AS leftRowId," +
-      tblPrefix + "rightTable.rowId AS rightRowId," +
-      tblPrefix + "diffs.statusId AS statusId," +
-      // Create dynamically the name of the columns
-      genericColumns +
-      " FROM " + tblPrefix + "diffs AS diffs JOIN " + tblPrefix + "leftTable ON leftTable.rowId = diffs.leftId " +
-      " JOIN " + tblPrefix + "rightTable ON rightTable.rowId = diffs.rightId AND diffs.statusId = '1'",
+        tblPrefix + "rightTable.rowId AS rightRowId," +
+        tblPrefix + "diffs.statusId AS statusId," +
+        // Create dynamically the name of the columns
+        genericColumns +
+        " FROM " + tblPrefix + "diffs AS diffs JOIN " + tblPrefix + "leftTable ON leftTable.rowId = diffs.leftId " +
+        " JOIN " + tblPrefix + "rightTable ON rightTable.rowId = diffs.rightId AND diffs.statusId = '1'",
       // Create view explained
       "CREATE VIEW explained AS SELECT " + tblPrefix + "leftTable.rowId AS leftRowId," +
-      tblPrefix + "rightTable.rowId AS rightRowId," +
-      tblPrefix + "diffs.statusId AS statusId," +
-      // Create dynamically the name of the columns
-      genericColumns +
-      " FROM " + tblPrefix + "diffs AS diffs JOIN " + tblPrefix + "leftTable ON leftTable.rowId = diffs.leftId " +
-      " JOIN " + tblPrefix + "rightTable ON rightTable.rowId = diffs.rightId AND diffs.statusId = '4'"
-      )
-
-    for(q <- createQueries) {
+        tblPrefix + "rightTable.rowId AS rightRowId," +
+        tblPrefix + "diffs.statusId AS statusId," +
+        // Create dynamically the name of the columns
+        genericColumns +
+        " FROM " + tblPrefix + "diffs AS diffs JOIN " + tblPrefix + "leftTable ON leftTable.rowId = diffs.leftId " +
+        " JOIN " + tblPrefix + "rightTable ON rightTable.rowId = diffs.rightId AND diffs.statusId = '4'"
+    ).foreach{q =>
       logger.debug("Create Sybase DiffSet views: " + q, null)
       dbConnection.execute(q)
     }
   }
 
-  /**
-   * Method to set up the environment
-   */
-  override def setupDataBaseEnvironment {
-    cleanTables
-    createTables
-    createValidStatus
-  }
+  def setupDataBaseEnvironment() = {cleanTables; createTables; createValidStatus}
 }
 /*
 Copyright 2017 Morgan Stanley

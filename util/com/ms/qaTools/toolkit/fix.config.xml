@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message xmlns:v="http://www.ms.com/qaTools/xmlValidate/2010" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <v:Matchers xsi:type="v:KeyedMatcher" global="true">
+    <v:Mapper xsi:type="v:ImplicitMapper">
+      <v:XPathMapping>field</v:XPathMapping>
+    </v:Mapper>
+    <v:XPathKeys>@tag</v:XPathKeys>
+  </v:Matchers>
+  
+  <v:Matchers xsi:type="v:KeyedMatcher" global="true">
+    <v:Mapper xsi:type="v:ImplicitMapper">
+      <v:XPathMapping>groups</v:XPathMapping>
+    </v:Mapper>
+    <v:XPathKeys>@tag</v:XPathKeys>
+  </v:Matchers>
+   
+  <v:Ignores>
+    <v:XPaths>trailer/field[@tag = "10"]</v:XPaths>
+  </v:Ignores>
+  
+</message>

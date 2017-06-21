@@ -11,7 +11,7 @@ trait ExecuteSupport {self: DatabaseConnection =>
         if (!row.isEmpty)
           for (i <- 0 until statement.getParameterMetaData.getParameterCount)
             SQLTypeParameter(statement.getParameterMetaData.getParameterType(i + 1)).set(i + 1, row(i), statement)
-        updated + statement.executeUpdate
+        updated + statement.exclusivelyExecuteUpdate()
       }
       statement.close
       if (!dbConnection.getAutoCommit) dbConnection.commit

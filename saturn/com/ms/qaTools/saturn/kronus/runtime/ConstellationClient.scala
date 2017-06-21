@@ -10,8 +10,11 @@ import spray.http.HttpRequest
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
 
 object ConstellationClient {
-  def apply(url: URL): IConstellationClient = try {
-    Class.forName("com.ms.qaTools.saturn.kronus.runtime.MsConstellationClient").getConstructor(classOf[URL]).newInstance(url).asInstanceOf[IConstellationClient]
+  def apply(url: URL, reportError: Throwable => Unit): IConstellationClient = try {
+    Class.forName("com.ms.qaTools.saturn.kronus.runtime.MsConstellationClient")
+      .getConstructor(classOf[URL], classOf[Throwable => Unit])
+      .newInstance(url, reportError)
+      .asInstanceOf[IConstellationClient]
   } catch {
     case _: ClassNotFoundException => new NopConstellationClient
   }

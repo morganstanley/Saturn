@@ -1,6 +1,5 @@
 package com.ms.qaTools.json.generator
 
-import com.ms.qaTools.io.DelimitedRow
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.ParameterizedText
@@ -10,12 +9,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.JsonNode
 import scala.collection.JavaConversions._
 
-
-
 case class JSONArrayCreator(elements: List[NodeCreator[JsonNode, JsonNode]]) extends JSONInnerNodeCreator {
-  override val isLocal: Boolean = false
-  override def creators = elements
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): ArrayNode = {
+  val isLocal: Boolean = false
+  def creators = elements
+  def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): ArrayNode = {
     val clocalIterators = this.adjustedIterators
     val arrayNode = JsonNodeFactory.instance.arrayNode()
     if (clocalIterators.isEmpty) {

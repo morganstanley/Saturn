@@ -1,21 +1,18 @@
 package com.ms.qaTools.xml.generator
 
-import com.ms.qaTools.io._
 import org.w3c.dom.Document
 import org.w3c.dom.CDATASection
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.ParameterizedText
 
-
-
-class XmlCDATACreator(cdata: CDATASection, override val isLegacyMode: Boolean) extends XmlLeafNodeCreator with ParameterizedText {
+class XmlCDATACreator(cdata: CDATASection, val isLegacyMode: Boolean) extends XmlLeafNodeCreator with ParameterizedText {
   require(cdata != null, "cdata node must not be null")
-  override val isLocal: Boolean = true
+  val isLocal = true
   lazy val value: String = cdata.getWholeText()
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: Document): CDATASection = {
+
+  override def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: Document): CDATASection =
     doc.createCDATASection(resolveValue(data))
-  }
 
   override def toString: String = "XmlCDATACreator(" + parts.mkString(",") + ")"
 }

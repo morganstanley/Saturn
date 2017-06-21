@@ -9,6 +9,7 @@ import com.ms.qaTools.saturn.exception.exception;
 import com.ms.qaTools.saturn.types.AbstractAnnotation;
 import com.ms.qaTools.saturn.types.AbstractRepetitionHandler;
 import com.ms.qaTools.saturn.types.AbstractRunGroupModifier;
+import com.ms.qaTools.saturn.types.AlmId;
 import com.ms.qaTools.saturn.types.NamedResourceDefinition;
 import com.ms.qaTools.saturn.types.SaturnStatusConditionEnum;
 import com.ms.qaTools.saturn.types.SaturnStatusEnum;
@@ -219,6 +220,33 @@ public interface AbstractRunGroup extends EObject
    * @generated
    */
   EList<IncludeFile> getIncludeFiles();
+
+  /**
+   * Returns the value of the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Alm Id</em>' containment reference isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Alm Id</em>' containment reference.
+   * @see #setAlmId(AlmId)
+   * @see com.ms.qaTools.saturn.SaturnPackage#getAbstractRunGroup_AlmId()
+   * @model containment="true"
+   *        extendedMetaData="kind='element' name='AlmId' namespace='##targetNamespace'"
+   * @generated
+   */
+  AlmId getAlmId();
+
+  /**
+   * Sets the value of the '{@link com.ms.qaTools.saturn.AbstractRunGroup#getAlmId <em>Alm Id</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Alm Id</em>' containment reference.
+   * @see #getAlmId()
+   * @generated
+   */
+  void setAlmId(AlmId value);
 
   /**
    * Returns the value of the '<em><b>Can Multiplex</b></em>' attribute. The default value is <code>"false"</code>. <!--

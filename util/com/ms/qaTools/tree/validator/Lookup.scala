@@ -1,15 +1,14 @@
 package com.ms.qaTools.tree.validator
 
 import org.w3c.dom.Node
-import javax.xml.namespace.NamespaceContext
-import com.ms.qaTools.xml.xpath.XPath
-import com.ms.qaTools.tree._
-import com.ms.qaTools.protobuf.path.PBPath
+
 import com.google.protobuf.Descriptors.FieldDescriptor
-import com.google.protobuf.Descriptors.Descriptor
-import com.google.protobuf.Message
+import com.ms.qaTools.protobuf.PBPath
+import com.ms.qaTools.tree.TreeNode
+import com.ms.qaTools.tree.XmlNode
+import com.ms.qaTools.xml.xpath.XPath
 
-
+import javax.xml.namespace.NamespaceContext
 
 trait Lookup[NodeType] {
   def asPath: String
@@ -17,18 +16,15 @@ trait Lookup[NodeType] {
   def getValue(node: TreeNode[NodeType]): String
 }
 
-// this should disappear - will be replaced by XPath and FIXPath
-
-case class XPathNodeLookup(xPathExpression: String)(implicit nsContext: NamespaceContext) extends Lookup[Node] {
-  def asPath = xPathExpression
-  def getNodes(node: TreeNode[Node]): Seq[TreeNode[Node]] = XPath(xPathExpression).asNodes(node.node).map { n: Node => XmlNode(n) }
-  def getValue(node: TreeNode[Node]): String = XPath(xPathExpression).asString(node.node)
+case class XPathNodeLookup(asPath: String)(implicit nsContext: NamespaceContext) extends Lookup[Node] {
+  val xPath = XPath(asPath)
+  def getNodes(node: TreeNode[Node]): Seq[TreeNode[Node]] = xPath.asNodes(node.node).map { n: Node => XmlNode(n) }
+  def getValue(node: TreeNode[Node]): String = xPath.asString(node.node)
 }
 
-case class PBPathNodeLookup(pbPathString: String) extends Lookup[FieldDescriptor] {
-  def asPath = pbPathString
-  def getValue(pbField: TreeNode[FieldDescriptor]): String = PBPath(pbPathString).asString(pbField.node)
-  def getNodes(node: TreeNode[FieldDescriptor]): Seq[TreeNode[FieldDescriptor]] = PBPath(pbPathString).asFieldDescriptors(node)
+case class PBPathNodeLookup(asPath: String) extends Lookup[FieldDescriptor] {
+  def getValue(pbField: TreeNode[FieldDescriptor]): String = PBPath(asPath).asString(pbField.node)
+  def getNodes(node: TreeNode[FieldDescriptor]): Seq[TreeNode[FieldDescriptor]] = PBPath(asPath).asFieldDescriptors(node)
 }
 /*
 Copyright 2017 Morgan Stanley

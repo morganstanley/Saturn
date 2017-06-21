@@ -1,80 +1,130 @@
 package com.ms.qaTools.io.rowSource.jdbc
-import com.ms.qaTools.io.rowSource.DatabaseConnection
-import com.ms.qaTools.withCloseable
+
 import java.io.Closeable
 import java.sql.Connection
+import java.sql.ParameterMetaData
 import java.sql.PreparedStatement
 import java.sql.ResultSet
+
 import scala.util.Try
+import scala.util.control.NonFatal
+
+import com.ms.qaTools._
+import com.ms.qaTools.io.rowSource.DatabaseConnection
+import com.ms.qaTools.jdbc.SQLTypeParameter
+
+import FetchSupport._
 
 trait FetchSupport { self: DatabaseConnection =>
-  import FetchSupport._
 
   def fetch(query: String, parameters: Seq[String] = Seq.empty, config: Config = Config()): ResultSetRowSource =
     fetchWithParameters(query, Iterator(parameters), config).next
 
   def fetchWithParameters(query: String, parameters: Iterator[Seq[String]], config: Config = Config()): ResultSetRowSources = {
-    val dbConnection = getConnection
-    Try {
-      // TODO: There should be an option in saturn if only a table name is supplied instead of trying to find the table
-      // from the metadata.
-      val sql = if (!hasTable(query)) query else "SELECT * FROM " + query
-      val statement = dbConnection.prepareStatement(sql, config.resultSetType, config.resultSetConcurrency)
-      statement.setFetchSize(config.fetchSize)
+    withPreparedStatement(query, config) { (statement, connToClose) =>
       new ResultSetRowSources(
         statement,
         parameters,
-        if (!self.persistent) Option(dbConnection) else None,
-        config.repeat)
-    }.recover{case t => {if (!self.persistent) dbConnection.close; throw t}}.get
+        connToClose,
+        config.repeat, paramMetaData(statement, config.parameterMetaDataSupport))
+    }
+  }
+
+  def fetchResultSetWithParameters(query: String, parameters: Iterator[Seq[String]], config: Config = Config()): ResultSetRowSource = {
+    withPreparedStatement(query, config) { (statement, connToClose) =>
+      val metaData = paramMetaData(statement, config.parameterMetaDataSupport)
+      val it = parameters.map { p => statementFromParameters(statement, metaData, p).exclusivelyExecuteQuery() }
+      new ResultSetRowSource(it.buffered, connToClose)
+    }
+  }
+
+  protected def withPreparedStatement[A](query: String, config: Config)
+                                        (body: (PreparedStatement, Option[Connection]) => A): A = {
+    val isTableName = hasTable(query)
+    val conn = getConnection
+    try {
+      val stmt = conn.prepareStatement(if (!isTableName) query else s"SELECT * FROM $query",
+                                       config.resultSetType, config.resultSetConcurrency)
+      body(stmt, if (!self.persistent) Option(conn) else None)
+    } catch {
+      case NonFatal(t) =>
+        if (!self.persistent) conn.close()
+        throw t
+    }
   }
 
   def hasTable(fullName: String): Boolean = {
-    def hasTable0(schema: String, name: String) = {
-      val dbConnection = getConnection
-      val result = Try { withCloseable(dbConnection.getMetaData.getTables(null, schema, name, null))(_.next) }.getOrElse(false)
-      if (!self.persistent) dbConnection.close
-      result
-    }
+    def hasTable0(schema: String, name: String) = Try {
+      // Need a new connection here, in case that an error happens, the connection will be closed and not available for
+      // the main query
+      withConnection(_.getMetaData.getTables(null, schema, name, null).next())
+    }.getOrElse(false)
     fullName.split('.') match {
       case Array(n)    => hasTable0(null, n)
       case Array(s, n) => hasTable0(s, n)
-      case _ => false
+      case _           => false
     }
   }
-}
 
-object FetchSupport {
-  case class Config(
-    fetchSize: Int = 100,
-    resultSetType: Int = ResultSet.TYPE_FORWARD_ONLY,
-    resultSetConcurrency: Int = ResultSet.CONCUR_READ_ONLY,
-    repeat: Boolean = false)
+  def paramMetaData(statement: PreparedStatement, cfg: Config): Option[ParameterMetaData] = paramMetaData(statement, cfg.parameterMetaDataSupport)
+  def paramMetaData(statement: PreparedStatement, parameterMetaDataSupport: Boolean): Option[ParameterMetaData] =
+    if (parameterMetaDataSupport) Try(statement.getParameterMetaData.ensuring(p => p != null)).toOption else None
+
+  def statementFromParameters(statement: PreparedStatement, paramMetaData: Option[ParameterMetaData], parameters: Seq[String]) =
+    statement.withSideEffect { s =>
+      paramMetaData match {
+        case Some(meta) =>
+          for (i <- 1 to meta.getParameterCount) {
+            Try(parameters(i - 1)).foreach { p => SQLTypeParameter(meta.getParameterType(i)).set(i, p, s) }
+          }
+        case None =>
+          parameters.zipWithIndex.foreach {
+            case (cell, index) => s.setString(index + 1, cell)
+          }
+      }
+    }
 
   protected class ResultSetRowSources(
-    statement: PreparedStatement,
+    val statement: PreparedStatement,
     parameters: Iterator[Seq[String]],
     val connectionToClose: Option[Connection],
-    repeat: Boolean
-  ) extends Iterator[ResultSetRowSource] with Closeable {
+    repeat: Boolean,
+    parameterMetaData: Option[ParameterMetaData]) extends Iterator[ResultSetRowSource] with Closeable {
     def hasNext = parameters.hasNext
-
-    def next = {
-      parameters.next.zipWithIndex.foreach {
-        case (cell, index) => statement.setString(index + 1, cell)}
-      Try {
-        if (repeat) ResultSetRowSource.continually(statement, connectionToClose)
-        else ResultSetRowSource(statement.executeQuery, connectionToClose)
-      }.recover{case t => {close; throw t}}.get
-    }
+    def next =
+      try {
+        if (repeat)
+          ResultSetRowSource.continually(statementFromParameters(statement, parameterMetaData, parameters.next), connectionToClose)
+        else
+          ResultSetRowSource(statementFromParameters(statement, parameterMetaData, parameters.next).exclusivelyExecuteQuery(), connectionToClose)
+      }
+      catch {
+        case t: Throwable => close; throw t
+      }
 
     def close = {
       statement.close
       connectionToClose.foreach(_.close)
     }
   }
+
 }
-/*
+
+trait FetchSupportWithParameterMetaData extends FetchSupport { self: DatabaseConnection =>
+  override def fetch(query: String, parameters: Seq[String] = Seq.empty, config: Config = Config()): ResultSetRowSource =
+    fetchWithParameters(query, Iterator(parameters), config.copy(parameterMetaDataSupport = true)).next
+  override def fetchWithParameters(query: String, parameters: Iterator[Seq[String]], config: Config = Config()): ResultSetRowSources =
+    super.fetchWithParameters(query, parameters, config.copy(parameterMetaDataSupport = true))
+}
+
+object FetchSupport {
+  case class Config(
+    parameterMetaDataSupport: Boolean = false,
+    fetchSize: Int = 100,
+    resultSetType: Int = ResultSet.TYPE_FORWARD_ONLY,
+    resultSetConcurrency: Int = ResultSet.CONCUR_READ_ONLY,
+    repeat: Boolean = false)
+}/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

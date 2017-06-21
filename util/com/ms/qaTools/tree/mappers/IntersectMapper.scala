@@ -1,25 +1,17 @@
 package com.ms.qaTools.tree.mappers
 
+import com.ms.qaTools.conversions.XmlToTreeNodeConversions.xmlNodeToDocument
+import com.ms.qaTools.io.rowSource.file.XmlFileRowSource
+import com.ms.qaTools.tree.XmlNode
+import com.ms.qaTools.xml.nodeList2List
 import java.io.File
 import org.w3c.dom.Attr
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import com.ms.qaTools.conversions.XmlToTreeNodeConversions.xmlNodeToDocument
-import com.ms.qaTools.io.rowSource.file.XmlFileRowSource
-import com.ms.qaTools.tree.XmlNode
-import com.ms.qaTools.io.rowSource.file.XmlFileRowSource
 
-
-
-case class XmlNodeIntersectMapper(
-  fileName: String)
-  extends XmlNodeManyToManyMapper {
-  override def apply(optionNodes: Seq[Option[XmlNode]]): Seq[Option[XmlNode]] = {
-
-    val intersectRowSource = XmlFileRowSource(fileName)
-    val zipDocs = optionNodes.filter(_ != None).map(_.get).zip(intersectRowSource.toIterable)
-
-    zipDocs.map {
+case class XmlNodeIntersectMapper(fileName: String) extends XmlNodeManyToManyMapper {
+  def apply(optionNodes: Seq[Option[XmlNode]]): Seq[Option[XmlNode]] =
+    optionNodes.flatten.zip(XmlFileRowSource(fileName).toIterable).map {
       case (received, expected) => {
         val (re, ee) = (received.getDocumentElement, expected.getDocumentElement)
         intersect(re, ee)
@@ -27,7 +19,6 @@ case class XmlNodeIntersectMapper(
         Option(received)
       }
     }
-  }
 
   def intersect(receivedElem: Element, expectedElem: Element): Unit = {
     intersectAttributes(receivedElem, expectedElem)
@@ -76,27 +67,19 @@ case class XmlNodeIntersectMapper(
 
   // Keep only the element if both element have same text nodes
   def compareTextNodes(receivedElem: Element, expectedElem: Element) = {
-    val receivedNodeList = receivedElem.getChildNodes
-    val receivedTextNodes = (0 until receivedNodeList.getLength).foldLeft(Seq[Node]())(
-      (textNodes, childIdx) =>
-        if (receivedNodeList.item(childIdx).getNodeType == Node.TEXT_NODE) textNodes :+ receivedNodeList.item(childIdx)
-        else textNodes)
+    val receivedText = receivedElem.getChildNodes.foldLeft(Seq[Node]())(
+      (textNodes, child) => if (child.getNodeType == Node.TEXT_NODE) textNodes :+ child else textNodes)
+      .map(_.getTextContent).mkString("").replaceAll("^\\s*", "").replaceAll("\\s*$", "")
 
-    val receivedText = receivedTextNodes.map(_.getTextContent()).mkString("").replaceAll("^\\s*", "").replaceAll("\\s*$", "")
-
-    val expectedNodeList = expectedElem.getChildNodes
-    val expectedTextNodes = (0 until expectedNodeList.getLength).foldLeft(Seq[Node]())(
-      (textNodes, childIdx) =>
-        if (expectedNodeList.item(childIdx).getNodeType == Node.TEXT_NODE) textNodes :+ expectedNodeList.item(childIdx)
-        else textNodes)
-    val expectedText = expectedTextNodes.map(_.getTextContent()).mkString("").replaceAll("^\\s*", "").replaceAll("\\s*$", "")
+    val expectedText = expectedElem.getChildNodes.foldLeft(Seq[Node]())(
+      (textNodes, child) => if (child.getNodeType == Node.TEXT_NODE) textNodes :+ child else textNodes)
+      .map(_.getTextContent()).mkString("").replaceAll("^\\s*", "").replaceAll("\\s*$", "")
 
     expectedText.equals(receivedText)
   }
 
   // Keep only attributes that are in both documents
   def intersectAttributes(receivedElem: Element, expectedElem: Element) {
-
     if (receivedElem.hasAttributes) {
       val attrNodeMap = receivedElem.getAttributes
       val receivedAttributes = (0 until attrNodeMap.getLength).foldLeft(Seq[Attr]())(

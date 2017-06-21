@@ -23,7 +23,6 @@ import com.ms.qaTools.generated.psManager.{ PidIsAliveCommand => MPidIsAliveComm
 import com.ms.qaTools.generated.psManager.{ Parameter => MParameter }
 import com.ms.qaTools.generated.psManager.{ ComplexValueParameter => MComplexValueParameter }
 
-
 object PsManagerConfig {
   def apply() = PsManagerFactory.eINSTANCE.createPsManagerConfig()
   def apply(name: String,
@@ -35,7 +34,7 @@ object PsManagerConfig {
     config
   }
 
-  def unapply(c: MPsManagerConfig): Option[(String, Seq[MApplication], Seq[MLauncher])] = Some((c.getName(), c.getApplications(), c.getLaunchers()))
+  def unapply(c: MPsManagerConfig): Option[(String, Seq[MApplication], Seq[MLauncher])] = Some((c.getName, c.getApplications, c.getLaunchers))
 }
 
 object Application {
@@ -47,7 +46,7 @@ object Application {
     application
   }
 
-  def unapply(a: MApplication): Option[(String, MLaunchCommand)] = Some(a.getName(), a.getLaunchCommand())
+  def unapply(a: MApplication): Option[(String, MLaunchCommand)] = Some((a.getName, a.getLaunchCommand))
 }
 
 object PerlLaunchCommand {
@@ -64,7 +63,7 @@ object PerlLaunchCommand {
     launchCommand
   }
 
-  def unapply(s: MPerlLaunchCommand): Option[(ComplexValue, MOutput)] = Some((s.getCommand(), s.getOutput()))
+  def unapply(s: MPerlLaunchCommand): Option[(ComplexValue, MOutput)] = Some((s.getCommand, s.getOutput))
 }
 
 object ShellLaunchCommand {
@@ -81,7 +80,7 @@ object ShellLaunchCommand {
     launchCommand
   }
 
-  def unapply(s: MShellLaunchCommand): Option[(ComplexValue, MOutput)] = Some((s.getCommand(), s.getOutput()))
+  def unapply(s: MShellLaunchCommand): Option[(ComplexValue, MOutput)] = Some((s.getCommand, s.getOutput))
 }
 
 object PerlAliveCommand {
@@ -98,7 +97,7 @@ object PerlAliveCommand {
     isAliveCommand
   }
 
-  def unapply(s: MPerlIsAliveCommand): Option[(ComplexValue, MOutput)] = Some((s.getCommand(), s.getOutput()))
+  def unapply(s: MPerlIsAliveCommand): Option[(ComplexValue, MOutput)] = Some((s.getCommand, s.getOutput))
 }
 
 object PidAliveCommand {
@@ -119,7 +118,7 @@ object ShellAliveCommand {
     isAliveCommand
   }
 
-  def unapply(s: MShellIsAliveCommand): Option[(ComplexValue, MOutput)] = Some((s.getCommand(), s.getOutput()))
+  def unapply(s: MShellIsAliveCommand): Option[(ComplexValue, MOutput)] = Some((s.getCommand, s.getOutput))
 }
 
 object ApplicationRef {
@@ -131,7 +130,7 @@ object ApplicationRef {
     ar.getParameters().addAll(parameters)
     ar
   }
-  def unapply(ar: MApplicationRef): Option[(String, String, Seq[MParameter])] = Some(ar.getName(), ar.getId(), ar.getParameters())
+  def unapply(ar: MApplicationRef): Option[(String, String, Seq[MParameter])] = Some((ar.getName, ar.getId, ar.getParameters))
 }
 
 object LocalLauncher {
@@ -143,7 +142,7 @@ object LocalLauncher {
     launcher
   }
 
-  def unapply(al: MLocalLauncher): Option[(String, Seq[MApplicationRef])] = Some(al.getName(), al.getApplicationRefs())
+  def unapply(al: MLocalLauncher): Option[(String, Seq[MApplicationRef])] = Some((al.getName, al.getApplicationRefs))
 }
 
 object RemoteLauncher {
@@ -171,7 +170,8 @@ object RemoteLauncher {
     launcher
   }
 
-  def unapply(al: MRemoteLauncher): Option[(String, ComplexValue, ComplexValue, ComplexValue, Seq[MApplicationRef])] = Some(al.getName(), al.getUser(), al.getHost(), al.getTimeout(), al.getApplicationRefs())
+  def unapply(al: MRemoteLauncher): Option[(String, ComplexValue, ComplexValue, ComplexValue, Seq[MApplicationRef])] =
+    Some((al.getName, al.getUser, al.getHost, al.getTimeout, al.getApplicationRefs))
 }
 
 object ComplexValueParameter {
@@ -181,13 +181,6 @@ object ComplexValueParameter {
     p.getMixed().addAll(fmEntries)
     p
   }
-}
-
-object Test {
-  PsManagerConfig("P000", Nil, Nil)
-  PsManagerConfig("P001")
-  PsManagerConfig("P002", Seq(Application("A000", null)))
-  PsManagerConfig("P002", Seq(Application("A001", ShellLaunchCommand(""))))
 }
 /*
 Copyright 2017 Morgan Stanley

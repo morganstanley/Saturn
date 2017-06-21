@@ -12,7 +12,6 @@ import org.eclipse.emf.common.util.EList;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link com.ms.qaTools.saturn.kronus.FunctionDef#getHashtags <em>Hashtags</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.FunctionDef#getTypeParameters <em>Type Parameters</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.FunctionDef#getParameterDefs <em>Parameter Defs</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.FunctionDef#getReturnType <em>Return Type</em>}</li>
@@ -24,24 +23,8 @@ import org.eclipse.emf.common.util.EList;
  * @model
  * @generated
  */
-public interface FunctionDef extends AbstractDef, ReferenceableDefs
+public interface FunctionDef extends ReferenceableDefs, NamedRuntimeDef
 {
-  /**
-   * Returns the value of the '<em><b>Hashtags</b></em>' containment reference list.
-   * The list contents are of type {@link com.ms.qaTools.saturn.kronus.HashtagCall}.
-   * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Hashtags</em>' containment reference list isn't clear,
-   * there really should be more of a description here...
-   * </p>
-   * <!-- end-user-doc -->
-   * @return the value of the '<em>Hashtags</em>' containment reference list.
-   * @see com.ms.qaTools.saturn.kronus.KronusPackage#getFunctionDef_Hashtags()
-   * @model containment="true"
-   * @generated
-   */
-  EList<HashtagCall> getHashtags();
-
   /**
    * Returns the value of the '<em><b>Type Parameters</b></em>' containment reference list.
    * The list contents are of type {@link com.ms.qaTools.saturn.kronus.TypeDef}.

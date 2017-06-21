@@ -17,6 +17,7 @@ object KronusStepConsoleNotifier extends ConsoleNotifier[KronusResult] {
       result.moduleResult.metaData.foreach(x => sc.logger.debug(spaces(1) + x))
       val metas = result.context.metaDataContexts
       logPrintMetaDatas(metas, metas.keys, 1)
+      result.moduleResult.exception.foreach(printThrowable(_, sc.outputVerbosity))
       sc.logger.debug("")
     }
   }

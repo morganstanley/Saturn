@@ -71,24 +71,20 @@ trait IntervalTimestampQueryCreator {
   }
 }
 
-case class SybaseIntervalTimestampQueryCreator() extends IntervalTimestampQueryCreator {
-
-  override val epochToTimestampStringFunc = (epoch: Long) => {
-    val dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-    "CAST('%s' AS DATETIME)".format(dateFormatter.print(epoch))
-  }
+case object SybaseIntervalTimestampQueryCreator extends IntervalTimestampQueryCreator {
+  val epochToTimestampStringFunc = (epoch: Long) => s"CAST('${DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").print(epoch)}' AS DATETIME)"
 }
 
-case class DB2IntervalTimestampQueryCreator() extends IntervalTimestampQueryCreator {
-
-  override val epochToTimestampStringFunc = (epoch: Long) => {
-    val dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-    "TIMESTAMP('%s')".format(dateFormatter.print(epoch))
-  }
+case object DB2IntervalTimestampQueryCreator extends IntervalTimestampQueryCreator {
+  val epochToTimestampStringFunc = (epoch: Long) => s"TIMESTAMP('${DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").print(epoch)}')"
 }
 
-case class H2IntervalTimestampQueryCreator() extends IntervalTimestampQueryCreator {
-  override val epochToTimestampStringFunc = (epoch: Long) =>DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").print(epoch)
+case object H2IntervalTimestampQueryCreator extends IntervalTimestampQueryCreator {
+  val epochToTimestampStringFunc = (epoch: Long) => DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").print(epoch)
+}
+
+case object PostgresIntervalTimestampQueryCreator extends IntervalTimestampQueryCreator {
+  val epochToTimestampStringFunc = (epoch: Long) => s"TIMESTAMP '${DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").print(epoch)}'"
 }
 
 /*
@@ -121,7 +117,7 @@ object IntervalSQLSelectRetryRowSource {
       val queryStr = queries.next.intervalQueryStr
       connection.fetch(queryStr, config = config)
     }
-    MaximumRetryIterator(sqlSelectCreator, maxRetry, infiniteRetry, retryPeriod) asFuture
+    MaximumRetryIterator(sqlSelectCreator, maxRetry, infiniteRetry, retryPeriod).asFuture
   }
 }
 /*

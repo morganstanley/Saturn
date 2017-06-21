@@ -4,8 +4,7 @@ import org.apache.xml.utils.PrefixResolver
 import javax.xml.namespace.NamespaceContext
 import org.w3c.dom.Node
 import com.ms.qaTools.xml.xpath.XPath
-
-
+import scala.language.implicitConversions
 
 object XPathConversions {
   implicit def nsContextToPrefixResolver(nsContext: NamespaceContext): PrefixResolver = {

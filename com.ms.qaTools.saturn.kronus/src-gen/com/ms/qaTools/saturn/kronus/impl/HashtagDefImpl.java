@@ -31,7 +31,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *
  * @generated
  */
-public class HashtagDefImpl extends AbstractDefImpl implements HashtagDef
+public class HashtagDefImpl extends NamedAbstractDefImpl implements HashtagDef
 {
   /**
    * The cached value of the '{@link #getParameterDefs() <em>Parameter Defs</em>}' containment reference list.

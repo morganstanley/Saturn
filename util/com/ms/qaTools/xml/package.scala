@@ -2,10 +2,16 @@ package com.ms.qaTools
 
 import java.io.StringReader
 import java.io.StringWriter
-import scala.collection.JavaConversions.mapAsJavaMap
+import java.util.WeakHashMap
+import java.util.concurrent.locks.ReentrantReadWriteLock
+
+import scala.collection.JavaConverters._
+import scala.language.implicitConversions
+
 import org.jaxen.SimpleNamespaceContext
 import org.w3c.dom.Attr
 import org.w3c.dom.CDATASection
+import org.w3c.dom.Comment
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.NamedNodeMap
@@ -14,30 +20,27 @@ import org.w3c.dom.NodeList
 import org.w3c.dom.Text
 import org.xml.sax.EntityResolver
 import org.xml.sax.InputSource
-import com.ms.qaTools.io.rowSource.Utils.StringUtil
+
 import com.ms.qaTools.xml.NamespaceContextImpl
+
 import javax.xml.namespace.NamespaceContext
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
 import javax.xml.transform.OutputKeys
-import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
-import org.w3c.dom.Comment
-
-
+import javax.xml.xpath.XPathFactory
+import net.sf.saxon.Configuration
+import net.sf.saxon.TransformerFactoryImpl
 
 package object xml {
-
-  implicit def nodeList2List(l: NodeList): Seq[Node] = Option(l) match {
-    case Some(nodes) => for (i <- 0 to (nodes.getLength - 1)) yield nodes.item(i)
-    case _           => Nil
+  implicit def nodeList2List(l: NodeList): Seq[Node] = if (l == null) Nil else {
+    (0 until l.getLength).toIterator.map(l.item).toBuffer
   }
 
-  implicit def nodeMap2List(l: NamedNodeMap): Iterable[Node] = Option(l) match {
-    case Some(atts) => for (i <- 0 to (atts.getLength - 1)) yield atts.item(i)
-    case _          => Nil
+  implicit def nodeMap2List(l: NamedNodeMap): Iterable[Node] = if (l == null) Nil else {
+    (0 until l.getLength).toIterator.map(l.item).toBuffer
   }
 
   lazy val DocumentBuilderFactoryInstance = {
@@ -50,69 +53,38 @@ package object xml {
     instance.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
     instance
   }
-  
+
   lazy val NoopEntityResolver = new EntityResolver {
     def resolveEntity(publicId: String, systemId: String) = new InputSource(new StringReader(""))
   }
 
-  val DocumentBuilderTL = new ThreadLocal[DocumentBuilder] {
-    override def initialValue() = {
-      try {
-        val builder = DocumentBuilderFactoryInstance.newDocumentBuilder
-        builder.setEntityResolver(NoopEntityResolver)
-        builder
-      }
-      catch {
-        case e: ParserConfigurationException => throw new Error(e)
-      }
+  object globals {
+    object saxon {
+      val configuration = new Configuration
     }
-    
-    def apply() = get()
+  }
+
+  val DocumentBuilderTL = new ThreadLocal[DocumentBuilder] {
+    override def initialValue() = try {
+      val builder = DocumentBuilderFactoryInstance.newDocumentBuilder
+      builder.setEntityResolver(NoopEntityResolver)
+      builder
+    } catch {
+      case e: ParserConfigurationException => throw new Error(e)
+    }
   }
 
   // node.getLocalName on a DOM Level 1 element returns null... I can't believe this is necessary.
-  def getLocalName(n: Node): String =
-    if (n.getLocalName() == null) n.getNodeName().split(":").last else n.getLocalName()
-
-  // get canonical xpath
-  def nodePath(node: Node)(implicit nsContext: NamespaceContext): String = {
-    def getPrefix(node: Node): Option[String] = {
-      val prefix = if (node.getNamespaceURI() != null) nsContext.getPrefix(node.getNamespaceURI()) else null
-      if (prefix != null) Some(prefix + ":") else None
-    }
-
-    def sameName(f: Node => Node)(n: Node): List[Node] =
-      Stream.iterate(n)(f).tail.takeWhile(_ != null).filter(
-        _.getNodeName == n.getNodeName).toList
-
-    "/" + Stream.iterate[Node](node) { n => n match { case a: Attr => a.getOwnerElement() case _ => n.getParentNode() } }.map {
-      case null        => None
-      case _: Comment  => None
-      case _: Document => None
-      case e: Element => {
-        val prefix = getPrefix(e)
-        val preceding = sameName(_.getPreviousSibling) _
-        val following = sameName(_.getNextSibling) _
-        val tag = prefix.getOrElse("") + getLocalName(e)
-        Some { (preceding(e), following(e)) match { case (Nil, Nil) => tag case (els, _) => tag + "[" + (els.size + 1) + "]" } }
-      }
-      case a: Attr => {
-        val prefix = getPrefix(a)
-        Some { "@" + prefix.getOrElse("") + a.getName() }
-      }
-      case c: CDATASection => {
-        Some { "#cdata:" + c.getNodeValue }
-      }
-      case t: Text => {
-        Some { "#text:" + t.getWholeText }
-      }
-
-    }.takeWhile(_.isDefined).map(_.get).reverse.mkString("/")
+  def getLocalName(n: Node): String = n.getLocalName match {
+    case null =>
+      val name = n.getNodeName
+      name.substring(name.lastIndexOf(':') + 1)
+    case name => name
   }
 
   def nodeToString(node: Node, indent: Boolean = false, indentAmount: Int = 2, omitXmlDeclaration: Boolean = true): String = {
     val writer = new StringWriter
-    val transformer = TransformerFactory.newInstance().newTransformer()
+    val transformer = TransformerFactory().newTransformer()
     transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, if (omitXmlDeclaration) "yes" else "no")
     transformer.setOutputProperty(OutputKeys.METHOD, "xml")
     transformer.setOutputProperty(OutputKeys.INDENT, if (indent) "yes" else "no")
@@ -123,13 +95,20 @@ package object xml {
     writer.toString
   }
 
-  def nodeListToString(nodeList: NodeList): String = {
-    val nodes = nodeList2List(nodeList)
-    nodes.map(a => nodeToString(a)).mkString.trim
-  }
+  def nodeListToString(nodeList: NodeList): String =
+    nodeList.map(a => nodeToString(a)).mkString.trim
 
   implicit def namespaceContextToJaxenImpl(ctx: NamespaceContextImpl): org.jaxen.NamespaceContext =
-    new SimpleNamespaceContext(ctx.namespaces)
+    new SimpleNamespaceContext(ctx.namespaces.asJava)
+
+  def isSaxon: Boolean =
+    sys.props.get(s"${XPathFactory.DEFAULT_PROPERTY_NAME}:${XPathFactory.DEFAULT_OBJECT_MODEL_URI}").contains("net.sf.saxon.xpath.XPathFactoryImpl")
+
+  object TransformerFactory {
+    private [this] val default = javax.xml.transform.TransformerFactory.newInstance
+    private [this] val saxon = new TransformerFactoryImpl(globals.saxon.configuration)
+    def apply(): javax.xml.transform.TransformerFactory = if (isSaxon) saxon else default
+  }
 }
 /*
 Copyright 2017 Morgan Stanley

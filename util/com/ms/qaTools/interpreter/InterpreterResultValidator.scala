@@ -1,23 +1,10 @@
 package com.ms.qaTools.interpreter
+import com.ms.qaTools.{toolkit => tk}
 
-import com.ms.qaTools._
-import com.ms.qaTools.toolkit.Result
-import com.ms.qaTools.toolkit.Pass
-import com.ms.qaTools.toolkit.Fail
-import com.ms.qaTools.toolkit.Status
-import com.ms.qaTools.toolkit.NotRun
-import com.ms.qaTools.toolkit.Passed
-import com.ms.qaTools.toolkit.Failed
+case class ValidationResult[T <: InterpreterResult](status: tk.Status, interpreterResult: T, exception: Option[Throwable] = None, message: Option[String] = None) extends tk.Result
 
-
-
-case class ValidationResult[InterpreterResultType <: InterpreterResult](override val status: Status = NotRun(),
-  interpreterResult: InterpreterResultType = NullInterpreterResult,
-  override val exception: Option[Throwable] = None,
-  override val errorMessage: Option[String] = None,
-  message: Option[String] = None) extends Result
-abstract class InterpreterResultValidator[InterpreterResultType <: InterpreterResult] {
-  def validate(result: InterpreterResultType): ValidationResult[InterpreterResultType]
+abstract class InterpreterResultValidator[T <: InterpreterResult] {
+  def validate(result: T): ValidationResult[T]
 }
 
 trait ShellResultValidator extends InterpreterResultValidator[ShellInterpreterResult] {
@@ -30,32 +17,29 @@ trait ShellResultValidator extends InterpreterResultValidator[ShellInterpreterRe
       case None => false
     }
   }
-  override def validate(shellResult: ShellInterpreterResult): ValidationResult[ShellInterpreterResult] = {
-    if(shellResult.failed) ValidationResult(Failed(), shellResult, exception = Option(new Exception("Validation failed.")))
+
+  def validate(shellResult: ShellInterpreterResult): ValidationResult[ShellInterpreterResult] = {
+    if(shellResult.status == tk.Failed) ValidationResult(tk.Failed, shellResult, Option(new Exception("Validation failed.")))
     else shellResult.stdout match {
-      case CheckStrFound() => ValidationResult(Passed(), shellResult, message = Option("String found: '" + checkStr + "'. Setting status to PASS."))
-      case _               => ValidationResult(Failed(), shellResult, exception = Option(new Exception("String not found: '" + checkStr + "'. Setting status to FAIL.")))
+      case CheckStrFound() => ValidationResult(tk.Passed, shellResult, message = Option("String found: '" + checkStr + "'. Setting status to PASS."))
+      case _               => ValidationResult(tk.Failed, shellResult, Option(new Exception("String not found: '" + checkStr + "'. Setting status to FAIL.")))
     }
   }
 }
 
-case class ShellPassValidator(override val checkStr: String) extends ShellResultValidator
-case class ShellFailValidator(override val checkStr: String) extends ShellResultValidator {
+case class ShellPassValidator(checkStr: String) extends ShellResultValidator
+case class ShellFailValidator(checkStr: String) extends ShellResultValidator {
   override def validate(shellResult: ShellInterpreterResult): ValidationResult[ShellInterpreterResult] = {
-    if(shellResult.failed) ValidationResult(Failed(), shellResult, exception = Option(new Exception("Validation failed.")))
+    if(shellResult.status == tk.Failed) ValidationResult(tk.Failed, shellResult, Option(new Exception("Validation failed.")))
     else shellResult.stdout match {
-      case CheckStrFound() => ValidationResult(Failed(), shellResult, message = Option("String found: '" + checkStr + "'. Setting status to FAIL."))
-      case _               => ValidationResult(Passed(), shellResult, exception = Option(new Exception("Validation failed: String not found: '" + checkStr + "'. Setting status to PASS.")))
+      case CheckStrFound() => ValidationResult(tk.Failed, shellResult, message = Option("String found: '" + checkStr + "'. Setting status to FAIL."))
+      case _               => ValidationResult(tk.Passed, shellResult, Option(new Exception("Validation failed: String not found: '" + checkStr + "'. Setting status to PASS.")))
     }
   }
 }
 
-case class NullInterpreterResultValidator[InterpreterResultType <: InterpreterResult]()extends InterpreterResultValidator[InterpreterResultType] {
-  def validate(result: InterpreterResultType): ValidationResult[InterpreterResultType] = result.status match {
-    case Passed() => ValidationResult(Passed(), result)
-    case Failed() => ValidationResult(Failed(), result, result.exception)
-    case NotRun() => ValidationResult(NotRun(), result)
-  }
+case class NullInterpreterResultValidator[T <: InterpreterResult]() extends InterpreterResultValidator[T] {
+  def validate(result: T) = ValidationResult(result.status, result, result.exception)
 }
 /*
 Copyright 2017 Morgan Stanley

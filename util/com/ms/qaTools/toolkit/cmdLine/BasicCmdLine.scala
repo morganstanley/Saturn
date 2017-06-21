@@ -1,7 +1,9 @@
 package com.ms.qaTools.toolkit.cmdLine
-import org.kohsuke.args4j.Option
-import org.kohsuke.args4j.CmdLineParser
 import org.kohsuke.args4j.CmdLineException
+import org.kohsuke.args4j.CmdLineParser
+import org.kohsuke.args4j.Option
+
+object EarlyExit extends Throwable
 
 class BasicCmdLine {
   @Option(name = "-h", aliases = Array("--help"), usage = "Show help/usage")
@@ -10,20 +12,32 @@ class BasicCmdLine {
   @Option(name = "--debug", usage = "Turn on debugging information")
   val debug: Boolean = false
 
-  @Option(name = "--noExitCode", usage = "Turn off exit code (for testing purpose)")
+  @Option(name = "--noExitCode", usage = "Do not exit JVM (for unit tests)", hidden = true)
   val noExitCode: Boolean = false
 
   @Option(name = "--version", usage = "Show current release version")
   val version: Boolean = false
-  
-  val cmdLineParser = new CmdLineParser(this)
 
-  def parseArguments(args: Array[String]) {
-    cmdLineParser.parseArgument(args: _*)
+  val cmdLineParser = new CmdLineParser(this)
+  util.Try(sys.env("COLUMNS").toInt).foreach(cmdLineParser.setUsageWidth)
+
+  def parseArguments(args: Array[String], app: String, version: String, buildTime: String) = {
+    try {
+      cmdLineParser.parseArgument(args: _*)
+    } catch {
+      case (e: CmdLineException) => if(! this.version && ! help) throw e
+    }
+
+    if (this.version) {
+      println(s"$app $version $buildTime")
+      println("Bin path: " + getClass.getProtectionDomain.getCodeSource.getLocation.getPath)
+      throw EarlyExit
+    }
+
     if (help) {
       println("Usage information")
       cmdLineParser.printUsage(System.out)
-      System.exit(0)
+      throw EarlyExit
     }
   }
 }

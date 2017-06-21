@@ -1,34 +1,25 @@
 package com.ms.qaTools.xml
 import com.ms.qaTools.tree.mappers._
-import com.ms.qaTools.tree.{ XmlNode }
+import com.ms.qaTools.tree.XmlNode
 import com.ms.qaTools.io.rowSource.file.XmlRowSource
 import com.ms.qaTools.conversions.XmlToTreeNodeConversions._
 import javax.xml.namespace.NamespaceContext
 import org.w3c.dom.Node
 import org.w3c.dom.Document
-import com.ms.qaTools.toolkit.Result
-import com.ms.qaTools.toolkit.Status
-import com.ms.qaTools.io.rowWriter.file.XmlRowWriter
-import com.ms.qaTools.toolkit.Runnable
 
-
-
-case class XmlManipulator(xmlRowSource: Iterator[Document],
-                          transformers: Seq[XmlNodeTransformer[_, _]],
-                          nsContext: NamespaceContext = new NamespaceContextImpl()) 
+case class XmlManipulator(xmlRowSource: Iterator[Document], transformers: Seq[XmlNodeTransformer[_, _]], nsContext: NamespaceContext = new NamespaceContextImpl())
 extends Iterator[Node] {
-  lazy val transformedIterator = {
+  lazy val transformedIterator =
     transformers.foldLeft(xmlDocsToTreeNodes(xmlRowSource)(nsContext))((rowSource, mapper) => {
       mapper match {
         case m: XmlNodeMapper             => rowSource.map(m(_))
         case f: XmlNodeFilter             => rowSource.filter(f(_))
         case mm: XmlNodeManyMapper        => rowSource.flatMap(mm(_))
         case m2m: XmlNodeManyToManyMapper => m2m(rowSource.toSeq).toIterator
-        case o: XmlNodeComparator         => rowSource.toSeq.sortWith(o(_, _)).toIterator
+        case o: XmlNodeComparator         => rowSource.toSeq.sortWith(Function.untupled(o)).toIterator
       }
     })
-  }
-  
+
   def hasNext = transformedIterator.hasNext
   def next = transformedIterator.next match {
     case None      => next

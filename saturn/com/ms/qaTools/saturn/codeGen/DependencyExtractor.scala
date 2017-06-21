@@ -1,6 +1,4 @@
 package com.ms.qaTools.saturn.codeGen
-import scala.Option.option2Iterable
-import scala.annotation.tailrec
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.JavaConversions.asScalaIterator
 import org.eclipse.emf.ecore.EObject
@@ -13,6 +11,7 @@ import com.ms.qaTools.saturn.resources.referenceResource.ReferenceResource
 import com.ms.qaTools.saturn.types.AbstractRepetitionHandler
 import com.ms.qaTools.saturn.types.NamedResourceDefinition
 import com.ms.qaTools.saturn.values.ReferenceComplexValue
+import scala.language.implicitConversions
 
 case class DependencyExtractor(preRepetitionDependencies:Seq[EObject],
                                postRepetitionDependencies:Seq[EObject],
@@ -59,25 +58,23 @@ object DependencyExtractor {
     val resourceMap = runGroup.getResources().filter(_.isEnabled()).map{a => (a.getName(),a)}.toMap
     val roots:Seq[EObject] = runGroup.getAttributes() ++ runGroup.getResources().filter(_.isEnabled())
 
-    val rootPairs:Seq[(EObject,Set[EObject])] = roots.map{eObject => (eObject, (eObject :: eObject.eAllContents().toList)
-                                                                            .flatMap{node => node match {
-                                                                              case ref:ReferenceResource     => resourceMap.get(ref.getResource())
-                                                                              case ref:ReferenceComplexValue => attributeMap.get(ref.getUserAttribute).orElse(resourceMap.get(ref.getUserAttribute))
-                                                                              case _                         => None
-                                                                            }}.toSet) }
+    val depMap: Seq[(EObject, Set[EObject])] = roots.map { eObject =>
+      eObject -> (Iterator(eObject) ++ eObject.eAllContents).flatMap {
+        case ref:ReferenceResource     => resourceMap.get(ref.getResource)
+        case ref:ReferenceComplexValue => attributeMap.get(ref.getUserAttribute).orElse(resourceMap.get(ref.getUserAttribute))
+        case _                         => None
+      }.toSet
+    }
 
-    val depMap = rootPairs.toMap
-
-
-    @tailrec
-    def extractDependencies(depMap:Map[EObject,Set[EObject]], repetitionHandler:Option[AbstractRepetitionHandler], deps:List[EObject]=Nil):Seq[EObject] = {
-      val newDeps:List[EObject] = depMap.filter{pair => pair._2.isEmpty }.map{_._1}.toList
-      if(newDeps.isEmpty) repetitionHandler match {
-        case Some(r) => extractDependencies(depMap.map{p => (p._1, p._2 - r)}.toMap, None, deps ::: List(r))
-        case None if depMap.nonEmpty => throw new Error("Attribute or Resource references to itself: " + dump(depMap))
-        case None    => deps
+    def extractDependencies(depMap: Seq[(EObject, Set[EObject])],
+                            repetitionHandler: Option[AbstractRepetitionHandler]): Seq[EObject] = {
+      import com.ms.qaTools.saturn.kronus.topSort
+      val (cycle, sorted) = topSort(depMap)
+      if (cycle.isEmpty) sorted
+      else repetitionHandler match {
+        case Some(r) => sorted ++: r +: extractDependencies(depMap.map { case (x, deps) => (x, deps - r) }, None)
+        case None    => throw new Error("Attribute or Resource references to itself: " + dump(depMap.toMap))
       }
-      else extractDependencies(depMap.filter{p => !p._2.isEmpty}.map{p => (p._1, p._2 -- newDeps)}.toMap, repetitionHandler, deps ::: newDeps)
     }
 
     val deps = extractDependencies(depMap, Option(runGroup.getRepetitionHandler))

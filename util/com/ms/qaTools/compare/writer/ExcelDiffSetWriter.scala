@@ -1,54 +1,28 @@
 package com.ms.qaTools.compare.writer
 
-import scala.annotation.migration
-import scala.collection.immutable.TreeMap
 import scala.collection.mutable.{ Map => MMap }
-import org.apache.poi.hssf.util.HSSFColor
-import org.apache.poi.ss.usermodel.CellStyle
-import org.apache.poi.ss.usermodel.Font
 import org.apache.poi.ss.usermodel.Sheet
-import com.ms.qaTools.compare.AbstractDiff
+import com.ms.qaTools.compare.Diff
 import com.ms.qaTools.compare.CompareColDef
+import com.ms.qaTools.compare.CompareColDefs
+import com.ms.qaTools.compare.DelimitedComparatorCounter
 import com.ms.qaTools.compare.DelimitedDifferent
 import com.ms.qaTools.compare.DelimitedIdentical
 import com.ms.qaTools.compare.DelimitedInLeftOnly
 import com.ms.qaTools.compare.DelimitedInRightOnly
-import com.ms.qaTools.compare.DiffCounter
 import com.ms.qaTools.compare.DifferenceCharacterization
+import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.file.ExcelWorkBook
-import com.ms.qaTools.io.rowSource.file.ExcelWorkBook.wtowb
 import scala.collection.immutable.ListMap
-import org.apache.poi.ss.SpreadsheetVersion
 
-class ExcelDiffSetWriter(workbook: ExcelWorkBook,
-  colDefs: Seq[CompareColDef],
+case class ExcelDiffSetWriter(workbook: ExcelWorkBook,
+  colDefs: CompareColDefs,
   pageNames: Map[Page, String] = PageNames(),
   omittedPages: Seq[Page] = Nil,
-  createExtraSheets: Boolean = true,
+  val createExtraSheets: Boolean = true,
   separateDiffs : Boolean = false)
-extends DiffSetWriter {
-  val maxRowsPerSheet = (if(workbook.isXlsx) SpreadsheetVersion.EXCEL2007 else SpreadsheetVersion.EXCEL97).getLastRowIndex
-  val canAddCell: (Sheet => Boolean) = (ws: Sheet) => ws.getLastRowNum < maxRowsPerSheet
-  
-  override def writeDiff(diff: AbstractDiff) = diff match {
-    case d: DelimitedIdentical   => addCellToIdenticalPage(d)
-    case d: DelimitedDifferent   => addCellToDifferencePage(d)
-    case d: DelimitedInLeftOnly  => addCellToInLeftOnlyPage(d)
-    case d: DelimitedInRightOnly => addCellToInRightOnlyPage(d)
-  }
-
-  override def writeNotes(notes: Seq[String] = Seq()) =
-    for(sheets <- sheetsMap.get(NotesPage)){
-      val ws = sheets.last
-      notes.foreach(n => writeTupleToCells(ws, 0, ws.getLastRowNum() + 1, Seq(n)))
-    }
-  
-  override def close = {
-    workbook.write
-    workbook.close
-  }
-
-  override def writeSummary(counter: DiffCounter) =
+extends AExcelDiffSetWriter[Diff[Seq[String]], DelimitedComparatorCounter](workbook, pageNames.filterKeys(!omittedPages.contains(_))) with DelimitedDiffSetWriter with SortedColumns {
+  def writeSummary(counter: DelimitedComparatorCounter) =
     sheetsMap.get(SummaryPage).foreach(sheets => {
       val ws = sheets.last
       writeTupleToCells(ws, 0, 0, List(pageNames(LeftPage), counter.left.toString))
@@ -66,7 +40,7 @@ extends DiffSetWriter {
 
       writeTupleToCells(ws, 0, ws.getLastRowNum() + 2, List("Explained Fields"))
       writeTupleToCells(ws, 0, ws.getLastRowNum() + 1, List("Field", "Go No-Go", "Status", "Explanation", "Count"))
-      ListMap(explainedFieldCountMap.toList.sortBy { _._1 }: _*).foreach {
+      ListMap(explainedFieldCountMap.toList.sortBy { _._1 }(ExplainedFieldOrdering): _*).foreach {
         case colInfo =>
           writeTupleToCells(ws, 0, ws.getLastRowNum() + 1, List(colInfo._1.field, colInfo._1.characterization.goNoGo, colInfo._1.characterization.name, colInfo._1.explanation, colInfo._2.toString))
       }
@@ -75,33 +49,6 @@ extends DiffSetWriter {
       diffCountMap.zipWithIndex.foreach {
         case (colInfo, index) =>
           writeTupleToCells(ws, 0, ws.getLastRowNum() + 1, List(colInfo._1, colInfo._2.toString))}})
-
-  protected def createWorkSheetsMap =
-    pageNames.filterNot(Function.tupled((k, v) => omittedPages.contains(k))).mapValues(v => Seq(workbook.createSheet(v)))
-
-  protected val sheetsMap: MMap[Page, Seq[Sheet]] = {
-    val map = MMap(createWorkSheetsMap.toSeq: _*)
-    val pageNames = map.values.map(l => l.last.getSheetName())
-    if (pageNames.isEmpty) throw new Error("DsCompare excel output file must have at least one page.")
-    if (pageNames.size != pageNames.toList.distinct.size) throw new Error("DsCompare excel output file must have unique page names.")
-    map
-  }
-
-  val orderedColDefs: Map[DataSet, List[CompareColDef]] = {
-    val (unorderedKeys, rest) = colDefs.toList.partition(col => col.isKey && !col.isIgnored)
-    val keys = unorderedKeys.sortBy(_.keyOrder)
-    val (ignoredCols, matchedCols) = rest.partition(_.isIgnored)
-    val ordered = keys ++ matchedCols ++ ignoredCols
-    Map(LEFT  -> ordered.filter(_.indexOpt.isDefined),
-        RIGHT -> ordered.filter(_.mappedIndex.isDefined),
-        BOTH  -> ordered)
-  }
-
-  protected val keyColCellStyle = getColorCellFormat(HSSFColor.LIGHT_TURQUOISE.index, getCellFont(bold = true))
-  protected val matchedColCellStyle = getColorCellFormat(HSSFColor.LIGHT_GREEN.index, getCellFont(bold = true))
-  protected val explainedColCellStyle = getColorCellFormat(HSSFColor.LIGHT_YELLOW.index, getCellFont(bold = true))
-  protected val explainedCellStyle = getColorCellFormat(HSSFColor.LIGHT_YELLOW.index)
-  protected val differenceCellStyle = getColorCellFormat(HSSFColor.CORAL.index)
 
   class ExplainedField(val field: String, val characterization: DifferenceCharacterization, val explanation: String) {
     override def toString = List(field, characterization, explanation).toString
@@ -115,15 +62,15 @@ extends DiffSetWriter {
       (field.hashCode() * 41) + explanation.hashCode
   }
 
-  protected var diffCountMap: MMap[String, Int] = MMap[String, Int]()
+  protected val diffCountMap = MMap[String, Int]()
   protected def addDiffCount(colDefName: String) =
     diffCountMap(colDefName) = diffCountMap.getOrElse(colDefName, 0) + 1
-  protected var explainedRecordCountMap: MMap[String, Int] = MMap[String, Int]()
+  protected val explainedRecordCountMap = MMap[String, Int]()
   protected def addExplainedRecordCount(isRedFlag: Boolean, explanation: String) =
     explainedRecordCountMap(explanation) = explainedRecordCountMap.getOrElse(explanation, 0) + 1
-  protected var explainedFieldCountMap: MMap[ExplainedField, Int] = MMap[ExplainedField, Int]()
+  protected val explainedFieldCountMap = MMap[ExplainedField, Int]()
   protected def addExplainedFieldCount(isRedFlag: Boolean, field: ExplainedField) =
-      explainedFieldCountMap(field) = explainedFieldCountMap.getOrElse(field, 0) + 1
+    explainedFieldCountMap(field) = explainedFieldCountMap.getOrElse(field, 0) + 1
 
   implicit object ExplainedFieldOrdering extends Ordering[ExplainedField] {
     def compare(t1: ExplainedField, t2: ExplainedField): Int = {
@@ -146,85 +93,46 @@ extends DiffSetWriter {
     }
   }
 
-  PageNames().keys.foreach(addHeaderToPages)
-
-  protected def getSheetAndLastRowIdx(page: Page, rowsNeeded: Int = 1) =
-    sheetsMap.get(page) match {
-      case Some(sheets) => {  /// FIXME?
-        val nextRowIdx = sheets.last.getLastRowNum + rowsNeeded
-        if(nextRowIdx < maxRowsPerSheet || !createExtraSheets)
-          (Some(sheets.last), sheets.last.getLastRowNum)
-        else {
-          val pattern = "(.*)_(\\d+)".r
-          val newSheetName = sheets.last.getSheetName match {
-            case pattern(a, b) => a + "_" + (b.toInt + 1)
-            case _             => sheets.last.getSheetName + "_" + 0
-          }
-          
-          val newWs = workbook.createSheet(newSheetName)
-          sheetsMap(page) = sheets :+ newWs
-          addHeaderToPages(page)
-          (Some(newWs), newWs.getLastRowNum)
-        }
-      }
-      case _ => (None, -1)
-    }
-
-  protected def writeTupleToCells(ws: Sheet, colNum: Int, rowNum: Int, cells: Seq[String]) {
-    val row = ws.createRow(rowNum)
-    insertCell(colNum, cells)
-    def insertCell(col: Int, cells: Seq[String]): Unit =
-      if (!cells.isEmpty) {
-        row.createCell(col).setCellValue(cells.head)
-        insertCell(col + 1, cells.tail)
-      }
-  }
-  
-  protected def addHeaderToPages(p: Page) =
+  protected def addHeaderToPage(p: Page) =
     sheetsMap.get(p).foreach(sheets =>
       p match {
-        case DifferencesPage => addHeaders(ws = sheets.last, addReasonColumn = true, addDataSetColumn = true)
-        case ExplainedPage   => addHeaders(ws = sheets.last, addReasonColumn = true, addDataSetColumn = true)
-        case IdenticalPage   => addHeaders(ws = sheets.last, addDataSetColumn = true)
-        case InLeftOnlyPage  => addHeaders(ws = sheets.last, dataSet = LEFT)
-        case InRightOnlyPage => addHeaders(ws = sheets.last, dataSet = RIGHT)
-        case LeftPage        => addHeaders(ws = sheets.last, dataSet = LEFT)
-        case RightPage       => addHeaders(ws = sheets.last, dataSet = RIGHT)
+        case DifferencesPage => addHeaders(sheets.last, sortedCompareColumns.map(Left(_)), addReasonColumn = true, addDataSetColumn = true)
+        case ExplainedPage   => addHeaders(sheets.last, sortedCompareColumns.map(Left(_)), addReasonColumn = true, addDataSetColumn = true)
+        case IdenticalPage   => addHeaders(sheets.last, sortedCompareColumns.map(Left(_)), addDataSetColumn = true)
+        case InLeftOnlyPage  => addHeaders(sheets.last, sortedLeftColumns .map(Right(_)))
+        case InRightOnlyPage => addHeaders(sheets.last, sortedRightColumns.map(Right(_)))
+        case LeftPage        => addHeaders(sheets.last, sortedLeftColumns .map(Right(_)))
+        case RightPage       => addHeaders(sheets.last, sortedRightColumns.map(Right(_)))
         case _               => ()})
-  
-  protected def addCellToWorksheet(ws: Sheet, colIdx: Int, rowIdx: Int, cellValue: String, cellStyle: Option[CellStyle] = None) =
-    if (ws != null && canAddCell(ws)) {
-      val cell = Option(ws.getRow(rowIdx)).getOrElse(ws.createRow(rowIdx)).createCell(colIdx)
-      cell.setCellValue(cellValue)
-      cellStyle.foreach(cell.setCellStyle)
-    }
 
-  protected def addCellToIdenticalPage(d: DelimitedIdentical) = {
+  def writeIdentical(d: DelimitedIdentical) = {
     def addCellToSheet(ws: Sheet) = {
       val rowIdx = ws.getLastRowNum + 1
       val (leftWs, leftWsIdx) = getSheetAndLastRowIdx(LeftPage)
       val (rightWs, rightWsIdx) = getSheetAndLastRowIdx(RightPage)
 
       addCellToWorksheet(ws, 0, rowIdx, "both")
-      orderedColDefs(BOTH).zipWithIndex.foldLeft((0,0)){
-        case ((leftOffset, rightOffset), (colDef, index)) =>
+      sortedCompareColumns.zipWithIndex.foldLeft((0, 0)){
+        case ((leftOffset, rightOffset), ((l, r, ignored), index)) =>
           //if the ColumnDefinition is not an ignored key
-          if(!colDef.isIgnored || !colDef.isKey) {
-            colDef.indexOpt.foreach(i => addCellToWorksheet(ws, index + 1, rowIdx, d.left(i)))
-            colDef.mappedIndex.foreach(i => addCellToWorksheet(ws, index + 1, rowIdx, d.right(i)))
+          if(!ignored || l.filter(_.isKey).isEmpty) {
+            l.foreach(l => addCellToWorksheet(ws, index + 1, rowIdx, d.left(l.index)))
+            r.foreach(r => addCellToWorksheet(ws, index + 1, rowIdx, d.right(r.index)))
           }
-          colDef.indexOpt.foreach(i => leftWs.foreach(addCellToWorksheet(_, index - leftOffset, leftWsIdx + 1, d.left(i))))
-          colDef.mappedIndex.foreach(i => rightWs.foreach(addCellToWorksheet(_, index - rightOffset, rightWsIdx + 1, d.right(i))))
-          (leftOffset + (if(colDef.indexOpt.isEmpty) 1 else 0), rightOffset + (if(colDef.mappedIndex.isEmpty) 1 else 0))
+          l.foreach(l => leftWs.foreach(addCellToWorksheet(_, index - leftOffset, leftWsIdx + 1, d.left(l.index))))
+          r.foreach(r => rightWs.foreach(addCellToWorksheet(_, index - rightOffset, rightWsIdx + 1, d.right(r.index))))
+          (leftOffset + (if (l.isEmpty) 1 else 0), rightOffset + (if (r.isEmpty) 1 else 0))
       }
     }
 
-    val (identicalWs, identicalWsIdx) = getSheetAndLastRowIdx(IdenticalPage)
-    identicalWs.map(addCellToSheet)
+    getSheetAndLastRowIdx(IdenticalPage)._1.map(addCellToSheet)
   }
 
-  protected def addCellToDifferencePage(d: DelimitedDifferent) = {
+  def writeDifferent(d: DelimitedDifferent) = {
     def addCellToSheet(ws: Sheet) = {
+      def getOrNull[A](s: Seq[A], i: Int): A =
+        s.applyOrElse(i, (i: Int) => null.asInstanceOf[A])
+
       val rowIdx = ws.getLastRowNum + (if(separateDiffs) 2 else 1)
       val (leftWs, leftWsIdx) = getSheetAndLastRowIdx(LeftPage)
       val (rightWs, rightWsIdx) = getSheetAndLastRowIdx(RightPage)
@@ -237,182 +145,133 @@ extends DiffSetWriter {
       addCellToWorksheet(ws, 0, rowIdx, pageNames(LeftPage))
       addCellToWorksheet(ws, 0, rowIdx + 1, pageNames(RightPage))
 
-      val diffIdx = d.compareColDefs.map(_.index).toSet
-      orderedColDefs(BOTH).zipWithIndex.foldLeft((0, 0)) {
-        case ((leftOffset, rightOffset), (colDef, index)) => {
-          if (!colDef.isIgnored && diffIdx.contains(colDef.index))
-            // Diff might be explained
-            d.explainedColumns.find { case (explainedColDef, _) => explainedColDef.name == colDef.name } match {
-              case Some((explainedColDef, explanation)) => {
-                colDef.indexOpt.foreach(i => addCellToWorksheet(ws, index + 1, rowIdx, d.left(i), Option(explainedCellStyle)))
-                colDef.mappedIndex.foreach(i => addCellToWorksheet(ws, index + 1, rowIdx + 1, d.right(i), Option(explainedCellStyle)))
+      val diffIdx = d.compareColDefs.map(_.left.index).toSet
+      sortedCompareColumns.zipWithIndex.foldLeft((0, 0)) {
+        case ((leftOffset, rightOffset), ((l, r, ignored), index)) =>
+          if (!ignored && l.filter(l => diffIdx(l.index)).nonEmpty)
+            d.explainedColumns.find { case (explainedColDef, _) => Some(explainedColDef.left.name) == l.map(_.name) } match {
+              case Some((explainedColDef, explanation)) =>
+                l.foreach(l => addCellToWorksheet(ws, index + 1, rowIdx, d.left(l.index), Option(explainedCellStyle)))
+                r.foreach(r => addCellToWorksheet(ws, index + 1, rowIdx + 1, d.right(r.index), Option(explainedCellStyle)))
                 addCellToWorksheet(ws, index + 1, rowIdx + 2, explanation, Option(explainedCellStyle))
-                addExplainedFieldCount(false, new ExplainedField(colDef.name, d.characterization(explainedColDef.index), explanation))
-              }
-              case None => {
-                colDef.indexOpt.foreach(i => addCellToWorksheet(ws, index + 1, rowIdx, d.left(i), Option(differenceCellStyle)))
-                colDef.mappedIndex.foreach(i => addCellToWorksheet(ws, index + 1, rowIdx + 1, d.right(i), Option(differenceCellStyle)))
-                addDiffCount(colDef.name)
-              }
+                addExplainedFieldCount(false, new ExplainedField(explainedColDef.left.name, d.characterization(explainedColDef.left.index), explanation))
+              case None =>
+                l.foreach(l => addCellToWorksheet(ws, index + 1, rowIdx, getOrNull(d.left, l.index), Option(differenceCellStyle)))
+                r.foreach(r => addCellToWorksheet(ws, index + 1, rowIdx + 1, getOrNull(d.right, r.index), Option(differenceCellStyle)))
+                l.foreach(l => addDiffCount(l.name))
             }
           else {
             // Column value is not a diff -- No coloring
-            colDef.indexOpt.foreach(i => addCellToWorksheet(ws, index + 1, rowIdx, d.left(i)))
-            colDef.mappedIndex.foreach(i => addCellToWorksheet(ws, index + 1, rowIdx + 1, d.right(i)))
-            }
+            l.foreach(l => addCellToWorksheet(ws, index + 1, rowIdx, getOrNull(d.left, l.index)))
+            r.foreach(r => addCellToWorksheet(ws, index + 1, rowIdx + 1, getOrNull(d.right, r.index)))
           }
 
           //Adding column value to left/right worksheet
-          colDef.indexOpt.foreach(i => leftWs.foreach(addCellToWorksheet(_, index - leftOffset, leftWsIdx + 1, d.left(i))))
-          colDef.mappedIndex.foreach(i => rightWs.foreach(addCellToWorksheet(_, index - rightOffset, rightWsIdx + 1, d.right(i))))
+          l.foreach(l => leftWs.foreach(addCellToWorksheet(_, index - leftOffset, leftWsIdx + 1, getOrNull(d.left, l.index))))
+          r.foreach(r => rightWs.foreach(addCellToWorksheet(_, index - rightOffset, rightWsIdx + 1, getOrNull(d.right, r.index))))
 
           // Explain whole row
-          d.explanation.foreach(addCellToWorksheet(ws, orderedColDefs(BOTH).size + 1, rowIdx, _, Option(explainedCellStyle)))
-          (leftOffset + (if(colDef.indexOpt.isEmpty) 1 else 0), rightOffset + (if(colDef.mappedIndex.isEmpty) 1 else 0))
-        }
+          d.explanation.foreach(addCellToWorksheet(ws, sortedCompareColumns.size + 1, rowIdx, _, Option(explainedCellStyle)))
+          (leftOffset + (if (l.isEmpty) 1 else 0), rightOffset + (if (r.isEmpty) 1 else 0))
+      }
     }
 
-    val page = if (d.isExplained) {
-      addExplainedRecordCount(false, d.explanation.get)
-      ExplainedPage
-    } else DifferencesPage
-    
-    val (ws, wsIdx) = getSheetAndLastRowIdx(page, 3)
-    for(wss <- ws) addCellToSheet(wss)
+    val page = d.explanation match {
+      case Some(e) => {addExplainedRecordCount(false, e); ExplainedPage}
+      case _ => DifferencesPage
+    }
+
+    getSheetAndLastRowIdx(page, 3)._1.map(addCellToSheet)
   }
-  
-  protected def addCellToInLeftOnlyPage(d: DelimitedInLeftOnly) = {
+
+  def writeInLeftOnly(d: DelimitedInLeftOnly) = {
     if (d.isExplained) {
       for (e <- d.explanation) addExplainedRecordCount(false, e)
       val (explainedWs, explainedWsIdx) = getSheetAndLastRowIdx(ExplainedPage)
       val (leftWs, leftWsIdx) = getSheetAndLastRowIdx(LeftPage)
 
-      // add row to explained and left sheet
-      orderedColDefs(LEFT).zipWithIndex.foreach {
-        case (colDef, index) => {
+      sortedLeftColumns.zipWithIndex.foreach {
+        case ((colDef, _), index) => {
           for(ws <- explainedWs) {
             addCellToWorksheet(ws, 0,         explainedWsIdx + 1, pageNames(LeftPage)) //row identifier
-            colDef.indexOpt.foreach(i => addCellToWorksheet(ws, index + 1, explainedWsIdx + 1, d.left(i)))
-            for(explanationStr <- d.explanation) addCellToWorksheet(ws, orderedColDefs(LEFT).size + 1, explainedWsIdx + 1, explanationStr, Option(explainedCellStyle))
-            if(true/*replace by boolean from allwyn*/) ws.createRow(explainedWsIdx + 2)
+            addCellToWorksheet(ws, index + 1, explainedWsIdx + 1, d.left(colDef.index))
+            for(explanationStr <- d.explanation) addCellToWorksheet(ws, sortedLeftColumns.size + 1, explainedWsIdx + 1, explanationStr, Option(explainedCellStyle))
+            ws.createRow(explainedWsIdx + 2)
           }
-          colDef.indexOpt.foreach(i => leftWs.foreach(addCellToWorksheet(_, index, leftWsIdx + 1, d.left(i))))
+          leftWs.foreach(addCellToWorksheet(_, index, leftWsIdx + 1, d.left(colDef.index)))
         }
-      }          
+      }
     } else {
       val (inLeftOnlyWs, inLeftOnlyWsIdx) = getSheetAndLastRowIdx(InLeftOnlyPage)
       val (leftWs, leftWsIdx) = getSheetAndLastRowIdx(LeftPage)
 
-      // add row to inLeftOnly and left sheet
-      orderedColDefs(LEFT).zipWithIndex.foreach {
-        case (colDef, index) =>
-          colDef.indexOpt.foreach(i => {
-            inLeftOnlyWs.foreach(addCellToWorksheet(_, index, inLeftOnlyWsIdx + 1, d.left(i)))
-            leftWs.foreach(addCellToWorksheet(_, index, leftWsIdx + 1, d.left(i)))
-          })
+      sortedLeftColumns.zipWithIndex.foreach {
+        case ((colDef, _), index) =>
+          val i = colDef.index
+          inLeftOnlyWs.foreach(addCellToWorksheet(_, index, inLeftOnlyWsIdx + 1, d.left(i)))
+          leftWs.foreach(addCellToWorksheet(_, index, leftWsIdx + 1, d.left(i)))
       }
     }
   }
 
-  protected def addCellToInRightOnlyPage(d: DelimitedInRightOnly) =
+  def writeInRightOnly(d: DelimitedInRightOnly) =
     if (d.isExplained) {
       for (e <- d.explanation) addExplainedRecordCount(false, e)
       val (explainedWs, explainedWsIdx) = getSheetAndLastRowIdx(ExplainedPage)
       val (rightWs, rightWsIdx) = getSheetAndLastRowIdx(RightPage)
 
-      // add row to explained and right sheet
-      orderedColDefs(RIGHT).zipWithIndex.foreach {
-        case (colDef, index) => {
+      sortedRightColumns.zipWithIndex.foreach {
+        case ((colDef, _), index) => {
           for (ws <- explainedWs) {
             addCellToWorksheet(ws, 0,         explainedWsIdx + 1, pageNames(RightPage)) //row identifier
-            addCellToWorksheet(ws, index + 1, explainedWsIdx + 1, d.right(colDef.rightIndex))
-            for (explanationStr <- d.explanation) addCellToWorksheet(ws, orderedColDefs(RIGHT).size + 1, explainedWsIdx + 1, explanationStr, Option(explainedCellStyle))
-            if(true/*replace by boolean from allwyn*/) ws.createRow(explainedWsIdx + 2)
+            addCellToWorksheet(ws, index + 1, explainedWsIdx + 1, d.right(colDef.index))
+            for (explanationStr <- d.explanation) addCellToWorksheet(ws, sortedRightColumns.size + 1, explainedWsIdx + 1, explanationStr, Option(explainedCellStyle))
+            ws.createRow(explainedWsIdx + 2)
           }
-          for (ws <- rightWs) addCellToWorksheet(ws, index, rightWsIdx + 1, d.right(colDef.rightIndex))
+          for (ws <- rightWs) addCellToWorksheet(ws, index, rightWsIdx + 1, d.right(colDef.index))
         }
       }
     } else {
       val (inRightOnlyWs, inRightOnlyWsIdx) = getSheetAndLastRowIdx(InRightOnlyPage)
       val (rightWs, rightWsIdx) = getSheetAndLastRowIdx(RightPage)
 
-      // add row to inRightOnly and right sheet
-      orderedColDefs(RIGHT).zipWithIndex.foreach {
-        case (colDef, index) => {
-          for (ws <- inRightOnlyWs) addCellToWorksheet(ws, index, inRightOnlyWsIdx + 1, d.right(colDef.rightIndex))
-          for (ws <- rightWs) addCellToWorksheet(ws, index, rightWsIdx + 1, d.right(colDef.rightIndex))
-        }
+      sortedRightColumns.zipWithIndex.foreach {
+        case ((colDef, _), index) =>
+          for (ws <- inRightOnlyWs) addCellToWorksheet(ws, index, inRightOnlyWsIdx + 1, d.right(colDef.index))
+          for (ws <- rightWs) addCellToWorksheet(ws, index, rightWsIdx + 1, d.right(colDef.index))
       }
     }
 
-  protected def addHeaders(ws: Sheet, addReasonColumn: Boolean = false, dataSet: DataSet = BOTH, addDataSetColumn: Boolean = false) = {
+  protected def addHeaders(ws: Sheet, columns: Seq[Either[(Option[ColumnDefinition], Option[ColumnDefinition], Boolean), (ColumnDefinition, Boolean)]], addReasonColumn: Boolean = false, addDataSetColumn: Boolean = false) = {
     val startingIndex = if (addDataSetColumn) 1 else 0
     if (addDataSetColumn) {
       addCellToWorksheet(ws, 0, 0, pageNames(LeftPage))
       addCellToWorksheet(ws, 0, 1, pageNames(RightPage))
     }
 
-    orderedColDefs(dataSet).zipWithIndex.foreach{case (colDef, index) =>
-      if (colDef.isKey) {
-        val cellStyle = if(colDef.isIgnored) None else Option(keyColCellStyle)
-        dataSet match {
-          case LEFT  => addCellToWorksheet(ws, index + startingIndex, 0, colDef.leftName, cellStyle)
-          case RIGHT => addCellToWorksheet(ws, index + startingIndex, 0, colDef.rightName, cellStyle)
-          case BOTH  => {
-            addCellToWorksheet(ws, index + startingIndex, 0, colDef.leftName, cellStyle)
-            addCellToWorksheet(ws, index + startingIndex, 1, colDef.rightName, cellStyle)
-          }
+    columns.zipWithIndex.foreach{
+      case (Right((c, matched)), index) =>
+        val style = (c.isKey, matched) match {
+          case (true, _)     => Some(keyColCellStyle)
+          case (false, true) => Some(matchedColCellStyle)
+          case _             => None}
+        addCellToWorksheet(ws, index + startingIndex, 0, c.name, style)
+      case (Left((l, r, ignored)), index) =>
+        val style = (l.filter(_.isKey).isDefined, ignored) match {
+          case (true, false)  => Option(keyColCellStyle)
+          case (false, false) => Option(matchedColCellStyle)
+          case (_, true)      => None
         }
-      }
-      else if (!colDef.isIgnored)
-        dataSet match {
-          case LEFT  => addCellToWorksheet(ws, index + startingIndex, 0, colDef.leftName, Option(matchedColCellStyle))
-          case RIGHT => addCellToWorksheet(ws, index + startingIndex, 0, colDef.rightName, Option(matchedColCellStyle))
-          case BOTH  => {
-            addCellToWorksheet(ws, index + startingIndex, 0, colDef.leftName, Option(matchedColCellStyle))
-            addCellToWorksheet(ws, index + startingIndex, 1, colDef.rightName, Option(matchedColCellStyle))
-          }
-        }
-      else
-        dataSet match {
-          case LEFT => colDef.nameOpt.foreach(addCellToWorksheet(ws, index + startingIndex, 0, _))
-          case RIGHT => colDef.mappedName.foreach(addCellToWorksheet(ws, index + startingIndex, 0, _))
-          case BOTH => {
-            colDef.nameOpt.foreach(addCellToWorksheet(ws, index + startingIndex, 0, _))
-            colDef.mappedName.foreach(addCellToWorksheet(ws, index + 1, startingIndex, _)) // FIXME are these indexes mixed up?
-          }
-        }
+        l.foreach(l => addCellToWorksheet(ws, index + startingIndex, 0, l.name, style))
+        r.foreach(r => addCellToWorksheet(ws, index + startingIndex, 1, r.name, style))
     }
 
     if (addReasonColumn) {
-      val colCount = startingIndex + orderedColDefs(dataSet).size
+      val colCount = startingIndex + columns.size
       addCellToWorksheet(ws, colCount, 0, "Reason", Option(explainedColCellStyle))
       addCellToWorksheet(ws, colCount, 1, "Reason", Option(explainedColCellStyle))
     }
   }
-
-  protected def getColorCellFormat(color: Short, cellFont: Font = getCellFont()) = {
-    val cellStyle = workbook.createCellStyle
-    cellStyle.setFillBackgroundColor(color)
-    cellStyle.setFillForegroundColor(color)
-    cellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND)
-    cellStyle.setFont(cellFont)
-    cellStyle
-  }
-
-  protected def getCellFont(fontName: String = "Arial", size: Int = 10, bold: Boolean = false) = {
-    val font = workbook.createFont
-    font.setFontHeightInPoints(size.toShort)
-    font.setFontName(fontName)
-    if (bold) font.setBoldweight(Font.BOLDWEIGHT_BOLD)
-    font
-  }
-}
-
-object ExcelDiffSetWriter {
-  def apply(workbook: ExcelWorkBook, colDefs: Seq[CompareColDef],
-            pageNames: Map[Page, String] = PageNames(), ommittedPages: Seq[Page] = Nil) =
-    new ExcelDiffSetWriter(workbook, colDefs, pageNames, ommittedPages)
 }
 /*
 Copyright 2017 Morgan Stanley

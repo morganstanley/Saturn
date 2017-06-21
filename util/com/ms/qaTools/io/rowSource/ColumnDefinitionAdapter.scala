@@ -19,7 +19,7 @@ object ColumnDefinitionAdapter {
   def apply(firstRow: Int, separatorChar: Char, multiPartColNameSep: String, colNameRows: Int, transformColDefs: (Seq[ColumnDefinition]) => Seq[ColumnDefinition] = identity[Seq[ColumnDefinition]]) =
     new StreamingColumnDefinitionAdapter(colNameRows = colNameRows, skipRows = firstRow, multiPartColNameSep = multiPartColNameSep, transformColDefs = transformColDefs)
   def apply(colNames: Seq[String], skipRows: Int) =
-    new SimpleColumnDefinitionAdapter(colNames.map {ColumnDefinition(_)}, skipRows)
+    new SimpleColumnDefinitionAdapter(colNames.zipWithIndex.map{case (n, i) => ColumnDefinition(name = n, index = i)}, skipRows)
   def apply(colCount: Int, skipRows: Int) =
     new SimpleColumnDefinitionAdapter((0 until colCount).map {i => ColumnDefinition(name = i.toString, index = i)}, skipRows)
 }

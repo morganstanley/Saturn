@@ -2,10 +2,8 @@
  */
 package com.ms.qaTools.saturn.kronus.impl;
 
-import com.ms.qaTools.saturn.kronus.AbstractDef;
+import com.ms.qaTools.saturn.kronus.AnnotatedDef;
 import com.ms.qaTools.saturn.kronus.Expression;
-import com.ms.qaTools.saturn.kronus.ImportDef;
-import com.ms.qaTools.saturn.kronus.IncludeDef;
 import com.ms.qaTools.saturn.kronus.Kronus;
 import com.ms.qaTools.saturn.kronus.KronusPackage;
 
@@ -32,8 +30,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link com.ms.qaTools.saturn.kronus.impl.KronusImpl#getImports <em>Imports</em>}</li>
- *   <li>{@link com.ms.qaTools.saturn.kronus.impl.KronusImpl#getIncludes <em>Includes</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.KronusImpl#getDefs <em>Defs</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.KronusImpl#getReturn <em>Return</em>}</li>
  * </ul>
@@ -44,26 +40,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
 public class KronusImpl extends MinimalEObjectImpl.Container implements Kronus
 {
   /**
-   * The cached value of the '{@link #getImports() <em>Imports</em>}' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getImports()
-   * @generated
-   * @ordered
-   */
-  protected EList<ImportDef> imports;
-
-  /**
-   * The cached value of the '{@link #getIncludes() <em>Includes</em>}' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getIncludes()
-   * @generated
-   * @ordered
-   */
-  protected EList<IncludeDef> includes;
-
-  /**
    * The cached value of the '{@link #getDefs() <em>Defs</em>}' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -71,7 +47,7 @@ public class KronusImpl extends MinimalEObjectImpl.Container implements Kronus
    * @generated
    * @ordered
    */
-  protected EList<AbstractDef> defs;
+  protected EList<AnnotatedDef> defs;
 
   /**
    * The cached value of the '{@link #getReturn() <em>Return</em>}' containment reference.
@@ -109,39 +85,11 @@ public class KronusImpl extends MinimalEObjectImpl.Container implements Kronus
    * <!-- end-user-doc -->
    * @generated
    */
-  public EList<ImportDef> getImports()
-  {
-    if (imports == null)
-    {
-      imports = new EObjectContainmentEList<ImportDef>(ImportDef.class, this, KronusPackage.KRONUS__IMPORTS);
-    }
-    return imports;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EList<IncludeDef> getIncludes()
-  {
-    if (includes == null)
-    {
-      includes = new EObjectContainmentEList<IncludeDef>(IncludeDef.class, this, KronusPackage.KRONUS__INCLUDES);
-    }
-    return includes;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EList<AbstractDef> getDefs()
+  public EList<AnnotatedDef> getDefs()
   {
     if (defs == null)
     {
-      defs = new EObjectContainmentEList<AbstractDef>(AbstractDef.class, this, KronusPackage.KRONUS__DEFS);
+      defs = new EObjectContainmentEList<AnnotatedDef>(AnnotatedDef.class, this, KronusPackage.KRONUS__DEFS);
     }
     return defs;
   }
@@ -204,10 +152,6 @@ public class KronusImpl extends MinimalEObjectImpl.Container implements Kronus
   {
     switch (featureID)
     {
-      case KronusPackage.KRONUS__IMPORTS:
-        return ((InternalEList<?>)getImports()).basicRemove(otherEnd, msgs);
-      case KronusPackage.KRONUS__INCLUDES:
-        return ((InternalEList<?>)getIncludes()).basicRemove(otherEnd, msgs);
       case KronusPackage.KRONUS__DEFS:
         return ((InternalEList<?>)getDefs()).basicRemove(otherEnd, msgs);
       case KronusPackage.KRONUS__RETURN:
@@ -226,10 +170,6 @@ public class KronusImpl extends MinimalEObjectImpl.Container implements Kronus
   {
     switch (featureID)
     {
-      case KronusPackage.KRONUS__IMPORTS:
-        return getImports();
-      case KronusPackage.KRONUS__INCLUDES:
-        return getIncludes();
       case KronusPackage.KRONUS__DEFS:
         return getDefs();
       case KronusPackage.KRONUS__RETURN:
@@ -249,17 +189,9 @@ public class KronusImpl extends MinimalEObjectImpl.Container implements Kronus
   {
     switch (featureID)
     {
-      case KronusPackage.KRONUS__IMPORTS:
-        getImports().clear();
-        getImports().addAll((Collection<? extends ImportDef>)newValue);
-        return;
-      case KronusPackage.KRONUS__INCLUDES:
-        getIncludes().clear();
-        getIncludes().addAll((Collection<? extends IncludeDef>)newValue);
-        return;
       case KronusPackage.KRONUS__DEFS:
         getDefs().clear();
-        getDefs().addAll((Collection<? extends AbstractDef>)newValue);
+        getDefs().addAll((Collection<? extends AnnotatedDef>)newValue);
         return;
       case KronusPackage.KRONUS__RETURN:
         setReturn((Expression)newValue);
@@ -278,12 +210,6 @@ public class KronusImpl extends MinimalEObjectImpl.Container implements Kronus
   {
     switch (featureID)
     {
-      case KronusPackage.KRONUS__IMPORTS:
-        getImports().clear();
-        return;
-      case KronusPackage.KRONUS__INCLUDES:
-        getIncludes().clear();
-        return;
       case KronusPackage.KRONUS__DEFS:
         getDefs().clear();
         return;
@@ -304,10 +230,6 @@ public class KronusImpl extends MinimalEObjectImpl.Container implements Kronus
   {
     switch (featureID)
     {
-      case KronusPackage.KRONUS__IMPORTS:
-        return imports != null && !imports.isEmpty();
-      case KronusPackage.KRONUS__INCLUDES:
-        return includes != null && !includes.isEmpty();
       case KronusPackage.KRONUS__DEFS:
         return defs != null && !defs.isEmpty();
       case KronusPackage.KRONUS__RETURN:

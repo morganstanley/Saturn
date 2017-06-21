@@ -1,66 +1,62 @@
 package com.ms.qaTools.io.rowSource
 
-import scala.annotation.tailrec
-import com.ms.qaTools.io.DelimitedRow
-import com.ms.qaTools.tree.TreeNode
+import scala.collection.AbstractIterator
+
+import com.ms.qaTools.tree.AsTreeNode
 import com.ms.qaTools.tree.extraction.ColumnIndex
 import com.ms.qaTools.tree.extraction.ColumnMapping
 import com.ms.qaTools.tree.extraction.DetachStrategy
 import com.ms.qaTools.tree.extraction.Extractor
 import com.ms.qaTools.tree.extraction.Index
 
-trait PathRowSource[N,R] extends Iterator[Seq[(String, Index)]] with ColumnDefinitions {
+abstract class PathRowSource[N: AsTreeNode, R] extends AbstractIterator[Seq[(String, Index)]] with ColumnDefinitions {
   val mappingNode: ColumnMapping[N]
   val extractor: Extractor[N] = new Extractor()
   val pathMappings: Seq[(String, String)]
   val rowSource: Iterator[R]
-  val nodeCreator: R => TreeNode[N]
+  val nodeCreator: R => N
   val detachNodes: DetachStrategy[N]
-  
-  def getBaseLine: Seq[(String, Index)] = pathMappings.zipWithIndex.map {p => (null,ColumnIndex(p._2))}
-  
-  @tailrec 
-  final def update(row: Seq[(String, Index)], base: Seq[(String, Index)]): Seq[(String, Index)] =
-    if (row.isEmpty) 
-      base 
-    else 
-      update(row.tail,base.updated(row.head._2.index, row.head))
-  
-  def createIterator(results: Seq[Seq[(String, Index)]]) = 
-    new Iterator[Seq[(String, Index)]] {
-      val base = getBaseLine
-      val i = results.iterator     
+
+  private[this] val base: Seq[(String, Index)] = (0 until pathMappings.length).map(i => (null, ColumnIndex(i)))
+
+  def createIterator(results: Seq[Seq[(String, Index)]]) =
+    new AbstractIterator[Seq[(String, Index)]] {
+      private[this] val i = results.iterator
       def hasNext = i.hasNext
-      def next = update(i.next,base)
+      def next = {
+        val row = base.toArray
+        i.next.foreach(change => row(change._2.index) = change)
+        row
+      }
     }
-  
+
   def colDefs: Seq[ColumnDefinition] = ColumnDefinition.fromColumnNames(pathMappings map { _._2 })
-  
+
   private[this] var s: Iterator[Seq[(String, Index)]] = null
 
   protected def createFromNext(a: R): Iterator[Seq[(String, Index)]] =
     createIterator(extractor.extract(mappingNode, nodeCreator(a), detachNodes))
 
-  def next(): Seq[(String, Index)] = {
+  def next = {
     while ((s == null || !s.hasNext) && rowSource.hasNext) s = createFromNext(rowSource.next)
     if (s.hasNext) s.next else null
   }
 
-  def hasNext() = if (s == null || !s.hasNext) rowSource.hasNext else s.hasNext
+  def hasNext = if (s == null || !s.hasNext) rowSource.hasNext else s.hasNext
 
-  def asDelimitedRowIterator: Iterator[DelimitedRow] with ColumnDefinitions = {
+  def asDelimitedRowIterator: Iterator[Seq[String]] with ColumnDefinitions = {
     val parent = this
-    new Iterator[DelimitedRow] with ColumnDefinitions {
+    new AbstractIterator[Seq[String]] with ColumnDefinitions {
       def colDefs = parent.colDefs
       def hasNext = parent.hasNext
       def next = parent.next.map { _._1 }
     }
   }
 
-  def asIndexedRepresentationIterator: Iterator[IndexedRepresentation[R]] = {
+  def asIndexedRepresentationIterator(print: R => String = (r: R) => r.toString): Iterator[IndexedRepresentation[R]] = {
     val parent = this
-    new Iterator[IndexedRepresentation[R]] {
-      def hasNext = parent.hasNext()
+    new AbstractIterator[IndexedRepresentation[R]] {
+      def hasNext = parent.hasNext
       def next = {
         if (rowSource.hasNext) {
           val m = rowSource.next
@@ -70,12 +66,13 @@ trait PathRowSource[N,R] extends Iterator[Seq[(String, Index)]] with ColumnDefin
               val representation = m
               val indexed = s.next.map { _._1 }
               def colDefs = parent.colDefs
+              def prettyPrint = print(representation)
             }
           else null
         } else null
       }
     }
-  }  
+  }
 }
 /*
 Copyright 2017 Morgan Stanley

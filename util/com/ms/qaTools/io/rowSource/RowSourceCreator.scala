@@ -3,23 +3,19 @@ package com.ms.qaTools.io.rowSource
 import java.io.Reader
 import java.io.{File => JFile}
 import com.ms.qaTools.io.rowSource.file.CsvRowSource
+import java.io.BufferedReader
 import java.io.StringReader
 import java.io.FileReader
 import file.TsvRowSource
 import file.PsvRowSource
 import file.ExcelRowSource
 import file.DataRowSource
-import com.ms.qaTools.io.SortedDelimitedIterator
 import com.ms.qaTools.conversions.JavaIOConversions._
 import com.ms.qaTools.io.rowSource.delimited.DelimitedParser
 import com.ms.qaTools.conversions.JavaIOConversions._
 import com.ms.qaTools.io.rowSource.file.ExcelWorkBook
 import com.ms.qaTools.io.rowSource.file.ExcelCellRowSource
-import com.ms.qaTools.io._
-import com.ms.qaTools.io.rowSource.ExternalSort._
 import com.ms.qaTools.io.rowSource.delimited.DelimitedParser
-
-
 
 trait RowSourceCreator[RowSourceType] {
   def createRowSource(fmt: String): RowSourceType
@@ -28,81 +24,83 @@ trait RowSourceCreator[RowSourceType] {
 case class DsRowSourceCreator(fileName: String,
                               wsName: Option[String] = None,
                               firstRow: Int = DelimitedParser.DEFAULT_SKIP_LINES,
-                              separatorChar: Char = DelimitedParser.DEFAULT_SEPARATOR, 
-                              quoteChar: Char = DelimitedParser.DEFAULT_QUOTE_CHARACTER, 
+                              separatorChar: Char = DelimitedParser.DEFAULT_SEPARATOR,
+                              quoteChar: Char = DelimitedParser.DEFAULT_QUOTE_CHARACTER,
                               escapeChar: Char = DelimitedParser.DEFAULT_ESCAPE_CHARACTER,
                               multiPartColNameSeparator: String = ".",
                               colNameRows: Int = 1,
                               headerless: Boolean = false,
                               columns: Seq[ColumnDefinition] = Nil,
                               transformColDefs: (Seq[ColumnDefinition]) => Seq[ColumnDefinition] = identity[Seq[ColumnDefinition]])
-extends RowSourceCreator[Iterator[DelimitedRow] with ColumnDefinitions] {
- 
-  def createRowSource(fmt: String): Iterator[DelimitedRow] with ColumnDefinitions = fmt match {
-    case "CSV" => 
-      CsvRowSource(reader = fileName, 
-          			line = firstRow, 
-          			separator = separatorChar, 
-          			quotechar = Some(quoteChar), 
-          			escape = Some(escapeChar), 
-          			colNameRows = colNameRows, 
-          			headerless = headerless,
-          			columns = columns,
-          			multiPartColNameSep = multiPartColNameSeparator,
-          			transformColDefs = transformColDefs)
-    case "EXCEL"|"XLS"|"XLSX" => 
-      ExcelRowSource(fileName, 
-    		  		wsName.getOrElse("Sheet1"), 
-    		  		firstRow = firstRow, 
-    		  		colNameRows = colNameRows, 
-    		  		headerless = headerless,
-    		  		columns = columns,
-    		  		multiPartColNameSep = multiPartColNameSeparator,
-    		  		transformColDefs = transformColDefs)
-    case "DATA" => 
-      DataRowSource(fileName, 
-    		  		line = firstRow, 
-    		  		separator = separatorChar, 
-    		  		quotechar = Some(quoteChar), 
-    		  		escape = Some(escapeChar), 
-    		  		colNameRows = colNameRows, 
-    		  		headerless = headerless,
-    		  		columns = columns,
-    		  		multiPartColNameSep = multiPartColNameSeparator,
-    		  		transformColDefs = transformColDefs)
-    case "TSV" => 
-      TsvRowSource( fileName, 
-    		  		line = firstRow, 
-    		  		separator = '\t', 
-    		  		quotechar = Some(quoteChar), 
-    		  		escape = Some(escapeChar), 
-    		  		colNameRows = colNameRows, 
-    		  		headerless = headerless,
-    		  		columns = columns,
-    		  		multiPartColNameSep = multiPartColNameSeparator,
-    		  		transformColDefs = transformColDefs)
-    case "PSV" => 
-      PsvRowSource(fileName, 
-    		  		line = firstRow, 
-    		  		separator = '|', 
-    		  		quotechar = Some(quoteChar), 
-    		  		escape = Some(escapeChar), 
-    		  		colNameRows = colNameRows, 
-    		  		headerless = headerless,
-    		  		columns = columns,
-    		  		multiPartColNameSep = multiPartColNameSeparator,
-    		  		transformColDefs = transformColDefs) 
-    case "CUSTOM" => 
-      CsvRowSource(fileName,
-    		  		line = firstRow,
-    		  		separator = separatorChar, 
-    		  		quotechar = Some(quoteChar), 
-    		  		escape = Some(escapeChar), 
-    		  		colNameRows = colNameRows,
-    		  		columns = columns,
-    		  		multiPartColNameSep = multiPartColNameSeparator,
-    		  		transformColDefs = transformColDefs)
-    case _ => throw new Exception("Could not create dataset row source for format: " + fmt)
+extends RowSourceCreator[Iterator[Seq[String]] with ColumnDefinitions] {
+  def createRowSource(fmt: String): Iterator[Seq[String]] with ColumnDefinitions = {
+    val input = Option(fileName).map { new FileReader(_) }.getOrElse(Console.in)
+    fmt match {
+      case "CSV" =>
+        CsvRowSource(reader = input,
+                  line = firstRow,
+                  separator = separatorChar,
+                  quotechar = Some(quoteChar),
+                  escape = Some(escapeChar),
+                  colNameRows = colNameRows,
+                  headerless = headerless,
+                  columns = columns,
+                  multiPartColNameSep = multiPartColNameSeparator,
+                  transformColDefs = transformColDefs)
+      case "EXCEL"|"XLS"|"XLSX" =>
+        ExcelRowSource(Option(fileName).getOrElse(throw new Exception("No file name provided for format: " + fmt)),
+                wsName.getOrElse("Sheet1"),
+                firstRow = firstRow,
+                colNameRows = colNameRows,
+                headerless = headerless,
+                columns = columns,
+                multiPartColNameSep = multiPartColNameSeparator,
+                transformColDefs = transformColDefs)
+      case "DATA" =>
+        DataRowSource(input,
+                line = firstRow,
+                separator = separatorChar,
+                quotechar = Some(quoteChar),
+                escape = Some(escapeChar),
+                colNameRows = colNameRows,
+                headerless = headerless,
+                columns = columns,
+                multiPartColNameSep = multiPartColNameSeparator,
+                transformColDefs = transformColDefs)
+      case "TSV" =>
+        TsvRowSource(input,
+                line = firstRow,
+                separator = '\t',
+                quotechar = Some(quoteChar),
+                escape = Some(escapeChar),
+                colNameRows = colNameRows,
+                headerless = headerless,
+                columns = columns,
+                multiPartColNameSep = multiPartColNameSeparator,
+                transformColDefs = transformColDefs)
+      case "PSV" =>
+        PsvRowSource(input,
+                line = firstRow,
+                separator = '|',
+                quotechar = Some(quoteChar),
+                escape = Some(escapeChar),
+                colNameRows = colNameRows,
+                headerless = headerless,
+                columns = columns,
+                multiPartColNameSep = multiPartColNameSeparator,
+                transformColDefs = transformColDefs)
+      case "CUSTOM" =>
+        CsvRowSource(input,
+                line = firstRow,
+                separator = separatorChar,
+                quotechar = Some(quoteChar),
+                escape = Some(escapeChar),
+                colNameRows = colNameRows,
+                columns = columns,
+                multiPartColNameSep = multiPartColNameSeparator,
+                transformColDefs = transformColDefs)
+      case _ => throw new Exception("Could not create dataset row source for format: " + fmt)
+    }
   }
 }
 /*

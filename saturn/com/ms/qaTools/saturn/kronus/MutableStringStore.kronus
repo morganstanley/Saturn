@@ -1,0 +1,26 @@
+package com.ms.qaTools.saturn.kronusCode.MutableStringStore
+
+include com.ms.qaTools.saturn.kronus.code.Prelude
+include com.ms.qaTools.saturn.kronusCode.Backport
+
+type Store = scala.collection.mutable.Map[String, String]
+type Result = com.ms.qaTools.toolkit.Result
+
+#Resource()
+def MutableStringStore(): Store = generate("yield") {
+  scala.collection.concurrent.TrieMap.empty: scala.collection.mutable.Map[String, String]
+}
+
+#Step()
+def MutableStringStoreSet(store: Store, key: String, value: String): Result = generate("yield") {
+  require(key.matches("\\w+"), s"invalid key: $key")
+  store(key) = value
+  new Result {def status = com.ms.qaTools.toolkit.Passed; val exception = None}
+}
+
+#Resource()
+def MutableStringStoreGet(store: Store, str: String): String = generate("yield") {
+  import scala.collection.JavaConverters._
+  import groovy.lang.{GroovyShell, Binding}
+  new GroovyShell(new Binding(store.asJava)).evaluate(s"""\"\"\"$str\"\"\" """).toString
+}

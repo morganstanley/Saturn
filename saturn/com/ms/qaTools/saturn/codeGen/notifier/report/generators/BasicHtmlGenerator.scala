@@ -12,7 +12,7 @@ import com.ms.qaTools.saturn.metaData.RepetitionHandler
 import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.runtime.notifier.html.HTMLCSS
 import com.ms.qaTools.saturn.runtime.notifier.html.appendException
-import com.ms.qaTools.toolkit.Fail
+import com.ms.qaTools.{toolkit => tk}
 
 class BasicHtmlGenerator(implicit sc: SaturnExecutionContext) extends HtmlGenerator {
   def runGroupIconClassName: String = "runGroupIcon"
@@ -30,7 +30,7 @@ class BasicHtmlGenerator(implicit sc: SaturnExecutionContext) extends HtmlGenera
 
     if (output) {
       // If there is no annotation, expand by default on failed
-      val expanded = annotationApplied.map(_.expandElement(result.status)).getOrElse(result.failed)
+      val expanded = annotationApplied.map(_.expandElement(result.status)).getOrElse(result.status == tk.Failed)
 
       val displayHeader = annotationApplied.filter(a => a.hideHeader) == None
       val displayRepeatingHeader = annotationApplied.filter(a => a.hideRepeatingHeader) == None
@@ -52,7 +52,7 @@ class BasicHtmlGenerator(implicit sc: SaturnExecutionContext) extends HtmlGenera
             case Success(r) => {
               val iterationAnnotations = r.metaData.collect { case s: ScenarioAnnotation => s }
               val iterationAnnotationApplied = getAnnotationByResult(iterationAnnotations, result.status)
-              
+
               if (hasRepetitionHandler) {
                 val iterationPanel = iterationsParentPanel.appendDiv.asPanelCollapsed
                 if (displayRepeatingHeader) {
@@ -70,16 +70,16 @@ class BasicHtmlGenerator(implicit sc: SaturnExecutionContext) extends HtmlGenera
             }
             case Failure(e) => {
               createHeaderPanel(parentElement = iterationsParentPanel,
-				                fullName = fullName,
-				                runGroupType = runGroupType,
-				                result = Fail(Option(e)),
-				                iconClass = runGroupIconClassName,
-				                title = name,
-				                description = "",
-				                tooltip = "%s: %s".format(runGroupType, fullName),
-				                dialogTitle = "Configuration",
-				                dialogContent = fullName,
-				                asScenario = asScenario)
+                        fullName = fullName,
+                        runGroupType = runGroupType,
+                        result =  new tk.Result {val status = tk.Failed; val exception = Option(e)},
+                        iconClass = runGroupIconClassName,
+                        title = name,
+                        description = "",
+                        tooltip = "%s: %s".format(runGroupType, fullName),
+                        dialogTitle = "Configuration",
+                        dialogContent = fullName,
+                        asScenario = asScenario)
               val panelContent = iterationsParentPanel.appendDiv.asPanelContent.expand(expanded)
               appendException(panelContent, e)
             }
@@ -91,7 +91,7 @@ class BasicHtmlGenerator(implicit sc: SaturnExecutionContext) extends HtmlGenera
           case Success(r) => {
             val iterationAnnotations = r.metaData.collect { case s: ScenarioAnnotation => s }
             val iterationAnnotationApplied = getAnnotationByResult(iterationAnnotations, result.status)
-              
+
             val childPanel = parentElement.appendDiv.addClass(HTMLCSS.PANEL_CLASS(expanded))
             if (displayRepeatingHeader) //createHeader runGroupName[n]
               createIterationResultHeaderPanel(childPanel, name, fullName, runGroupType, runGroupIconClassName, r, showIterationNo, scenarioAnnotations = iterationAnnotations)
@@ -118,7 +118,8 @@ class BasicHtmlGenerator(implicit sc: SaturnExecutionContext) extends HtmlGenera
 
 object BasicHtmlGenerator {
   def apply()(implicit sc: SaturnExecutionContext) = new BasicHtmlGenerator
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

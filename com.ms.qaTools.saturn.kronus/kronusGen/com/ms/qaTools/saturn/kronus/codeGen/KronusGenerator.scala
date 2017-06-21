@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.EObject
 import com.ms.qaTools.saturn.kronus._
 
 trait KronusGenerator {
-  def generateFile(topLevel: TopLevelKronus, outputDir: Path): Try[KronusGenerator.Result]
+  def generateFile(topLevel: TopLevelKronus, outputDir: Path): KronusGenerator.Result
 }
 
 object KronusGenerator {
@@ -23,17 +23,18 @@ object KronusGenerator {
     }
   }
 
-  class CompileException(eobj: EObject, message: String, cause: Throwable) extends Exception(message, cause) {
-    def location = Location.fromEObject(eobj)
+  class CompileException(eObject: EObject, message: String, cause: Throwable) extends Exception(message, cause) {
+    def location = Location.fromEObject(eObject)
 
-    def path = (Iterator(eobj) ++ eobj.eContainers).collect {
-      case x: AbstractDef => x.getName
+    def path = (Iterator(eObject) ++ eObject.eContainers).flatMap {
+      case x: AbstractDef => x.name
+      case _              => None
     }.toSeq.reverse.mkString(".")
 
     override def getMessage = {
       val loc = locationInErrorMessage(location)
       val msg = Option(super.getMessage).fold("")(": " + _)
-      s"Error generate code for $path$loc$msg"
+      s"Error generating code for: $path$loc\n$msg"
     }
   }
 }

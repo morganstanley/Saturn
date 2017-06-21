@@ -184,7 +184,7 @@ abstract class ComplexValueGenerator {
             namespaceStr <- namespace.generate
           } yield s"XPathValueTry(context, $resourceStr, $rowStr, $xPathValStr, $namespaceStr, ${fragment}, XPathConstants.${returnType})"
         }
-      case Some(fixPath: FIXComplexValue) => 
+      case Some(fixPath: FIXComplexValue) =>
         for {
           resource <- ResourceGenerator(fixPath.getResource())
           row <- ComplexValueStringGenerator(fixPath.getRow())
@@ -197,7 +197,7 @@ abstract class ComplexValueGenerator {
             rowStr <- row.generate
             fixPathValStr <- fixPathVal.generate
             messageTypeStr <- messageType.generate
-          } yield s"FIXPathValueTry(context, $resourceStr, $rowStr, $fixPathValStr, $messageTypeStr, XPathConstants.${returnType})"
+          } yield s"FixPathValueTry(context, $resourceStr, $rowStr, $fixPathValStr, $messageTypeStr, XPathConstants.${returnType})"
         }
       case Some(json: JSONComplexValue) => for {
         resource <- ResourceGenerator(json.getResource())
@@ -230,11 +230,13 @@ abstract class ComplexValueGenerator {
 
     entry.getValue match {
       case value: MFallible =>
+        val defValCV = value.getDefaultValue
         for {
           tryGen <- tryGenTry
-          defVal <- ComplexValueStringGenerator(value.getDefaultValue)
+          defVal <- ComplexValueStringGenerator(defValCV)
         } yield value.getFailBehavior match {
-          case IGNORE => TryMethodCallGen(tryGen, "orElse", Seq(defVal))
+          case IGNORE => if (defValCV == null || defValCV.getMixed.isEmpty) TryMethodCallGen(tryGen, "orEmpty", Nil)
+                         else TryMethodCallGen(tryGen, "orElse", Seq(defVal))
           case WARN   => TryMethodCallGen(tryGen, "warnWith",
                                           Seq(ScalaExpr("context"), StringExpr(containerPath(value), noInterpolate = true), defVal))
           case ERROR  => tryGen

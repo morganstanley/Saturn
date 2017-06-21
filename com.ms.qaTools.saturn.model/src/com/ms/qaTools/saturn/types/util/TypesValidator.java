@@ -130,6 +130,8 @@ public class TypesValidator extends EObjectValidator
         return validateAbstractRepetitionHandler((AbstractRepetitionHandler)value, diagnostics, context);
       case TypesPackage.ABSTRACT_RUN_GROUP_MODIFIER:
         return validateAbstractRunGroupModifier((AbstractRunGroupModifier)value, diagnostics, context);
+      case TypesPackage.ALM_ID:
+        return validateAlmId((AlmId)value, diagnostics, context);
       case TypesPackage.COLUMN:
         return validateColumn((Column)value, diagnostics, context);
       case TypesPackage.COMMENT:
@@ -255,6 +257,16 @@ public class TypesValidator extends EObjectValidator
       DiagnosticChain diagnostics, Map<Object, Object> context)
   {
     return validate_EveryDefaultConstraint(abstractRunGroupModifier, diagnostics, context);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public boolean validateAlmId(AlmId almId, DiagnosticChain diagnostics, Map<Object, Object> context)
+  {
+    return validate_EveryDefaultConstraint(almId, diagnostics, context);
   }
 
   /**

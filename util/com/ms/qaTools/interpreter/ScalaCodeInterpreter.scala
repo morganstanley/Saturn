@@ -1,39 +1,32 @@
 package com.ms.qaTools.interpreter
 
-import scala.annotation.implicitNotFound
-import scala.math.abs
-import scala.tools.nsc.interpreter.IMain
-import scala.tools.nsc.interpreter.NamedParam
-import scala.tools.nsc.interpreter.Results
-import scala.tools.nsc.Settings
-import java.io.File
-import com.ms.qaTools.toolkit.Result
-import com.ms.qaTools.toolkit.Pass
-import com.ms.qaTools.toolkit.Fail
-import com.ms.qaTools._
-import com.ms.qaTools.toolkit.Status
-import com.ms.qaTools.toolkit.Failed
-import com.ms.qaTools.toolkit.Passed
+import scala.tools.nsc.interpreter
+import scala.util.control.NonFatal
 
+import com.ms.qaTools.toolkit
 
-
-case class ScalaInterpreterResult(override val status: Status,
+case class ScalaInterpreterResult(
+  status: toolkit.Status,
   command: String,
   resultObj: Option[Any] = None,
-  override val exception: Option[Throwable] = None,
-  override val errorMessage: Option[String] = None) extends InterpreterResult
+  exception: Option[Throwable] = None,
+  override val errorMessage: Option[String] = None
+) extends InterpreterResult
 
-class ScalaInterpreter(debug: Boolean,
-  imports: Iterable[String],
-  bindings: Map[String, Any]) extends Interpreter[String, ScalaInterpreterResult] {
-
+class ScalaInterpreter(debug: Boolean, imports: Iterable[String], bindings: Map[String, Any])
+extends Interpreter[String, ScalaInterpreterResult] {
   private lazy val settings = {
-    val set = new Settings
-    set.classpath.value += File.pathSeparator + System.getProperty("java.class.path")
+    val set = new scala.tools.nsc.Settings
+    Option(System.getProperty("sbt-classpath")) match {
+      case Some(cp) => set.classpath.value = cp
+      case None     => set.classpath.value += java.io.File.pathSeparator + System.getProperty("java.class.path")
+    }
+    set.deprecation.value = true
     set
   }
 
-  class QAToolsIMain extends IMain(settings = settings) { override def lastRequest = prevRequestList.last }
+  class QAToolsIMain extends interpreter.IMain(settings = settings) {
+    override def lastRequest = prevRequestList.last}
 
   private lazy val imain = new QAToolsIMain()
 
@@ -44,37 +37,44 @@ class ScalaInterpreter(debug: Boolean,
     imports.map {i => codeSb append s"import ${i};\n"}
     val results = if (debug) {
       bindings.foreach {
-        b => imain.bind(NamedParam(b._1, b._2))
+        b => imain.bind(interpreter.NamedParam(b._1, b._2))
       }
-      //if (imain.isParseable(code)) imain.interpret(code)      
       imain.interpret(codeSb.append(code).toString)
-    } else {
+    }
+    else {
       //imports.foreach { i => imain.beQuietDuring(imain.addImports(i)) }
       bindings.foreach {
-        b => imain.beQuietDuring(imain.bind(NamedParam(b._1, b._2)))
+        b => imain.beSilentDuring(imain.bind(interpreter.NamedParam(b._1, b._2)))
       }
-      //if (imain.isParseable(code)) imain.quietRun(code)
       imain.quietRun(codeSb.append(code).toString)
     }
 
-    if (results == Results.Error || results == Results.Incomplete)
-      ScalaInterpreterResult(Failed(), code, errorMessage = Some("Error interpreting the code: " + results.toString))
+    if (results == interpreter.Results.Error || results == interpreter.Results.Incomplete)
+      ScalaInterpreterResult(toolkit.Failed, code, errorMessage = Some("Error interpreting the code: " + results.toString))
     else {
       val func = imain.lastRequest.lineRep.call("$result")
       imain.close
       Option(func) match {
-        case Some(f) => ScalaInterpreterResult(Passed(), code, resultObj = Option(f))
-        case None => ScalaInterpreterResult(Failed(), code, errorMessage = Option("Scala code could not compile."))
+        case Some(f) => ScalaInterpreterResult(toolkit.Passed, code, resultObj = Option(f))
+        case None => ScalaInterpreterResult(toolkit.Failed, code, errorMessage = Option("Scala code could not compile."))
       }
     }
+  }
+
+  def eval[A](code: String): A = try run(code) match {
+    case r: toolkit.Result if r.status == toolkit.Passed => r.resultObj match {
+      case Some(x) => x.asInstanceOf[A]
+      case None    => throw new NoSuchElementException("Scala interpreter didn't return a result object.")
+    }
+    case r => throw new RuntimeException(r.errorMessage.orNull, r.exception.orNull)
+  } catch {
+    case NonFatal(t) => throw new IllegalArgumentException(s"error while eval `$code'", t)
   }
 }
 
 object ScalaInterpreter {
-  def apply(
-    debug: Boolean = false,
-    imports: Iterable[String] = Nil,
-    bindings: Map[String, Any] = Map.empty) = new ScalaInterpreter(debug, imports, bindings)
+  def apply(debug: Boolean = false, imports: Iterable[String] = Nil, bindings: Map[String, Any] = Map.empty) =
+    new ScalaInterpreter(debug, imports, bindings)
 }
 /*
 Copyright 2017 Morgan Stanley

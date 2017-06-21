@@ -1,11 +1,12 @@
 package com.ms.qaTools.io.rowSource
 
 trait Representation[+R] {
-  val representation: R
+  def representation: R
+  def prettyPrint: String
 }
 
 trait IndexedRepresentation[+R] extends Representation[R] with ColumnDefinitions {
-  val indexed: Seq[String]
+  def indexed: Seq[String]
   def apply(index: Int) = indexed(index)
 }
 

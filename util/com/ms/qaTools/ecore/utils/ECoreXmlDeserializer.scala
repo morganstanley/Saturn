@@ -1,74 +1,65 @@
 package com.ms.qaTools.ecore.utils
 
+import com.ms.qaTools.AnyUtil
+import com.ms.qaTools.TryUtil
+import java.io.OutputStream
+import java.io.StringWriter
 import java.lang.Boolean
 import java.net.URL
-import scala.collection.JavaConversions.mapAsJavaMap
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.EStructuralFeature
-import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
+import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.emf.ecore.resource.URIConverter
+import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.emf.ecore.xmi.XMLResource
-import scala.util.Try
 import org.w3c.dom.Document
+import scala.collection.JavaConversions.mapAsJavaMap
+import scala.util.Try
 
 trait ECoreXmlDeserializer[ObjectType <: EObject] {
   val packageInstance: EPackage
   val rootFeature: EStructuralFeature
   val resourceFactory: Resource.Factory
 
-  //  Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("pmc", new XMIResourceFactoryImpl)
-  //  Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xml", new XMLResourceFactoryImpl)
-
-  val options = Map(XMLResource.OPTION_EXTENDED_META_DATA -> Boolean.TRUE,
+  val options = Map(
+    XMLResource.OPTION_EXTENDED_META_DATA     -> Boolean.TRUE,
     XMLResource.OPTION_LAX_FEATURE_PROCESSING -> Boolean.TRUE)
 
   def newXmlResource = resourceFactory.createResource(URI.createFileURI("xml")).asInstanceOf[XMLResource]
 
-  def resourceFrom(doc: Document): Try[Resource] = Try {
-    val r = newXmlResource
-    r.load(doc, options)
-    r
-  }
+  def resourceFrom(doc: Document): Resource =
+    newXmlResource.withSideEffect(_.load(doc, options))
 
-  def resourceFrom(uri: URI): Try[Resource] = Try {
-    val r = resourceFactory.createResource(uri)
-    r.load(options)
-    r
-  }
+  def resourceFrom(uri: URI): Resource =
+    resourceFactory.createResource(uri).withSideEffect(_.load(options))
 
-  def resourceFrom(s: String): Try[Resource] = Try {
-    val r = newXmlResource
-    r.load(new URIConverter.ReadableInputStream(s), options)
-    r
-  }
+  def resourceFrom(s: String): Resource =
+    newXmlResource.withSideEffect(_.load(new URIConverter.ReadableInputStream(s), options))
 
-  def deserialize(doc: Document): Try[ObjectType] = resourceFrom(doc).flatMap(deserialize)
-  def deserialize(uri: URI): Try[ObjectType] = resourceFrom(uri).flatMap(deserialize)
-  def deserialize(url: URL): Try[ObjectType] = deserialize(URI.createURI(url.toString()))
+  def deserialize(doc: Document): ObjectType = deserialize(resourceFrom(doc))
+  def deserialize(uri: URI): ObjectType = deserialize(resourceFrom(uri))
+  def deserialize(url: URL): ObjectType = deserialize(URI.createURI(url.toString))
+  def deserialize(resource: Resource): ObjectType = resource.getContents.get(0).eGet(rootFeature).asInstanceOf[ObjectType]
 
-  def deserialize(resource: Resource) = {
-    for {
-      eObject <- Try { resource.getContents().get(0) }
-      eGetResult <- ECoreGetTry[ObjectType](eObject, rootFeature).recoverWith { case t: Throwable => throw new Exception(s"Something bad happened while deserializing: ${resource.getURI()}.", t) }
-    } yield eGetResult
-  }
+  def deserializeFromString(data: String): ObjectType = deserialize(resourceFrom(data))
 
- def deserializeFromString(data: String): Try[ObjectType] = resourceFrom(data).flatMap(deserialize)
-
-  def serialize(uri: URI, model: ObjectType): Unit = {
+  protected def serialize(os: OutputStream, resource: Resource, model: EObject): Unit = {
     val resourceSet = new ResourceSetImpl()
     val extMap = resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap()
     extMap.put("*", resourceFactory)
-    //    resourceSet.getPackageRegistry().put(packageInstance.getNsURI(),packageInstance)
-
-    val resource = resourceSet.createResource(uri)
+    //val resource = uriOrResource.fold({resourceSet.createResource(_)}, {r => r})
     resource.getContents().add(model)
-
-    resource.save(null)
+    resource.save(os, null)
   }
+
+  def serialize(uri: URI, model: ObjectType): Unit = serialize(URIConverter.INSTANCE.createOutputStream(uri), model.eResource, EcoreUtil.getRootContainer(model))
+
+  def serialize(model: ObjectType): String =
+    (new StringWriter).withSideEffect(w =>
+      serialize(new URIConverter.WriteableOutputStream(w, System.getProperty("file.encoding")), model.eResource, EcoreUtil.getRootContainer(model))).toString
 }
 /*
 Copyright 2017 Morgan Stanley

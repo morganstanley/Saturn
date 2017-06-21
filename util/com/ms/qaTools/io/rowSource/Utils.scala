@@ -4,16 +4,19 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.ms.qaTools._
+import com.ms.qaTools.fix.IFixDictionary
+import com.ms.qaTools.fix.FixMessage
 import com.ms.qaTools.io.ByteArrayIteratorIO
 import com.ms.qaTools.io.DeviceIO
-import com.ms.qaTools.io.rowSource.json.JSONRowSource
 import com.ms.qaTools.io.StringIO
 import com.ms.qaTools.io.StringIteratorIO
+import com.ms.qaTools.io.rowSource.file.SaxonXmlRowSource
 import com.ms.qaTools.jdbc.SQLTypeParameter
-import com.ms.qaTools.json.JSONExtractor
+import com.ms.qaTools.json.JsonExtractor
 import com.ms.qaTools.json.JSONGenerator
 import com.ms.qaTools.xml.generator.XmlGenerator
 import com.ms.qaTools.xml.NamespaceContextImpl
+import com.ms.qaTools.xml.TransformerFactory
 import com.ms.qaTools.xml.XmlExtractor
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -35,12 +38,40 @@ import javax.xml.soap.{ MessageFactory, SOAPMessage, MimeHeaders }
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.stream.StreamResult
-import javax.xml.transform.TransformerFactory
+import net.sf.saxon.dom.NodeOverNodeInfo
+import net.sf.saxon.event.PipelineConfiguration
+import net.sf.saxon.tree.tiny.TinyBuilder
 import org.apache.commons.io.IOUtils
 import org.w3c.dom.{ Document => W3cDocument }
 import org.w3c.dom.{ Node => W3cNode }
+import quickfix.DataDictionary
 import scala.collection.JavaConversions._
 import scala.language.{ implicitConversions, reflectiveCalls }
+import scala.util.{Success, Failure}
+import scala.util.control.NonFatal
+
+trait Named {
+  def name:String
+}
+
+trait ExtractRows {
+  def extractRows(columnMappings: (String, String)*): Iterator[Seq[String]] with ColumnDefinitions
+}
+
+trait NamespaceDefinitions {
+  val namespaceContext: NamespaceContextImpl
+}
+
+trait Resizable[S] {
+  def resize(row: Seq[S], colDefs: Seq[ColumnDefinition]): Seq[S] =
+    if (colDefs != null)
+      row ++ Seq.fill(colDefs.size - row.size)(null.asInstanceOf[S])
+    else row
+}
+
+trait AsTemplateOf[X] {
+  def asTemplateOf(i: Iterator[Seq[String]] with ColumnDefinitions): X
+}
 
 object Utils {
   // Iterator implicit util classes
@@ -85,8 +116,8 @@ object Utils {
   implicit class ByteArrayIteratorUtil(iterator: Iterator[Array[Byte]]) {
     def toStringIterator: Iterator[String] = iterator.map { new String(_) }
     def toDocumentIterator: Iterator[W3cDocument] = iterator.map(_.toDocument)
-    def toJsonIterator: Iterator[JsonNode] = this.toDeviceIO.reader.map { reader => new JSONRowSource(reader) }.rethrow("An exception occurred converting an Iterator[String] to an Iterator[JsonNode].").get
-
+    def toJsonIterator: Iterator[JsonNode] =
+      this.toDeviceIO.reader.map{JsonRowSource(_)}.rethrow("An exception occurred converting an Iterator[String] to an Iterator[JsonNode]."). get
     def toDeviceIO: DeviceIO = ByteArrayIteratorIO(iterator)
     def gzip: Iterator[Array[Byte]] = iterator.map(_.gzip)
     def gunzip: Iterator[Array[Byte]] = iterator.map(_.gunzip)
@@ -99,17 +130,23 @@ object Utils {
       ByteArrayIteratorUtil(iterator).toDocumentIterator withNamespaceDefinitions (iterator.namespaceContext)
   }
 
+  implicit class FixIteratorUtil(iterator: Iterator[quickfix.Message]) {
+    def toByteArrayIterator: Iterator[Array[Byte]] = iterator.map { _.toString.getBytes() }
+    def toStringIterator: Iterator[String] = iterator.map { _.toString }
+  }
+
   implicit class StringSeqIteratorWithColumnDefinitionsUtil(iterator:Iterator[Seq[String]] with ColumnDefinitions) {
     def toExtractorMappings: Seq[(String,String)] = iterator.map {case Seq(s1, s2) => (s1, s2)}.toSeq
 
-    def generateDocumentIterator(templates: Iterator[W3cDocument]): Iterator[W3cDocument] = Option(templates.next) match {
+    def generateDocumentIterator(templates: Iterator[W3cDocument]): Iterator[W3cDocument] = try Option(templates.next) match {
       case Some(template) => XmlGenerator(template, iterator)
       case None => Iterator.empty
-    }
-    def generateJsonIterator(templates: Iterator[JsonNode]): Iterator[JsonNode] = Option(templates.next) match {
+    } finally closeAny(templates)
+
+    def generateJsonIterator(templates: Iterator[JsonNode]): Iterator[JsonNode] = try Option(templates.next) match {
       case Some(template) => JSONGenerator(template, iterator)
       case None => Iterator.empty
-    }
+    } finally closeAny(templates)
 
     def toRowMaps: Iterator[Map[String, Option[String]]] = {
       val cols = iterator.colDefs.sortBy(_.index).map(_.name)
@@ -118,6 +155,12 @@ object Utils {
   }
 
   implicit class W3CDocumentIteratorUtil(iterator: Iterator[W3cDocument]) extends AsTemplateOf[Iterator[W3cDocument]] with ExtractRows {
+    def toFixIterator(dictionary: DataDictionary) = new Iterator[quickfix.Message] with IFixDictionary {
+      val dataDictionary = dictionary
+      def hasNext = iterator.hasNext
+      def next = FixMessage(iterator.next, dictionary)
+    }
+
     def toByteArrayIterator: Iterator[Array[Byte]] = iterator.map { _.toByteArray }
     def toStringIterator: Iterator[String] = iterator.map { _.toXmlString }
 
@@ -152,13 +195,16 @@ object Utils {
     def toStringIterator: Iterator[String] = iterator.map { _.toString() }
 
     def asTemplateOf(rows: Iterator[Seq[String]] with ColumnDefinitions): Iterator[JsonNode] = rows.generateJsonIterator(iterator)
-    def extractRows(columnMappings: (String, String)*): Iterator[Seq[String]] with ColumnDefinitions = JSONExtractor(iterator, columnMappings)
+    def extractRows(columnMappings: (String, String)*): Iterator[Seq[String]] with ColumnDefinitions = JsonExtractor(iterator, columnMappings)
   }
 
   implicit class StringIteratorUtil(iterator: Iterator[String]) {
     def toByteArrayIterator: Iterator[Array[Byte]] = iterator.map { _.getBytes }
     def toDocumentIterator: Iterator[W3cDocument] = iterator.map { _.toDocument }
-    def toJsonIterator: Iterator[JsonNode] = this.toDeviceIO.reader.map { reader => new JSONRowSource(reader) }.rethrow("An exception occurred converting an Iterator[String] to an Iterator[JsonNode].").get
+    def toJsonIterator: Iterator[JsonNode] =
+      this.toDeviceIO.reader.map{JsonRowSource(_)}.rethrow("An exception occurred converting an Iterator[String] to an Iterator[JsonNode].") match {
+        case Success(v) => v
+        case Failure(e) => throw e}
     def toDeviceIO: DeviceIO = StringIteratorIO(iterator)
   }
 
@@ -171,9 +217,9 @@ object Utils {
 
   implicit class ResultSetIteratorUtil(i: Iterator[ResultSet] with Named with ColumnDefinitions with Closeable) {
     def toSeqStringIterator =
-      new IteratorProxy[Seq[String]] with Named with ColumnDefinitions with Closeable {
+      new IteratorProxy[Seq[String]] with Named with ColumnDefinitions {
         def colDefs = i.colDefs
-        def close = i.close
+        override def close = i.close
         val name = i.name
         lazy val self = i.map(_.toSeqString)
       }
@@ -182,30 +228,40 @@ object Utils {
   implicit class LdapSearchResultIteratorUtil(results: Iterator[LdapSearchResult] with Closeable) {
     def toJsonIterator = new IteratorProxy[JsonNode] with Closeable {
       protected val self = results.map(_.toJson)
-      def close() = results.close()
-    }
+    }.thenClose(results)
   }
 
-  implicit class ResultSetUtil(r: ResultSet) {
-    def toSeqString: Seq[String] =
-      (1 to r.getMetaData.getColumnCount).map(i =>
-        Option(r.getAsSQLType(i)) match {
-          case Some(b: Blob) => IOUtils.toString(b.getBinaryStream)
+  implicit class FixMessageUtil(protected val msg: quickfix.Message) extends AnyVal {
+    def toDocument: W3cDocument = msg.toXML().toDocument
+    def toXmlString: String = msg.toXML
+    def toBytesMessage(session: Session): BytesMessage = msg.toString.toBytesMessage(session)
+  }
+
+  implicit class ResultSetUtil(protected val r: ResultSet) extends AnyVal {
+    def toSeqString(start: Int, end: Int): Seq[String] = {
+      val meta = r.getMetaData
+      (start until end).map { i =>
+        try SQLTypeParameter(meta.getColumnType(i)).get(i, r) match {
+          case Some(b: Blob) => IOUtils.toString(b.getBinaryStream, java.nio.charset.Charset.defaultCharset)
           case Some(c: Clob) => IOUtils.toString(c.getCharacterStream)
           case Some(a: SQLXML) => a.getString
           case Some(a) => a.toString
           case None => null
-        })
+        } catch {
+          case NonFatal(t) => throw new RuntimeException("Error parsing column " + meta.getColumnName(i), t)
+        }
+      }
+    }
 
-    def getAsSQLType(i: Int) = SQLTypeParameter(r.getMetaData.getColumnType(i)).get(i, r).orNull
+    def toSeqString: Seq[String] = toSeqString(1, r.getMetaData.getColumnCount + 1)
   }
 
   // individual element implicit class
-  implicit class W3CDocumentUtil(doc: W3cDocument) {
+  implicit class W3CDocumentUtil(protected val doc: W3cDocument) extends AnyVal {
     def toByteArray: Array[Byte] = toXmlString.getBytes()
     def toXmlString: String = {
       val source = new DOMSource(doc)
-      val transformer = TransformerFactory.newInstance().newTransformer()
+      val transformer = TransformerFactory().newTransformer()
       transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes")
       transformer.setOutputProperty(OutputKeys.METHOD, "xml")
       transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1")
@@ -215,6 +271,17 @@ object Utils {
       transformer.transform(source, sr)
       sw.toString()
     }
+    def toTextMessage(session: Session): TextMessage = doc.toByteArray.toTextMessage(session)
+    def toBytesMessage(session: Session): BytesMessage = doc.toByteArray.toBytesMessage(session)
+
+    def toSaxon: W3cDocument = {
+      val outputTarget = new TinyBuilder(new PipelineConfiguration(com.ms.qaTools.xml.globals.saxon.configuration))
+      val transformer = TransformerFactory().newTransformer()
+      transformer.transform(new DOMSource(doc), outputTarget)
+      val tinyNode = outputTarget.getTree().getNode(0)
+      val nodeOverNodeInfo = NodeOverNodeInfo.wrap(tinyNode)
+      nodeOverNodeInfo.asInstanceOf[W3cDocument]
+    }
   }
 
   implicit class W3CNodeUtil(node: W3cNode) {
@@ -223,20 +290,20 @@ object Utils {
       case Some(node: W3cNode) => {
         //val factory = DocumentBuilderFactory.newInstance()
         //val builder = factory.newDocumentBuilder
-        val doc = com.ms.qaTools.xml.DocumentBuilderTL().newDocument()
+        val doc = com.ms.qaTools.xml.DocumentBuilderTL.get().newDocument
         doc.adoptNode(node)
         doc.appendChild(node)
         doc
       }
       case None => {
-        val doc = com.ms.qaTools.xml.DocumentBuilderTL().newDocument()
+        val doc = com.ms.qaTools.xml.DocumentBuilderTL.get().newDocument
         doc
       }
     }
   }
 
   implicit class ByteArrayUtil(bs: Array[Byte]) {
-    def toDocument: W3cDocument = com.ms.qaTools.xml.DocumentBuilderTL() parse new ByteArrayInputStream(bs)
+    def toDocument: W3cDocument = com.ms.qaTools.xml.DocumentBuilderTL.get().parse(new ByteArrayInputStream(bs))
     def toJson: JsonNode = new ObjectMapper().readTree(bs)
     def toSoapMessage: SOAPMessage = MessageFactory.newInstance.createMessage(new MimeHeaders,
       new ByteArrayInputStream(bs))
@@ -257,14 +324,17 @@ object Utils {
   }
 
   implicit class StringUtil(s: String) {
-    def toDocument: W3cDocument = com.ms.qaTools.xml.DocumentBuilderTL() parse new ByteArrayInputStream(s.getBytes())
+    def toDocument: W3cDocument = com.ms.qaTools.xml.DocumentBuilderTL.get().parse(new ByteArrayInputStream(s.getBytes()))
 
     def toJsonNode: JsonNode = {
-      val xs = JSONRowSource(s)
-      val x = xs.next
-      assert(!xs.hasNext, s"$s contains multiple JSON nodes")
-      x
-    }
+      val xs = JsonRowSource(s)
+      xs.next.ensuring(!xs.hasNext, s"$s contains multiple JSON nodes")}
+
+    def toTextMessage(session: Session): TextMessage =
+      Option(s).map(s => session.createTextMessage(s)).orNull
+
+    def toBytesMessage(session: Session): BytesMessage = Option(s).map{s =>
+      session.createBytesMessage.withSideEffect(_.writeBytes(s.getBytes))}.orNull
   }
 
   // Iterator to iterator implicit conversion
@@ -288,31 +358,6 @@ object Utils {
     def toJsonIterator: Iterator[JsonNode] = msgs.map(_.toJson)
   }
 
-  implicit class JmsByteArrayIteratorUtil(bss: Iterator[Array[Byte]]) {
-    def toTextMessageIterator(implicit session: Session): Iterator[TextMessage] = bss.map(_.toTextMessage)
-    def toBytesMessageIterator(implicit session: Session): Iterator[BytesMessage] = bss.map(_.toBytesMessage)
-  }
-
-  implicit class JmsW3CDocumentIteratorUtil(docs: Iterator[W3cDocument]) {
-    def toTextMessageIterator(implicit session: Session): Iterator[TextMessage] = docs.map(_.toTextMessage)
-    def toBytesMessageIterator(implicit session: Session): Iterator[BytesMessage] = docs.map(_.toBytesMessage)
-  }
-
-  implicit class JmsJsonIteratorUtil(nodes: Iterator[JsonNode]) {
-    def toTextMessageIterator(implicit session: Session): Iterator[TextMessage] = nodes.map(_.toTextMessage)
-    def toBytesMessageIterator(implicit session: Session): Iterator[BytesMessage] = nodes.map(_.toBytesMessage)
-  }
-
-  implicit class JmsDelimitedRowIteratorUtil(rows: Iterator[Seq[String]]) {
-    def toTextMessageIterator(implicit session: Session): Iterator[TextMessage] = rows.map(_.toTextMessage)
-    def toBytesMessageIterator(implicit session: Session): Iterator[BytesMessage] = rows.map(_.toBytesMessage)
-  }
-
-  implicit class JmsStringIteratorUtil(ss: Iterator[String]) {
-    def toTextMessageIterator(implicit session: Session): Iterator[TextMessage] = ss.map(_.toTextMessage)
-    def toBytesMessageIterator(implicit session: Session): Iterator[BytesMessage] = ss.map(_.toBytesMessage)
-  }
-
   // individual element implicit class
   implicit class JmsMessageUtil(msg: Message) {
     def toByteArray: Array[Byte] = msg match {
@@ -333,36 +378,22 @@ object Utils {
   }
 
   implicit class JmsByteArrayUtil(bs: Array[Byte]) {
-    def toTextMessage(implicit session: Session): TextMessage = new String(bs).toTextMessage
-    def toBytesMessage(implicit session: Session): BytesMessage = {
+    def toTextMessage(session: Session): TextMessage = new String(bs).toTextMessage(session)
+    def toBytesMessage(session: Session): BytesMessage = {
       val m = session.createBytesMessage
       m.writeBytes(bs)
       m
     }
   }
 
-  implicit class JmsW3CDocumentUtil(doc: W3cDocument) {
-    def toTextMessage(implicit session: Session): TextMessage = doc.toByteArray.toTextMessage
-    def toBytesMessage(implicit session: Session): BytesMessage = doc.toByteArray.toBytesMessage
-  }
-
   implicit class JmsJsonUtil(node: JsonNode) {
-    def toTextMessage(implicit session: Session): TextMessage = node.toString.toTextMessage
-    def toBytesMessage(implicit session: Session): BytesMessage = node.toString.toBytesMessage
+    def toTextMessage(session: Session): TextMessage = node.toString.toTextMessage(session)
+    def toBytesMessage(session: Session): BytesMessage = node.toString.toBytesMessage(session)
   }
 
   implicit class JmsDelimitedRowUtil(row: Seq[String]) {
-    def toTextMessage(implicit session: Session): TextMessage = row(0).toTextMessage
-    def toBytesMessage(implicit session: Session): BytesMessage = row(0).toBytesMessage
-  }
-
-  implicit class JmsStringUtil(s: String) {
-    def toTextMessage(implicit session: Session): TextMessage = Option(s).map(s => session.createTextMessage(s)).orNull
-    def toBytesMessage(implicit session: Session): BytesMessage = Option(s).map{s =>
-      val bytesMessage = session.createBytesMessage()
-      bytesMessage.writeBytes(s.getBytes)
-      bytesMessage
-    }.orNull
+    def toTextMessage(session: Session): TextMessage = row(0).toTextMessage(session)
+    def toBytesMessage(session: Session): BytesMessage = row(0).toBytesMessage(session)
   }
 
   implicit class LdapSearchResultUtil(result: LdapSearchResult) {
@@ -371,7 +402,7 @@ object Utils {
     def toJson = JsonNodeFactory.instance.objectNode withSideEffect { x =>
       x.put("dn", result.getNameInNamespace)
       result.getAttributes.getAll foreach { attr =>
-        x.put(attr.getID, fromAttr(attr))
+        x.set(attr.getID, fromAttr(attr))
       }
     }
 
@@ -402,32 +433,48 @@ object Utils {
   implicit def jmsMessageIteratorToByteArrayIterator(msgs: Iterator[Message]): Iterator[Array[Byte]] = msgs.toByteArrayIterator
   implicit def ldapSearchResultIteratorToJsonIterator(results: Iterator[LdapSearchResult] with Closeable) = results.toJsonIterator
 
-  implicit def stringToJmsTextMessage(msg: String)(implicit session: Session): TextMessage = msg.toTextMessage
-  implicit def stringToJmsBytesMessage(msg: String)(implicit session: Session): BytesMessage = msg.toBytesMessage
-  implicit def stringIteratorToTextMessageIterator(msgs: Iterator[String])(implicit session: Session): Iterator[TextMessage] = msgs.toTextMessageIterator
-  implicit def stringIteratorToBytesMessageIterator(msgs: Iterator[String])(implicit session: Session): Iterator[BytesMessage] = msgs.toBytesMessageIterator
-  implicit def delimitedRowToJmsTextMessage(msg: Seq[String])(implicit session: Session): TextMessage = msg.toTextMessage
-  implicit def delimitedRowToJmsBytesMessage(msg: Seq[String])(implicit session: Session): BytesMessage = msg.toBytesMessage
-  implicit def delimitedRowIteratorToTextMessageIterator(msgs: Iterator[Seq[String]])(implicit session: Session): Iterator[TextMessage] = msgs.toTextMessageIterator
-  implicit def delimitedRowIteratorToBytesMessageIterator(msgs: Iterator[Seq[String]])(implicit session: Session): Iterator[BytesMessage] = msgs.toBytesMessageIterator
-  implicit def documentToJmsTextMessage(msg: W3cDocument)(implicit session: Session): TextMessage = msg.toTextMessage
-  implicit def documentToJmsBytesMessage(msg: W3cDocument)(implicit session: Session): BytesMessage = msg.toBytesMessage
-  implicit def documentIteratorToTextMessageIterator(msgs: Iterator[W3cDocument])(implicit session: Session): Iterator[TextMessage] = msgs.toTextMessageIterator
-  implicit def documentIteratorToBytesMessageIterator(msgs: Iterator[W3cDocument])(implicit session: Session): Iterator[BytesMessage] = msgs.toByteArrayIterator
-  implicit def jsonToJmsTextMessage(node: JsonNode)(implicit session: Session): TextMessage = node.toTextMessage
-  implicit def jsonToJmsBytesMessage(node: JsonNode)(implicit session: Session): BytesMessage = node.toBytesMessage
-  implicit def jsonIteratorToTextMessageIterator(nodes: Iterator[JsonNode])(implicit session: Session): Iterator[TextMessage] = nodes.toTextMessageIterator
-  implicit def jsonIteratorToBytesMessageIterator(nodes: Iterator[JsonNode])(implicit session: Session): Iterator[BytesMessage] = nodes.toByteArrayIterator
-  implicit def byteArrayToJmsTextMessage(msg: Array[Byte])(implicit session: Session): TextMessage = msg.toTextMessage
-  implicit def byteArrayToJmsBytesMessage(msg: Array[Byte])(implicit session: Session): BytesMessage = msg.toBytesMessage
-  implicit def byteArrayIteratorToTextMessageIterator(msgs: Iterator[Array[Byte]])(implicit session: Session): Iterator[TextMessage] = msgs.toTextMessageIterator
-  implicit def byteArrayIteratorToBytesMessageIterator(msgs: Iterator[Array[Byte]])(implicit session: Session): Iterator[BytesMessage] = msgs.toBytesMessageIterator
   implicit def resultSetIteratorToSeqStringIterator(i: Iterator[ResultSet] with Named with ColumnDefinitions with Closeable) = i.toSeqStringIterator
 
   type ToW3cDocument[A] = Convert[A, W3cDocument]
   type ToStringPairs[A] = Convert[A, Seq[(String, String)]]
   type ToNamespaceContext[A] = Convert[A, NamespaceContextImpl]
   type ToExtractRows[A] = Convert[A, ExtractRows]
+
+  trait ConvertWithSession[A, B] {
+    def convert(session: Session)(x: A): B}
+
+  implicit object FixMessageToBytesMessage extends ConvertWithSession[quickfix.Message, BytesMessage] {
+    def convert(session: Session)(x: quickfix.Message) = x.toBytesMessage(session)}
+
+  implicit object DocumentToBytesMessage extends ConvertWithSession[W3cDocument, BytesMessage] {
+    def convert(session: Session)(x: W3cDocument) = x.toBytesMessage(session)}
+
+  implicit object StringToBytesMessage extends ConvertWithSession[String, BytesMessage]{
+    def convert(session: Session)(x: String) = x.toBytesMessage(session)}
+
+  implicit object ByteArrayToBytesMessage extends ConvertWithSession[Array[Byte], BytesMessage]{
+    def convert(session: Session)(x: Array[Byte]) = x.toBytesMessage(session)}
+
+  implicit object JsonNodeToBytesMessage extends ConvertWithSession[JsonNode, BytesMessage]{
+    def convert(session: Session)(x: JsonNode) = x.toBytesMessage(session)}
+
+  implicit object SeqStringToBytesMessage extends ConvertWithSession[Seq[String], BytesMessage]{
+    def convert(session: Session)(x: Seq[String]) = x.toBytesMessage(session)}
+
+  implicit object DocumentToTextMessage extends ConvertWithSession[W3cDocument, TextMessage] {
+    def convert(session: Session)(x: W3cDocument) = x.toTextMessage(session)}
+
+  implicit object StringToTextMessage extends ConvertWithSession[String, TextMessage]{
+    def convert(session: Session)(x: String) = x.toTextMessage(session)}
+
+  implicit object ByteArrayToTextMessage extends ConvertWithSession[Array[Byte], TextMessage]{
+    def convert(session: Session)(x: Array[Byte]) = x.toTextMessage(session)}
+
+  implicit object JsonNodeToTextMessage extends ConvertWithSession[JsonNode, TextMessage]{
+    def convert(session: Session)(x: JsonNode) = x.toTextMessage(session)}
+
+  implicit object SeqStringToTextMessage extends ConvertWithSession[Seq[String], TextMessage]{
+    def convert(session: Session)(x: Seq[String]) = x.toTextMessage(session)}
 }
 /*
 Copyright 2017 Morgan Stanley

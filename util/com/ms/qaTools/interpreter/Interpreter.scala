@@ -1,8 +1,12 @@
 package com.ms.qaTools.interpreter
-import com.ms.qaTools.toolkit.Result
+import com.ms.qaTools.{toolkit => tk}
 
-trait InterpreterResult extends Result
-case object NullInterpreterResult extends InterpreterResult
+trait InterpreterResult extends tk.Result
+
+case object NullInterpreterResult extends InterpreterResult {
+  def status    = tk.NotRun
+  val exception = None
+}
 
 trait Interpreter[-A, +B <: InterpreterResult] {
   def run(in: A): B

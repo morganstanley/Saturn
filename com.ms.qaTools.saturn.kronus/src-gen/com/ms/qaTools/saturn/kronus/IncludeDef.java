@@ -2,7 +2,6 @@
  */
 package com.ms.qaTools.saturn.kronus;
 
-import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->
@@ -14,6 +13,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link com.ms.qaTools.saturn.kronus.IncludeDef#getModule <em>Module</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.IncludeDef#getName <em>Name</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.kronus.IncludeDef#isReexport <em>Reexport</em>}</li>
  * </ul>
  * </p>
  *
@@ -21,33 +21,33 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface IncludeDef extends EObject
+public interface IncludeDef extends AbstractDef
 {
   /**
-   * Returns the value of the '<em><b>Module</b></em>' attribute.
+   * Returns the value of the '<em><b>Module</b></em>' reference.
    * <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Module</em>' attribute isn't clear,
+   * If the meaning of the '<em>Module</em>' reference isn't clear,
    * there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * @return the value of the '<em>Module</em>' attribute.
-   * @see #setModule(String)
+   * @return the value of the '<em>Module</em>' reference.
+   * @see #setModule(TopLevelKronus)
    * @see com.ms.qaTools.saturn.kronus.KronusPackage#getIncludeDef_Module()
    * @model
    * @generated
    */
-  String getModule();
+  TopLevelKronus getModule();
 
   /**
-   * Sets the value of the '{@link com.ms.qaTools.saturn.kronus.IncludeDef#getModule <em>Module</em>}' attribute.
+   * Sets the value of the '{@link com.ms.qaTools.saturn.kronus.IncludeDef#getModule <em>Module</em>}' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Module</em>' attribute.
+   * @param value the new value of the '<em>Module</em>' reference.
    * @see #getModule()
    * @generated
    */
-  void setModule(String value);
+  void setModule(TopLevelKronus value);
 
   /**
    * Returns the value of the '<em><b>Name</b></em>' attribute.
@@ -74,6 +74,32 @@ public interface IncludeDef extends EObject
    * @generated
    */
   void setName(String value);
+
+  /**
+   * Returns the value of the '<em><b>Reexport</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Reexport</em>' attribute isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Reexport</em>' attribute.
+   * @see #setReexport(boolean)
+   * @see com.ms.qaTools.saturn.kronus.KronusPackage#getIncludeDef_Reexport()
+   * @model
+   * @generated
+   */
+  boolean isReexport();
+
+  /**
+   * Sets the value of the '{@link com.ms.qaTools.saturn.kronus.IncludeDef#isReexport <em>Reexport</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Reexport</em>' attribute.
+   * @see #isReexport()
+   * @generated
+   */
+  void setReexport(boolean value);
 
 } // IncludeDef
 /*

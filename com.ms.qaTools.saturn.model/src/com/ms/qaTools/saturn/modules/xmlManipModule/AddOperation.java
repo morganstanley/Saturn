@@ -12,9 +12,11 @@ import com.ms.qaTools.saturn.values.ComplexValue;
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getNodeName <em>Node Name</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getUri <em>Uri</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getValue <em>Value</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getPositionXpath <em>Position Xpath</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#isIsAttribute <em>Is Attribute</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#isIsXml <em>Is Xml</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#isIsCData <em>Is CData</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getAddPosition <em>Add Position</em>}</li>
  * </ul>
  * </p>
  *
@@ -129,6 +131,33 @@ public interface AddOperation extends AbstractOperation
   void setValue(ComplexValue value);
 
   /**
+   * Returns the value of the '<em><b>Position Xpath</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Position Xpath</em>' containment reference isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Position Xpath</em>' containment reference.
+   * @see #setPositionXpath(ComplexValue)
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.XmlManipModulePackage#getAddOperation_PositionXpath()
+   * @model containment="true"
+   *        extendedMetaData="kind='element' name='PositionXpath' namespace='##targetNamespace'"
+   * @generated
+   */
+  ComplexValue getPositionXpath();
+
+  /**
+   * Sets the value of the '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getPositionXpath <em>Position Xpath</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Position Xpath</em>' containment reference.
+   * @see #getPositionXpath()
+   * @generated
+   */
+  void setPositionXpath(ComplexValue value);
+
+  /**
    * Returns the value of the '<em><b>Is Attribute</b></em>' attribute. The default value is <code>"false"</code>. <!--
    * begin-user-doc -->
    * <p>
@@ -231,6 +260,64 @@ public interface AddOperation extends AbstractOperation
    * @generated
    */
   boolean isSetIsCData();
+
+  /**
+   * Returns the value of the '<em><b>Add Position</b></em>' attribute.
+   * The default value is <code>"NONE"</code>.
+   * The literals are from the enumeration {@link com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum}.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Add Position</em>' attribute isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Add Position</em>' attribute.
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum
+   * @see #isSetAddPosition()
+   * @see #unsetAddPosition()
+   * @see #setAddPosition(AddPositionTypeEnum)
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.XmlManipModulePackage#getAddOperation_AddPosition()
+   * @model default="NONE" unsettable="true"
+   *        extendedMetaData="kind='attribute' name='addPosition'"
+   * @generated
+   */
+  AddPositionTypeEnum getAddPosition();
+
+  /**
+   * Sets the value of the '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getAddPosition <em>Add Position</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Add Position</em>' attribute.
+   * @see com.ms.qaTools.saturn.modules.xmlManipModule.AddPositionTypeEnum
+   * @see #isSetAddPosition()
+   * @see #unsetAddPosition()
+   * @see #getAddPosition()
+   * @generated
+   */
+  void setAddPosition(AddPositionTypeEnum value);
+
+  /**
+   * Unsets the value of the '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getAddPosition <em>Add Position</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isSetAddPosition()
+   * @see #getAddPosition()
+   * @see #setAddPosition(AddPositionTypeEnum)
+   * @generated
+   */
+  void unsetAddPosition();
+
+  /**
+   * Returns whether the value of the '{@link com.ms.qaTools.saturn.modules.xmlManipModule.AddOperation#getAddPosition <em>Add Position</em>}' attribute is set.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return whether the value of the '<em>Add Position</em>' attribute is set.
+   * @see #unsetAddPosition()
+   * @see #getAddPosition()
+   * @see #setAddPosition(AddPositionTypeEnum)
+   * @generated
+   */
+  boolean isSetAddPosition();
 
   /**
    * Returns the value of the '<em><b>Is Xml</b></em>' attribute. The default value is <code>"false"</code>. <!--

@@ -1,48 +1,38 @@
 package com.ms.qaTools.tree.mappers
 
 import com.ms.qaTools.tree.XmlNode
-import com.ms.qaTools.tree.mappers._
 import com.ms.qaTools.tree.validator.XPathNodeLookup
 import org.w3c.dom.Attr
-import org.slf4j.{ LoggerFactory }
+import org.slf4j.LoggerFactory
 
-
-
-case class XmlNodeDeleteMapper(xPaths: Seq[String])
-  extends XmlNodeMapper  {
+case class XmlNodeDeleteMapper(xPaths: Seq[String]) extends XmlNodeMapper {
   val logger = LoggerFactory.getLogger(getClass)
-  override def apply(optionNode: Option[XmlNode]): Option[XmlNode] = {
-    optionNode match {
-      case None => optionNode
-      case Some(node) => {
-        val ownerDocument = node.node.getOwnerDocument
-        xPaths.foreach(xPath => {
-          val xPathLookup = XPathNodeLookup(xPath)(node.nsContext)
-          logger.debug("XmlNodeDeleteMapper: deleting nodes for XPath  " + xPath)
-          val found = xPathLookup.getNodes(node)
-          xPathLookup.getNodes(node).foreach(nodeFound => {
-            nodeFound.node match {
-              case attribute: Attr => {
-                val ownerElement = attribute.getOwnerElement()
-                if (ownerElement != null) {
-                  logger.debug("XmlNodeDeleteMapper: deleting attribute " + nodeFound.toString)
-                  ownerElement.removeAttributeNode(attribute)
-                }
+  def apply(optionNode: Option[XmlNode]): Option[XmlNode] = optionNode match {
+    case None => optionNode
+    case Some(node) =>
+      val ownerDocument = node.node.getOwnerDocument
+      xPaths.foreach{xPath =>
+        val xPathLookup = XPathNodeLookup(xPath)(node.nsContext)
+        logger.debug("XmlNodeDeleteMapper: deleting nodes for XPath  " + xPath)
+        val found = xPathLookup.getNodes(node)
+        xPathLookup.getNodes(node).foreach{nodeFound =>
+          nodeFound.node match {
+            case attribute: Attr =>
+              val ownerElement = attribute.getOwnerElement()
+              if (ownerElement != null) {
+                logger.debug("XmlNodeDeleteMapper: deleting attribute " + nodeFound.toString)
+                ownerElement.removeAttributeNode(attribute)
               }
-              case _ => {
-                val parentNode = nodeFound.node.getParentNode()
-                if (parentNode != null) {
-                  logger.debug("XmlNodeDeleteMapper: deleting node " + nodeFound.toString)
-                  parentNode.removeChild(nodeFound.node)
-                }
+            case _ =>
+              val parentNode = nodeFound.node.getParentNode()
+              if (parentNode != null) {
+                logger.debug("XmlNodeDeleteMapper: deleting node " + nodeFound.toString)
+                parentNode.removeChild(nodeFound.node)
               }
-            }
-          })
-        })
-
-        Option(node)
+          }
+        }
       }
-    }
+      Option(node)
   }
 }
 /*

@@ -13,17 +13,16 @@ import scala.util.parsing.input.Position
 
 class StreamingReader(reader: JReader, bufSize: Int = 4 * 1024) extends Closeable {
   private[this] val iterator = Iterator.continually(readNext).takeWhile(! _.isEmpty)
-  private[this] var sbBuffer: StringBuilder = 
-    new StringBuilder(bufSize).appendAll(if (iterator.hasNext) iterator.next else Array())
+  private[this] val sbBuffer = new StringBuilder(bufSize).appendAll(if (iterator.hasNext) iterator.next else Array())
   private def readNext(): Array[Char] = {
     val a: Array[Char] = Array.fill(bufSize)(null.asInstanceOf[Char])
     val read = reader.read(a)
     a.slice(0, read)
   }
-  
+
   def atEnd: Boolean = !ensure(1)
 
-  def removeWhitespace = while (!atEnd && first.toInt != 0 && first.isWhitespace) { drop }
+  def removeWhitespace() = while (!atEnd && first.toInt != 0 && first.isWhitespace) { drop }
 
   def first: Char = if (ensure(1)) sbBuffer(offset) else StreamingReader.NUL
 
@@ -32,7 +31,7 @@ class StreamingReader(reader: JReader, bufSize: Int = 4 * 1024) extends Closeabl
     else if (ensure(i)) sbBuffer.substring(offset, offset + i)
     else ""
   }
-  
+
   def drop: Char = {
     val c = first
     if (sbBuffer.length > offset) count(c)
@@ -41,11 +40,15 @@ class StreamingReader(reader: JReader, bufSize: Int = 4 * 1024) extends Closeabl
 
   def drop(i: Int): String = {
     val s = first(i)
-    s foreach count
+    var j = 0
+    while (j < s.length) {
+      count(s.charAt(j))
+      j += 1
+    }
     s
   }
-  
-  def dropUntil(c: Char, include: Boolean): String = dropUntil(c.toString, include)  
+
+  def dropUntil(c: Char, include: Boolean): String = dropUntil(c.toString, include)
   @tailrec final def dropUntil(s: String, include: Boolean): String = {
     val i = sbBuffer.indexOf(s, offset) - offset
     if (i < 0) {
@@ -69,8 +72,8 @@ class StreamingReader(reader: JReader, bufSize: Int = 4 * 1024) extends Closeabl
         if (iterator.hasNext) {
           sbBuffer.appendAll(iterator.next)
           dropUntilRegex(r)
-        } 
-        else ""        
+        }
+        else ""
       }
     }
   }
@@ -84,11 +87,9 @@ class StreamingReader(reader: JReader, bufSize: Int = 4 * 1024) extends Closeabl
     }
     true
   }
-  
+
   def headIs(c: Char) = first == c
 
-  def pushback(c: Char) = sbBuffer.insert(0, c)
-  
   def close = reader.close
 
   def pos: Position = new Position {

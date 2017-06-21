@@ -11,7 +11,7 @@ import com.ms.qaTools.saturn.runtime.SaturnRunInfo
 
 class ScenarioReportWriter(out: OutputStream = new NullOutputStream(), title: String = "Scenario report") {
   val htmlDocument = {
-    val doc = Jsoup.parse("""<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">  
+    val doc = Jsoup.parse("""<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -20,8 +20,8 @@ class ScenarioReportWriter(out: OutputStream = new NullOutputStream(), title: St
 <script src="http://toolkits.ms.com/webaurora/core.js"></script>
  <script>
         Module = new WebAuroraEnvironment("prod", false /*debug*/ );
-        Module.load("ria","jquery","1.6.1"); 
-        Module.load("ria","jquery-ui","1.8.6"); 
+        Module.load("ria","jquery","1.6.1");
+        Module.load("ria","jquery-ui","1.8.6");
  </script>
 <script type="text/javascript" src="invalid/control.js"></script>
 <script type="text/javascript" src="invalid/jquery.simpletip-1.3.1.js"></script>
@@ -32,7 +32,7 @@ class ScenarioReportWriter(out: OutputStream = new NullOutputStream(), title: St
 <div class="reportBanner">
   <div id="saturnReportTitle" class="bannerLeft">
     <font size="5"><b>Saturn Scenario Execution Report</b></font>
-    <br/>    
+    <br/>
   </div>
   <div id="saturnReportRunInfo" class="bannerRight">
   </div>
@@ -75,13 +75,14 @@ class ScenarioReportWriter(out: OutputStream = new NullOutputStream(), title: St
     this.synchronized { htmlDocument.body().appendChild(element) }
   }
 
-  def write = out.write(htmlDocument.toString().getBytes())
+  def write() = out.write(htmlDocument.toString().getBytes())
 }
 
 object ScenarioReportWriter {
   def apply(out: OutputStream, title: String = "Scenario report") = new ScenarioReportWriter(out, title)
   def apply() = new ScenarioReportWriter()
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

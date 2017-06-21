@@ -13,11 +13,9 @@ import org.apache.commons.lang.NotImplementedException
 import org.eclipse.emf.ecore.util.EcoreUtil
 import java.io.IOException
 
-
-
 class Resolver{
   val logger = LoggerFactory.getLogger(getClass)
-  
+
   type ContainmentUpdating = EStructuralFeatureImpl.ContainmentUpdatingFeatureMapEntry
   type Simple = EStructuralFeatureImpl.SimpleFeatureMapEntry
 
@@ -37,7 +35,7 @@ class Resolver{
         catch {
           case io: IOException => { println(io); "" }
           case e: Exception => { println(e); "" }
-          case _ => { "" }
+          case _: Throwable => { "" }
         }
 
       }

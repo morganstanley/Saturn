@@ -14,8 +14,6 @@ import org.eclipse.emf.ecore.EObject;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link com.ms.qaTools.saturn.kronus.Kronus#getImports <em>Imports</em>}</li>
- *   <li>{@link com.ms.qaTools.saturn.kronus.Kronus#getIncludes <em>Includes</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.Kronus#getDefs <em>Defs</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.Kronus#getReturn <em>Return</em>}</li>
  * </ul>
@@ -28,40 +26,8 @@ import org.eclipse.emf.ecore.EObject;
 public interface Kronus extends EObject
 {
   /**
-   * Returns the value of the '<em><b>Imports</b></em>' containment reference list.
-   * The list contents are of type {@link com.ms.qaTools.saturn.kronus.ImportDef}.
-   * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Imports</em>' containment reference list isn't clear,
-   * there really should be more of a description here...
-   * </p>
-   * <!-- end-user-doc -->
-   * @return the value of the '<em>Imports</em>' containment reference list.
-   * @see com.ms.qaTools.saturn.kronus.KronusPackage#getKronus_Imports()
-   * @model containment="true"
-   * @generated
-   */
-  EList<ImportDef> getImports();
-
-  /**
-   * Returns the value of the '<em><b>Includes</b></em>' containment reference list.
-   * The list contents are of type {@link com.ms.qaTools.saturn.kronus.IncludeDef}.
-   * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Includes</em>' containment reference list isn't clear,
-   * there really should be more of a description here...
-   * </p>
-   * <!-- end-user-doc -->
-   * @return the value of the '<em>Includes</em>' containment reference list.
-   * @see com.ms.qaTools.saturn.kronus.KronusPackage#getKronus_Includes()
-   * @model containment="true"
-   * @generated
-   */
-  EList<IncludeDef> getIncludes();
-
-  /**
    * Returns the value of the '<em><b>Defs</b></em>' containment reference list.
-   * The list contents are of type {@link com.ms.qaTools.saturn.kronus.AbstractDef}.
+   * The list contents are of type {@link com.ms.qaTools.saturn.kronus.AnnotatedDef}.
    * <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Defs</em>' containment reference list isn't clear,
@@ -73,7 +39,7 @@ public interface Kronus extends EObject
    * @model containment="true"
    * @generated
    */
-  EList<AbstractDef> getDefs();
+  EList<AnnotatedDef> getDefs();
 
   /**
    * Returns the value of the '<em><b>Return</b></em>' containment reference.

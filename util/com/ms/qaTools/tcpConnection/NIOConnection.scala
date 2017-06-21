@@ -18,14 +18,13 @@ trait Connection {
 }
 
 class NIOConnectionImpl(bufferLength: Int, directBuffer: Boolean, confBlock: Boolean, soTimeOut: Int) extends Connection {
-
-  override def getBuffer(directBuffer: Boolean, bufferLength: Int): ByteBuffer = {
+  def getBuffer(directBuffer: Boolean, bufferLength: Int): ByteBuffer = {
     if (directBuffer) ByteBuffer.allocateDirect(bufferLength).order(ByteOrder.BIG_ENDIAN) else
       ByteBuffer.allocate(bufferLength).order(ByteOrder.BIG_ENDIAN)
   }
 
-  override def connect(server: InetSocketAddress): SocketChannel = {
-    var socketChannel: SocketChannel = SocketChannel.open()
+  def connect(server: InetSocketAddress): SocketChannel = {
+    val socketChannel: SocketChannel = SocketChannel.open()
     socketChannel.configureBlocking(confBlock)
 
     try {
@@ -39,11 +38,10 @@ class NIOConnectionImpl(bufferLength: Int, directBuffer: Boolean, confBlock: Boo
     }
   }
 
-  override def isConnected(socketChannel: SocketChannel): Boolean = {
-    if (null != socketChannel) socketChannel.isConnected() else false
-  }
+  def isConnected(socketChannel: SocketChannel) =
+    socketChannel != null && socketChannel.isConnected
 
-  override def send(data: Array[Byte], socketChannel: SocketChannel) = {
+  def send(data: Array[Byte], socketChannel: SocketChannel) = {
     if (null == socketChannel) throw new Error("Connection has not been made.")
     val buffer = getBuffer(directBuffer, bufferLength)
     var pos = 0
@@ -65,7 +63,7 @@ class NIOConnectionImpl(bufferLength: Int, directBuffer: Boolean, confBlock: Boo
     }
   }
 
-  override def receive(socketChannel: SocketChannel): Array[Byte] = {
+  def receive(socketChannel: SocketChannel) = {
     if (null == socketChannel) throw new Error("Connection has not been made.")
     val buffer = getBuffer(directBuffer, bufferLength)
     buffer.clear()
@@ -77,22 +75,20 @@ class NIOConnectionImpl(bufferLength: Int, directBuffer: Boolean, confBlock: Boo
     val bytesRead = try { wrappedChannel.read(buffer) } catch { case e: Exception => 0 }
     bytesRead match {
       case 0 | -1  => Array[Byte]()
-      case _  => {
-        val data: Array[Byte] = new Array[Byte](bytesRead)
+      case _  =>
+        val data = new Array[Byte](bytesRead)
         val byteStream = new ByteArrayOutputStream()
-        buffer.rewind()
+        buffer.rewind
         buffer.get(data, 0, data.length)
         byteStream.write(data)
-        buffer.clear()
-        byteStream.toByteArray()
-      }
+        buffer.clear
+        byteStream.toByteArray
     }
   }
 
-  override def close(socketChannel: SocketChannel) = {
-    socketChannel.close()
-  }
-}/*
+  def close(socketChannel: SocketChannel) = socketChannel.close
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

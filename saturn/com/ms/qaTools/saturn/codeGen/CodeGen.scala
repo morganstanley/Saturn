@@ -47,7 +47,9 @@ import com.ms.qaTools.saturn.repetition.{ForEachRepetition => MForEachRepetition
 import com.ms.qaTools.saturn.repetition.{ForEachXPathRepetition => MForEachXPathRepetition}
 import com.ms.qaTools.saturn.repetition.{ForRepetition => MForRepetition}
 import com.ms.qaTools.saturn.types.{AbstractRepetitionHandler => MAbstractRepetitionHandler}
+import com.ms.qaTools.saturn.types.AlmId
 import com.ms.qaTools.saturn.utils.SaturnEObjectUtils.SaturnEObjectHelper
+import com.ms.qaTools.saturn.values.ComplexValue
 import com.ms.qaTools.toolkit.Result
 import com.ms.qaTools.toolkit.NotRun
 import com.ms.qaTools.toolkit.ToolkitApp
@@ -67,20 +69,20 @@ import com.ms.qaTools.saturn.SaturnPackage
 import java.io.File
 
 case class AbstractStepLogicGenerator(step: MAbstractStep)(implicit codeGenUtil: SaturnCodeGenUtil) extends FutureGen {
-  override def generate = Try { s"""Future{println(s"${step.getName}"); "${step.getName}"}.map{result => Try{IterationResult(Passed(), context, Nil, result.toString)}}""" }
+  override def generate = Try { s"""Future{println(s"${step.getName}"); "${step.getName}"}.map{result => Try{IterationResult(Passed, context, Nil, result.toString)}}""" }
 }
 
 object NonProcedureGenerator {
   def apply(nonProcedure:MAbstractRunGroup)(implicit codeGenUtil:SaturnCodeGenUtil):Try[ScalaGen] = {
     import codeGenUtil.getWrapped
-    for {  
+    for {
       nonProcedureLogicGen <- AbstractRunGroupGenerator(nonProcedure)
     } yield new ScalaGen() {
       def generate:Try[String] = for {
         procedureLogicStr <- nonProcedureLogicGen.generate()
       } yield s"val ${nonProcedure.getName}Future:Future[Try[IteratorResult[${nonProcedure.getResultClassName()}]]] = $procedureLogicStr"
     }
-  }  
+  }
 }
 
 class ProcedureGenerator(procedure: MAbstractRunGroup)(implicit codeGenUtil: SaturnCodeGenUtil) extends ScalaGen {
@@ -131,11 +133,11 @@ class ProcedureGenerator(procedure: MAbstractRunGroup)(implicit codeGenUtil: Sat
         case (name, typ, None) =>
           Success(s"$name: ${typ.mapTypeParams(typeParamRename)}")
         case (name, typ, Some(default)) =>
-          default.generate().map(d => s"$name: ${typ.mapTypeParams(typeParamRename)} = $d.get")
+          default.generate().map(d => s"$name: ${typ.mapTypeParams(typeParamRename)} = $d. get")
       }.toTrySeq.map(_.mkString("(", ", ", ")"))
       procedureLogicGen <- AbstractRunGroupGenerator(procedure)
       procedureLogicStr <- procedureLogicGen.generate()
-    } yield s"def ${procedure.getName}$tparams$vparams$implicits: $retType = $procedureLogicStr"
+    } yield s"def ${procedure.getName}$tparams(context: IterationContext)$vparams$implicits: $retType = $procedureLogicStr"
   }
 
   def genImplicits: Seq[TypeTree] = {
@@ -176,7 +178,7 @@ object ProcedureGenerator {
 object AbstractRunGroupGenerator {
   def apply(runGroup: MAbstractRunGroup)(implicit codeGenUtil: SaturnCodeGenUtil): Try[FutureGen] = {
     import codeGenUtil.getWrapped
-    val resultClass = runGroup.getResultClassName()    
+    val resultClass = runGroup.getResultClassName()
     val (repetitionHandler, postIterationObjects) =
       if (runGroup.isEnabled)
         (Option(runGroup.getRepetitionHandler), runGroup.getPostIterationObjects.toSeq)
@@ -186,35 +188,41 @@ object AbstractRunGroupGenerator {
       logicGen <- if (runGroup.isEnabled())
        StepLogicGenerator(runGroup)
       else
-        Try { FutureExpr(TryExpr(ScalaExpr(s"""IterationResult(Passed(), context,  iterationMetaData, TerminalResult(None, false),0)"""))) }
+        Try { FutureExpr(TryExpr(ScalaExpr(s"""IterationResult(Passed, context,  iterationMetaData, TerminalResult(None, false),0)"""), true), true) }
       iterationGen <- generateRepetitionHandler(runGroup, resultClass, repetitionHandler, postIterationObjects, logicGen)
       iteratorGen <- generatePreIterationObjects(runGroup, iterationGen)
       runGroupDependencyGen <- generateRunGroupDependencies(runGroup, iteratorGen)
       notifiersGen <- generateRunGroupNotifiers(runGroup)
-      parentContext <- Try{if (runGroup.getParentRunGroup(Option(runGroup.eContainer())) == None) "None" else "Some(context)" }
     } yield new FutureGen() {
       override def generate: Try[String] = {
         for {
           notifiersStr <- notifiersGen.generate
           runGroupDependencyStr <- runGroupDependencyGen.generate
         } yield {
-          s"""{
-  val name = "${runGroup.getName}" //"${runGroup.getFullName()}"
+          val context = if (runGroup.isInstanceOf[Saturn]) "IteratorContext(saturnModelUrl, saturnDiagramUrl)" else {
+            val lexCtx = if (runGroup.isProcedure) "Some(lexicalContext)" else "None"
+            s"""context.child("${runGroup.getName}", $lexCtx)"""
+          }
+          val lexicalContext = runGroup match {
+            case runGroup: MRunGroup if runGroup.getRunGroups.exists(_.isProcedure) =>
+              "val lexicalContext = __tmpContext"
+            case _ => ""
+          }
+          s"""{ // ${runGroup.getFullName()}
   $notifiersStr
-  val __tmpContext = IteratorContext(name, $parentContext)
-  val __iterationResult = {
+  val __tmpContext = $context
+  $lexicalContext
+  ; {
     val context = __tmpContext
-    val ffti:Future[Future[Try[IteratorResult[$resultClass]]]] = $runGroupDependencyStr
-    handleRunGroupIteratorAndAnnotations[${runGroup.getResultClassName}](context, ffti) // ${runGroup.getRunGroupName} Iterator    
+    val fti: Future[Try[IteratorResult[$resultClass]]] = $runGroupDependencyStr
+    handleRunGroupIteratorAndAnnotations[${runGroup.getResultClassName}](context, __notifiers, fti) // ${runGroup.getRunGroupName} Iterator
   }
-  __iterationResult
-  
 }"""
         }
       }
     }
   }
- 
+
   def generateRunGroupNotifiers(runGroup: MAbstractRunGroup)(implicit codeGenUtil: SaturnCodeGenUtil): Try[FutureGen] = {
     import codeGenUtil.getWrapped
     Success {
@@ -237,14 +245,14 @@ object AbstractRunGroupGenerator {
           } yield {
             val notifiers = Seq(consoleNotifier, scenarioReportNotifier, scenarioListenerNotifier,
                                 s"ConstellationNotifier[${runGroup.getResultClassName}]()").filterNot(_.isEmpty).mkString(",")
-            s"""implicit val notifiers: Seq[Notifier[${runGroup.getResultClassName}]] = Seq($notifiers)"""
+            s"""val __notifiers: Seq[Notifier[${runGroup.getResultClassName}]] = Seq($notifiers)"""
           }
 
         }
       }
     }
   }
-  
+
   def generateSaturnListeners(saturn: MSaturn) = {
     for{
       scenarioReportListener <- saturn.getListeners.collect{case r: MScenarioReportListener => r}
@@ -263,14 +271,7 @@ object AbstractRunGroupGenerator {
         new ScalaGen {
           override def generate(): Try[String] = for {
             code <- codeGen.generate
-          } yield {
-            s"""val $linkName = (for {
-                  $source <- $sourceLC filter (!_.status.notRun)
-                  result <- {$code}
-                } yield {
-                  BoolDepth(result, $source.depth)
-                }).getOrElse(FalseDepth())"""
-          }
+          } yield s"val $linkName = customLinkSatisfied($sourceLC) { $source => $code }"
         }
       }
     }
@@ -287,43 +288,67 @@ object AbstractRunGroupGenerator {
       }
     }
   }
-  
-  def generateRunGroupDependencies(runGroup: MAbstractRunGroup, yieldExpr:ScalaGen)(implicit codeGenUtil: SaturnCodeGenUtil):Try[FutureGen] = {
-    import codeGenUtil.getWrapped
 
-    for {  
-      dependencyAssignments <- Try{runGroup.getDependencyRunGroups.toSeq.map { runGroup =>
-        ForAssignment(CanRunExpressionGenerator.getLinkName(runGroup), FutureFnExpr(s"${runGroup.getName}Future"))
-      }}
-      canRun                <- generateCanRun(runGroup)
-      canRunExpr            <- Try{if(dependencyAssignments.isEmpty) Nil else Seq(
-          ForAssignmentEq("canRunAndDepth", canRun),
-          ForCondition(ScalaExpr("canRunAndDepth.value")))}
-    } yield ForFutureExpr(dependencyAssignments ++ canRunExpr, yieldExpr)
+  def generateRunGroupDependencies(runGroup: MAbstractRunGroup, yieldExpr:FutureGen)
+                                  (implicit codeGenUtil: SaturnCodeGenUtil):Try[FutureGen] = {
+    import codeGenUtil.getWrapped
+    {
+      runGroup.getDependencyRunGroups match {
+        case Seq() => Success(yieldExpr)
+        case deps  => for {
+          canRun <- generateCanRun(runGroup)
+          canRun <- canRun.generate()
+          body <- yieldExpr.generate()
+        } yield FutureFnExpr {
+          val (futures, links) = deps.map(d => (d.getName + "Future", CanRunExpressionGenerator.getLinkName(d))).unzip
+          s"""handleRunGroupDependencies(Seq(${futures.mkString(", ")})) {
+           |  case Seq(${links.mkString(", ")}) => $canRun
+           |} { canRunAndDepth =>
+           |  $body
+           |}""".stripMargin
+        }
+      }
+    }.rethrow(s"Error generating dependencies for run group: ${runGroup.getFullName()}")
   }
+
+  protected def genAlmMappings(model: AlmId): Try[Seq[TryGen]] = Option(model).toList.flatMap { model =>
+    def isEmpty(x: ComplexValue): Boolean = x == null || x.getMixed.isEmpty
+    val args = Array(model.getDomain, model.getProject, model.getId).toSeq
+    if (args.forall(isEmpty))
+      Nil
+    else if (args.exists(isEmpty))
+      throw new IllegalArgumentException("incomplete ALM Mapping: " + model.eObjectToPath)
+    else
+      args.map(ComplexValueStringGenerator(_)).toTrySeq.map { args =>
+        ForTryExpr(Array(ForAssignment("domain", args(0)),
+                         ForAssignment("project", args(1)),
+                         ForAssignment("id", args(2))),
+                   FunctionCallGen(classOf[ALMMapping].getName,
+                                   ScalaExpr("domain"), ScalaExpr("project"), ScalaExpr("id")))
+      } :: Nil
+  }.toTrySeq
 
   def generateIteratorMetaData(runGroup: MAbstractRunGroup)(implicit codeGenUtil: SaturnCodeGenUtil): Try[ForAssignment] = {
     import codeGenUtil.getWrapped
     for {
       annotations <- Try { runGroup.getAnnotations.collect { case a: MReportAnnotation => a }.toSeq}
       scenarioAnnotations <- annotations.map{ScenarioAnnotationGenerator(_, false)}.toTrySeq
-      almMappings = ALMMapping.fromRunGroupID(runGroup.getId).map(x => TryExpr(x.toCode))
       verbosityConfigs <- Try { runGroup.getAnnotations.collect { case a:MVerbosityAnnotation if a.isEnabled => a }.toSeq }
       verbosityAnnotations <- verbosityConfigs.map { VerbosityAnnotationGenerator(_) }.toTrySeq
-      htmlGenerator <- Try { TryExpr(s"HtmlGenerator.${runGroup.getNotifierBaseClassName}_HtmlGenerator") }
+      htmlGenerator <- Try { TryExpr(s"HtmlGenerator.${runGroup.getNotifierBaseClassName}_HtmlGenerator", true) }
       hasRepetitionHandlerForAssignment <- Try {
-									        runGroup.getRepetitionHandler match {
-									          case s: MForRepetition => Seq(TryExpr("ForRepetitionHandler"))
-									          case s: MForEachRepetition => Seq(TryExpr("ForEachRepetitionHandler"))
-									          case s: MForEachXPathRepetition => Seq(TryExpr("ForEachXPathRepetitionHandler"))
-									          case _ => Nil
-									        }
-									      }
-										  
+                          runGroup.getRepetitionHandler match {
+                            case s: MForRepetition => Seq(TryExpr("ForRepetitionHandler"))
+                            case s: MForEachRepetition => Seq(TryExpr("ForEachRepetitionHandler"))
+                            case s: MForEachXPathRepetition => Seq(TryExpr("ForEachXPathRepetitionHandler"))
+                            case _ => Nil
+                          }
+                        }
+
     } yield ForAssignment("iteratorMetaData", SeqTryExpr(Seq(htmlGenerator) ++ hasRepetitionHandlerForAssignment ++
-                                                         scenarioAnnotations ++ almMappings ++
+                                                         scenarioAnnotations ++
                                                          verbosityAnnotations, Some("Any")).toTryGen)
-    
+
   }
 
   def generateIterationMetaData(runGroup: MAbstractRunGroup)(implicit codeGenUtil: SaturnCodeGenUtil): Try[ForAssignment] = {
@@ -331,24 +356,25 @@ object AbstractRunGroupGenerator {
     for {
       scenarioReportConfigs <- Try { runGroup.getAnnotations.collect { case a:MReportAnnotation if a.isEnabled => a }.toSeq }.rethrow("scenario configs")
       scenarioAnnotations <- scenarioReportConfigs.map { ScenarioAnnotationGenerator(_, true) }.toTrySeq.rethrow("scenario annotations")
+      almMappings <- genAlmMappings(runGroup.getAlmId)
       verbosityConfigs <- Try { runGroup.getAnnotations.collect { case a:MVerbosityAnnotation if a.isEnabled => a }.toSeq }.rethrow("verbsoity configs")
       verbosityAnnotations <- verbosityConfigs.map { VerbosityAnnotationGenerator(_) }.toTrySeq.rethrow("verbosity annotations")
 
       hasRepetitionHandlerForAssignment <- Try {
-									        runGroup.getRepetitionHandler match {
-									          case s: MForRepetition => Seq(TryExpr("ForRepetitionHandler"))
-									          case s: MForEachRepetition => Seq(TryExpr("ForEachRepetitionHandler"))
-									          case s: MForEachXPathRepetition => Seq(TryExpr("ForEachXPathRepetitionHandler"))
-									          case _ => Nil
-									        }
-									      }.rethrow("repetitionhandler")
-										  
-    } yield ForAssignment("iterationMetaData", SeqTryExpr(hasRepetitionHandlerForAssignment ++ 
-                                                          scenarioAnnotations ++ 
+                          runGroup.getRepetitionHandler match {
+                            case s: MForRepetition => Seq(TryExpr("ForRepetitionHandler"))
+                            case s: MForEachRepetition => Seq(TryExpr("ForEachRepetitionHandler"))
+                            case s: MForEachXPathRepetition => Seq(TryExpr("ForEachXPathRepetitionHandler"))
+                            case _ => Nil
+                          }
+                        }.rethrow("repetitionhandler")
+
+    } yield ForAssignment("iterationMetaData", SeqTryExpr(hasRepetitionHandlerForAssignment ++
+                                                          scenarioAnnotations ++ almMappings ++
                                                           verbosityAnnotations, Some("Any")).toTryGen)
   }
-  
-  def generatePreIterationObjects(runGroup: MAbstractRunGroup, yieldExpr:ScalaGen)(implicit codeGenUtil: SaturnCodeGenUtil):Try[TryGen] = {
+
+  def generatePreIterationObjects(runGroup: MAbstractRunGroup, yieldExpr:ScalaGen)(implicit codeGenUtil: SaturnCodeGenUtil):Try[FutureGen] = {
     import codeGenUtil.getWrapped
     for {
       preIterObjects     <- Try {
@@ -359,9 +385,9 @@ object AbstractRunGroupGenerator {
           Nil
       }
       preIterAssignments <- preIterObjects.map{eObject => IterationObjectGenerator(eObject)}.toTrySeq
-      metaDataAssignment <- generateIteratorMetaData(runGroup) 
-    } 
-    yield new TryGen() {
+      metaDataAssignment <- generateIteratorMetaData(runGroup)
+    }
+    yield new FutureGen {
        val iteratorResultGen = ForTryExpr(preIterAssignments ++ Seq(metaDataAssignment), yieldExpr)
        override def generate:Try[String] = iteratorResultGen.generate().map{ iteratorResultStr => s"""{
          |  val iteratorResult = $iteratorResultStr
@@ -370,7 +396,7 @@ object AbstractRunGroupGenerator {
        }
     }
   }
-  
+
   def generateRepetitionHandlerRows(repetitionHandler: MAbstractRepetitionHandler)(implicit codeGenUtil: SaturnCodeGenUtil): ForAssignment = Option(repetitionHandler) match {
     case Some(forRepetition: MForRepetition)                   => ForAssignment("rows", TryExpr("List[Seq[String]]()"))
     case Some(forEachRepetition: MForEachRepetition)           => ForAssignment("rows", TryExpr("List[Seq[String]]()"))
@@ -380,12 +406,12 @@ object AbstractRunGroupGenerator {
   }
 
   def generateRepetitionHandler(runGroup:MAbstractRunGroup, resultClassStr:String, repetitionHandler: Option[MAbstractRepetitionHandler], postIterationObjects: Seq[EObject], repetitionBodyGen: ScalaGen)(implicit codeGenUtil: SaturnCodeGenUtil):Try[FutureGen] = {
-    val resultFuturesGenTry = repetitionHandler match {  
-      case Some(forRepetition: MForRepetition)                   => generateWithRepetition(runGroup, postIterationObjects, forRepetition.getIterators().toSeq.zipWithIndex.map { pair => val (iter, idx) = pair; ForAssignment(iter.getAttribute(), AttributeTry(TryExpr(s"row($idx)"), iter.getAttribute)) }, repetitionBodyGen)
-      case Some(forEachRepetition: MForEachRepetition)           => generateWithRepetition(runGroup, postIterationObjects, forEachRepetition.getColumnMappings().map { mapping => ForAssignment(mapping.getAttribute(), AttributeTry(TryExpr(s"""row(rows.getColDefByName("${mapping.getColumn()}").get.index)"""), mapping.getAttribute)) }, repetitionBodyGen) //generateForEachRepetition(runGroup, forEachRepetition, postIterationObjects, repetitionBodyGen)
-      case Some(forEachXPathRepetition: MForEachXPathRepetition) => generateWithRepetition(runGroup, postIterationObjects, forEachXPathRepetition.getXPathMappings().map{ mapping => ForAssignment(mapping.getAttribute(), AttributeTry(TryExpr(s"""row(rows.getColDefByName("${mapping.getAttribute()}").get.index)"""), mapping.getAttribute)) }, repetitionBodyGen) //generateForEachXPathRepetition(runGroup, forEachXPathRepetition, postIterationObjects, repetitionBodyGen)
-      case Some(somethingElse)                                   => Failure { new Exception(s"RepetitionHandler: $somethingElse is not supported.") }
-      case None                                                  => generateNoRepetition(runGroup, postIterationObjects, repetitionBodyGen)
+    val resultFuturesGenTry = repetitionHandler match {
+      case Some(r: MForRepetition)          => generateWithRepetition(runGroup, postIterationObjects, r.getIterators.toSeq.zipWithIndex.map{case (iter, idx) => ForAssignment(iter.getAttribute, AttributeTry(TryExpr(s"row($idx)"), iter.getAttribute))}, repetitionBodyGen)
+      case Some(r: MForEachRepetition)      => generateWithRepetition(runGroup, postIterationObjects, r.getColumnMappings.map{mapping => ForAssignment(mapping.getAttribute, AttributeTry(TryExpr(s"""Option(row(rows.colDefs.find(_.name == "${mapping.getColumn}").getOrElse(sys.error("column definition ${mapping.getColumn} not found")).index)).getOrElse("")"""), mapping.getAttribute))}, repetitionBodyGen)
+      case Some(r: MForEachXPathRepetition) => generateWithRepetition(runGroup, postIterationObjects, r.getXPathMappings.map{mapping => val a = mapping.getAttribute; ForAssignment(a, AttributeTry(TryExpr(s"""row(rows.colDefs.find(_.name == "$a").getOrElse(sys.error("attribute $a not found")).index)"""), a))}, repetitionBodyGen)
+      case Some(r)                          => Failure { new Exception(s"RepetitionHandler: $r is not supported.") }
+      case None                             => generateNoRepetition(runGroup, postIterationObjects, repetitionBodyGen)
     }
     import codeGenUtil.getWrapped
 
@@ -397,41 +423,40 @@ object AbstractRunGroupGenerator {
             waitBefore <- Try { runGroup.getWaitBefore().intValue() }
             waitAfter <- Try { runGroup.getWaitAfter().intValue() }
           } yield s"""{
-              val resultFutures:Future[Seq[Try[IterationResult[$resultClassStr]]]] = 
+              val resultFutures:Future[Seq[Try[IterationResult[$resultClassStr]]]] =
               ${if (waitBefore > 0) s"akka.pattern.after(${waitBefore}.seconds, sc.actorSystem.scheduler)(" else ""}
                 $resultFuturesStr
               ${if (waitBefore > 0) ")" else ""}
-              ${if (waitAfter > 0) 
+              ${if (waitAfter > 0)
                 s""".flatMap(result =>
                   for {
-                    delay <- akka.pattern.after(${waitAfter}.seconds, sc.actorSystem.scheduler)(Promise.successful().future)
+                    delay <- akka.pattern.after(${waitAfter}.seconds, sc.actorSystem.scheduler)(Promise.successful(()).future)
                   } yield result)""" else ""}
-              resultFutures.map{results => IteratorResult(passIfAllPassItn(results), context, iteratorMetaData, results, ${if (runGroup.getDependencyRunGroups.isEmpty) "0" else "canRunAndDepth.depth + 1"})}
+              IteratorResult.fromIterationResults(resultFutures, context, iteratorMetaData, ${if (runGroup.getDependencyRunGroups.isEmpty) "0" else "canRunAndDepth.depth + 1"})
             }"""
       }
     }
     qq
   }
-  
+
   def generateNoRepetition(runGroup:MAbstractRunGroup, postIterationObjects: Seq[EObject], runGroupLogicGen: ScalaGen)(implicit codeGenUtil: SaturnCodeGenUtil):Try[FutureGen] = {
     import codeGenUtil.getWrapped
     val iterationResultGen = for {
       postIterationAssignments <- postIterationObjects.map{ eObject => IterationObjectGenerator(eObject)}.toTrySeq
-      metaDataAssignment       <- generateIterationMetaData(runGroup)      
+      metaDataAssignment       <- generateIterationMetaData(runGroup)
     } yield ForTryExpr(postIterationAssignments ++ Seq(metaDataAssignment), runGroupLogicGen)
 
-    iterationResultGen.map{iterationResultGen => new FutureGen() {      
+    iterationResultGen.map{iterationResultGen => new FutureGen() {
       override def generate = iterationResultGen.generate().map{iterationResultStr => s"""{
-        val __tmpContext = IterationContext(name, Some(context), None)
-        val __iterationResult = {
+        val __tmpContext = IterationContext(context, None)
+        ; {
           val context = __tmpContext
           val iterationResult = $iterationResultStr
-          handleSingleRunGroupIterationAndAnnotations[${runGroup.getResultClassName}](context, iterationResult)
+          handleSingleRunGroupIterationAndAnnotations[${runGroup.getResultClassName}](context, __notifiers, iterationResult)
         }
-        __iterationResult
       }
       """}
-    }} 
+    }}
   }
 
   def generateWithRepetition(runGroup: MAbstractRunGroup, postIterationObjects: Seq[EObject], repetitionAssignments: Seq[ForAssignment], runGroupLogicGen: ScalaGen)(implicit codeGenUtil: SaturnCodeGenUtil): Try[FutureGen] = {
@@ -451,81 +476,80 @@ object AbstractRunGroupGenerator {
               case _                 => ""
             }}
           } yield s"""futureMapN[Seq[String], Try[IterationResult[${runGroup.getResultClassName}]]](rows, { (row:Seq[String], iterationNo:Int) =>
-            val __tmpContext = IterationContext(name, Some(context), Some(iterationNo))
-            val __iterationResult = {
+            val __tmpContext = IterationContext(context, Some(iterationNo))
+            ; {
               val context = __tmpContext
               val iterationResult = $iterationResultStr
-              handleRunGroupIterationAndAnnotations[${runGroup.getResultClassName}](context, iterationResult)
+              handleRunGroupIterationAndAnnotations[${runGroup.getResultClassName}](context, __notifiers, iterationResult)
             }
-            __iterationResult
           },$maxSimultaneous$breakTerminalCheck)"""
       }
-    } 
-  }  
+    }
+  }
 }
 
 case class SaturnAppObjectGenerator(saturn:MSaturn)(implicit codeGenUtil: SaturnCodeGenUtil) extends ScalaGen {
   import codeGenUtil.getWrapped
 
   def generate() = Try {
+    import scala.reflect.runtime.universe._
     s"""object ${saturn.getAppClassName} extends App {
-  val cmdLine = $getOpts
-  cmdLine.parseArguments(args)
-
-  val (result, exitCode) = if (cmdLine.showSourceFile) {
-    $printSaturnFile
-    (null, 0)
-  } else if (cmdLine.version) {
-    System.out.println("saturn 2017.4.5 20170405.175420")
-    System.out.println("Bin path: " + getClass.getProtectionDomain.getCodeSource.getLocation.getPath)
-    (null, 0)
-  } else {
-    implicit val sc = SaturnExecutionContext("COMMAND", cmdLine)
-    val result = try Await.result(new ${saturn.getClassName}().runFuture, Duration.Inf) finally sc.close()
-    Option(cmdLine.junitOutputDir).foreach { outDir =>
-      sys.props("specs2.junit.outDir") = outDir
-      specs2.junitxml(new ${saturn.getJUnitReportClassName}(result))
+  def inner_main(args: Array[String]) = try {
+    val cmdLine = $getOpts
+    cmdLine.parseArguments(args, "saturn", "2017.6.21", "20170621.163640")
+    val saturnUrl = getClass.getResource(${Literal(Constant(codeGenUtil.generateResourceAlias(saturn)))})
+    val diagramUrl = Option(getClass.getResource(${Literal(Constant(codeGenUtil.diagramResource(saturn)))}))
+    if (cmdLine.showSourceFile) {
+      $printSaturnFile
+      (null, 0)
+    } else {
+      implicit val sc = SaturnExecutionContext("COMMAND", cmdLine)
+      val result = try Await.result(new ${saturn.getClassName}(saturnUrl, diagramUrl).runFuture, Duration.Inf) finally sc.close()
+      Option(cmdLine.junitOutputDir).foreach { outDir =>
+        sys.props("specs2.junit.outDir") = outDir
+        specs2.junitxml(new ${saturn.getJUnitReportClassName}(result))
+      }
+      (result, if(runGroupPassed(result).value) 0 else 1)
     }
-    val exitCode = if(runGroupPassed(result).value) 0 else 1
-    if(!cmdLine.noExitCode) System.exit(exitCode)
-    (result, exitCode)
-  }
+  } catch {case com.ms.qaTools.toolkit.cmdLine.EarlyExit => (null, 0)}
+
+  System.exit(inner_main(args)._2) // App is meant to exit, JUnit should call inner_main
 }"""}
 
   val getOpts = s"""new SaturnCmdLine() {
-  override def resolveEnvVars = Seq(${saturn.getWebAnnotationEnvVars.mkString(", ")})
-  ${saturn.getWebAnnotations flatMap cfgToOpts mkString "\n"}
-}"""
+    override def resolveEnvVars = Seq(${saturn.getWebAnnotationEnvVars.mkString(", ")})
+    ${saturn.getWebAnnotations flatMap cfgToOpts mkString "\n"}
+  }
+"""
 
   def cfgToOpts(cfg: MSaturnWebConfiguration): Traversable[String] = for {
     valDef       <- cfg.getValues
     source       = valDef.getSource
     target       = valDef.getTarget.asInstanceOf[MSingleValueEnvVarTargetDefinition]
-    captionEsc   = escapeJava(source.getCaption)
+    caption = source.getCaption
+    _ = require(!caption.contains(' '), s"Annotation caption should not contain space: $caption")
+    captionEsc = escapeJava(caption)
     envVar       = target.getEnvVar
     usageMessage = Option(escapeJava(source.getDescription)).filter(_.nonEmpty).getOrElse(s"$captionEsc populates envVar: $envVar")
     defaultStr = getOptDefault(source).map(s => s""""${escapeJava(s)}"""").orNull
+
   } yield s"""@Args4jOption(name="--$captionEsc", usage="$usageMessage")
 val $envVar: String = sys.env.getOrElse("$envVar", $defaultStr)"""
 
-  def getOptDefault(source: MAbstractSourceDefinition): Option[String] = {
-    source match {
-      case s: MTextSourceDefinition         => Option(s.getDefaultValue)
-      case s: MFileSelectorSourceDefinition => Option(s.getDefaultValue)
-      case _                                => None
-    }
+  def getOptDefault(source: MAbstractSourceDefinition): Option[String] = source match {
+    case s: MTextSourceDefinition         => Option(s.getDefaultValue)
+    case s: MFileSelectorSourceDefinition => Option(s.getDefaultValue)
+    case _                                => None
   }
 
   val printSaturnFile: String = {
-    val source = if (codeGenUtil.saturnAsJarResource) {
-      val saturnResourceEsc = escapeJava(codeGenUtil.generateResourceAlias(saturn))
-      s"""scala.io.Source.fromInputStream(getClass.getClassLoader.getResourceAsStream("$saturnResourceEsc"))"""
-    } else {
+    val source = if (codeGenUtil.saturnAsJarResource)
+      s"scala.io.Source.fromInputStream(saturnUrl.openStream())"
+    else
       codeGenUtil.saturnFileName map { fn =>
         s"""scala.io.Source.fromFile("${escapeJava(fn)}")"""
       } getOrElse """scala.io.Source.fromString("No source file available")"""
-    }
-    s"$source.getLines foreach println"
+    s"val source = $source; try source.getLines.foreach(println) finally source.close()"
   }
 }
 
@@ -557,23 +581,23 @@ case class SaturnJUnitGenerator(saturn:MSaturn, exitCode: Int = 0, stdOut: Optio
   val stdOutTest = for {
     stdOutStr <- stdOut
   } yield """"output to STDOUT" in {
-        val output = outStr.replaceAll("\r\n", "\n")
+        val output = outStr.replaceAll("\r\n", "\n").replaceFirst("Saturn log file: [^\n]+\\s*", "")
         output must beEqualTo(""""" + s""""$stdOutStr"""" + """"".replaceAll("\r\n","\n"))
       }"""
-  val options = (if (saturnOpts.isDefined) saturnOpts.get
-                    else if(stdOut.isDefined) Seq("--verbosity","QUIET")
-                    else Seq()) :+ "--noExitCode"
+  val options = ((saturnOpts, stdOut) match {
+    case (Some(opts), _) => opts
+    case (None, Some(stdout)) => Seq("--verbosity","QUIET")
+    case _ => Nil
+  }) :+ "--noExitCode"
   def generate() = Try {
     s"""@RunWith(classOf[JUnitRunner])
 class ${saturn.getSpecsClassName} extends Specification {
   "${saturn.getAppClassName}" should {
-    ${if(stdOut.isDefined) "val outStr = stdOutDuring " else ""}
-    {
-      ${saturn.getAppClassName}.main(Array[String](${options.map("\"" + escapeJava(_) + "\"").mkString(",")}))
-    }
-    val result = ${saturn.getAppClassName}.result
+    val (outStr, (result, exitCode)) = stdOutDuring {
+      ${saturn.getAppClassName}.inner_main(Array[String](${options.map("\"" + escapeJava(_) + "\"").mkString(",")}))}
+
     "have exitCode" in {
-      ${saturn.getAppClassName}.exitCode must be_==($exitCode)
+      exitCode must be_==($exitCode)
     }
 
     ${stdOutTest.getOrElse("")}
@@ -587,9 +611,9 @@ case class SaturnMainClassGenerator(saturn:MSaturn)(implicit codeGenUtil: Saturn
   def generate() = for {
     runGroupLogicGen <- AbstractRunGroupGenerator(saturn)
     runGroupLogicStr <- runGroupLogicGen.generate().rethrow(s"An exception occurred while generating the runGroup logic for saturn object: '${saturn.getName()}'.")
-  } 
+  }
   yield {
-    s"""case class ${saturn.getClassName}(implicit sc: SaturnExecutionContext) {
+    s"""case class ${saturn.getClassName}(saturnModelUrl: java.net.URL, saturnDiagramUrl: Option[java.net.URL])(implicit sc: SaturnExecutionContext) {
   ${saturn.getClassName} =>
   implicit val ec = sc.executionContext
   implicit val locale = java.util.Locale.US
@@ -611,7 +635,7 @@ class SaturnMonolithicFileGenerator(codeGenUtil: SaturnCodeGenUtil,
                                     exitCode: Int) extends ScalaFileGenerator {
   import codeGenUtil.getWrapped
   def includeFileSaturns = codeGenUtil.includeFiles.toSeq
-  
+
   override def generate:Seq[(FileIO,Try[String])] = Seq((fileIO, {
     val saturn = codeGenUtil.saturn
     val runGroupsWithJunitAnnotations = codeGenUtil.saturnEObjects.flatMap(codeGenUtil.getRunGroupsWithJUnitAnnotations(_)).toSeq
@@ -621,7 +645,7 @@ class SaturnMonolithicFileGenerator(codeGenUtil: SaturnCodeGenUtil,
         IncludeFileClassGenerator(i)(codeGenUtil)
       } }.toTrySeq
       saturnIncludeClassesStrs <- saturnIncludeClassesGen.map{_.generate()}.toTrySeq
-      saturnIncludeClassesStr  = saturnIncludeClassesStrs.mkString("\n\n") 
+      saturnIncludeClassesStr  = saturnIncludeClassesStrs.mkString("\n\n")
       saturnMainClassStr       <- SaturnMainClassGenerator(saturn)(codeGenUtil).generate.rethrow(s"An exception occurred while generating the main class for saturn object: '${saturn.getName()}'.")
       saturnAppObjectStr       <- SaturnAppObjectGenerator(saturn)(codeGenUtil).generate.rethrow(s"An exception occurred while generating the App object for saturn object: '${saturn.getName()}'.")
       saturnJUnitStr           <- jUnitOverride match {
@@ -632,15 +656,15 @@ class SaturnMonolithicFileGenerator(codeGenUtil: SaturnCodeGenUtil,
     }
     yield {
     s"""package $packageName
-      
+
 $saturnImports
 
 $saturnIncludeClassesStr
 
 $saturnMainClassStr
-  
+
 $saturnAppObjectStr
-  
+
 $saturnJUnitStr
 
 $specificationStr
@@ -658,11 +682,11 @@ object SaturnMonolithicFileGenerator {
             saturnOpts: Option[Seq[String]] = None,
             exitCode: Int = 0): SaturnMonolithicFileGenerator =
     baseFileIO match {
-      case fileIO: FileIO => new SaturnMonolithicFileGenerator(codeGenUtil, fileIO, packageName, jUnitOverride, stdOut, saturnOpts, exitCode)
+      case fileIO: FileIO => throw new UnsupportedOperationException
       case dirIO:  DirIO  =>
         val packageDirName = packageName.replace(".", "/")
-        val fileIO = dirIO + DirIO(packageDirName) + FileIO(codeGenUtil.saturn.getName() + ".scala")       
-        codeGenUtil.copySaturnFiles(dirIO + DirIO("resources/saturn"))
+        val fileIO = dirIO + DirIO(packageDirName) + FileIO(codeGenUtil.saturn.getName() + ".scala")
+        codeGenUtil.copySaturnFiles(dirIO + DirIO(codeGenUtil.resourceRoot))
         new SaturnMonolithicFileGenerator(codeGenUtil, fileIO, packageName, jUnitOverride, stdOut, saturnOpts, exitCode)
       case _ => throw new Exception(s"Invalid BaseFileIO type:${baseFileIO.getClass.getName}")
     }
@@ -682,7 +706,7 @@ class SaturnMultiFileGenerator(codeGenUtil: SaturnCodeGenUtil,
 
   val packageDirName = packageName.replace(".", "/")
   val packageDirIO = dirIO + DirIO(packageDirName)
-  codeGenUtil.copySaturnFiles(dirIO + DirIO("resources/saturn"))
+  codeGenUtil.copySaturnFiles(dirIO + DirIO(codeGenUtil.resourceRoot))
 
   override def generate: Seq[(FileIO, Try[String])] = {
     val saturn = codeGenUtil.saturn
@@ -700,13 +724,13 @@ class SaturnMultiFileGenerator(codeGenUtil: SaturnCodeGenUtil,
           specificationStr   <- JUnitReportClassGenerator(saturn, runGroupsWithJunitAnnotations)(codeGenUtil).generate()
         } yield {
           s"""package $packageName
-      
+
 $saturnImports
 
 $saturnMainClassStr
-  
+
 $saturnAppObjectStr
-  
+
 $saturnJUnitStr
 
 $specificationStr
@@ -746,22 +770,22 @@ class SaturnCodeGenApp extends ToolkitApp[Result] {
   object CmdLine extends BasicCmdLine with SaturnFile { // Create object to avoid reflective call warnings
     @AOption(name = "--toConsole", usage = "Optional console output", required = false)
     val toConsole: Boolean = false
-    
+
     @AOption(name = "--codeFormat", usage = "JAR-DIR|JAR-FILE|SINGLE-FILE, default: (JAR-DIR)", required = false)
     val codeFormat: String = "JAR-DIR"
-      
+
     @AOption(name = "--packageName", usage = "Scala package name used in generated code, default: (default)", required = false)
-    val packageName: String = "default"      
-    
+    val packageName: String = "default"
+
     @AOption(name = "--output", aliases = Array("-o"), usage = "Output file or directory", required = false)
-    val output: String = null     
-    
+    val output: String = null
+
     @AOption(name = "--saturnLint", usage = "WARN|ERROR|IGNORE, default= (ERROR)", required = false)
     val saturnLint: String = "ERROR"
-    
+
     @AOption(name = "--saturnLintFileName", usage = "Optional SaturnLint output fileName, default: (stderr)", required = false)
     val saturnLintFileName: Boolean = false
-    
+
     @AOption(name = "--dryRun", usage = "Do not write generate any files, simply generate.", required = false)
     val dryRun: Boolean = false
 
@@ -790,7 +814,7 @@ class SaturnCodeGenApp extends ToolkitApp[Result] {
       val stdOutStr = for {
         fileName <- Option(stdOutFileName)
       } yield IOUtils.toString(new java.io.FileReader(fileName))
-      codeFormat match {    
+      codeFormat match {
         case "SINGLE-FILE" => SaturnMonolithicFileGenerator(codeGenUtil.copy(saturnAsJarResource = false), FileIO(output), packageName, jUnitOverrideStr, stdOutStr, saturnOpts, exitCode)
         case "JAR-FILE"    => SaturnMonolithicFileGenerator(codeGenUtil, DirIO(output), packageName, jUnitOverrideStr, stdOutStr, saturnOpts, exitCode)
         case "JAR-DIR"     => SaturnMultiFileGenerator(codeGenUtil, DirIO(output), packageName, jUnitOverrideStr, stdOutStr, saturnOpts, exitCode)
@@ -802,12 +826,12 @@ class SaturnCodeGenApp extends ToolkitApp[Result] {
 
   val saturnFileName = cmdLine.saturnFileName
   val toConsole = cmdLine.toConsole
-  
-  val scriptFiles = for {
+
+  lazy val scriptFiles = for {
     codeGenUtil         <- SaturnCodeGenUtil.createFromFileName(saturnFileName)
     saturnLintResult    <- cmdLine.saturnLint match {
       case "WARN" | "ERROR" => SaturnLintRunner(codeGenUtil).run
-      case "IGNORE"         => Try { SaturnLintResult(NotRun(), Nil) }
+      case "IGNORE"         => Try { SaturnLintResult(NotRun, Nil) }
       case invalid          => throw new Error(s"'$invalid' is not a valid value for saturnLint. Options are WARN|ERROR|IGNORE, default= (ERROR)")
     }
     checkResults        <- Try{
@@ -823,42 +847,18 @@ class SaturnCodeGenApp extends ToolkitApp[Result] {
     saturnFileGenerator <- cmdLine.saturnFileGenerator(codeGenUtil)
   } yield saturnFileGenerator.generate()
 
-
-  if(!cmdLine.dryRun) {  
-    scriptFiles match {
-      case Success(fileMaps) => {
-        for(fileMap <- fileMaps) yield {
-          fileMap match {
-            case (fileIO, Success(f)) => {
-              if(cmdLine.debug) println(s"Writing: ${fileIO.file.get.getPath()}")
-              fileIO.mkParentDirs
-              val writer = fileIO.writer
-              writer.map{w => w.write(f); w.close; true}
-            }
-            case (fileIO, Failure(e)) => e.printStackTrace()
-          }
-        }
-      }
-      case Failure(e) => e.printStackTrace()
-    }
-  }
-  
-  if(cmdLine.toConsole) {  
-    scriptFiles match {
-      case Success(fileMaps) => {
-        for(fileMap <- fileMaps) yield {
-          fileMap match {
-            case (fileIO, Success(f)) => {
-              val writer = StandardIO().writer              
-              writer.map{w => w.write(s"\n\n<${fileIO.file.get.getPath()}>\n"); w.write(f); true}
-            }
-            case (fileIO, Failure(e)) => e.printStackTrace()
-          }
-        }
-      }
-      case Failure(e) => e.printStackTrace()
-    }
-  }  
+  scriptFiles.flatMap(_.flatMap {
+    case (fileIO, Success(f)) => Seq(
+      if(!cmdLine.dryRun) {
+        if(cmdLine.debug) println(s"Writing: ${fileIO.fileName}")
+        fileIO.mkParentDirs
+        fileIO.writer.map{w => w.write(f); w.close}
+      } else Success(()),
+      if(cmdLine.toConsole)
+        StandardIO().writer.map{w => w.write(s"\n\n<${fileIO.fileName}>\n"); w.write(f)}
+      else Success(()))
+    case (_, failure) => Seq(failure)
+  }.toTrySeq).recover{case e => e.printStackTrace}
 }
 /*
 Copyright 2017 Morgan Stanley

@@ -8,7 +8,7 @@ import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.runtime.TRACE
 import com.ms.qaTools.saturn.runtime.notifier.console.spaces
 import com.ms.qaTools.saturn.runtime.notifier.console.stringToAnsiColorString
-import com.ms.qaTools.toolkit.xmlGen.XmlGenResult
+import com.ms.qaTools.toolkit.XmlGenResult
 
 case object XmlGenStepConsoleNotifier extends ConsoleNotifier[XmlGenResult] {
   override val runGroupType = "XmlGen"

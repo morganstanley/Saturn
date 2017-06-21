@@ -1,95 +1,69 @@
 package com.ms.qaTools.io.rowSource
-import com.ms.qaTools.io.rowSource.Utils._
+import com.ms.qaTools.io.rowSource.Utils.StringSeqIteratorWithColumnDefinitionsUtil
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.{Map => JMap}
 import scala.collection.JavaConversions._
 import scala.runtime.ScalaRunTime
+import spray.json._
 
-trait LocaleFormatting {
-  implicit val locale: Locale
-}
-
-trait ColumnType {
-  def compare(leftValue: String, rightValue: String): Int
-}
+trait ColumnType extends Ordering[String]
 
 trait FixedWidth {self: ColumnDefinition =>
   val width: Int
   val caseCondition: Option[String]
 }
 
-object JustificationEnum extends Enumeration {
-  type Justification = Value
-  val LEFT_JUSTIFIED, RIGHT_JUSTIFIED = Value
-}
-
-case class StringColumnType() extends ColumnType {
-  def compare(leftValue: String, rightValue: String): Int = {
+case object StringColumnType extends ColumnType {
+  def compare(leftValue: String, rightValue: String): Int =
     if (leftValue == null && rightValue == null) 0
-    else if (leftValue == null && rightValue != null) -1
-    else if (leftValue != null && rightValue == null) 1
+    else if (leftValue == null) -1
+    else if (rightValue == null) 1
     else leftValue compareTo rightValue
-  }
 
   override def toString = "STR"
 }
 
-case class NumericColumnType/*(defaultValue: Double = 0.0)*/(implicit val locale: Locale) extends ColumnType /*with LocaleFormatting*/ {
-  def compare(leftValue: String, rightValue: String): Int = {
+case class NumericColumnType(implicit val locale: Locale) extends ColumnType {
+  def compare(leftValue: String, rightValue: String): Int =
     if ((leftValue == null || leftValue.isEmpty) && (rightValue == null || rightValue.isEmpty)) 0
-    else if ((leftValue == null || leftValue.isEmpty) && (rightValue != null && !rightValue.isEmpty)) -1
-    else if ((leftValue != null && !leftValue.isEmpty) && (rightValue == null || rightValue.isEmpty)) 1
+    else if (leftValue == null || leftValue.isEmpty) -1
+    else if (rightValue == null || rightValue.isEmpty) 1
     else {
       /*
        * Number formats are generally not synchronized.
        * It is recommended to create separate format instances for each thread. If multiple threads access a format concurrently, it must be synchronized externally.
        */
       val format: NumberFormat = NumberFormat.getInstance(locale)
-      val l = try {
-        val number = format.parse(leftValue)
-        number.doubleValue()
-      } catch {
-        case t: Throwable => {
-          throw new Exception("Cannot compare left numeric value: " + leftValue, t)
-        }
-      }
-
-      val r = try {
-        val number = format.parse(rightValue)
-        number.doubleValue()
-      } catch {
-        case t: Throwable => {
-          throw new Exception("Cannot compare right numeric value: " + rightValue, t)
-        }
-      }
-
+      val l = format.parse(leftValue).doubleValue()
+      val r = format.parse(rightValue).doubleValue()
       l compareTo r
     }
-  }
 
   override def toString = "NUM"
 }
 
 object ColumnType {
-  def apply(typeStr:String)(implicit locale: Locale):ColumnType = typeStr.toUpperCase() match {
-    case "STR" | "STRING" => StringColumnType()
-    case "NUM" => NumericColumnType()
-    case _     => throw new Exception("Invalid column type string: '" + typeStr + "'")
+  def apply(typeStr: String)(implicit locale: Locale): ColumnType = typeStr.toUpperCase() match {
+    case "STR" | "STRING" => StringColumnType
+    case "NUM" | "NUMERIC" => NumericColumnType()
+    case _  => throw new Exception("Invalid column type string: '" + typeStr + "'")
   }
-  def unapply(c:ColumnDefinition,t:ColumnType):Boolean = c.colType == t
+
+  def unapply(c: ColumnDefinition, t: ColumnType): Boolean = c.colType == t
+
+  implicit def jsonFormat(implicit locale: Locale) = new JsonFormat[ColumnType] {
+    def read(json: JsValue) = json match {
+      case JsString(s) => apply(s)
+      case _           => deserializationError(json.compactPrint)
+    }
+
+    def write(t: ColumnType) = JsString(t.toString)
+  }
 }
 
-class ColumnDefinition(val name: String,
-                       val keyOrder: Option[Int],
-                       val index: Int = -1,
-                       val colType: ColumnType = StringColumnType()) extends Product {
+case class ColumnDefinition(name: String, keyOrder: Option[Int] = None, index: Int, colType: ColumnType = StringColumnType) extends Product {
   require(keyOrder.fold(true)(_ > 0), s"Key order must be greater than 0: $this")
-
-  def update(name: String          = this.name,
-             keyOrder: Option[Int] = this.keyOrder,
-             index: Int            = this.index,
-             colType: ColumnType   = this.colType) = ColumnDefinition(name, keyOrder, index, colType)
 
   // This method is for interop with Groovy, so that you can use this in Groovy:
   //     colDef.update(name: "NEW_NAME")
@@ -114,13 +88,8 @@ class ColumnDefinition(val name: String,
 }
 
 object ColumnDefinition {
-  def apply(name: String,
-            keyOrder: Option[Int] = None,
-            index: Int = -1,
-            colType: ColumnType = StringColumnType()) = new ColumnDefinition(name, keyOrder, index, colType)
-
-  def fromColumnNames(colNames: Seq[String]): Seq[ColumnDefinition] = colNames.zipWithIndex.map{c => val(name, index) = c; ColumnDefinition(name = name, index = index)}
-  def colNameExists(colName: String, colDefs: Seq[ColumnDefinition]) = colDefs.exists(colDef => colDef.name == colName)
+  def fromColumnNames(colNames: Seq[String]) =
+    colNames.zipWithIndex.map{case (name, index) => ColumnDefinition(name, None, index)}
 
   def toDataSets(columns: Seq[ColumnDefinition]): Iterator[Seq[String]] with ColumnDefinitions = {
     import Utils._
@@ -129,32 +98,14 @@ object ColumnDefinition {
     }.withColumnNames("NAME", "KEY_ORDER", "INDEX", "TYPE")
   }
 
-  def fromDataSets(data: Iterator[Seq[String]] with ColumnDefinitions)(implicit locale: Locale): Seq[ColumnDefinition] = {
-    data.toRowMaps.zipWithIndex.map {
-      case (r, i) =>
-        ColumnDefinition(r("NAME").get,
-                         r.get("KEY_ORDER").flatten.map(_.toInt),
-                         r.get("INDEX").flatten.map(_.toInt).getOrElse(i),
-                         r.get("TYPE").flatten.map(ColumnType(_)).getOrElse(StringColumnType()))
+  def fromDataSets(data: Iterator[Seq[String]] with ColumnDefinitions)(implicit locale: Locale): Seq[ColumnDefinition] =
+    data.toRowMaps.zipWithIndex.map{case (r, i) =>
+      ColumnDefinition(
+        r("NAME").getOrElse(sys.error(s"Could not get NAME out of column definition `$r`")),
+        r.get("KEY_ORDER").flatten.map(_.toInt),
+        r.get("INDEX").flatten.map(_.toInt).getOrElse(i),
+        r.get("TYPE").flatten.map(ColumnType(_)).getOrElse(StringColumnType))
     }.toSeq
-  }
-}
-
-object NumericColumnDefinition {
-  def unapply[T <: ColumnDefinition](c:Option[T]):Option[T] = c match {
-    case Some(x) => unapply(x)
-    case None => None
-  }
-  def unapply[T <: ColumnDefinition](c:T):Option[T] = {
-    c.colType match {
-      case _: NumericColumnType => Some(c)
-      case _ => None
-    }
-  }
-}
-
-object StringColumnDefinition {
-  def unapply(c:ColumnDefinition):Boolean = c.colType == StringColumnType()
 }
 /*
 Copyright 2017 Morgan Stanley

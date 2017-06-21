@@ -1,94 +1,65 @@
 package com.ms.qaTools.toolkit
 
 import com.ms.qaTools.toolkit.cmdLine.BasicCmdLine
+import com.ms.qaTools.toolkit.cmdLine.EarlyExit
 import scala.annotation.tailrec
 import scala.util.{Try, Success, Failure}
-import org.kohsuke.args4j.CmdLineParser
 import org.kohsuke.args4j.CmdLineException
 
-
-
-abstract class ToolkitApp[ResultType <: Result] extends App {
+abstract class ToolkitApp[T <: Result] extends App {
   val APP_NAME: String
   val APP_VERSION: String = "2.1.0"
-  val BUILD_TIME: String = "20170405.151415"
-  val cmdLine: BasicCmdLine
-  
-  def parseArguments = {
-    try {
-        cmdLine.parseArguments(args)
-    } catch {
-      case (e: CmdLineException) => handleCmdLineException(e)
-      case (e: Exception)        => handleCmdLineException(e)
-    }
-    if (cmdLine.version) {
-      displayVersion
-      if (!cmdLine.noExitCode) System.exit(0)
-    }
-  }
-  
-  def handleCmdLineException(e: CmdLineException) = {
-    if(cmdLine.version){
-      displayVersion
-      if (!cmdLine.noExitCode) System.exit(0)
-    } else if(cmdLine.help) {
-      println("Usage information")
-      cmdLine.cmdLineParser.printUsage(System.out)
-      if (!cmdLine.noExitCode) System.exit(0)
-    } else {
-      System.err.println(e.getMessage())
-      cmdLine.cmdLineParser.printUsage(System.err)
-      System.exit(-1)
+  val BUILD_TIME: String = "20170621.154536"
+  def cmdLine: BasicCmdLine
+
+  def parseArguments() = cmdLine.parseArguments(args, APP_NAME, APP_VERSION, BUILD_TIME)
+
+  protected def printMessages(result: T) = println(result)
+
+  @deprecated("Use exit(Success(result))", "qaTools/util/2.1.56")
+  def exit(result: T) = _exit(result)
+
+  protected def _exit(result: T) = result.status match {
+    case Passed => if (!cmdLine.noExitCode) System.exit(0)
+    case status => {
+      System.err.println(APP_NAME + s": $status")
+      printMessages(result)
+      if (!cmdLine.noExitCode) System.exit(-1)
     }
   }
 
-  def handleCmdLineException(e: Exception) = {
-    System.err.println(e.getMessage())
-    cmdLine.cmdLineParser.printUsage(System.err);
-    System.exit(-1)
-  }
-  
-  def displayVersion = {
-    System.out.println(APP_NAME + " " + APP_VERSION + " " + BUILD_TIME)
-    val binPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-    System.out.println("Bin path: " + binPath)
+  def exit(result: Try[T]) = result match {
+    case Success(r) => _exit(r)
+    case Failure(e) => _exitException(e)
   }
 
-  protected def printMessages(result: ResultType) = println(result)
+  @deprecated("Use exit(Failure(t))", "qaTools/util/2.1.56")
+  def exitException(t: Throwable) = _exitException(t)
 
-  def exit(result: ResultType) {
-    result match {
-      case Pass() => if (!cmdLine.noExitCode) System.exit(0)
-      case Fail() => {
-        System.err.println(APP_NAME + " failed.")
-        printMessages(result)
-        if (!cmdLine.noExitCode) System.exit(-1)
-      }
+  protected def _exitException(t: Throwable) = {
+    t match {
+      case t: CmdLineException =>
+        printException(t)
+        if (cmdLine.debug) t.printStackTrace
+        cmdLine.cmdLineParser.printUsage(System.err)
+        if (!cmdLine.noExitCode) System.exit(-1) else throw t
+      case EarlyExit =>
+        if (! cmdLine.noExitCode) System.exit(0) else ()
+      case t =>
+        printException(t)
+        if (cmdLine.debug) t.printStackTrace
+        if (!cmdLine.noExitCode) System.exit(-1) else throw t
     }
   }
 
-  def exit(result: Try[ResultType]) {
-    result match {
-      case Success(r) => exit(r)
-      case Failure(e) => exitException(e)
-    }
-  }
-
-  def exitException(t: Throwable) = {
-    printException(t)
-    if (cmdLine.debug) t.printStackTrace()
-    if (!cmdLine.noExitCode) System.exit(-1)
-    else throw t
-  }
-  
   def printException(t: Throwable) = {
     @tailrec
     def _printException(t: Throwable, exceptionStr: String, count: Int): String = {
-        if(t == null) exceptionStr
-        else {
-          val indents = Seq.fill(count)(" ").mkString("")
-          _printException(t.getCause(), "%s%sCaused by %s: %s\n".format(exceptionStr, indents, t.getClass.toString, t.getMessage()), count + 1)
-        }
+      if(t == null) exceptionStr
+      else {
+        val indents = Seq.fill(count)(" ").mkString("")
+        _printException(t.getCause(), "%s%sCaused by %s: %s\n".format(exceptionStr, indents, t.getClass.toString, t.getMessage()), count + 1)
+      }
     }
     System.err.println(_printException(t, "", 0))
   }

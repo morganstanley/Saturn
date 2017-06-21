@@ -40,6 +40,7 @@ public class InternalKronusLexer extends Lexer {
     public static final int RULE_INT=7;
     public static final int T__29=29;
     public static final int T__22=22;
+    public static final int T__66=66;
     public static final int RULE_ML_COMMENT=10;
     public static final int T__23=23;
     public static final int T__24=24;
@@ -47,7 +48,9 @@ public class InternalKronusLexer extends Lexer {
     public static final int T__62=62;
     public static final int T__63=63;
     public static final int T__20=20;
+    public static final int T__64=64;
     public static final int T__21=21;
+    public static final int T__65=65;
     public static final int RULE_STRING=6;
     public static final int RULE_OTHER_ID=12;
     public static final int RULE_SL_COMMENT=11;
@@ -92,10 +95,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__13;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:11:7: ( '.' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:11:9: '.'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:11:7: ( '#' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:11:9: '#'
             {
-            match('.'); 
+            match('#'); 
 
             }
 
@@ -112,10 +115,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__14;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:12:7: ( '_' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:12:9: '_'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:12:7: ( '<~' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:12:9: '<~'
             {
-            match('_'); 
+            match("<~"); 
+
 
             }
 
@@ -132,10 +136,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__15;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:13:7: ( '{' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:13:9: '{'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:13:7: ( '~>' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:13:9: '~>'
             {
-            match('{'); 
+            match("~>"); 
+
 
             }
 
@@ -152,10 +157,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__16;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:14:7: ( ',' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:14:9: ','
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:14:7: ( '[' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:14:9: '['
             {
-            match(','); 
+            match('['); 
 
             }
 
@@ -172,10 +177,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__17;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:15:7: ( '}' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:15:9: '}'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:15:7: ( ',' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:15:9: ','
             {
-            match('}'); 
+            match(','); 
 
             }
 
@@ -192,11 +197,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__18;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:16:7: ( '=>' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:16:9: '=>'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:16:7: ( ']' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:16:9: ']'
             {
-            match("=>"); 
-
+            match(']'); 
 
             }
 
@@ -213,11 +217,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__19;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:17:7: ( 'as' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:17:9: 'as'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:17:7: ( '(' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:17:9: '('
             {
-            match("as"); 
-
+            match('('); 
 
             }
 
@@ -234,11 +237,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__20;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:18:7: ( 'def' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:18:9: 'def'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:18:7: ( ')' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:18:9: ')'
             {
-            match("def"); 
-
+            match(')'); 
 
             }
 
@@ -255,11 +257,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__21;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:19:7: ( 'false' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:19:9: 'false'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:19:7: ( ':' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:19:9: ':'
             {
-            match("false"); 
-
+            match(':'); 
 
             }
 
@@ -276,11 +277,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__22;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:20:7: ( 'generate' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:20:9: 'generate'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:20:7: ( '@' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:20:9: '@'
             {
-            match("generate"); 
-
+            match('@'); 
 
             }
 
@@ -297,11 +297,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__23;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:21:7: ( 'import' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:21:9: 'import'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:21:7: ( '!' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:21:9: '!'
             {
-            match("import"); 
-
+            match('!'); 
 
             }
 
@@ -318,11 +317,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__24;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:22:7: ( 'include' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:22:9: 'include'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:22:7: ( '_' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:22:9: '_'
             {
-            match("include"); 
-
+            match('_'); 
 
             }
 
@@ -339,11 +337,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__25;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:23:7: ( 'kronus' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:23:9: 'kronus'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:23:7: ( '.' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:23:9: '.'
             {
-            match("kronus"); 
-
+            match('.'); 
 
             }
 
@@ -360,11 +357,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__26;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:24:7: ( 'package' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:24:9: 'package'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:24:7: ( '{' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:24:9: '{'
             {
-            match("package"); 
-
+            match('{'); 
 
             }
 
@@ -381,11 +377,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__27;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:25:7: ( 'return' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:25:9: 'return'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:25:7: ( '}' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:25:9: '}'
             {
-            match("return"); 
-
+            match('}'); 
 
             }
 
@@ -402,10 +397,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__28;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:26:7: ( 'true' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:26:9: 'true'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:26:7: ( '=>' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:26:9: '=>'
             {
-            match("true"); 
+            match("=>"); 
 
 
             }
@@ -423,10 +418,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__29;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:27:7: ( 'type' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:27:9: 'type'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:27:7: ( 'as' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:27:9: 'as'
             {
-            match("type"); 
+            match("as"); 
 
 
             }
@@ -444,10 +439,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__30;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:28:7: ( 'val' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:28:9: 'val'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:28:7: ( 'def' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:28:9: 'def'
             {
-            match("val"); 
+            match("def"); 
 
 
             }
@@ -465,10 +460,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__31;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:29:7: ( 'with' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:29:9: 'with'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:29:7: ( 'export' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:29:9: 'export'
             {
-            match("with"); 
+            match("export"); 
 
 
             }
@@ -486,10 +481,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__32;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:30:7: ( '+' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:30:9: '+'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:30:7: ( 'false' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:30:9: 'false'
             {
-            match('+'); 
+            match("false"); 
+
 
             }
 
@@ -506,10 +502,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__33;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:31:7: ( '-' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:31:9: '-'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:31:7: ( 'generate' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:31:9: 'generate'
             {
-            match('-'); 
+            match("generate"); 
+
 
             }
 
@@ -526,10 +523,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__34;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:32:7: ( '<:' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:32:9: '<:'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:32:7: ( 'import' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:32:9: 'import'
             {
-            match("<:"); 
+            match("import"); 
 
 
             }
@@ -547,10 +544,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__35;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:33:7: ( '[' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:33:9: '['
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:33:7: ( 'include' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:33:9: 'include'
             {
-            match('['); 
+            match("include"); 
+
 
             }
 
@@ -567,10 +565,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__36;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:34:7: ( ']' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:34:9: ']'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:34:7: ( 'kronus' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:34:9: 'kronus'
             {
-            match(']'); 
+            match("kronus"); 
+
 
             }
 
@@ -587,10 +586,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__37;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:35:7: ( '$' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:35:9: '$'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:35:7: ( 'package' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:35:9: 'package'
             {
-            match('$'); 
+            match("package"); 
+
 
             }
 
@@ -607,10 +607,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__38;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:36:7: ( '(' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:36:9: '('
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:36:7: ( 'return' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:36:9: 'return'
             {
-            match('('); 
+            match("return"); 
+
 
             }
 
@@ -627,10 +628,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__39;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:37:7: ( ')' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:37:9: ')'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:37:7: ( 'true' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:37:9: 'true'
             {
-            match(')'); 
+            match("true"); 
+
 
             }
 
@@ -647,10 +649,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__40;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:38:7: ( ':' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:38:9: ':'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:38:7: ( 'type' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:38:9: 'type'
             {
-            match(':'); 
+            match("type"); 
+
 
             }
 
@@ -667,10 +670,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__41;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:39:7: ( '@' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:39:9: '@'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:39:7: ( 'val' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:39:9: 'val'
             {
-            match('@'); 
+            match("val"); 
+
 
             }
 
@@ -687,10 +691,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__42;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:40:7: ( '#' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:40:9: '#'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:40:7: ( 'with' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:40:9: 'with'
             {
-            match('#'); 
+            match("with"); 
+
 
             }
 
@@ -707,10 +712,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__43;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:41:7: ( '*' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:41:9: '*'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:41:7: ( '+' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:41:9: '+'
             {
-            match('*'); 
+            match('+'); 
 
             }
 
@@ -727,10 +732,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__44;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:42:7: ( '!' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:42:9: '!'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:42:7: ( '-' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:42:9: '-'
             {
-            match('!'); 
+            match('-'); 
 
             }
 
@@ -747,10 +752,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__45;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:43:7: ( '/' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:43:9: '/'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:43:7: ( '<:' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:43:9: '<:'
             {
-            match('/'); 
+            match("<:"); 
+
 
             }
 
@@ -767,10 +773,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__46;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:44:7: ( '<' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:44:9: '<'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:44:7: ( '$' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:44:9: '$'
             {
-            match('<'); 
+            match('$'); 
 
             }
 
@@ -787,11 +793,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__47;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:45:7: ( '<=' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:45:9: '<='
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:45:7: ( '*' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:45:9: '*'
             {
-            match("<="); 
-
+            match('*'); 
 
             }
 
@@ -808,10 +813,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__48;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:46:7: ( '>' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:46:9: '>'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:46:7: ( '/' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:46:9: '/'
             {
-            match('>'); 
+            match('/'); 
 
             }
 
@@ -828,11 +833,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__49;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:47:7: ( '>=' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:47:9: '>='
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:47:7: ( '<' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:47:9: '<'
             {
-            match(">="); 
-
+            match('<'); 
 
             }
 
@@ -849,10 +853,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__50;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:48:7: ( '==' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:48:9: '=='
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:48:7: ( '<=' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:48:9: '<='
             {
-            match("=="); 
+            match("<="); 
 
 
             }
@@ -870,11 +874,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__51;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:49:7: ( '!=' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:49:9: '!='
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:49:7: ( '>' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:49:9: '>'
             {
-            match("!="); 
-
+            match('>'); 
 
             }
 
@@ -891,10 +894,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__52;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:50:7: ( '&&' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:50:9: '&&'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:50:7: ( '>=' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:50:9: '>='
             {
-            match("&&"); 
+            match(">="); 
 
 
             }
@@ -912,10 +915,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__53;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:51:7: ( '||' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:51:9: '||'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:51:7: ( '==' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:51:9: '=='
             {
-            match("||"); 
+            match("=="); 
 
 
             }
@@ -933,10 +936,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__54;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:52:7: ( '%' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:52:9: '%'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:52:7: ( '!=' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:52:9: '!='
             {
-            match('%'); 
+            match("!="); 
+
 
             }
 
@@ -953,10 +957,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__55;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:53:7: ( '&' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:53:9: '&'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:53:7: ( '&&' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:53:9: '&&'
             {
-            match('&'); 
+            match("&&"); 
+
 
             }
 
@@ -973,10 +978,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__56;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:54:7: ( ';' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:54:9: ';'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:54:7: ( '||' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:54:9: '||'
             {
-            match(';'); 
+            match("||"); 
+
 
             }
 
@@ -993,10 +999,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__57;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:55:7: ( '?' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:55:9: '?'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:55:7: ( '%' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:55:9: '%'
             {
-            match('?'); 
+            match('%'); 
 
             }
 
@@ -1013,10 +1019,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__58;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:56:7: ( '\\\\' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:56:9: '\\\\'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:56:7: ( '&' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:56:9: '&'
             {
-            match('\\'); 
+            match('&'); 
 
             }
 
@@ -1033,10 +1039,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__59;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:57:7: ( '^' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:57:9: '^'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:57:7: ( ';' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:57:9: ';'
             {
-            match('^'); 
+            match(';'); 
 
             }
 
@@ -1053,10 +1059,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__60;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:58:7: ( '`' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:58:9: '`'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:58:7: ( '?' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:58:9: '?'
             {
-            match('`'); 
+            match('?'); 
 
             }
 
@@ -1073,10 +1079,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__61;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:59:7: ( '|' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:59:9: '|'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:59:7: ( '\\\\' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:59:9: '\\\\'
             {
-            match('|'); 
+            match('\\'); 
 
             }
 
@@ -1093,10 +1099,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__62;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:60:7: ( '~' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:60:9: '~'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:60:7: ( '^' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:60:9: '^'
             {
-            match('~'); 
+            match('^'); 
 
             }
 
@@ -1113,8 +1119,68 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = T__63;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:61:7: ( '<-' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:61:9: '<-'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:61:7: ( '`' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:61:9: '`'
+            {
+            match('`'); 
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__63"
+
+    // $ANTLR start "T__64"
+    public final void mT__64() throws RecognitionException {
+        try {
+            int _type = T__64;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:62:7: ( '|' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:62:9: '|'
+            {
+            match('|'); 
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__64"
+
+    // $ANTLR start "T__65"
+    public final void mT__65() throws RecognitionException {
+        try {
+            int _type = T__65;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:63:7: ( '~' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:63:9: '~'
+            {
+            match('~'); 
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__65"
+
+    // $ANTLR start "T__66"
+    public final void mT__66() throws RecognitionException {
+        try {
+            int _type = T__66;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:64:7: ( '<-' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:64:9: '<-'
             {
             match("<-"); 
 
@@ -1127,15 +1193,15 @@ public class InternalKronusLexer extends Lexer {
         finally {
         }
     }
-    // $ANTLR end "T__63"
+    // $ANTLR end "T__66"
 
     // $ANTLR start "RULE_KRONUS_ASSIGN"
     public final void mRULE_KRONUS_ASSIGN() throws RecognitionException {
         try {
             int _type = RULE_KRONUS_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5256:20: ( '=' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5256:22: '='
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5856:20: ( '=' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5856:22: '='
             {
             match('='); 
 
@@ -1154,8 +1220,8 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = RULE_CAPITALIZED_ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5258:21: ( ( 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5258:23: ( 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5858:21: ( ( 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5858:23: ( 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_' ) {
                 input.consume();
@@ -1166,7 +1232,7 @@ public class InternalKronusLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5258:38: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5858:38: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             loop1:
             do {
                 int alt1=2;
@@ -1215,11 +1281,11 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = RULE_OTHER_ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5260:15: ( 'a' .. 'z' ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5260:17: 'a' .. 'z' ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5860:15: ( 'a' .. 'z' ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5860:17: 'a' .. 'z' ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             {
             matchRange('a','z'); 
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5260:26: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5860:26: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             loop2:
             do {
                 int alt2=2;
@@ -1268,10 +1334,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = RULE_INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5262:10: ( ( '0' .. '9' )+ )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5262:12: ( '0' .. '9' )+
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5862:10: ( ( '0' .. '9' )+ )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5862:12: ( '0' .. '9' )+
             {
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5262:12: ( '0' .. '9' )+
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5862:12: ( '0' .. '9' )+
             int cnt3=0;
             loop3:
             do {
@@ -1285,7 +1351,7 @@ public class InternalKronusLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5262:13: '0' .. '9'
+            	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5862:13: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -1317,12 +1383,12 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = RULE_TRIPPLE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5264:21: ( '\"\"\"' ( options {greedy=false; } : . )* '\"\"\"' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5264:23: '\"\"\"' ( options {greedy=false; } : . )* '\"\"\"'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5864:21: ( '\"\"\"' ( options {greedy=false; } : . )* '\"\"\"' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5864:23: '\"\"\"' ( options {greedy=false; } : . )* '\"\"\"'
             {
             match("\"\"\""); 
 
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5264:29: ( options {greedy=false; } : . )*
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5864:29: ( options {greedy=false; } : . )*
             loop4:
             do {
                 int alt4=2;
@@ -1356,7 +1422,7 @@ public class InternalKronusLexer extends Lexer {
 
                 switch (alt4) {
             	case 1 :
-            	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5264:57: .
+            	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5864:57: .
             	    {
             	    matchAny(); 
 
@@ -1386,10 +1452,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = RULE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:13: ( ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:13: ( ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             {
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -1407,10 +1473,10 @@ public class InternalKronusLexer extends Lexer {
             }
             switch (alt7) {
                 case 1 :
-                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:16: '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
+                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:16: '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
                     {
                     match('\"'); 
-                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:20: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )*
+                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:20: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )*
                     loop5:
                     do {
                         int alt5=3;
@@ -1426,7 +1492,7 @@ public class InternalKronusLexer extends Lexer {
 
                         switch (alt5) {
                     	case 1 :
-                    	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:21: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' )
+                    	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:21: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' )
                     	    {
                     	    match('\\'); 
                     	    if ( input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||(input.LA(1)>='t' && input.LA(1)<='u') ) {
@@ -1442,7 +1508,7 @@ public class InternalKronusLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:66: ~ ( ( '\\\\' | '\"' ) )
+                    	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:66: ~ ( ( '\\\\' | '\"' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -1467,10 +1533,10 @@ public class InternalKronusLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:86: '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
+                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:86: '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
                     {
                     match('\''); 
-                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:91: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )*
+                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:91: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )*
                     loop6:
                     do {
                         int alt6=3;
@@ -1486,7 +1552,7 @@ public class InternalKronusLexer extends Lexer {
 
                         switch (alt6) {
                     	case 1 :
-                    	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:92: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' )
+                    	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:92: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' )
                     	    {
                     	    match('\\'); 
                     	    if ( input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||(input.LA(1)>='t' && input.LA(1)<='u') ) {
@@ -1502,7 +1568,7 @@ public class InternalKronusLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5266:137: ~ ( ( '\\\\' | '\\'' ) )
+                    	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5866:137: ~ ( ( '\\\\' | '\\'' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -1545,12 +1611,12 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = RULE_ML_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5268:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5268:19: '/*' ( options {greedy=false; } : . )* '*/'
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5868:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5868:19: '/*' ( options {greedy=false; } : . )* '*/'
             {
             match("/*"); 
 
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5268:24: ( options {greedy=false; } : . )*
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5868:24: ( options {greedy=false; } : . )*
             loop8:
             do {
                 int alt8=2;
@@ -1575,7 +1641,7 @@ public class InternalKronusLexer extends Lexer {
 
                 switch (alt8) {
             	case 1 :
-            	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5268:52: .
+            	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5868:52: .
             	    {
             	    matchAny(); 
 
@@ -1605,12 +1671,12 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = RULE_SL_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5270:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5270:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5870:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5870:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
             {
             match("//"); 
 
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5270:24: (~ ( ( '\\n' | '\\r' ) ) )*
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5870:24: (~ ( ( '\\n' | '\\r' ) ) )*
             loop9:
             do {
                 int alt9=2;
@@ -1623,7 +1689,7 @@ public class InternalKronusLexer extends Lexer {
 
                 switch (alt9) {
             	case 1 :
-            	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5270:24: ~ ( ( '\\n' | '\\r' ) )
+            	    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5870:24: ~ ( ( '\\n' | '\\r' ) )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -1643,7 +1709,7 @@ public class InternalKronusLexer extends Lexer {
                 }
             } while (true);
 
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5270:40: ( ( '\\r' )? '\\n' )?
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5870:40: ( ( '\\r' )? '\\n' )?
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -1652,9 +1718,9 @@ public class InternalKronusLexer extends Lexer {
             }
             switch (alt11) {
                 case 1 :
-                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5270:41: ( '\\r' )? '\\n'
+                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5870:41: ( '\\r' )? '\\n'
                     {
-                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5270:41: ( '\\r' )?
+                    // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5870:41: ( '\\r' )?
                     int alt10=2;
                     int LA10_0 = input.LA(1);
 
@@ -1663,7 +1729,7 @@ public class InternalKronusLexer extends Lexer {
                     }
                     switch (alt10) {
                         case 1 :
-                            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5270:41: '\\r'
+                            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5870:41: '\\r'
                             {
                             match('\r'); 
 
@@ -1695,10 +1761,10 @@ public class InternalKronusLexer extends Lexer {
         try {
             int _type = RULE_WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5272:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5272:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5872:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5872:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             {
-            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5272:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:5872:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             int cnt12=0;
             loop12:
             do {
@@ -1748,8 +1814,8 @@ public class InternalKronusLexer extends Lexer {
     // $ANTLR end "RULE_WS"
 
     public void mTokens() throws RecognitionException {
-        // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:8: ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | RULE_KRONUS_ASSIGN | RULE_CAPITALIZED_ID | RULE_OTHER_ID | RULE_INT | RULE_TRIPPLE_STRING | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS )
-        int alt13=60;
+        // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:8: ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | RULE_KRONUS_ASSIGN | RULE_CAPITALIZED_ID | RULE_OTHER_ID | RULE_INT | RULE_TRIPPLE_STRING | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS )
+        int alt13=63;
         alt13 = dfa13.predict(input);
         switch (alt13) {
             case 1 :
@@ -2110,63 +2176,84 @@ public class InternalKronusLexer extends Lexer {
                 }
                 break;
             case 52 :
-                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:316: RULE_KRONUS_ASSIGN
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:316: T__64
+                {
+                mT__64(); 
+
+                }
+                break;
+            case 53 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:322: T__65
+                {
+                mT__65(); 
+
+                }
+                break;
+            case 54 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:328: T__66
+                {
+                mT__66(); 
+
+                }
+                break;
+            case 55 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:334: RULE_KRONUS_ASSIGN
                 {
                 mRULE_KRONUS_ASSIGN(); 
 
                 }
                 break;
-            case 53 :
-                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:335: RULE_CAPITALIZED_ID
+            case 56 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:353: RULE_CAPITALIZED_ID
                 {
                 mRULE_CAPITALIZED_ID(); 
 
                 }
                 break;
-            case 54 :
-                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:355: RULE_OTHER_ID
+            case 57 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:373: RULE_OTHER_ID
                 {
                 mRULE_OTHER_ID(); 
 
                 }
                 break;
-            case 55 :
-                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:369: RULE_INT
+            case 58 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:387: RULE_INT
                 {
                 mRULE_INT(); 
 
                 }
                 break;
-            case 56 :
-                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:378: RULE_TRIPPLE_STRING
+            case 59 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:396: RULE_TRIPPLE_STRING
                 {
                 mRULE_TRIPPLE_STRING(); 
 
                 }
                 break;
-            case 57 :
-                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:398: RULE_STRING
+            case 60 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:416: RULE_STRING
                 {
                 mRULE_STRING(); 
 
                 }
                 break;
-            case 58 :
-                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:410: RULE_ML_COMMENT
+            case 61 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:428: RULE_ML_COMMENT
                 {
                 mRULE_ML_COMMENT(); 
 
                 }
                 break;
-            case 59 :
-                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:426: RULE_SL_COMMENT
+            case 62 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:444: RULE_SL_COMMENT
                 {
                 mRULE_SL_COMMENT(); 
 
                 }
                 break;
-            case 60 :
-                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:442: RULE_WS
+            case 63 :
+                // ../com.ms.qaTools.saturn.kronus/src-gen/com/ms/qaTools/saturn/parser/antlr/internal/InternalKronus.g:1:460: RULE_WS
                 {
                 mRULE_WS(); 
 
@@ -2180,106 +2267,114 @@ public class InternalKronusLexer extends Lexer {
 
     protected DFA13 dfa13 = new DFA13(this);
     static final String DFA13_eotS =
-        "\2\uffff\1\60\3\uffff\1\63\13\53\2\uffff\1\104\11\uffff\1\106\1"+
-        "\111\1\113\1\115\1\117\21\uffff\1\121\14\53\17\uffff\1\56\1\uffff"+
-        "\1\137\11\53\1\151\1\53\2\uffff\7\53\1\162\1\163\1\uffff\1\164\1"+
-        "\165\6\53\4\uffff\1\53\1\175\1\53\1\177\1\53\1\u0081\1\53\1\uffff"+
-        "\1\u0083\1\uffff\1\u0084\1\uffff\1\u0085\3\uffff";
+        "\2\uffff\1\65\1\67\7\uffff\1\71\1\72\3\uffff\1\75\14\54\4\uffff"+
+        "\1\116\1\120\1\122\1\124\31\uffff\1\126\15\54\11\uffff\1\57\1\uffff"+
+        "\1\145\12\54\1\160\1\54\2\uffff\10\54\1\172\1\173\1\uffff\1\174"+
+        "\1\54\1\176\6\54\3\uffff\1\u0085\1\uffff\1\54\1\u0087\1\54\1\u0089"+
+        "\1\54\1\u008b\1\uffff\1\54\1\uffff\1\u008d\1\uffff\1\u008e\1\uffff"+
+        "\1\u008f\3\uffff";
     static final String DFA13_eofS =
-        "\u0086\uffff";
+        "\u0090\uffff";
     static final String DFA13_minS =
-        "\1\11\1\uffff\1\60\3\uffff\1\75\1\163\1\145\1\141\1\145\1\155\1"+
-        "\162\1\141\1\145\1\162\1\141\1\151\2\uffff\1\55\11\uffff\1\75\1"+
-        "\52\1\75\1\46\1\174\12\uffff\1\0\6\uffff\1\60\1\146\1\154\1\156"+
-        "\1\160\1\143\1\157\1\143\1\164\1\165\1\160\1\154\1\164\17\uffff"+
-        "\1\42\1\uffff\1\60\1\163\1\145\1\157\1\154\1\156\1\153\1\165\2\145"+
-        "\1\60\1\150\2\uffff\1\145\2\162\2\165\1\141\1\162\2\60\1\uffff\2"+
-        "\60\1\141\1\164\1\144\1\163\1\147\1\156\4\uffff\1\164\1\60\1\145"+
-        "\1\60\1\145\1\60\1\145\1\uffff\1\60\1\uffff\1\60\1\uffff\1\60\3"+
+        "\1\11\1\uffff\1\55\1\76\7\uffff\1\75\1\60\3\uffff\1\75\1\163\1"+
+        "\145\1\170\1\141\1\145\1\155\1\162\1\141\1\145\1\162\1\141\1\151"+
+        "\4\uffff\1\52\1\75\1\46\1\174\11\uffff\1\0\17\uffff\1\60\1\146\1"+
+        "\160\1\154\1\156\1\160\1\143\1\157\1\143\1\164\1\165\1\160\1\154"+
+        "\1\164\11\uffff\1\42\1\uffff\1\60\1\157\1\163\1\145\1\157\1\154"+
+        "\1\156\1\153\1\165\2\145\1\60\1\150\2\uffff\1\162\1\145\2\162\2"+
+        "\165\1\141\1\162\2\60\1\uffff\1\60\1\164\1\60\1\141\1\164\1\144"+
+        "\1\163\1\147\1\156\3\uffff\1\60\1\uffff\1\164\1\60\1\145\1\60\1"+
+        "\145\1\60\1\uffff\1\145\1\uffff\1\60\1\uffff\1\60\1\uffff\1\60\3"+
         "\uffff";
     static final String DFA13_maxS =
-        "\1\176\1\uffff\1\172\3\uffff\1\76\1\163\1\145\1\141\1\145\1\156"+
-        "\1\162\1\141\1\145\1\171\1\141\1\151\2\uffff\1\75\11\uffff\1\75"+
-        "\1\57\1\75\1\46\1\174\12\uffff\1\uffff\6\uffff\1\172\1\146\1\154"+
-        "\1\156\1\160\1\143\1\157\1\143\1\164\1\165\1\160\1\154\1\164\17"+
-        "\uffff\1\42\1\uffff\1\172\1\163\1\145\1\157\1\154\1\156\1\153\1"+
-        "\165\2\145\1\172\1\150\2\uffff\1\145\2\162\2\165\1\141\1\162\2\172"+
-        "\1\uffff\2\172\1\141\1\164\1\144\1\163\1\147\1\156\4\uffff\1\164"+
-        "\1\172\1\145\1\172\1\145\1\172\1\145\1\uffff\1\172\1\uffff\1\172"+
-        "\1\uffff\1\172\3\uffff";
+        "\1\176\1\uffff\1\176\1\76\7\uffff\1\75\1\172\3\uffff\1\76\1\163"+
+        "\1\145\1\170\1\141\1\145\1\156\1\162\1\141\1\145\1\171\1\141\1\151"+
+        "\4\uffff\1\57\1\75\1\46\1\174\11\uffff\1\uffff\17\uffff\1\172\1"+
+        "\146\1\160\1\154\1\156\1\160\1\143\1\157\1\143\1\164\1\165\1\160"+
+        "\1\154\1\164\11\uffff\1\42\1\uffff\1\172\1\157\1\163\1\145\1\157"+
+        "\1\154\1\156\1\153\1\165\2\145\1\172\1\150\2\uffff\1\162\1\145\2"+
+        "\162\2\165\1\141\1\162\2\172\1\uffff\1\172\1\164\1\172\1\141\1\164"+
+        "\1\144\1\163\1\147\1\156\3\uffff\1\172\1\uffff\1\164\1\172\1\145"+
+        "\1\172\1\145\1\172\1\uffff\1\145\1\uffff\1\172\1\uffff\1\172\1\uffff"+
+        "\1\172\3\uffff";
     static final String DFA13_acceptS =
-        "\1\uffff\1\1\1\uffff\1\3\1\4\1\5\14\uffff\1\24\1\25\1\uffff\1\27"+
-        "\1\30\1\31\1\32\1\33\1\34\1\35\1\36\1\37\5\uffff\1\52\1\54\1\55"+
-        "\1\56\1\57\1\60\1\62\1\65\1\66\1\67\1\uffff\1\71\1\74\1\2\1\6\1"+
-        "\46\1\64\15\uffff\1\26\1\43\1\63\1\42\1\47\1\40\1\72\1\73\1\41\1"+
-        "\45\1\44\1\50\1\53\1\51\1\61\1\uffff\1\7\14\uffff\1\70\1\10\11\uffff"+
-        "\1\22\10\uffff\1\20\1\21\1\23\1\11\7\uffff\1\13\1\uffff\1\15\1\uffff"+
-        "\1\17\1\uffff\1\14\1\16\1\12";
+        "\1\uffff\1\1\2\uffff\1\4\1\5\1\6\1\7\1\10\1\11\1\12\2\uffff\1\15"+
+        "\1\16\1\17\15\uffff\1\37\1\40\1\42\1\43\4\uffff\1\55\1\57\1\60\1"+
+        "\61\1\62\1\63\1\70\1\71\1\72\1\uffff\1\74\1\77\1\2\1\41\1\46\1\66"+
+        "\1\45\1\3\1\65\1\52\1\13\1\14\1\20\1\51\1\67\16\uffff\1\75\1\76"+
+        "\1\44\1\50\1\47\1\53\1\56\1\54\1\64\1\uffff\1\21\15\uffff\1\73\1"+
+        "\22\12\uffff\1\35\11\uffff\1\33\1\34\1\36\1\uffff\1\24\6\uffff\1"+
+        "\23\1\uffff\1\26\1\uffff\1\30\1\uffff\1\32\1\uffff\1\27\1\31\1\25";
     static final String DFA13_specialS =
-        "\55\uffff\1\0\130\uffff}>";
+        "\56\uffff\1\0\141\uffff}>";
     static final String[] DFA13_transitionS = {
-            "\2\57\2\uffff\1\57\22\uffff\1\57\1\36\1\55\1\34\1\27\1\43\1"+
-            "\41\1\56\1\30\1\31\1\35\1\22\1\4\1\23\1\1\1\37\12\54\1\32\1"+
-            "\44\1\24\1\6\1\40\1\45\1\33\32\52\1\25\1\46\1\26\1\47\1\2\1"+
-            "\50\1\7\2\53\1\10\1\53\1\11\1\12\1\53\1\13\1\53\1\14\4\53\1"+
-            "\15\1\53\1\16\1\53\1\17\1\53\1\20\1\21\3\53\1\3\1\42\1\5\1\51",
+            "\2\60\2\uffff\1\60\22\uffff\1\60\1\13\1\56\1\1\1\37\1\45\1"+
+            "\43\1\57\1\7\1\10\1\40\1\35\1\5\1\36\1\15\1\41\12\55\1\11\1"+
+            "\46\1\2\1\20\1\42\1\47\1\12\32\53\1\4\1\50\1\6\1\51\1\14\1\52"+
+            "\1\21\2\54\1\22\1\23\1\24\1\25\1\54\1\26\1\54\1\27\4\54\1\30"+
+            "\1\54\1\31\1\54\1\32\1\54\1\33\1\34\3\54\1\16\1\44\1\17\1\3",
             "",
-            "\12\52\7\uffff\32\52\4\uffff\1\52\1\uffff\32\52",
-            "",
-            "",
-            "",
-            "\1\62\1\61",
-            "\1\64",
-            "\1\65",
+            "\1\64\14\uffff\1\62\2\uffff\1\63\100\uffff\1\61",
             "\1\66",
-            "\1\67",
-            "\1\70\1\71",
-            "\1\72",
-            "\1\73",
-            "\1\74",
-            "\1\75\6\uffff\1\76",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\70",
+            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+            "",
+            "",
+            "",
+            "\1\74\1\73",
+            "\1\76",
             "\1\77",
             "\1\100",
-            "",
-            "",
-            "\1\103\14\uffff\1\101\2\uffff\1\102",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
+            "\1\101",
+            "\1\102",
+            "\1\103\1\104",
             "\1\105",
-            "\1\107\4\uffff\1\110",
+            "\1\106",
+            "\1\107",
+            "\1\110\6\uffff\1\111",
             "\1\112",
-            "\1\114",
-            "\1\116",
+            "\1\113",
             "",
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\42\56\1\120\uffdd\56",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-            "\1\122",
+            "\1\114\4\uffff\1\115",
+            "\1\117",
+            "\1\121",
             "\1\123",
-            "\1\124",
-            "\1\125",
-            "\1\126",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\42\57\1\125\uffdd\57",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
             "\1\127",
             "\1\130",
             "\1\131",
@@ -2287,72 +2382,77 @@ public class InternalKronusLexer extends Lexer {
             "\1\133",
             "\1\134",
             "\1\135",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
             "\1\136",
-            "",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+            "\1\137",
             "\1\140",
             "\1\141",
             "\1\142",
             "\1\143",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "\1\144",
-            "\1\145",
+            "",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
             "\1\146",
             "\1\147",
             "\1\150",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+            "\1\151",
             "\1\152",
-            "",
-            "",
             "\1\153",
             "\1\154",
             "\1\155",
             "\1\156",
             "\1\157",
-            "\1\160",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
             "\1\161",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
             "",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+            "",
+            "\1\162",
+            "\1\163",
+            "\1\164",
+            "\1\165",
             "\1\166",
             "\1\167",
             "\1\170",
             "\1\171",
-            "\1\172",
-            "\1\173",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
             "",
-            "",
-            "",
-            "",
-            "\1\174",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
-            "\1\176",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
+            "\1\175",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
+            "\1\177",
             "\1\u0080",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+            "\1\u0081",
             "\1\u0082",
+            "\1\u0083",
+            "\1\u0084",
             "",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
             "",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
             "",
-            "\12\53\7\uffff\32\53\4\uffff\1\53\1\uffff\32\53",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
+            "",
+            "\1\u0086",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
+            "\1\u0088",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
+            "\1\u008a",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
+            "",
+            "\1\u008c",
+            "",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
+            "",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
+            "",
+            "\12\54\7\uffff\32\54\4\uffff\1\54\1\uffff\32\54",
             "",
             "",
             ""
@@ -2388,19 +2488,19 @@ public class InternalKronusLexer extends Lexer {
             this.transition = DFA13_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | RULE_KRONUS_ASSIGN | RULE_CAPITALIZED_ID | RULE_OTHER_ID | RULE_INT | RULE_TRIPPLE_STRING | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS );";
+            return "1:1: Tokens : ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | RULE_KRONUS_ASSIGN | RULE_CAPITALIZED_ID | RULE_OTHER_ID | RULE_INT | RULE_TRIPPLE_STRING | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             IntStream input = _input;
         	int _s = s;
             switch ( s ) {
                     case 0 : 
-                        int LA13_45 = input.LA(1);
+                        int LA13_46 = input.LA(1);
 
                         s = -1;
-                        if ( (LA13_45=='\"') ) {s = 80;}
+                        if ( (LA13_46=='\"') ) {s = 85;}
 
-                        else if ( ((LA13_45>='\u0000' && LA13_45<='!')||(LA13_45>='#' && LA13_45<='\uFFFF')) ) {s = 46;}
+                        else if ( ((LA13_46>='\u0000' && LA13_46<='!')||(LA13_46>='#' && LA13_46<='\uFFFF')) ) {s = 47;}
 
                         if ( s>=0 ) return s;
                         break;

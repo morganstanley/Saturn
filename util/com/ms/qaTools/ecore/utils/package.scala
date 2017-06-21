@@ -1,14 +1,13 @@
 package com.ms.qaTools.ecore
 
 import org.eclipse.emf.common.util.URI
-
-
+import scala.language.implicitConversions
 
 package object utils {
-  @deprecated
+  @deprecated("Use ECoreStringUtils#toUri", "qaTools/util/2.1.5")
   implicit def stringToURI(fileUriStr: String): URI = URI.createFileURI(fileUriStr)
-  
-  implicit class ECoreStringUtils(string:String) {
+
+  implicit class ECoreStringUtils(string: String) {
     def toUri: URI = URI.createFileURI(string)
   }
 }

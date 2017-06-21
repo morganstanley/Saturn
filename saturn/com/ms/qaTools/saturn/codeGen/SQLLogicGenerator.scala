@@ -1,6 +1,7 @@
 package com.ms.qaTools.saturn.codeGen
 
 import scala.collection.JavaConversions.asScalaBuffer
+import scala.util.Success
 import scala.util.Try
 
 import com.ms.qaTools.MonadSeqUtil
@@ -45,43 +46,35 @@ object SQLLogicGenerator {
 
   def genSQLCallOperation(operation: SQLCallOperation, sql: MSQLStep, dbGen: TryGen)(implicit codeGenUtil: SaturnCodeGenUtil): Try[FutureGen] =
     for {
-      procCalls <- Try { operation.getProcedureCalls().filter(_.isEnabled) }.rethrow("An exception occurred while retrieving procedure calls.")
-      sqlExprsGen <- procCalls.map(c => ComplexValueStringGenerator(c.getSQL())).toTrySeq.map(SeqTryExpr(_)).rethrow("An exception occurred while generating code for procedure call expressions.")
+      procCalls <- Try{operation.getProcedureCalls.filter(_.isEnabled)}.rethrow("An exception occurred while retrieving procedure calls.")
+      sqlExprsGen <- procCalls.map(c => ComplexValueStringGenerator(c.getSQL)).toTrySeq.map(SeqTryExpr(_)).rethrow("An exception occurred while generating code for procedure call expressions.")
       outputIOs <- Try {
         procCalls.zipWithIndex.map {
-          case (c, i) =>
-            for (output <- Option(c.getOutput)) yield ResourceGenerator(output, name = Option("OutputIO" + i))(appendOptions = appendOptions(i))
+          case (c, i) => Option(c.getOutput).map(o => ResourceGenerator(o, name = Some("OutputIO" + i))(appendOptions = appendOptions(i)))
         }
       }.rethrow("An exception occurred while retrieving output resources.")
       parameters <- Try {
         procCalls.zipWithIndex.map {
-          case (c, i) =>
-            for (paramFile <- Option(c.getParameterFile)) yield ResourceGenerator(paramFile)(appendOptions = appendOptions(i))
+          case (c, i) => Option(c.getParameterFile).map(p => ResourceGenerator(p)(appendOptions = appendOptions(i)))
         }
       }.rethrow("An exception occurred while retrieving parameter resources.")
     } yield StepLogicGenerator.modifierGen(new ScalaGen {
       override def generate(): Try[String] = for {
-        dbStr <- dbGen.generate
+        dbStr       <- dbGen.generate
         sqlExprsStr <- sqlExprsGen.generate
-        outputsStr <- outputIOs.map { option =>
-          option.map(outputIO => outputIO.flatMap { gen =>
-            OptionExpr(gen.withMap(ScalaExpr("""_.device match {
-                                                  case f:BaseFileIO => f.fileName
-                                                  case _ => throw new Exception("")
-                                                }"""))).generate
-          }).getOrElse(Try { "None" })
-        }.toTrySeq
-        parametersStr <- parameters.map { option =>
-          option.map(outputIO => outputIO.flatMap(OptionExpr(_).generate)).getOrElse(Try { """None""" })
-        }.toTrySeq
-      } yield {
-        val fileNameStrs = outputsStr.mkString("Seq(", ",", ")")
-        s"""SQLCallRunner(context, 
-                          $dbStr,
-                          $sqlExprsStr,
-                          $fileNameStrs,
-                          ${parametersStr.mkString("Seq(", ",", ")")})"""
-      }
+        outputsStr  <- outputIOs.map{_.map(_.flatMap{_.withMap(ScalaExpr("""{
+            | case CsvIO(FileIO(f, _)) => (tag: String) =>
+            |   CsvIO(FileIO(FilenameUtils.getFullPath(f) + FilenameUtils.getBaseName(f) + "." + tag + "." + FilenameUtils.getExtension(f))).output
+            | case _ => sys.error("Only file based CSVs are supported for SQLCall output")
+            | }""".stripMargin)).generate
+        }).getOrElse(Success("Try{(_: String) => CsvIO(NullIO).output}"))}.toTrySeq
+        parametersStr <- parameters.map(_.map(_.flatMap(OptionExpr(_).generate)).getOrElse(Success("None"))).toTrySeq
+      } yield s"""SQLCallRunner(
+                    context,
+                    $dbStr,
+                    $sqlExprsStr,
+                    ${outputsStr.mkString("Seq(", ",", ")")},
+                    ${parametersStr.mkString("Seq(", ",", ")")})"""
     }, sql, "SQLCall")
 
   def genSQLClearOperation(operation: SQLClearOperation, sql: MSQLStep, dbGen: TryGen)(implicit codeGenUtil: SaturnCodeGenUtil): Try[FutureGen] =
@@ -92,7 +85,7 @@ object SQLLogicGenerator {
       override def generate(): Try[String] = for {
         dbStr <- dbGen.generate
         tablesStr <- tableStringsGen.generate
-      } yield s"""SQLClearRunner(context, 
+      } yield s"""SQLClearRunner(context,
                                  $dbStr,
                                  $tablesStr)"""
     }, sql, "SQLClear")
@@ -116,7 +109,7 @@ object SQLLogicGenerator {
           option.map(outputIO =>
             outputIO.flatMap(OptionExpr(_).generate)).getOrElse(Try { """None""" })
         }.toTrySeq
-      } yield s"""SQLExecuteRunner(context, 
+      } yield s"""SQLExecuteRunner(context,
                                    $dbStr,
                                    $sqlExprsStr,
                                    ${parametersStr.mkString("Seq(", ",", ")")})"""
@@ -154,7 +147,7 @@ object SQLLogicGenerator {
   def genSQLLoadOperation(operation: SQLLoadOperation, sql: MSQLStep, dbGen: TryGen)(implicit codeGenUtil: SaturnCodeGenUtil): Try[FutureGen] =
     for {
       tables <- Try { operation.getTables().filter(_.isEnabled()) }.rethrow("An exception occurred while retrieving table strings for SQL Load operating.")
-      
+
       tablesGen <- tables.zipWithIndex.map {
         case (t, index) => for {
           sql <- ComplexValueStringGenerator(t.getSQL())
@@ -167,7 +160,7 @@ object SQLLogicGenerator {
         dbStr <- dbGen.generate
         tablesStr <- tablesGen.generate
       } yield s"SQLLoadRunner(context, $dbStr, $tablesStr)"
-    }, sql, "SQLLoad")    
+    }, sql, "SQLLoad")
 }
 /*
 Copyright 2017 Morgan Stanley

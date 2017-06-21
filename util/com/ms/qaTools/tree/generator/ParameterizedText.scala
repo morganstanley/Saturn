@@ -1,37 +1,33 @@
 package com.ms.qaTools.tree.generator
 
-
-
 import scala.util.matching.Regex
 
 trait Part {
-  def value(data:Seq[String])(implicit colMap:Lookupable, context:ColContext):String
+  def value(data: Seq[String])(implicit colMap: Lookupable, context: ColContext): String
 }
 
-case class StringPart(val _value:String) extends Part {
-  override def value(data:Seq[String])(implicit colMap:Lookupable, context:ColContext):String = _value
+case class StringPart(val _value: String) extends Part {
+  def value(data: Seq[String])(implicit colMap: Lookupable, context: ColContext) = _value
 }
 
-case class ParmPart(colQuery:UnresolvedColQuery) extends Part {
-  override def value(data:Seq[String])(implicit colMap:Lookupable, context:ColContext):String = {
+case class ParmPart(colQuery: UnresolvedColQuery) extends Part {
+  def value(data: Seq[String])(implicit colMap: Lookupable, context: ColContext) =
     try {
-        val resolvedColQuery:ResolvedColQuery = context.resolveQuery(colQuery)
-        val colDef:ColDef = context.lookupColDef(resolvedColQuery)
-        data(colDef.index)
+      val resolvedColQuery:ResolvedColQuery = context.resolveQuery(colQuery)
+      val colDef:ColDef = context.lookupColDef(resolvedColQuery)
+      data(colDef.index)
+    } catch {
+      case e: Throwable => throw new Exception("An exception occurred looking up value for: " + colQuery.queryString, e)
     }
-    catch { 
-     case e => throw new Exception("An exception occurred looking up value for: " + colQuery.queryString, e)
-    }
-  }
 }
 
 trait ParameterizedText {
-  def value:String
-  def isLegacyMode:Boolean
-  val parts:List[Part] = {    
+  def value: String
+  def isLegacyMode: Boolean
+  val parts: List[Part] = {
     // When legacy mode is on, variables are defined as: %%d0.C0%% where d0 stands for the dataSet name and everything else is the column name
     // When legacy mode is off, variables are defined as ${C0} and no dataSet is required.
-    
+
     val hasParm:Regex = if(isLegacyMode) """^(?s)(.*?)%%(.+?)%%(.*)$""".r else """^(?s)(.*?)\$\{(.+?)\}(.*)$""".r
     def addSIfNotNull(s:String,l:List[Part]):List[Part] = if(s.isEmpty) { l } else { StringPart(s)::l }
 
@@ -45,15 +41,15 @@ trait ParameterizedText {
             val parm = m.subgroups(1)
             val post = m.subgroups(2)
             val colQuery = if(isLegacyMode) UnresolvedColQuery(parm).tail else UnresolvedColQuery(parm)
-            val parmPart = ParmPart(colQuery) 
-            _parts(post, parmPart::addSIfNotNull(pre,p))            
+            val parmPart = ParmPart(colQuery)
+            _parts(post, parmPart::addSIfNotNull(pre,p))
           }
           case None => StringPart(v)::p
         }
         /*v match {
           case hasParm(pre,parm,post) => {
             val colQuery = if(isLegacyMode) UnresolvedColQuery(parm).tail else UnresolvedColQuery(parm)
-            val parmPart = ParmPart(colQuery) 
+            val parmPart = ParmPart(colQuery)
             _parts(post, parmPart::addSIfNotNull(pre,p))}
           case _                      => StringPart(v)::p
         }*/
@@ -63,14 +59,11 @@ trait ParameterizedText {
   }
 
   def resolveValue(data:Seq[String])(implicit colMap:Lookupable, context:ColContext):String = parts.map{_.value(data)}.filterNot(_ == null).mkString
-  
-  def extractColQueries:Set[UnresolvedColQuery] = {
-    val colQueries = parts flatMap(_ match {
-      case ParmPart(colQuery) => List(colQuery) //if(colQuery.isIterQuery) colQuery.trimmedHierarchy else List(colQuery)
-      case _ => Nil
-    })
-    colQueries.toSet
-  }
+
+  def extractColQueries:Set[UnresolvedColQuery] = parts.flatMap{
+    case ParmPart(colQuery) => List(colQuery) //if(colQuery.isIterQuery) colQuery.trimmedHierarchy else List(colQuery)
+    case _ => Nil
+  }.toSet
 }
 /*
 Copyright 2017 Morgan Stanley

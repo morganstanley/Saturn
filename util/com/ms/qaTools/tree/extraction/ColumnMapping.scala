@@ -1,33 +1,58 @@
 package com.ms.qaTools.tree.extraction
 
-import com.ms.qaTools.tree.TreeNode
+import com.ms.qaTools.Tree
+import com.ms.qaTools.collections.zipWithCondition
 
-
-
-trait Step[T] {
-  def getText(): String
-  def hasPredicates: Boolean
-  def resolve(context: TreeNode[T]): Seq[TreeNode[T]]
+object Step {
+  class Root[T] extends Step[T] {
+    def getText = "/"
+    def hasPredicates = false
+    def resolve(context: T) = context :: Nil
+  }
 }
 
-trait ColumnMapping[T] {
-  val step: Step[T]
-  val mapping: Option[Index]
-  val children: Seq[ColumnMapping[T]]
-  def +(that: ColumnMapping[T]): ColumnMapping[T]
-  val sf = { (a: ColumnMapping[T], b: ColumnMapping[T]) => a.step.getText() < b.step.getText() }
-  val cf = { (a: ColumnMapping[T], b: ColumnMapping[T]) => a.step.getText().compareTo(b.step.getText()) }
-  val mf = { p: (Option[ColumnMapping[T]], Option[ColumnMapping[T]]) =>
-    p match {
+trait Step[T] extends Comparable[Step[T]] with Proxy {
+  def getText(): String
+  def hasPredicates: Boolean
+  def resolve(context: T): Seq[T]
+
+  def self = getText
+  def compareTo(that: Step[T]) = getText.compareTo(that.getText)
+  override def toString = "%s(%s)".format(getClass.getSimpleName, getText)
+}
+
+object ColumnMapping {
+  implicit def orderingByStep[T]: Ordering[ColumnMapping[T]] = Ordering.by(_.step)
+
+  implicit def isTree[T] = new Tree[ColumnMapping[T]] {
+    def children(parent: ColumnMapping[T]) = parent.children.iterator
+  }
+
+  def root[T](children: Seq[ColumnMapping[T]]): ColumnMapping[T] = apply(new Step.Root[T], None, children)
+
+  def branch[T](steps: Iterator[Step[T]], index: Index): ColumnMapping[T] = {
+    val children = steps.foldRight[List[ColumnMapping[T]]](Nil) { (step, children) =>
+      apply(step, if (children.isEmpty) Some(index) else None, children) :: Nil
+    }
+    root(children)
+  }
+}
+
+case class ColumnMapping[T](step: Step[T], mapping: Option[Index], children: Seq[ColumnMapping[T]]) {
+  def +(that: ColumnMapping[T]): ColumnMapping[T] = {
+    require(step == that.step)
+    val cs = zipWithCondition(children.sorted, that.children.sorted)(implicitly[Ordering[ColumnMapping[T]]].compare).map {
       case (Some(a), Some(b)) => a + b
       case (Some(a), None)    => a
       case (None, Some(b))    => b
-      case (None, None)       => throw new Error("You've reached unreachable code.")
+      case (None, None)       => throw new RuntimeException("unreachable code")
     }
+    ColumnMapping(step, mapping.orElse(that.mapping), cs)
   }
+
   override def toString = mapping match {
     case Some(m) => step + " -> " + m.index
-    case None => step + " -> None" 
+    case None    => step.toString
   }
 }
 /*

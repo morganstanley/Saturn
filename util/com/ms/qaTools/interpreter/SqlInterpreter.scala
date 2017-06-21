@@ -1,10 +1,9 @@
 package com.ms.qaTools.interpreter
 import com.ms.qaTools.io.rowSource.DatabaseConnection
-import com.ms.qaTools.toolkit.{Status, Passed, Failed}
-import scala.util.{Try, Success, Failure}
+import com.ms.qaTools.{toolkit => tk}
 
-//case class SqlInterpreterResult(override val status: Status, command: sql.Command, resultObj: Option[Any] = None, override val exception: Option[Throwable] = None)
-case class SqlInterpreterResult(override val status: Status, command: String, resultObj: Option[Any] = None, override val exception: Option[Throwable] = None)
+//case class SqlInterpreterResult(status: Status, command: sql.Command, resultObj: Option[Any], exception: Option[Throwable])
+case class SqlInterpreterResult(status: tk.Status, command: String, resultObj: Option[Any], exception: Option[Throwable])
 extends InterpreterResult
 /*
 object sql {
@@ -18,15 +17,16 @@ object sql {
 //case class SqlInterpreter(database: DatabaseConnection) extends Interpreter[sql.Command, SqlInterpreterResult] {
 case class SqlInterpreter(database: DatabaseConnection) extends Interpreter[String, SqlInterpreterResult] {
 //  import sql._
-//  def run(command: Command) = Try(command match {
-  def run(command: String) = Try(command match {
+//  def run(command: Command) = {
+  def run(command: String) = {
+    val r = util.Try(command match {
 //    case Clear(table)              => database.clear(table)
 //    case Execute(stmt, parameters) => database.execute(stmt, parameters)
 //    case Call(proc, parameters)    => database.call(proc, parameters)
-    case stmt                      => database.execute(stmt)
-  }) match {
-    case Success(r) => SqlInterpreterResult(Passed(), command, Option(r))
-    case Failure(t) => SqlInterpreterResult(Failed(), command, exception = Option(t))
+      case stmt                      => database.execute(stmt)
+    })
+
+    SqlInterpreterResult(if (r.isSuccess) tk.Passed else tk.Failed, command, r.toOption, r.failed.toOption)
   }
 }
 /*

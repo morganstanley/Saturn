@@ -1,60 +1,61 @@
 package com.ms.qaTools.compare.writer.tree
 import com.ms.qaTools.compare.AbstractDiff
-import com.ms.qaTools.compare.DiffCounter
-import com.ms.qaTools.compare.HasLeft
 import com.ms.qaTools.compare.HasResult
-import com.ms.qaTools.compare.HasRight
 import com.ms.qaTools.io.rowSource.IndexedRepresentation
 import com.ms.qaTools.tree.validator._
-import java.io.File
-import java.lang.Boolean
 
-class ConsoleDiffSetWriter[D](printDocs: Boolean = false, val serializer: D => String) extends TreeDiffSetWriter[D] {
+class ConsoleDiffSetWriter[D](printDocs: Boolean = false) extends TreeDiffSetWriter[D] {
   val separator = Array.fill(80)("-").mkString
 
   def close = ()
 
   def writeDiff(diff: AbstractDiff) = {
-    val documentBuilder = new StringBuilder
     println(separator)
-    val (expectedDesc, expectedDoc) = diff match {
-      case hl: HasLeft[IndexedRepresentation[D]] => {
-        val d = "Expected Doc: (keys: %s)".format(describe(hl.left))
-        if (printDocs) (d, s"[Expected:\n${serializer(hl.left.representation)}]")
-        else (d, "")
-      }
-      case _ => ("", "")
+    val (expectedDesc, expectedDoc) = leftIndexedRepresentation(diff).fold(("", "")) { l =>
+      (s"Expected Doc: (keys: ${describe(l)})", s"[Expected:\n${l.prettyPrint}]")
     }
-    val (actualDesc, actualDoc) = diff match {
-      case hr: HasRight[IndexedRepresentation[D]] => {
-        val d = "Actual Doc: (keys: %s)".format(describe(hr.right))
-        if (printDocs) (d, s"[Actual:\n${serializer(hr.right.representation)}]")
-        else (d, "")
-      }
-      case _ => ("", "")
+    val (actualDesc, actualDoc) = rightIndexedRepresentation(diff).fold(("", "")) { r =>
+      (s"Actual Doc: (keys: ${describe(r)})", s"[Actual:\n${r.prettyPrint}]")
     }
-    val status = getStatus(diff)
-    Console.println("[%s, %s]: %s".format(expectedDesc, actualDesc, status))
+    Console.println(s"[$expectedDesc, $actualDesc]: ${getStatus(diff)}")
     diff match {
-      case h: HasResult[_] => printResult(h.result)
+      case h: HasResult[_] => printResult(h.result.asInstanceOf[TreeResult[D]])
       case _               =>
     }
     if (printDocs) println(s"Representations: ${expectedDoc}\n${actualDoc}")
     println(separator)
   }
 
-  def writeSummary(counter: DiffCounter) = ()
+  def writeSummary(counter: TreeNodeCounter) = {
+    println(separator)
+    println("Datasets Summary:")
+    println(s"Left: ${counter.left}")
+    println(s"Right: ${counter.right}")
+    println("Comparison Summary:")
+    println(s"Different: ${counter.different}")
+    println(s"In Left Only: ${counter.inLeftOnly}")
+    println(s"In Right Only: ${counter.inRightOnly}")
+    println(s"Validated Fail: ${counter.validatedFail}")
+    println(s"Validated Pass: ${counter.validatedPass}")
+    println(s"Explained: ${counter.explained}")
+    println(s"Identical: ${counter.identical}")
+  }
+
   def writeNotes(notes: Seq[String] = Nil) = ()
 
   protected def describe(rep: IndexedRepresentation[D]): String =
     rep.colDefs.zip(rep.indexed).map { p => p._1.name + ": " + p._2 }.mkString("[", ", ", "]")
 
-  protected def printResult(result: TreeResult[_]) = {
+  protected def printResult(result: TreeResult[D]) = {
     val stats = result.statistics
-    val expectedDiffs = stats.expectedDiffs
-    val actualDiffs = stats.actualDiffs
-    val (d, il, ir, vp, vf) = buildLists((expectedDiffs ++ actualDiffs).toSeq.distinct)
-    (d.sortWith(sort) ++ il.sortWith(sort) ++ ir.sortWith(sort) ++ vp.sortWith(sort) ++ vf.sortWith(sort)).foreach(d => println("|->" + d.mkString))
+    for {
+      ds <- Array(stats.different.toSeq.sorted,
+                  stats.inLeftOnly.toSeq.sorted,
+                  stats.inRightOnly.toSeq.sorted,
+                  stats.validationPassed.toSeq.sorted,
+                  stats.validationFailed.toSeq.sorted)
+      d <- ds
+    } println("|->" + d.mkString)
   }
 }
 /*

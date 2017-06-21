@@ -1,12 +1,10 @@
 package com.ms.qaTools.io
 import com.mongodb.DBObject
 import com.mongodb.util.JSON.{parse => mongoJSONParse}
-import com.ms.qaTools.io.rowSource.AdapterColumnDefinitions
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.io.rowSource.ExternalSort
 import com.ms.qaTools.io.rowSource.jdbc.ResultSetRowSource
 import com.ms.qaTools.io.rowSource.Utils._
-import com.ms.qaTools.xml._
 import java.io.ByteArrayInputStream
 import java.io.Closeable
 import java.io.StringReader
@@ -28,6 +26,7 @@ import org.xml.sax.EntityResolver
 import org.xml.sax.InputSource
 import scala.Array.canBuildFrom
 import scala.xml.Node
+import scala.language.implicitConversions
 
 package object rowSource {
   def ltToOrdering[T](lt: (T, T) => Boolean): Ordering[T] = new Ordering[T] {
@@ -68,8 +67,8 @@ package object rowSource {
     }
   }
 
-  implicit def excelCellIteratorToDelimitedRowIterator(i: Iterator[Seq[Cell]] with AdapterColumnDefinitions): Iterator[DelimitedRow] with ColumnDefinitions =
-    new Iterator[DelimitedRow] with ColumnDefinitions {
+  implicit def excelCellIteratorToDelimitedRowIterator(i: Iterator[Seq[Cell]] with AdapterColumnDefinitions): Iterator[Seq[String]] with ColumnDefinitions =
+    new Iterator[Seq[String]] with ColumnDefinitions {
       def colDefs = i.colDefs
       def next = tableRowFromCellArray(i.next)
       def hasNext = i.hasNext

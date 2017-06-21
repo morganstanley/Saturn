@@ -101,7 +101,7 @@ case class ScalaExpr(expr:String) extends ScalaGen {
 
 class SeqExpr[ItemType <: ScalaGen](exprs:Seq[ItemType], `type`: Option[String] = None) extends SeqGen {
   def asType = `type` map {t => s"[$t]"} getOrElse("")
-  def generate():Try[String] = exprs.map{_.generate()}.toTrySeq.map{exprStrs => s"Seq${asType}(${exprStrs.mkString(", ")})"}  
+  def generate():Try[String] = exprs.map{_.generate()}.toTrySeq.map{exprStrs => s"Seq${asType}(${exprStrs.mkString(", ")})"}
 }
 
 case class SeqTryExpr(exprs:Seq[TryGen], `type`: Option[String] = None) extends SeqExpr[TryGen](exprs, `type`) {
@@ -118,7 +118,7 @@ case class SeqTryFnExpr(expr:TryGen) extends SeqExpr[TryGen](Seq(expr)) {
 }
 
 object SeqTryFnExpr {
-  def apply(exprStr:String):SeqTryFnExpr = SeqTryFnExpr(TryFnExpr(exprStr)) 
+  def apply(exprStr:String):SeqTryFnExpr = SeqTryFnExpr(TryFnExpr(exprStr))
 }
 
 case class FoldExpr(seq: Seq[TryGen], z: ScalaGen, f: ScalaGen) extends TryGen {
@@ -139,7 +139,7 @@ case class OptionExpr(expr:ScalaGen) extends OptionGen {
 
 case class TryExpr(expr:ScalaGen, guaranteedSuccess: Boolean = false) extends TryGen {
   def f = if (guaranteedSuccess) "Success" else "Try"
-  def generate():Try[String] = expr.generate().map{e => s"$f{$e}"}
+  def generate():Try[String] = expr.generate().map{e => s"$f{$e${System.getProperty("line.separator")}}"}
 }
 
 case class Tuple2Expr(_1: ScalaGen, _2: ScalaGen) extends ScalaGen {
@@ -152,7 +152,8 @@ case class Tuple2Expr(_1: ScalaGen, _2: ScalaGen) extends ScalaGen {
 }
 
 object TryExpr {
-  def apply(exprStr:String):TryExpr = TryExpr(ScalaExpr(exprStr))
+  def apply(exprStr:String, guaranteedSuccess: Boolean):TryExpr = TryExpr(ScalaExpr(exprStr), guaranteedSuccess)
+  def apply(exprStr:String): TryExpr = apply(exprStr, false)
 }
 
 case class TryFnExpr(expr:ScalaGen) extends TryGen {
@@ -163,8 +164,10 @@ object TryFnExpr {
   def apply(exprStr:String):TryFnExpr = TryFnExpr(ScalaExpr(exprStr))
 }
 
-case class FutureExpr(expr:ScalaGen) extends FutureGen {
-  def generate():Try[String] = expr.generate().map{e => s"Future{$e}" }
+case class FutureExpr(expr:ScalaGen, guaranteedSuccess: Boolean = false) extends FutureGen {
+  def generate():Try[String] = expr.generate().map {
+    "Future%s { %s }".format(if (guaranteedSuccess) ".successful" else "", _)
+  }
 }
 
 object FutureExpr {
@@ -214,14 +217,14 @@ abstract class ForExpr(assignments:Seq[ForArgument], bodyExpr:ScalaGen) extends 
 }
 
 case class ForOptionExpr(assignments:Seq[ForArgument], bodyExpr:ScalaGen) extends ForExpr(assignments, bodyExpr) with OptionGen {
-  override def generateEmpty:Try[String] = bodyExpr.generate().map(bodyStr => s"Option($bodyStr)")  
+  override def generateEmpty:Try[String] = bodyExpr.generate().map(bodyStr => s"Option($bodyStr)")
 }
 
 case class ForTryExpr(assignments:Seq[ForArgument], bodyExpr:ScalaGen) extends ForExpr(assignments, bodyExpr) with TryGen {
-  override def generateEmpty:Try[String] = bodyExpr.generate().map(bodyStr => s"Try($bodyStr)")  
+  override def generateEmpty:Try[String] = bodyExpr.generate().map(bodyStr => s"Try($bodyStr)")
 
   @tailrec private def findDep(x: ScalaGen): ScalaGen = x match {
-    case FunctionCallGen("rethrow", dep, _) => findDep(dep)
+    case x: FunctionCallGen if x.fn == "rethrow" && x.args.size == 2 => findDep(x.args(0))
     case AttributeTry(dep, _)               => findDep(dep)
     case ConnectTry(dep, _, _)              => findDep(dep)
     case TryFnExpr(dep)                     => findDep(dep)
@@ -229,38 +232,38 @@ case class ForTryExpr(assignments:Seq[ForArgument], bodyExpr:ScalaGen) extends F
   }
 
   protected def wrap(buf: ListBuffer[String], name: String, rhs: ScalaGen, callGet: Boolean): ListBuffer[String] = {
-    val x0 = rhs.generate().get
-    val x = if (callGet) s"{$x0}.get" else x0
+    val x0 = rhs.generate(). get
+    val x = if (callGet) s"{$x0}. get" else x0
     val dep = findDep(rhs) match {
       case dep if dep == rhs => x0
-      case dep               => dep.generate().get
+      case dep               => dep.generate(). get
     }
     if (dep.contains(name)) {
-      // Generate temporary name to work around the limit that Scala cannot shadow a val using a val in the outer scope
-      // with same name
-      val tmp = f"__${name}_$name%h"
+      // Generate temporary name to work around the limit that Scala cannot shadow a val using a val in the outer scope with same name
+      val tmp = s"__outer_$name"
       s"val $tmp = $x; {" +=: s"val $name = $tmp;" +=: buf += "}"
     } else
       s"val $name = $x;" +=: buf
   }
 
-  override def generate() = for (body <- bodyExpr.generate()) yield {
+  override def generate() = for (body <- bodyExpr.generate) yield {
     val buf = (assignments :\ ListBuffer(body)) {
       case (ForAssignment(name, rhs), buf) =>
         wrap(buf, name, rhs, true)
       case (ForAssignmentEq(name, rhs), buf) =>
         wrap(buf, name, rhs, false)
       case (ForCondition(pred), buf) =>
-        val p = pred.generate().get
+        val p = pred.generate(). get
         s"""if (!($p)) throw new NoSuchElementException("Predicate does not hold");""" +=: buf
     }
-    ("Try {" +=: buf += "}").mkString(Properties.lineSeparator)
+    buf.mkString("Try {", Properties.lineSeparator, "}")
   }
 }
 
 case class ForFutureExpr(assignments:Seq[ForArgument], bodyExpr:ScalaGen) extends ForExpr(assignments, bodyExpr) with FutureGen {
-  override def generateEmpty:Try[String] = bodyExpr.generate().map(bodyStr => s"Future($bodyStr)")  
-}/*
+  override def generateEmpty:Try[String] = bodyExpr.generate().map(bodyStr => s"Future($bodyStr)")
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

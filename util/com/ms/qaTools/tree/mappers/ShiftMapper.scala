@@ -2,14 +2,9 @@ package com.ms.qaTools.tree.mappers
 
 import com.ms.qaTools.tree.XmlNode
 import javax.xml.namespace.NamespaceContext
-import com.ms.qaTools.conversions.XmlToTreeNodeConversions._
-import com.ms.qaTools.io.rowWriter.file.XmlRowWriter
+import com.ms.qaTools.io.rowWriter.XmlRowWriter
 import com.ms.qaTools.io.rowSource.Utils._
-import com.ms.qaTools.io._
-import com.ms.qaTools.conversions.JavaIOConversions._
 import java.io.FileWriter
-
-
 
 /*
  * By default will put to file the shifted docs and the remainder is available
@@ -22,9 +17,8 @@ case class XmlNodeShiftMapper(
   keepRemainder: Boolean = false,
   shiftedToFile: Boolean = false,
   remainderToFile: Boolean = false)
-  extends XmlNodeManyToManyMapper {
-
-  override def apply(optionNodes: Seq[Option[XmlNode]]): Seq[Option[XmlNode]] = {
+extends XmlNodeManyToManyMapper {
+  def apply(optionNodes: Seq[Option[XmlNode]]) = {
     val (shifted, remainder) = optionNodes.filter(_ != None).splitAt(shift)
     if (fileName != null) {
       val xmlRowWriter = new XmlRowWriter(new FileWriter(fileName))

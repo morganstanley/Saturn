@@ -1,8 +1,6 @@
 package com.ms.qaTools
 
-import scala.annotation.tailrec
-
-
+import scala.collection.AbstractIterator
 
 package object collections {
   /*
@@ -10,24 +8,27 @@ package object collections {
    * if condition returns 0, pair current L1 element with L2 element.
    * if condition returns > 0, pair None with current L2 element.
    */
-  def zipWithCondition[J, K](l1: Iterable[J], l2: Iterable[K])(c: (J, K) => Int): Seq[(Option[J], Option[K])] = {
-    @tailrec
-    def zipWithCondition0(_l1: Iterable[J], _l2: Iterable[K], _accu: Seq[(Option[J], Option[K])]): Seq[(Option[J], Option[K])] = {
-      (_l1.toList, _l2.toList) match {
-        case (Nil, Nil) => _accu
-        case (Nil, x :: xs) => _accu ++ _l2.map { k => (None, Option(k)) }
-        case (x :: xs, Nil) => _accu ++ _l1.map { j => (Option(j), None) }
-        case (y :: ys, x :: xs) => {
-          c(y, x) match {
-            case z if (z < 0) => zipWithCondition0(ys, _l2, _accu ++ List((Option(y), None)))
-            case 0 => zipWithCondition0(ys, xs, _accu ++ List((Option(y), Option(x))))
-            case z if (z > 0) => zipWithCondition0(_l1, xs, _accu ++ List((None, Option(x))))
-          }
+  def zipWithCondition[J, K](l1: Iterable[J], l2: Iterable[K])(c: (J, K) => Int): Seq[(Option[J], Option[K])] =
+    zipWithCondition(l1.iterator.buffered, l2.iterator.buffered)(c).toSeq
+
+  def zipWithCondition[A, B](xs: BufferedIterator[A],
+                             ys: BufferedIterator[B])(cmp: (A, B) => Int): Iterator[(Option[A], Option[B])] =
+    new AbstractIterator[(Option[A], Option[B])] {
+      def hasNext = xs.hasNext || ys.hasNext
+
+      def next() = if (xs.hasNext) {
+        if (ys.hasNext) cmp(xs.head, ys.head) match {
+          case c if c < 0 => (Option(xs.next()), None)
+          case c if c > 0 => (None, Option(ys.next()))
+          case _          => (Option(xs.next()), Option(ys.next()))
+        } else {
+          (Option(xs.next()), None)
         }
+      } else {
+        if (ys.hasNext) (None, Option(ys.next()))
+        else Iterator.empty.next()
       }
     }
-    zipWithCondition0(l1, l2, Nil)
-  }
 
   def zipAsOption[J, K](l1: Iterable[J], l2: Iterable[K]): Seq[(Option[J], Option[K])] = zipWithCondition(l1, l2) { (j, k) => 0 }
 

@@ -8,7 +8,7 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 import scala.util.Try
 
-class ResultSetRowSource (resultSets: BufferedIterator[ResultSet], connectionToClose: Option[Connection])
+class ResultSetRowSource (resultSets: BufferedIterator[ResultSet], connectionToClose: Option[Connection], onRepeat: Boolean = false)
 extends Iterator[ResultSet] with Named with ColumnDefinitions with Closeable {
   val metaData  = resultSets.head.getMetaData
 
@@ -23,15 +23,14 @@ extends Iterator[ResultSet] with Named with ColumnDefinitions with Closeable {
   }
 
   private val i: Iterator[ResultSet] =
-    resultSets.map(rs => Iterator.continually(rs).takeWhile(_.next)).takeWhile(_.nonEmpty).flatten
+    if (onRepeat)
+      resultSets.map {rs => Iterator.continually(rs).takeWhile { _.next }}.takeWhile {_.nonEmpty}.flatten
+    else
+      resultSets.flatMap {rs => Iterator.continually(rs).takeWhile { _.next }}
 
   def hasNext = i.hasNext
-
   def next = i.next
-  
-  def close = {
-    connectionToClose.foreach(_.close)
-  }
+  def close = connectionToClose.foreach(_.close)
 }
 
 object ResultSetRowSource {
@@ -39,7 +38,7 @@ object ResultSetRowSource {
     new ResultSetRowSource(Iterator(resultSet).buffered, connectionToClose)
 
   def continually(statement: PreparedStatement, connectionToClose: Option[Connection]) =
-    new ResultSetRowSource(Iterator.continually(statement.executeQuery).buffered, connectionToClose)
+    new ResultSetRowSource(Iterator.continually(statement.exclusivelyExecuteQuery()).buffered, connectionToClose, true)
 }
 /*
 Copyright 2017 Morgan Stanley

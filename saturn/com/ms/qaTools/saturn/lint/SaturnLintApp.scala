@@ -18,9 +18,9 @@ object SaturnLintApp extends App {
   } yield saturnLintResult
 
   saturnLintResultTry match {
-    case Success(saturnLintResult) => for(r <- saturnLintResult.validationResults) {
-                                        println(validationResultToString(r))
-                                      }
+    case Success(saturnLintResult) =>
+      for(r <- saturnLintResult.validationResults)
+        println(validationResultToString(r))
     case Failure(e)                => println(e)
   }
 

@@ -2,6 +2,8 @@
  */
 package com.ms.qaTools.saturn.kronus;
 
+import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -13,6 +15,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  *   <li>{@link com.ms.qaTools.saturn.kronus.TopLevelKronus#getPackage <em>Package</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.kronus.TopLevelKronus#getExports <em>Exports</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.TopLevelKronus#getKronus <em>Kronus</em>}</li>
  * </ul>
  * </p>
@@ -48,6 +51,22 @@ public interface TopLevelKronus extends EObject
    * @generated
    */
   void setPackage(PackageDef value);
+
+  /**
+   * Returns the value of the '<em><b>Exports</b></em>' containment reference list.
+   * The list contents are of type {@link com.ms.qaTools.saturn.kronus.ExportDef}.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Exports</em>' containment reference list isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Exports</em>' containment reference list.
+   * @see com.ms.qaTools.saturn.kronus.KronusPackage#getTopLevelKronus_Exports()
+   * @model containment="true"
+   * @generated
+   */
+  EList<ExportDef> getExports();
 
   /**
    * Returns the value of the '<em><b>Kronus</b></em>' containment reference.

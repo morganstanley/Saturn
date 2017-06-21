@@ -1,16 +1,8 @@
 package com.ms.qaTools.protobuf.mappers
 
-import com.google.protobuf.Message
-
-import ognl.Ognl
-
-
-
 case class PBFilterMapper(expression: String, exclude: Boolean = false) extends PBMessageFilterMapper {
-  override def apply(inMessage: Message): Boolean = {
-    val ognlValue = Ognl.getValue(expression, inMessage).asInstanceOf[Boolean]
-    if (exclude) !ognlValue else ognlValue
-  }
+  def apply(m: com.google.protobuf.Message) =
+    ognl.Ognl.getValue(expression, m).asInstanceOf[Boolean] != exclude
 }
 /*
 Copyright 2017 Morgan Stanley

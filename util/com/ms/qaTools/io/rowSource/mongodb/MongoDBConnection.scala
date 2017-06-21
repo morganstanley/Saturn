@@ -43,7 +43,7 @@ object MongoDBConnection {
 class MongoDBConnection(val client: MMongoClient, val dbName: String) extends Closeable {
   val db = client.getDB(dbName)
   def getCollection(collection: String) = db.getCollection(collection)
-  def dropDatabase = client.dropDatabase(dbName)
+  def dropDatabase() = client.dropDatabase(dbName)
   def close = client.close
 }
 /*

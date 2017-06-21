@@ -34,6 +34,15 @@ public interface TypesFactory extends EFactory
   AbstractRepetitionHandler createAbstractRepetitionHandler();
 
   /**
+   * Returns a new object of class '<em>Alm Id</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Alm Id</em>'.
+   * @generated
+   */
+  AlmId createAlmId();
+
+  /**
    * Returns a new object of class '<em>Column</em>'.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @return a new object of class '<em>Column</em>'.

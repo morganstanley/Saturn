@@ -3,13 +3,21 @@
 package com.ms.qaTools.saturn.kronus.impl;
 
 import com.ms.qaTools.saturn.kronus.AbstractDef;
+import com.ms.qaTools.saturn.kronus.AnnotatedDef;
 import com.ms.qaTools.saturn.kronus.AnnotationCall;
 import com.ms.qaTools.saturn.kronus.AnnotationDef;
+import com.ms.qaTools.saturn.kronus.Assignment;
 import com.ms.qaTools.saturn.kronus.BinaryOperation;
 import com.ms.qaTools.saturn.kronus.BooleanLiteral;
 import com.ms.qaTools.saturn.kronus.CodeAssignment;
 import com.ms.qaTools.saturn.kronus.CodeBlock;
 import com.ms.qaTools.saturn.kronus.DoubleLiteral;
+import com.ms.qaTools.saturn.kronus.ExportAll;
+import com.ms.qaTools.saturn.kronus.ExportClause;
+import com.ms.qaTools.saturn.kronus.ExportDef;
+import com.ms.qaTools.saturn.kronus.ExportHashtag;
+import com.ms.qaTools.saturn.kronus.ExportRuntimeName;
+import com.ms.qaTools.saturn.kronus.ExportSymbol;
 import com.ms.qaTools.saturn.kronus.Expression;
 import com.ms.qaTools.saturn.kronus.FunctionCall;
 import com.ms.qaTools.saturn.kronus.FunctionDef;
@@ -17,13 +25,14 @@ import com.ms.qaTools.saturn.kronus.HashtagCall;
 import com.ms.qaTools.saturn.kronus.HashtagDef;
 import com.ms.qaTools.saturn.kronus.ImportDef;
 import com.ms.qaTools.saturn.kronus.IncludeDef;
-import com.ms.qaTools.saturn.kronus.IncludeRef;
 import com.ms.qaTools.saturn.kronus.IntegerLiteral;
 import com.ms.qaTools.saturn.kronus.KeywordParameterValue;
 import com.ms.qaTools.saturn.kronus.Kronus;
 import com.ms.qaTools.saturn.kronus.KronusCodeBlock;
 import com.ms.qaTools.saturn.kronus.KronusFactory;
 import com.ms.qaTools.saturn.kronus.KronusPackage;
+import com.ms.qaTools.saturn.kronus.NamedAbstractDef;
+import com.ms.qaTools.saturn.kronus.NamedRuntimeDef;
 import com.ms.qaTools.saturn.kronus.PackageDef;
 import com.ms.qaTools.saturn.kronus.ParameterDef;
 import com.ms.qaTools.saturn.kronus.ParameterValue;
@@ -79,6 +88,20 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  private EClass assignmentEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass annotatedDefEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   private EClass abstractDefEClass = null;
 
   /**
@@ -87,6 +110,48 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * @generated
    */
   private EClass referenceableDefsEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass namedAbstractDefEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass namedRuntimeDefEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass typeInstanceEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass functionDefEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass annotationDefEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass hashtagDefEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -115,6 +180,48 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * @generated
    */
   private EClass includeDefEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass exportDefEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass exportClauseEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass exportSymbolEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass exportAllEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass exportHashtagEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass exportRuntimeNameEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -150,34 +257,6 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * @generated
    */
   private EClass typeIdEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass typeInstanceEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass functionDefEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass annotationDefEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass hashtagDefEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -290,13 +369,6 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * @generated
    */
   private EClass functionCallEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass includeRefEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -428,9 +500,19 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getTopLevelKronus_Kronus()
+  public EReference getTopLevelKronus_Exports()
   {
     return (EReference)topLevelKronusEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getTopLevelKronus_Kronus()
+  {
+    return (EReference)topLevelKronusEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -448,7 +530,7 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getKronus_Imports()
+  public EReference getKronus_Defs()
   {
     return (EReference)kronusEClass.getEStructuralFeatures().get(0);
   }
@@ -458,7 +540,7 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getKronus_Includes()
+  public EReference getKronus_Return()
   {
     return (EReference)kronusEClass.getEStructuralFeatures().get(1);
   }
@@ -468,9 +550,9 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getKronus_Defs()
+  public EClass getAssignment()
   {
-    return (EReference)kronusEClass.getEStructuralFeatures().get(2);
+    return assignmentEClass;
   }
 
   /**
@@ -478,9 +560,79 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getKronus_Return()
+  public EReference getAssignment_Lhs()
   {
-    return (EReference)kronusEClass.getEStructuralFeatures().get(3);
+    return (EReference)assignmentEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getAssignment_LhsParameter()
+  {
+    return (EAttribute)assignmentEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAssignment_Rhs()
+  {
+    return (EReference)assignmentEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getAssignment_RhsParameter()
+  {
+    return (EAttribute)assignmentEClass.getEStructuralFeatures().get(3);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getAnnotatedDef()
+  {
+    return annotatedDefEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAnnotatedDef_Hashtags()
+  {
+    return (EReference)annotatedDefEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAnnotatedDef_Annotations()
+  {
+    return (EReference)annotatedDefEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAnnotatedDef_Def()
+  {
+    return (EReference)annotatedDefEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -498,9 +650,9 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getAbstractDef_Name()
+  public EClass getReferenceableDefs()
   {
-    return (EAttribute)abstractDefEClass.getEStructuralFeatures().get(0);
+    return referenceableDefsEClass;
   }
 
   /**
@@ -508,9 +660,149 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EClass getReferenceableDefs()
+  public EClass getNamedAbstractDef()
   {
-    return referenceableDefsEClass;
+    return namedAbstractDefEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getNamedAbstractDef_Name()
+  {
+    return (EAttribute)namedAbstractDefEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getNamedRuntimeDef()
+  {
+    return namedRuntimeDefEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getTypeInstance()
+  {
+    return typeInstanceEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getTypeInstance_Name()
+  {
+    return (EReference)typeInstanceEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getTypeInstance_TypeParameters()
+  {
+    return (EReference)typeInstanceEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getFunctionDef()
+  {
+    return functionDefEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getFunctionDef_TypeParameters()
+  {
+    return (EReference)functionDefEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getFunctionDef_ParameterDefs()
+  {
+    return (EReference)functionDefEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getFunctionDef_ReturnType()
+  {
+    return (EReference)functionDefEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getFunctionDef_Value()
+  {
+    return (EReference)functionDefEClass.getEStructuralFeatures().get(3);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getAnnotationDef()
+  {
+    return annotationDefEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAnnotationDef_ParameterDefs()
+  {
+    return (EReference)annotationDefEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getHashtagDef()
+  {
+    return hashtagDefEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getHashtagDef_ParameterDefs()
+  {
+    return (EReference)hashtagDefEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -528,29 +820,9 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getValDef_Hashtags()
-  {
-    return (EReference)valDefEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getValDef_Annotations()
-  {
-    return (EReference)valDefEClass.getEStructuralFeatures().get(1);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
   public EReference getValDef_Value()
   {
-    return (EReference)valDefEClass.getEStructuralFeatures().get(2);
+    return (EReference)valDefEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -608,9 +880,9 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getIncludeDef_Module()
+  public EReference getIncludeDef_Module()
   {
-    return (EAttribute)includeDefEClass.getEStructuralFeatures().get(0);
+    return (EReference)includeDefEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -621,6 +893,126 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
   public EAttribute getIncludeDef_Name()
   {
     return (EAttribute)includeDefEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getIncludeDef_Reexport()
+  {
+    return (EAttribute)includeDefEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getExportDef()
+  {
+    return exportDefEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getExportDef_Symbols()
+  {
+    return (EReference)exportDefEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getExportClause()
+  {
+    return exportClauseEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getExportClause_Unexport()
+  {
+    return (EAttribute)exportClauseEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getExportClause_Symbol()
+  {
+    return (EReference)exportClauseEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getExportSymbol()
+  {
+    return exportSymbolEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getExportAll()
+  {
+    return exportAllEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getExportHashtag()
+  {
+    return exportHashtagEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getExportHashtag_Ref()
+  {
+    return (EReference)exportHashtagEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getExportRuntimeName()
+  {
+    return exportRuntimeNameEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getExportRuntimeName_Ref()
+  {
+    return (EReference)exportRuntimeNameEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -761,136 +1153,6 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
   public EClass getTypeId()
   {
     return typeIdEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EClass getTypeInstance()
-  {
-    return typeInstanceEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getTypeInstance_Name()
-  {
-    return (EReference)typeInstanceEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getTypeInstance_TypeParameters()
-  {
-    return (EReference)typeInstanceEClass.getEStructuralFeatures().get(1);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EClass getFunctionDef()
-  {
-    return functionDefEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getFunctionDef_Hashtags()
-  {
-    return (EReference)functionDefEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getFunctionDef_TypeParameters()
-  {
-    return (EReference)functionDefEClass.getEStructuralFeatures().get(1);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getFunctionDef_ParameterDefs()
-  {
-    return (EReference)functionDefEClass.getEStructuralFeatures().get(2);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getFunctionDef_ReturnType()
-  {
-    return (EReference)functionDefEClass.getEStructuralFeatures().get(3);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getFunctionDef_Value()
-  {
-    return (EReference)functionDefEClass.getEStructuralFeatures().get(4);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EClass getAnnotationDef()
-  {
-    return annotationDefEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getAnnotationDef_ParameterDefs()
-  {
-    return (EReference)annotationDefEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EClass getHashtagDef()
-  {
-    return hashtagDefEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getHashtagDef_ParameterDefs()
-  {
-    return (EReference)hashtagDefEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -1068,9 +1330,29 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  public EReference getParameterDef_Hashtags()
+  {
+    return (EReference)parameterDefEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getParameterDef_Annotations()
+  {
+    return (EReference)parameterDefEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EAttribute getParameterDef_Name()
   {
-    return (EAttribute)parameterDefEClass.getEStructuralFeatures().get(0);
+    return (EAttribute)parameterDefEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -1080,7 +1362,7 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    */
   public EAttribute getParameterDef_ByName()
   {
-    return (EAttribute)parameterDefEClass.getEStructuralFeatures().get(1);
+    return (EAttribute)parameterDefEClass.getEStructuralFeatures().get(3);
   }
 
   /**
@@ -1090,7 +1372,7 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    */
   public EReference getParameterDef_Type()
   {
-    return (EReference)parameterDefEClass.getEStructuralFeatures().get(2);
+    return (EReference)parameterDefEClass.getEStructuralFeatures().get(4);
   }
 
   /**
@@ -1100,7 +1382,7 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    */
   public EAttribute getParameterDef_List()
   {
-    return (EAttribute)parameterDefEClass.getEStructuralFeatures().get(3);
+    return (EAttribute)parameterDefEClass.getEStructuralFeatures().get(5);
   }
 
   /**
@@ -1110,7 +1392,7 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
    */
   public EReference getParameterDef_DefaultValue()
   {
-    return (EReference)parameterDefEClass.getEStructuralFeatures().get(4);
+    return (EReference)parameterDefEClass.getEStructuralFeatures().get(6);
   }
 
   /**
@@ -1251,36 +1533,6 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
   public EReference getFunctionCall_ParameterValues()
   {
     return (EReference)functionCallEClass.getEStructuralFeatures().get(1);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EClass getIncludeRef()
-  {
-    return includeRefEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getIncludeRef_Include()
-  {
-    return (EReference)includeRefEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getIncludeRef_Ref()
-  {
-    return (EReference)includeRefEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -1465,22 +1717,50 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     // Create classes and their features
     topLevelKronusEClass = createEClass(TOP_LEVEL_KRONUS);
     createEReference(topLevelKronusEClass, TOP_LEVEL_KRONUS__PACKAGE);
+    createEReference(topLevelKronusEClass, TOP_LEVEL_KRONUS__EXPORTS);
     createEReference(topLevelKronusEClass, TOP_LEVEL_KRONUS__KRONUS);
 
     kronusEClass = createEClass(KRONUS);
-    createEReference(kronusEClass, KRONUS__IMPORTS);
-    createEReference(kronusEClass, KRONUS__INCLUDES);
     createEReference(kronusEClass, KRONUS__DEFS);
     createEReference(kronusEClass, KRONUS__RETURN);
 
+    assignmentEClass = createEClass(ASSIGNMENT);
+    createEReference(assignmentEClass, ASSIGNMENT__LHS);
+    createEAttribute(assignmentEClass, ASSIGNMENT__LHS_PARAMETER);
+    createEReference(assignmentEClass, ASSIGNMENT__RHS);
+    createEAttribute(assignmentEClass, ASSIGNMENT__RHS_PARAMETER);
+
+    annotatedDefEClass = createEClass(ANNOTATED_DEF);
+    createEReference(annotatedDefEClass, ANNOTATED_DEF__HASHTAGS);
+    createEReference(annotatedDefEClass, ANNOTATED_DEF__ANNOTATIONS);
+    createEReference(annotatedDefEClass, ANNOTATED_DEF__DEF);
+
     abstractDefEClass = createEClass(ABSTRACT_DEF);
-    createEAttribute(abstractDefEClass, ABSTRACT_DEF__NAME);
 
     referenceableDefsEClass = createEClass(REFERENCEABLE_DEFS);
 
+    namedAbstractDefEClass = createEClass(NAMED_ABSTRACT_DEF);
+    createEAttribute(namedAbstractDefEClass, NAMED_ABSTRACT_DEF__NAME);
+
+    namedRuntimeDefEClass = createEClass(NAMED_RUNTIME_DEF);
+
+    typeInstanceEClass = createEClass(TYPE_INSTANCE);
+    createEReference(typeInstanceEClass, TYPE_INSTANCE__NAME);
+    createEReference(typeInstanceEClass, TYPE_INSTANCE__TYPE_PARAMETERS);
+
+    functionDefEClass = createEClass(FUNCTION_DEF);
+    createEReference(functionDefEClass, FUNCTION_DEF__TYPE_PARAMETERS);
+    createEReference(functionDefEClass, FUNCTION_DEF__PARAMETER_DEFS);
+    createEReference(functionDefEClass, FUNCTION_DEF__RETURN_TYPE);
+    createEReference(functionDefEClass, FUNCTION_DEF__VALUE);
+
+    annotationDefEClass = createEClass(ANNOTATION_DEF);
+    createEReference(annotationDefEClass, ANNOTATION_DEF__PARAMETER_DEFS);
+
+    hashtagDefEClass = createEClass(HASHTAG_DEF);
+    createEReference(hashtagDefEClass, HASHTAG_DEF__PARAMETER_DEFS);
+
     valDefEClass = createEClass(VAL_DEF);
-    createEReference(valDefEClass, VAL_DEF__HASHTAGS);
-    createEReference(valDefEClass, VAL_DEF__ANNOTATIONS);
     createEReference(valDefEClass, VAL_DEF__VALUE);
 
     packageDefEClass = createEClass(PACKAGE_DEF);
@@ -1490,8 +1770,26 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     createEAttribute(importDefEClass, IMPORT_DEF__MODULE);
 
     includeDefEClass = createEClass(INCLUDE_DEF);
-    createEAttribute(includeDefEClass, INCLUDE_DEF__MODULE);
+    createEReference(includeDefEClass, INCLUDE_DEF__MODULE);
     createEAttribute(includeDefEClass, INCLUDE_DEF__NAME);
+    createEAttribute(includeDefEClass, INCLUDE_DEF__REEXPORT);
+
+    exportDefEClass = createEClass(EXPORT_DEF);
+    createEReference(exportDefEClass, EXPORT_DEF__SYMBOLS);
+
+    exportClauseEClass = createEClass(EXPORT_CLAUSE);
+    createEAttribute(exportClauseEClass, EXPORT_CLAUSE__UNEXPORT);
+    createEReference(exportClauseEClass, EXPORT_CLAUSE__SYMBOL);
+
+    exportSymbolEClass = createEClass(EXPORT_SYMBOL);
+
+    exportAllEClass = createEClass(EXPORT_ALL);
+
+    exportHashtagEClass = createEClass(EXPORT_HASHTAG);
+    createEReference(exportHashtagEClass, EXPORT_HASHTAG__REF);
+
+    exportRuntimeNameEClass = createEClass(EXPORT_RUNTIME_NAME);
+    createEReference(exportRuntimeNameEClass, EXPORT_RUNTIME_NAME__REF);
 
     typeDefEClass = createEClass(TYPE_DEF);
     createEAttribute(typeDefEClass, TYPE_DEF__VARIANCE);
@@ -1511,23 +1809,6 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     createEReference(typeRefEClass, TYPE_REF__TYPE_REF);
 
     typeIdEClass = createEClass(TYPE_ID);
-
-    typeInstanceEClass = createEClass(TYPE_INSTANCE);
-    createEReference(typeInstanceEClass, TYPE_INSTANCE__NAME);
-    createEReference(typeInstanceEClass, TYPE_INSTANCE__TYPE_PARAMETERS);
-
-    functionDefEClass = createEClass(FUNCTION_DEF);
-    createEReference(functionDefEClass, FUNCTION_DEF__HASHTAGS);
-    createEReference(functionDefEClass, FUNCTION_DEF__TYPE_PARAMETERS);
-    createEReference(functionDefEClass, FUNCTION_DEF__PARAMETER_DEFS);
-    createEReference(functionDefEClass, FUNCTION_DEF__RETURN_TYPE);
-    createEReference(functionDefEClass, FUNCTION_DEF__VALUE);
-
-    annotationDefEClass = createEClass(ANNOTATION_DEF);
-    createEReference(annotationDefEClass, ANNOTATION_DEF__PARAMETER_DEFS);
-
-    hashtagDefEClass = createEClass(HASHTAG_DEF);
-    createEReference(hashtagDefEClass, HASHTAG_DEF__PARAMETER_DEFS);
 
     codeAssignmentEClass = createEClass(CODE_ASSIGNMENT);
 
@@ -1553,6 +1834,8 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     createEReference(annotationCallEClass, ANNOTATION_CALL__PARAMETER_VALUES);
 
     parameterDefEClass = createEClass(PARAMETER_DEF);
+    createEReference(parameterDefEClass, PARAMETER_DEF__HASHTAGS);
+    createEReference(parameterDefEClass, PARAMETER_DEF__ANNOTATIONS);
     createEAttribute(parameterDefEClass, PARAMETER_DEF__NAME);
     createEAttribute(parameterDefEClass, PARAMETER_DEF__BY_NAME);
     createEReference(parameterDefEClass, PARAMETER_DEF__TYPE);
@@ -1580,10 +1863,6 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     functionCallEClass = createEClass(FUNCTION_CALL);
     createEReference(functionCallEClass, FUNCTION_CALL__METHOD);
     createEReference(functionCallEClass, FUNCTION_CALL__PARAMETER_VALUES);
-
-    includeRefEClass = createEClass(INCLUDE_REF);
-    createEReference(includeRefEClass, INCLUDE_REF__INCLUDE);
-    createEReference(includeRefEClass, INCLUDE_REF__REF);
 
     stringLiteralEClass = createEClass(STRING_LITERAL);
     createEAttribute(stringLiteralEClass, STRING_LITERAL__VALUE);
@@ -1636,15 +1915,23 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     // Set bounds for type parameters
 
     // Add supertypes to classes
-    valDefEClass.getESuperTypes().add(this.getAbstractDef());
+    assignmentEClass.getESuperTypes().add(this.getAbstractDef());
+    namedAbstractDefEClass.getESuperTypes().add(this.getAbstractDef());
+    namedRuntimeDefEClass.getESuperTypes().add(this.getNamedAbstractDef());
+    functionDefEClass.getESuperTypes().add(this.getReferenceableDefs());
+    functionDefEClass.getESuperTypes().add(this.getNamedRuntimeDef());
+    annotationDefEClass.getESuperTypes().add(this.getNamedRuntimeDef());
+    hashtagDefEClass.getESuperTypes().add(this.getNamedAbstractDef());
     valDefEClass.getESuperTypes().add(this.getReferenceableDefs());
-    typeDefEClass.getESuperTypes().add(this.getAbstractDef());
+    valDefEClass.getESuperTypes().add(this.getNamedRuntimeDef());
+    importDefEClass.getESuperTypes().add(this.getAbstractDef());
+    includeDefEClass.getESuperTypes().add(this.getAbstractDef());
+    exportAllEClass.getESuperTypes().add(this.getExportSymbol());
+    exportHashtagEClass.getESuperTypes().add(this.getExportSymbol());
+    exportRuntimeNameEClass.getESuperTypes().add(this.getExportSymbol());
+    typeDefEClass.getESuperTypes().add(this.getNamedRuntimeDef());
     typeNameEClass.getESuperTypes().add(this.getTypeId());
     typeRefEClass.getESuperTypes().add(this.getTypeId());
-    functionDefEClass.getESuperTypes().add(this.getAbstractDef());
-    functionDefEClass.getESuperTypes().add(this.getReferenceableDefs());
-    annotationDefEClass.getESuperTypes().add(this.getAbstractDef());
-    hashtagDefEClass.getESuperTypes().add(this.getAbstractDef());
     codeBlockEClass.getESuperTypes().add(this.getCodeAssignment());
     codeBlockEClass.getESuperTypes().add(this.getValue());
     scalaCodeBlockEClass.getESuperTypes().add(this.getCodeBlock());
@@ -1656,7 +1943,6 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     sequenceEClass.getESuperTypes().add(this.getValue());
     valRefEClass.getESuperTypes().add(this.getValue());
     functionCallEClass.getESuperTypes().add(this.getValue());
-    includeRefEClass.getESuperTypes().add(this.getValue());
     stringLiteralEClass.getESuperTypes().add(this.getValue());
     doubleLiteralEClass.getESuperTypes().add(this.getValue());
     integerLiteralEClass.getESuperTypes().add(this.getValue());
@@ -1667,22 +1953,50 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     // Initialize classes and features; add operations and parameters
     initEClass(topLevelKronusEClass, TopLevelKronus.class, "TopLevelKronus", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getTopLevelKronus_Package(), this.getPackageDef(), null, "package", null, 0, 1, TopLevelKronus.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getTopLevelKronus_Exports(), this.getExportDef(), null, "exports", null, 0, -1, TopLevelKronus.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getTopLevelKronus_Kronus(), this.getKronus(), null, "kronus", null, 0, 1, TopLevelKronus.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(kronusEClass, Kronus.class, "Kronus", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getKronus_Imports(), this.getImportDef(), null, "imports", null, 0, -1, Kronus.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getKronus_Includes(), this.getIncludeDef(), null, "includes", null, 0, -1, Kronus.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getKronus_Defs(), this.getAbstractDef(), null, "defs", null, 0, -1, Kronus.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getKronus_Defs(), this.getAnnotatedDef(), null, "defs", null, 0, -1, Kronus.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getKronus_Return(), this.getExpression(), null, "return", null, 0, 1, Kronus.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+    initEClass(assignmentEClass, Assignment.class, "Assignment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getAssignment_Lhs(), this.getValDef(), null, "lhs", null, 0, 1, Assignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getAssignment_LhsParameter(), ecorePackage.getEString(), "lhsParameter", null, 0, 1, Assignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getAssignment_Rhs(), this.getValDef(), null, "rhs", null, 0, 1, Assignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getAssignment_RhsParameter(), ecorePackage.getEString(), "rhsParameter", null, 0, 1, Assignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(annotatedDefEClass, AnnotatedDef.class, "AnnotatedDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getAnnotatedDef_Hashtags(), this.getHashtagCall(), null, "hashtags", null, 0, -1, AnnotatedDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getAnnotatedDef_Annotations(), this.getAnnotationCall(), null, "annotations", null, 0, -1, AnnotatedDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getAnnotatedDef_Def(), this.getAbstractDef(), null, "def", null, 0, 1, AnnotatedDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
     initEClass(abstractDefEClass, AbstractDef.class, "AbstractDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getAbstractDef_Name(), ecorePackage.getEString(), "name", null, 0, 1, AbstractDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(referenceableDefsEClass, ReferenceableDefs.class, "ReferenceableDefs", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
+    initEClass(namedAbstractDefEClass, NamedAbstractDef.class, "NamedAbstractDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getNamedAbstractDef_Name(), ecorePackage.getEString(), "name", null, 0, 1, NamedAbstractDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(namedRuntimeDefEClass, NamedRuntimeDef.class, "NamedRuntimeDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+    initEClass(typeInstanceEClass, TypeInstance.class, "TypeInstance", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getTypeInstance_Name(), this.getTypeDef(), null, "name", null, 0, 1, TypeInstance.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getTypeInstance_TypeParameters(), this.getTypeInstance(), null, "typeParameters", null, 0, -1, TypeInstance.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(functionDefEClass, FunctionDef.class, "FunctionDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getFunctionDef_TypeParameters(), this.getTypeDef(), null, "typeParameters", null, 0, -1, FunctionDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getFunctionDef_ParameterDefs(), this.getParameterDef(), null, "parameterDefs", null, 0, -1, FunctionDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getFunctionDef_ReturnType(), this.getTypeInstance(), null, "returnType", null, 0, 1, FunctionDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getFunctionDef_Value(), this.getCodeAssignment(), null, "value", null, 0, 1, FunctionDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(annotationDefEClass, AnnotationDef.class, "AnnotationDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getAnnotationDef_ParameterDefs(), this.getParameterDef(), null, "parameterDefs", null, 0, -1, AnnotationDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(hashtagDefEClass, HashtagDef.class, "HashtagDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getHashtagDef_ParameterDefs(), this.getParameterDef(), null, "parameterDefs", null, 0, -1, HashtagDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
     initEClass(valDefEClass, ValDef.class, "ValDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getValDef_Hashtags(), this.getHashtagCall(), null, "hashtags", null, 0, -1, ValDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getValDef_Annotations(), this.getAnnotationCall(), null, "annotations", null, 0, -1, ValDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getValDef_Value(), this.getExpression(), null, "value", null, 0, 1, ValDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(packageDefEClass, PackageDef.class, "PackageDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1692,8 +2006,26 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     initEAttribute(getImportDef_Module(), ecorePackage.getEString(), "module", null, 0, 1, ImportDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(includeDefEClass, IncludeDef.class, "IncludeDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getIncludeDef_Module(), ecorePackage.getEString(), "module", null, 0, 1, IncludeDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getIncludeDef_Module(), this.getTopLevelKronus(), null, "module", null, 0, 1, IncludeDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getIncludeDef_Name(), ecorePackage.getEString(), "name", null, 0, 1, IncludeDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getIncludeDef_Reexport(), ecorePackage.getEBoolean(), "reexport", null, 0, 1, IncludeDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(exportDefEClass, ExportDef.class, "ExportDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getExportDef_Symbols(), this.getExportClause(), null, "symbols", null, 0, -1, ExportDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(exportClauseEClass, ExportClause.class, "ExportClause", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getExportClause_Unexport(), ecorePackage.getEBoolean(), "unexport", null, 0, 1, ExportClause.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getExportClause_Symbol(), this.getExportSymbol(), null, "symbol", null, 0, 1, ExportClause.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(exportSymbolEClass, ExportSymbol.class, "ExportSymbol", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+    initEClass(exportAllEClass, ExportAll.class, "ExportAll", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+    initEClass(exportHashtagEClass, ExportHashtag.class, "ExportHashtag", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getExportHashtag_Ref(), this.getHashtagDef(), null, "ref", null, 0, 1, ExportHashtag.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(exportRuntimeNameEClass, ExportRuntimeName.class, "ExportRuntimeName", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getExportRuntimeName_Ref(), this.getNamedRuntimeDef(), null, "ref", null, 0, 1, ExportRuntimeName.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(typeDefEClass, TypeDef.class, "TypeDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getTypeDef_Variance(), ecorePackage.getEString(), "variance", null, 0, 1, TypeDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1713,23 +2045,6 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     initEReference(getTypeRef_TypeRef(), this.getTypeDef(), null, "typeRef", null, 0, 1, TypeRef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(typeIdEClass, TypeId.class, "TypeId", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-
-    initEClass(typeInstanceEClass, TypeInstance.class, "TypeInstance", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getTypeInstance_Name(), this.getTypeDef(), null, "name", null, 0, 1, TypeInstance.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getTypeInstance_TypeParameters(), this.getTypeInstance(), null, "typeParameters", null, 0, -1, TypeInstance.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-    initEClass(functionDefEClass, FunctionDef.class, "FunctionDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getFunctionDef_Hashtags(), this.getHashtagCall(), null, "hashtags", null, 0, -1, FunctionDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getFunctionDef_TypeParameters(), this.getTypeDef(), null, "typeParameters", null, 0, -1, FunctionDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getFunctionDef_ParameterDefs(), this.getParameterDef(), null, "parameterDefs", null, 0, -1, FunctionDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getFunctionDef_ReturnType(), this.getTypeInstance(), null, "returnType", null, 0, 1, FunctionDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getFunctionDef_Value(), this.getCodeAssignment(), null, "value", null, 0, 1, FunctionDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-    initEClass(annotationDefEClass, AnnotationDef.class, "AnnotationDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getAnnotationDef_ParameterDefs(), this.getParameterDef(), null, "parameterDefs", null, 0, -1, AnnotationDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-    initEClass(hashtagDefEClass, HashtagDef.class, "HashtagDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getHashtagDef_ParameterDefs(), this.getParameterDef(), null, "parameterDefs", null, 0, -1, HashtagDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(codeAssignmentEClass, CodeAssignment.class, "CodeAssignment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
@@ -1755,6 +2070,8 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     initEReference(getAnnotationCall_ParameterValues(), this.getParameterValue(), null, "parameterValues", null, 0, -1, AnnotationCall.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(parameterDefEClass, ParameterDef.class, "ParameterDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getParameterDef_Hashtags(), this.getHashtagCall(), null, "hashtags", null, 0, -1, ParameterDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getParameterDef_Annotations(), this.getAnnotationCall(), null, "annotations", null, 0, -1, ParameterDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getParameterDef_Name(), ecorePackage.getEString(), "name", null, 0, 1, ParameterDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getParameterDef_ByName(), ecorePackage.getEBoolean(), "byName", null, 0, 1, ParameterDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getParameterDef_Type(), this.getTypeInstance(), null, "type", null, 0, 1, ParameterDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1782,10 +2099,6 @@ public class KronusPackageImpl extends EPackageImpl implements KronusPackage
     initEClass(functionCallEClass, FunctionCall.class, "FunctionCall", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getFunctionCall_Method(), this.getFunctionDef(), null, "method", null, 0, 1, FunctionCall.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getFunctionCall_ParameterValues(), this.getParameterValue(), null, "parameterValues", null, 0, -1, FunctionCall.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-    initEClass(includeRefEClass, IncludeRef.class, "IncludeRef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getIncludeRef_Include(), this.getIncludeDef(), null, "include", null, 0, 1, IncludeRef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getIncludeRef_Ref(), this.getValue(), null, "ref", null, 0, 1, IncludeRef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(stringLiteralEClass, StringLiteral.class, "StringLiteral", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getStringLiteral_Value(), ecorePackage.getEString(), "value", null, 0, 1, StringLiteral.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

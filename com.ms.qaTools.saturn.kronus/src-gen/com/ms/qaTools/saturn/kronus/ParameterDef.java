@@ -2,6 +2,7 @@
  */
 package com.ms.qaTools.saturn.kronus;
 
+import org.eclipse.emf.common.util.EList;
 
 /**
  * <!-- begin-user-doc -->
@@ -11,6 +12,8 @@ package com.ms.qaTools.saturn.kronus;
  * <p>
  * The following features are supported:
  * <ul>
+ *   <li>{@link com.ms.qaTools.saturn.kronus.ParameterDef#getHashtags <em>Hashtags</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.kronus.ParameterDef#getAnnotations <em>Annotations</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.ParameterDef#getName <em>Name</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.ParameterDef#isByName <em>By Name</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.ParameterDef#getType <em>Type</em>}</li>
@@ -25,6 +28,38 @@ package com.ms.qaTools.saturn.kronus;
  */
 public interface ParameterDef extends ReferenceableDefs
 {
+  /**
+   * Returns the value of the '<em><b>Hashtags</b></em>' containment reference list.
+   * The list contents are of type {@link com.ms.qaTools.saturn.kronus.HashtagCall}.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Hashtags</em>' containment reference list isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Hashtags</em>' containment reference list.
+   * @see com.ms.qaTools.saturn.kronus.KronusPackage#getParameterDef_Hashtags()
+   * @model containment="true"
+   * @generated
+   */
+  EList<HashtagCall> getHashtags();
+
+  /**
+   * Returns the value of the '<em><b>Annotations</b></em>' containment reference list.
+   * The list contents are of type {@link com.ms.qaTools.saturn.kronus.AnnotationCall}.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Annotations</em>' containment reference list isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Annotations</em>' containment reference list.
+   * @see com.ms.qaTools.saturn.kronus.KronusPackage#getParameterDef_Annotations()
+   * @model containment="true"
+   * @generated
+   */
+  EList<AnnotationCall> getAnnotations();
+
   /**
    * Returns the value of the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc -->

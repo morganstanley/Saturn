@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Ant-Version: Apache Ant 1.9.4
-Created-By: 1.8.0_45-b14 (Oracle Corporation)
+Created-By: 1.8.0_121-b13 (Oracle Corporation)
 Bundle-ManifestVersion: 2
 Bundle-Name: com.ms.qaTools.saturn.kronus
 Bundle-Vendor: QAPM QATools
-Bundle-Version: 2017.4.5.20170405_125424
+Bundle-Version: 2017.6.21.20170621_113641
 Bundle-SymbolicName: com.ms.qaTools.saturn.kronus; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext;visibility:=reexport,org.eclipse.xte
@@ -17,8 +17,7 @@ Require-Bundle: org.eclipse.xtext;visibility:=reexport,org.eclipse.xte
  e.xtext.common.types,org.scala-lang.scala-library,org.scala-lang.scal
  a-compiler,org.apache.ivy;visibility:=reexport,org.eclipse.core.runti
  me,org.eclipse.xtext.xbase.lib,org.objectweb.asm;bundle-version="[5.0
- .1,6.0.0)";resolution:=optional,com.ms.qaTools.kronus.repository;visi
- bility:=reexport
+ .1,6.0.0)";resolution:=optional
 Import-Package: org.apache.log4j,org.eclipse.xtext.xbase.lib
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.ms.qaTools.saturn,com.ms.qaTools.saturn.services,c
@@ -27,4 +26,5 @@ Export-Package: com.ms.qaTools.saturn,com.ms.qaTools.saturn.services,c
  Tools.saturn.parser.antlr,com.ms.qaTools.saturn.parser.antlr.internal
  ,com.ms.qaTools.saturn.validation,com.ms.qaTools.saturn.scoping,com.m
  s.qaTools.saturn.generator,com.ms.qaTools.saturn.formatting
+Provide-Package: META-INF.kronus
 

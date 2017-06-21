@@ -1,22 +1,47 @@
 package com.ms.qaTools.saturn.codeGen
 
 import java.io.Closeable
+import java.net.URL
+import java.util.{List => JList}
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable.LinkedHashMap
 import scala.collection.mutable.ListBuffer
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 
+import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
+import org.eclipse.emf.ecore.util.EcoreUtil
+import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil
+import org.eclipse.gmf.runtime.emf.core.resources.GMFResourceFactory
+import org.eclipse.gmf.runtime.notation.BasicCompartment
+import org.eclipse.gmf.runtime.notation.Diagram
+import org.eclipse.gmf.runtime.notation.NotationPackage
+import org.eclipse.gmf.runtime.notation.View
+
+import com.ms.qaTools.saturn.AbstractRunGroup
+import com.ms.qaTools.saturn.DocumentRoot
+import com.ms.qaTools.saturn.KronusStep
+import com.ms.qaTools.saturn.RunGroup
+import com.ms.qaTools.saturn.Saturn
+import com.ms.qaTools.saturn.SaturnPackage
+import com.ms.qaTools.saturn.codeGen.notifier.report.MetaData
 import com.ms.qaTools.saturn.kronus.runtime.ConstellationDecoration
 import com.ms.qaTools.saturn.kronus.runtime.ConstellationEntity
+import com.ms.qaTools.saturn.kronus.runtime.Scope
+import com.ms.qaTools.saturn.repetition.{ ForRepetition, ForEachRepetition, ForEachXPathRepetition }
 import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
 import com.ms.qaTools.saturn.runtime.WriteOnlyJsonFormat
+import com.ms.qaTools.saturn.util.SaturnResourceFactoryImpl
+import com.ms.qaTools.saturn.utils.SaturnEObjectJsonSupport
+import com.ms.qaTools.saturn.utils.SaturnEObjectUtils._
 
-import spray.json._
+import spray.json._, DefaultJsonProtocol._
 
 case class Attribute(name: String, value: Either[String, Throwable])
-case class Resource(name: String, resource: Either[Any, Throwable])
 
 trait AbstractContext {
   val metaDataContexts = LinkedHashMap[String, MetaDataContext]()
@@ -36,20 +61,39 @@ trait AbstractContext {
 }
 
 abstract class Context(implicit sc: SaturnExecutionContext)
-extends AbstractContext with ConstellationDecoration.HighPriorityFromImplicits {
-  def name: String
+extends Scope with AbstractContext with ConstellationDecoration.HighPriorityFromImplicits {
   def parent: Option[Context]
   def getFullContextName: String
   def constellationEntityName: String
+  def model: AbstractRunGroup
 
   val closeableResources = ListBuffer[Closeable]()
-  val resources = ListBuffer[Resource]()
   val complexValues = ListBuffer[Context.ComplexValue]()
   val attributes = ListBuffer[Attribute]()
 
   val constellationEntity: ConstellationEntity = parent match {
-    case None    => new ConstellationEntity(constellationEntityName)(sc.constellationClient, sc.executionContext)
+    case None    => ConstellationEntity(constellationEntityName)(sc.toKronusRunParameters)
     case Some(p) => p.constellationEntity.newChild(constellationEntityName)
+  }
+
+  def sourceLocation = None
+  def entity = Some(constellationEntity)
+  def annotations = Nil
+
+  def constellationDecorationFromAttributeOrResource[A: ConstellationDecoration.From](model: EObject): ConstellationDecoration.From[A] = {
+    new ConstellationDecoration.From[A] {
+      def from(x: A) = implicitly[ConstellationDecoration.From[A]].from(x).map { deco =>
+        val json = JsObject("type" -> model.eClass.getName.toJson, "details" -> deco.decorationValue)
+        ConstellationDecoration(ConstellationDecoration.ResultType, json)
+      }
+    }
+  }
+
+  protected def uploadAttributeOrResource[A: ConstellationDecoration.From]
+                                         (name: String, model: EObject, result: Try[A]): Unit = {
+    val entity = constellationEntity.newChild(name)
+    entity.attachDecorations(Iterable(model.toConstellationDecoration))
+    entity.complete(result, Nil)(constellationDecorationFromAttributeOrResource(model))
   }
 
   def attributeTry(valueTry: Try[String], name: String): Try[String] = {
@@ -57,51 +101,152 @@ extends AbstractContext with ConstellationDecoration.HighPriorityFromImplicits {
       case Success(v) => attributes += Attribute(name, Left(v))
       case Failure(e) => attributes += Attribute(name, Right(e))
     }
-    constellationEntity.newChild(name).complete(valueTry, Nil)
+    model.getAttributes.asScala.find(_.getName == name).orElse {
+      model.getRepetitionHandler match {
+        case rep: ForRepetition          => rep.getIterators.asScala.find(_.getAttribute == name)
+        case rep: ForEachRepetition      => rep.getColumnMappings.asScala.find(_.getAttribute == name)
+        case rep: ForEachXPathRepetition => rep.getXPathMappings.asScala.find(_.getAttribute == name)
+        case null                        => None
+      }
+    }.orElse {
+      model match {
+        case model: KronusStep => model.getKronusCallConfiguration.getArguments.asScala.find(_.getName == name)
+        case _                 => None
+      }
+    }.foreach(uploadAttributeOrResource(name, _, valueTry))
     valueTry
   }
 
   def connectTry[X: ConstellationDecoration.From](resourceTry: Try[X], name: String, isReference: Boolean): Try[X] = {
     resourceTry match {
-      case Success(c: Closeable) if !isReference => { closeableResources += c; resources += Resource(name, Left(c)) }
-      case Success(r)            => resources += Resource(name, Left(r))
-      case Failure(e)            => resources += Resource(name, Right(e))
+      case Success(c: Closeable) if !isReference => closeableResources += c
+      case _                                     =>
     }
-    if (resourceContexts.contains(name)) constellationEntity.newChild(name).complete(resourceTry, Nil)
+    if (resourceContexts.contains(name)) {
+      val resMod = model.getResources.asScala.find(_.getName == name).getOrElse {
+        throw new NoSuchElementException(s"resource $name")
+      }
+      uploadAttributeOrResource(name, resMod, resourceTry)
+    }
     resourceTry
   }
 
-  def closeAll { closeableResources.foreach(r => Try { r.close() }) }
+  def closeAll(): Unit = {
+    closeableResources.foreach(sc.referenceCounter.removeOrClose)
+    closeableResources.clear()
+  }
 }
 
-case class IterationContext(name: String, parent: Some[IteratorContext], iterationNo: Option[Int])
+case class IterationContext(p: IteratorContext, iterationNo: Option[Int])
                            (implicit sc: SaturnExecutionContext) extends Context {
+  def parent = Some(p)
+  def name = p.name
+
   // Skip the names of the IteratorContext - Get only the names of the Iteration context.
-  def getFullContextName(): String = {
-    val withItnNo = constellationEntityName
-    parent match {
-      case Some(p) =>
-        p.parent match {
-          case Some(pp) => s"${pp.getFullContextName()}.$withItnNo"
-          case None     => withItnNo
-        }
-      case _ => withItnNo
-    }
-  }
+  def getFullContextName =
+    p.parent.map(_.getFullContextName + ".").getOrElse("") + constellationEntityName
 
   def constellationEntityName = name + iterationNo.fold("")(i => s"[$i]")
+
+  def model = p.model
+
+  def uploadMeta(): Unit = constellationEntity.attachDecorations(MetaData.fromMetaDataContexts(model, metaDataContexts))
+
+  def child(name: String, lexicalContext: Option[AIteratorContext])
+           (implicit sc: SaturnExecutionContext): IteratorContext = {
+    val parentC = lexicalContext.getOrElse(p)
+    val parentM = parentC.model.asInstanceOf[RunGroup]
+    val childM = parentM.getRunGroups.asScala.find(_.getName == name).getOrElse {
+      throw new IllegalArgumentException(s"no step named $name can be found in ${parentM.eObjectToPath}")
+    }
+    val childV = parentC.view.flatMap { view =>
+      view.getChildren.iterator.asScala.flatMap {
+        case v: BasicCompartment => v.getChildren.asInstanceOf[JList[View]].asScala
+        case v: View             => Some(v)
+      }.find(ViewUtil.resolveSemanticElement(_) eq childM)
+    }
+    IteratorContext(childM, Some(this), childV)
+  }
 }
 
-case class IteratorContext(name: String, parent: Option[IterationContext])
-                          (implicit sc: SaturnExecutionContext) extends Context {
-  def getFullContextName(): String = {
-    parent match {
-      case None    => name
-      case Some(p) => p.getFullContextName + "." + name
+object AIteratorContext {
+  ; { // Initialize global Resource.Factory.Registry and EPackage.Registry
+    val ext2fact = org.eclipse.emf.ecore.resource.Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap
+    ext2fact.put("saturnDiagram", new GMFResourceFactory)
+    ext2fact.put("saturn", new SaturnResourceFactoryImpl)
+    val _ = Seq(SaturnPackage.eINSTANCE, NotationPackage.eINSTANCE)
+  }
+
+  object DiagramJsonSupport extends SaturnEObjectJsonSupport {
+    override protected def writeWithPath(e: EObject, path: Seq[String]) = {
+      val json = super.writeWithPath(e, path)
+      ; {
+        for {
+          elementJson <- json.fields.get("element")
+          semantic <- Option(e).collect { case e: View => ViewUtil.resolveSemanticElement(e) }
+          nameAttr <- semantic.eClass.getEAllAttributes.asScala.find(_.getName == "name")
+        } yield {
+          val name = semantic.eGet(nameAttr).asInstanceOf[String]
+          val fields = elementJson.asJsObject.fields ++ Option(name).map("name" -> _.toJson)
+          JsObject(json.fields + ("element" -> JsObject(fields)))
+        }
+      }.getOrElse(json)
     }
   }
 
+  protected[codeGen] def url2saturn(url: URL, viewURL: Option[URL]): (Saturn, Option[Diagram]) = {
+    val resSet = new ResourceSetImpl
+    val model = resSet.getResource(URI.createURI(url.toString), true).getContents.get(0).asInstanceOf[DocumentRoot].getSaturn
+    val diagram = viewURL.map { url =>
+      resSet.getResource(URI.createURI(url.toString), true).getContents.get(0).asInstanceOf[Diagram]
+    }
+    (model, diagram)
+  }
+}
+
+abstract class AIteratorContext(implicit sc: SaturnExecutionContext) extends Context {
+  def view: Option[View]
+
+  constellationEntity.attachDecorations {
+    view.map { view =>
+      require(ViewUtil.resolveSemanticElement(view) eq model)
+      val field = if (view.isInstanceOf[Diagram]) {
+        import AIteratorContext.DiagramJsonSupport._
+        "value" -> (view: EObject).toJson
+      } else "path" -> EcoreUtil.getRelativeURIFragmentPath(null, view).toJson
+      ConstellationDecoration(ConstellationDecoration.Type("Saturn3.Diagram"),
+                              JsObject("type" -> view.eClass.getName.toJson, field))
+    }
+  }
+
+  def getFullContextName: String = (parent.map(_.getFullContextName) ++ Seq(name)).mkString(".")
   def constellationEntityName = name
+
+  def includeFile(name: String, url: URL, viewURL: Option[URL]) = {
+    val (model, diag) = AIteratorContext.url2saturn(url, viewURL)
+    IncludeFileContext(name, model, Some(this), diag)
+  }
+}
+
+case class IncludeFileContext(name: String, model: Saturn, parent: Some[AIteratorContext], view: Option[Diagram])
+                             (implicit sc: SaturnExecutionContext) extends AIteratorContext {
+  override def closeAll() = {
+    super.closeAll
+    constellationEntity.complete(Success(()), Nil)
+  }
+}
+
+object IteratorContext {
+  def apply(modelUrl: URL, diagramUrl: Option[URL])(implicit sc: SaturnExecutionContext): IteratorContext = {
+    val (model, diagram) = AIteratorContext.url2saturn(modelUrl, diagramUrl)
+    apply(model, None, diagram)
+  }
+}
+
+case class IteratorContext(model: AbstractRunGroup, parent: Option[IterationContext], view: Option[View])
+                          (implicit sc: SaturnExecutionContext) extends AIteratorContext {
+  def name = model.getName
+  def uploadMeta(): Unit = constellationEntity.attachDecorations(Seq(model.toConstellationDecoration))
 }
 
 case class MetaDataContext(name: String, metaData: Option[Any]) extends AbstractContext
@@ -135,7 +280,6 @@ case class ResourceContext(name: String, resourceType: String) extends AbstractC
 object Context {
   case class ComplexValue(name: String, value: Either[String, Throwable])
 }
-
 /*
 Copyright 2017 Morgan Stanley
 

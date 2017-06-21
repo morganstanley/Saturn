@@ -19,15 +19,15 @@ import java.io.{Writer => JWriter}
 import java.util.zip.{GZIPInputStream => JGZIPInputStream}
 import java.util.zip.{GZIPOutputStream => JGZIPOutputStream}
 
-import scala.Array.canBuildFrom
-import scala.collection.JavaConversions.asJavaEnumeration
-import scala.collection.mutable.{Buffer, UnrolledBuffer}
+import scala.collection.JavaConversions._
+import scala.collection.mutable.Buffer
 import scala.util.Try
 
 import scalaz.Monad
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.filefilter.{RegexFileFilter => JRegexFileFilter}
+import org.apache.commons.io.input.AutoCloseInputStream
 import org.apache.commons.io.input.{NullInputStream => JNullInputStream}
 import org.apache.commons.io.input.{NullReader => JNullReader}
 import org.apache.commons.io.output.{NullOutputStream => JNullOutputStream}
@@ -36,44 +36,24 @@ import org.apache.commons.io.output.{TeeOutputStream => JTeeOutputStream}
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 
-import com.ms.qaTools.compare.AbstractDiff
-import com.ms.qaTools.compare.CompareColDef
-import com.ms.qaTools.compare.DiffCounter
+import com.ms.qaTools.compare.CompareColDefs
+import com.ms.qaTools.compare.DelimitedDifferent
+import com.ms.qaTools.compare.DelimitedIdentical
+import com.ms.qaTools.compare.DelimitedInLeftOnly
+import com.ms.qaTools.compare.DelimitedInRightOnly
+import com.ms.qaTools.compare.Diff
+import com.ms.qaTools.compare.DelimitedComparatorCounter
 import com.ms.qaTools.compare.writer.DiffSetWriter
+import com.ms.qaTools.compare.writer.DelimitedDiffSetWriter
 import com.ms.qaTools.compare.writer.ExcelDiffSetRotateWriter
 import com.ms.qaTools.compare.writer.ExcelDiffSetWriter
 import com.ms.qaTools.compare.writer.Page
 import com.ms.qaTools.io.rowSource.file.ExcelWorkBook
 import com.ms.qaTools.io.rowSource.file.ByteArrayRowSource
-import com.ms.qaTools.io.rowWriter.file.ByteArrayRowWriter
+import com.ms.qaTools.io.rowWriter.ByteArrayRowWriter
+import com.ms.qaTools.io.transports.Transport
 
 import javax.mail.internet.{MimeBodyPart => JMimeBodyPart}
-
-@deprecated trait IO2[+I, +O] extends IO3[I, O, Unit] {
-  def input: I
-  def output: O
-  def diffWriter =  throw new Exception("diffWriter not available") 
-}
-
-@deprecated trait IO3[+I, +O, +D] {
-  def input: I
-  def output: O
-  def diffWriter: D
-  def cleanup = {}
-}
-
-@deprecated trait IO2Try[+I, +O] extends IO3Try[I, O, Unit] {
-  def input: Try[I]
-  def output: Try[O]
-  def diffWriter = Try{ throw new Exception("diffWriter not available") }
-}
-
-@deprecated trait IO3Try[+I, +O, +D] {
-  def input: Try[I]
-  def output: Try[O]
-  def diffWriter: Try[D]
-  def cleanup = {}
-}
 
 trait Input[+T] {
   def input: Try[T]
@@ -107,8 +87,8 @@ object Output {
   }
 }
 
-trait DiffWriter {
-  def diffWriter: Try[(Seq[com.ms.qaTools.compare.CompareColDef], Map[Page, String], Seq[Page]) => DiffSetWriter]
+trait DiffWriter[A] {
+  def diffWriter: Try[(CompareColDefs, Map[Page, String], Seq[Page]) => A]
 }
 
 trait DeviceIO {
@@ -116,7 +96,7 @@ trait DeviceIO {
   def writer:       Try[JWriter] = outputStream.map{os => new JOutputStreamWriter(os) }
   def inputStream:  Try[JInputStream] = inputStreams.map{iss => new JSequenceInputStream(iss)}
   def outputStream: Try[JOutputStream] = outputStreams.map{oss => oss.reduceLeft((soFar,os) => new JTeeOutputStream(os,soFar))}
-  
+
   def readers:       Try[Iterator[JReader]] = inputStreams.map{iss => iss.map{is => new JInputStreamReader(is)}}
   def writers:       Try[Iterator[JWriter]] = outputStreams.map{oss => oss.map{os => new JOutputStreamWriter(os)}}
   def inputStreams:  Try[Iterator[JInputStream]]
@@ -124,7 +104,7 @@ trait DeviceIO {
 }
 
 abstract class BaseFileIO(val fileName:String) extends DeviceIO with Closeable {
-  protected val streams: Buffer[Closeable] = UnrolledBuffer.empty
+  protected[io] val streams: Buffer[Closeable] = Buffer.empty
 
   protected def trace[A <: Closeable](s: A): A = {
     streams += s
@@ -143,24 +123,25 @@ abstract class BaseFileIO(val fileName:String) extends DeviceIO with Closeable {
   }
 
   def mkParentDirs:Try[DirIO] = parentDirIO.flatMap{dirIO => dirIO.mkDirs}
-  def delete:Unit = file.map{_.delete}
-  
+  def delete(): Unit = file.map{_.delete}
+
   def file:Try[JFile]         = Try{ new JFile(fileName) }
   def files:Try[Seq[JFile]]   = file.map{file => Seq(file)}
-  
+
   def fileExists = file.map{file => if(!file.exists) throw new FileNotFoundException(fileName);  file}
   def filesExist = files.map{files => files.foreach{file => if(!file.exists) throw new FileNotFoundException(fileName)}; files }
-  
+
   val append                 = false
-  def inputStreams           = filesExist.map{files => files.iterator.map{file => trace(new JFileInputStream(file)) } }
-  def outputStreams          = files.map{files => files.iterator.map{file => trace(new JFileOutputStream(file, append)) } }
+  def inputStreams           = filesExist.map{files => files.iterator.map{file => trace(new AutoCloseInputStream(new JFileInputStream(file))) } }
+  def outputStreams          = for (files <- files; _ <- mkParentDirs) yield files.iterator.map { file => trace(new JFileOutputStream(file, append)) }
 }
 
 case class FileIO(override val fileName:String, override val append: Boolean = false) extends BaseFileIO(fileName)
-case class DirIO(override val fileName:String, filterPattern:String=".*") extends BaseFileIO(fileName) with DiffWriter {
-  def mkDirs = file.map{file => if(file.mkdirs) this else throw new Exception(s"Could not create directory: '$fileName'.") }
-  override def delete = file.map{dir => FileUtils.deleteDirectory(dir)}
-  
+case class DirIO(override val fileName:String, filterPattern:String=".*")
+extends BaseFileIO(fileName) with DiffWriter[DelimitedDiffSetWriter] {
+  def mkDirs = file.map(file => if(file.exists || file.mkdirs) this else throw new Exception(s"Could not create directory: '$fileName'."))
+  override def delete() = file.map{dir => FileUtils.deleteDirectory(dir)}
+
   override def files:Try[Seq[JFile]] = file.map{dir =>
     val filter:JFilenameFilter = new JRegexFileFilter(filterPattern)
     val files:Seq[JFile] = Option(dir.listFiles(filter)) match {
@@ -169,7 +150,7 @@ case class DirIO(override val fileName:String, filterPattern:String=".*") extend
     }
     files
   }
-  
+
   override def filesExist:Try[Seq[JFile]] = fileExists.map{dir =>
     val filter:JFilenameFilter = new JRegexFileFilter(filterPattern)
     val files:Seq[JFile] = Option(dir.listFiles(filter)) match {
@@ -178,15 +159,15 @@ case class DirIO(override val fileName:String, filterPattern:String=".*") extend
     }
     files
   }
-  
+
   def +(that:FileIO):FileIO = FileIO(fileName + JFile.separator + that.fileName)
   def +(that:DirIO):DirIO = DirIO(fileName + JFile.separator + that.fileName)
 
   def diffWriter = file map { f =>
-    (colDefs: Seq[CompareColDef], pageNames: Map[Page, String], omittedPages: Seq[Page]) =>
+    (colDefs: CompareColDefs, pageNames: Map[Page, String], omittedPages: Seq[Page]) =>
       val conf = ExcelDiffSetRotateWriter.Config(pageNames = pageNames, omittedPages = omittedPages)
       ExcelDiffSetRotateWriter(f, colDefs,
-                               conf.copy(prefix = if (filterPattern != ".*") filterPattern else conf.prefix))
+        conf.copy(prefix = if (filterPattern != ".*") filterPattern else conf.prefix))
   }
 }
 
@@ -211,12 +192,12 @@ object StdOut extends UncloseableOutputStream(System.out)
 object StdErr extends UncloseableOutputStream(System.err)
 
 case class ExcelIO(override val fileName: String, isXlsx: Boolean = false)
-extends BaseFileIO(fileName) with Input[Workbook] with Output[ExcelWorkBook] with DiffWriter{
+extends BaseFileIO(fileName) with Input[Workbook] with Output[ExcelWorkBook] with DiffWriter[DelimitedDiffSetWriter] {
   def input = inputStream.map(ExcelWorkBook(_))
   def output = outputStream.map(ExcelWorkBook(_, isXlsx))
   def diffWriter =
     output.map(wb =>
-      (colDefs: Seq[com.ms.qaTools.compare.CompareColDef], pageNames: Map[Page, String], omittedPages: Seq[Page]) =>
+      (colDefs: CompareColDefs, pageNames: Map[Page, String], omittedPages: Seq[Page]) =>
         ExcelDiffSetWriter(wb, colDefs, pageNames, omittedPages))
   def worksheetNames = input.map{wb => (0 until wb.getNumberOfSheets).map{wb.getSheetName}.toIterator}
   def worksheets     = input.map{wb => (0 until wb.getNumberOfSheets).map{wb.getSheetAt}.toIterator}
@@ -226,7 +207,7 @@ case class StringIO(contents:String) extends DeviceIO {
   override def reader  = Try { new JStringReader(contents) }
   override def readers = reader.map { reader => Iterator(reader) }
   override def writers = Try{ Iterator(new JStringWriter()) }
-  
+
   override def inputStream = Try{ new JByteArrayInputStream(contents.toCharArray().map{c => c.toByte}) }
   def inputStreams         = inputStream.map{inputStream => Iterator(inputStream) }
   def outputStreams        = NullIO.outputStreams
@@ -235,7 +216,7 @@ case class StringIO(contents:String) extends DeviceIO {
 case class StringIteratorIO(iterator:Iterator[String]) extends DeviceIO {
   override def readers       = Try{ iterator.map{string => new JStringReader(string)} }
   override def inputStreams  = Try{ iterator.map{contents => new JByteArrayInputStream(contents.toCharArray().map{c => c.toByte})} }
-  override def outputStreams = NullIO.outputStreams  
+  override def outputStreams = NullIO.outputStreams
 }
 
 object ByteIO {
@@ -244,10 +225,10 @@ object ByteIO {
 
 case class ByteArrayIteratorIO(iterator:Iterator[Array[Byte]]) extends DeviceIO {
   override def inputStreams  = Try{ iterator.map{contents => new JByteArrayInputStream(contents)} }
-  override def outputStreams = NullIO.outputStreams  
+  override def outputStreams = NullIO.outputStreams
 }
 
-object NullIO extends DeviceIO with Input[ByteArrayRowSource] with Output[ByteArrayRowWriter] with DiffWriter {
+object NullIO extends DeviceIO with Input[ByteArrayRowSource] with Output[ByteArrayRowWriter] with DiffWriter[DelimitedDiffSetWriter] {
   override def readers = Try{ Iterator(new JNullReader(0)) }
   override def writers = Try{ Iterator(new JNullWriter()) }
   def inputStreams     = Try{ Iterator(new JNullInputStream(0)) }
@@ -255,12 +236,14 @@ object NullIO extends DeviceIO with Input[ByteArrayRowSource] with Output[ByteAr
   def input = inputStream.map(ByteArrayRowSource(_))
   def output = outputStream.map(ByteArrayRowWriter(_))
   def diffWriter =
-    Try{(colDefs: Seq[com.ms.qaTools.compare.CompareColDef], pageNames: Map[Page, String], omittedPages: Seq[Page]) =>
-      new NullWriter with DiffSetWriter {
-        def writeDiff(diff: AbstractDiff) = ()
-        def writeSummary(counter: DiffCounter) = ()
-        def writeNotes(notes: Seq[String] = Nil) = ()
-        def createViews = ()}}
+    Try{(colDefs: CompareColDefs, pageNames: Map[Page, String], omittedPages: Seq[Page]) =>
+      new NullWriter with DelimitedDiffSetWriter {
+        def writeIdentical(diff: DelimitedIdentical) = ()
+        def writeDifferent(diff: DelimitedDifferent) = ()
+        def writeInLeftOnly(diff: DelimitedInLeftOnly) = ()
+        def writeInRightOnly(diff: DelimitedInRightOnly) = ()
+        def writeSummary(counter: DelimitedComparatorCounter) = ()
+        def writeNotes(notes: Seq[String] = Nil) = ()}}
 }
 
 object GZipIO {
@@ -270,8 +253,20 @@ object GZipIO {
   }
 }
 
-trait NetworkIO[A] extends Input[Iterator[A]] with Output[Writer[Iterator[A]]] {
-  def syncInput(requests: Iterator[A]): Try[Iterator[A]]
+object NetworkIO {
+  case class HttpSupport(headers: Map[String, String] = Map.empty, noIOExceptions: Boolean = false)
+  case class Config(timeout: Int = 60, disableChunkedEncoding: Boolean = false, httpSupport: Option[HttpSupport] = None) {
+    def withHttpSupport(h: HttpSupport) = copy(httpSupport = Option(h))
+  }
+
+  trait Factory[A] {
+    def create(transport: Transport): scalaz.Reader[Config, NetworkIO[A]]
+  }
+}
+
+trait NetworkIO[A] extends Input[Iterator[A]] with Output[Writer[Iterator[A]]] with Closeable {
+  def syncSendMessage(request: A): A
+  def syncInput(requests: Iterator[A]): Try[Iterator[A]] = Try(requests.map(syncSendMessage))
 }
 /*
 Copyright 2017 Morgan Stanley

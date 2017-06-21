@@ -1,21 +1,18 @@
 package com.ms.qaTools.xml.generator
 
-import com.ms.qaTools.io._
 import org.w3c.dom.Comment
 import org.w3c.dom.Document
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.ParameterizedText
 
-
-
-class XmlCommentCreator(comment: Comment, override val isLegacyMode: Boolean) extends XmlLeafNodeCreator with ParameterizedText {
+class XmlCommentCreator(comment: Comment, val isLegacyMode: Boolean) extends XmlLeafNodeCreator with ParameterizedText {
   require(comment != null, "text node must not be null")
-  override val isLocal: Boolean = true
-  lazy val value: String = comment.getData()
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: Document): Comment = {
+  val isLocal = true
+  lazy val value: String = comment.getData
+
+  override def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: Document): Comment =
     doc.createComment(resolveValue(data))
-  }
 
   override def toString: String = "XmlCommentCreator(" + parts.mkString(",") + ")"
 }

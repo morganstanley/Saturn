@@ -4,13 +4,14 @@ package com.ms.qaTools.saturn.kronus.impl;
 
 import com.ms.qaTools.saturn.kronus.IncludeDef;
 import com.ms.qaTools.saturn.kronus.KronusPackage;
+import com.ms.qaTools.saturn.kronus.TopLevelKronus;
 
 import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -21,32 +22,23 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <ul>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.IncludeDefImpl#getModule <em>Module</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.IncludeDefImpl#getName <em>Name</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.kronus.impl.IncludeDefImpl#isReexport <em>Reexport</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class IncludeDefImpl extends MinimalEObjectImpl.Container implements IncludeDef
+public class IncludeDefImpl extends AbstractDefImpl implements IncludeDef
 {
   /**
-   * The default value of the '{@link #getModule() <em>Module</em>}' attribute.
+   * The cached value of the '{@link #getModule() <em>Module</em>}' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @see #getModule()
    * @generated
    * @ordered
    */
-  protected static final String MODULE_EDEFAULT = null;
-
-  /**
-   * The cached value of the '{@link #getModule() <em>Module</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getModule()
-   * @generated
-   * @ordered
-   */
-  protected String module = MODULE_EDEFAULT;
+  protected TopLevelKronus module;
 
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute.
@@ -67,6 +59,26 @@ public class IncludeDefImpl extends MinimalEObjectImpl.Container implements Incl
    * @ordered
    */
   protected String name = NAME_EDEFAULT;
+
+  /**
+   * The default value of the '{@link #isReexport() <em>Reexport</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isReexport()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean REEXPORT_EDEFAULT = false;
+
+  /**
+   * The cached value of the '{@link #isReexport() <em>Reexport</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isReexport()
+   * @generated
+   * @ordered
+   */
+  protected boolean reexport = REEXPORT_EDEFAULT;
 
   /**
    * <!-- begin-user-doc -->
@@ -94,7 +106,27 @@ public class IncludeDefImpl extends MinimalEObjectImpl.Container implements Incl
    * <!-- end-user-doc -->
    * @generated
    */
-  public String getModule()
+  public TopLevelKronus getModule()
+  {
+    if (module != null && module.eIsProxy())
+    {
+      InternalEObject oldModule = (InternalEObject)module;
+      module = (TopLevelKronus)eResolveProxy(oldModule);
+      if (module != oldModule)
+      {
+        if (eNotificationRequired())
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, KronusPackage.INCLUDE_DEF__MODULE, oldModule, module));
+      }
+    }
+    return module;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public TopLevelKronus basicGetModule()
   {
     return module;
   }
@@ -104,9 +136,9 @@ public class IncludeDefImpl extends MinimalEObjectImpl.Container implements Incl
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setModule(String newModule)
+  public void setModule(TopLevelKronus newModule)
   {
-    String oldModule = module;
+    TopLevelKronus oldModule = module;
     module = newModule;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, KronusPackage.INCLUDE_DEF__MODULE, oldModule, module));
@@ -140,15 +172,41 @@ public class IncludeDefImpl extends MinimalEObjectImpl.Container implements Incl
    * <!-- end-user-doc -->
    * @generated
    */
+  public boolean isReexport()
+  {
+    return reexport;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setReexport(boolean newReexport)
+  {
+    boolean oldReexport = reexport;
+    reexport = newReexport;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, KronusPackage.INCLUDE_DEF__REEXPORT, oldReexport, reexport));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   @Override
   public Object eGet(int featureID, boolean resolve, boolean coreType)
   {
     switch (featureID)
     {
       case KronusPackage.INCLUDE_DEF__MODULE:
-        return getModule();
+        if (resolve) return getModule();
+        return basicGetModule();
       case KronusPackage.INCLUDE_DEF__NAME:
         return getName();
+      case KronusPackage.INCLUDE_DEF__REEXPORT:
+        return isReexport();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -164,10 +222,13 @@ public class IncludeDefImpl extends MinimalEObjectImpl.Container implements Incl
     switch (featureID)
     {
       case KronusPackage.INCLUDE_DEF__MODULE:
-        setModule((String)newValue);
+        setModule((TopLevelKronus)newValue);
         return;
       case KronusPackage.INCLUDE_DEF__NAME:
         setName((String)newValue);
+        return;
+      case KronusPackage.INCLUDE_DEF__REEXPORT:
+        setReexport((Boolean)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -184,10 +245,13 @@ public class IncludeDefImpl extends MinimalEObjectImpl.Container implements Incl
     switch (featureID)
     {
       case KronusPackage.INCLUDE_DEF__MODULE:
-        setModule(MODULE_EDEFAULT);
+        setModule((TopLevelKronus)null);
         return;
       case KronusPackage.INCLUDE_DEF__NAME:
         setName(NAME_EDEFAULT);
+        return;
+      case KronusPackage.INCLUDE_DEF__REEXPORT:
+        setReexport(REEXPORT_EDEFAULT);
         return;
     }
     super.eUnset(featureID);
@@ -204,9 +268,11 @@ public class IncludeDefImpl extends MinimalEObjectImpl.Container implements Incl
     switch (featureID)
     {
       case KronusPackage.INCLUDE_DEF__MODULE:
-        return MODULE_EDEFAULT == null ? module != null : !MODULE_EDEFAULT.equals(module);
+        return module != null;
       case KronusPackage.INCLUDE_DEF__NAME:
         return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+      case KronusPackage.INCLUDE_DEF__REEXPORT:
+        return reexport != REEXPORT_EDEFAULT;
     }
     return super.eIsSet(featureID);
   }
@@ -222,10 +288,10 @@ public class IncludeDefImpl extends MinimalEObjectImpl.Container implements Incl
     if (eIsProxy()) return super.toString();
 
     StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (module: ");
-    result.append(module);
-    result.append(", name: ");
+    result.append(" (name: ");
     result.append(name);
+    result.append(", reexport: ");
+    result.append(reexport);
     result.append(')');
     return result.toString();
   }

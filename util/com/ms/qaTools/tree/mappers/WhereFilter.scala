@@ -1,33 +1,22 @@
 package com.ms.qaTools.tree.mappers
 
-import org.w3c.dom.{ Node }
-import javax.xml.namespace.NamespaceContext
-import com.ms.qaTools.tree.validator.{ XPathNodeLookup }
-import com.ms.qaTools.tree.{ TreeNode }
-import com.ms.qaTools.xml._
+import com.ms.qaTools.tree.validator.XPathNodeLookup
 import com.ms.qaTools.tree.XmlNode
 
+case class XmlNodeXPathFilter(xPath: String, exclude: Boolean = false) extends XmlNodeFilter {
+  def apply(optionNode: Option[XmlNode]) = optionNode match {
+    case None => false
+    case Some(node) =>
+      val ownerDocument = node.node.getOwnerDocument
+      val xPathLookup = XPathNodeLookup(xPath)(node.nsContext)
 
-
-case class XmlNodeXPathFilter(xPath: String, exclude: Boolean = false)
-  extends XmlNodeFilter {
-
-  override def apply(optionNode: Option[XmlNode]): Boolean = {
-    optionNode match {
-      case None => false
-      case Some(node) => {
-        val ownerDocument = node.node.getOwnerDocument
-        val xPathLookup = XPathNodeLookup(xPath)(node.nsContext)
-
-        if (exclude) {
-          val value = xPathLookup.getValue(node)
-          value.isEmpty || value.equals("false")
-        } else {
-          val value = xPathLookup.getValue(node)
-          !value.isEmpty && (value.equals("true") || !value.equals("false"))
-        }
+      if (exclude) {
+        val value = xPathLookup.getValue(node)
+        value.isEmpty || value.equals("false")
+      } else {
+        val value = xPathLookup.getValue(node)
+        !value.isEmpty && (value.equals("true") || !value.equals("false"))
       }
-    }
   }
 }
 /*

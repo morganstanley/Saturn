@@ -69,18 +69,6 @@ import com.ms.qaTools.saturn.resources.fileResource.{CSVFile => MCSVFile}
 import com.ms.qaTools.saturn.resources.referenceResource.{ReferenceResource => MReferenceResource}
 import com.ms.qaTools.saturn.resources.referenceResource.ReferenceResourceFactory
 
-
-
-/**
- * TODO - ComplexValues
- *   are defined both in Saturn and in util, the saturn implementation should refer to the util implementation rather than implementing its own
- *   this first implementation should simply use Saturn's implementation while mimicking util's dsl, this can be refactored later
- *   the temporary version of complex values dsl should be implemented in its own file here
- *
- * TODO - File organization
- *   Should we have a dsl file/module-resource?
- */
-
 trait LinkContext {
   def addLinks(p:MRunGroup,l:Seq[LinkDef])
   def calcLinks(s:MSaturn):Seq[MAbstractLink]
@@ -90,8 +78,6 @@ case object NullLinkContext extends LinkContext {
   def addLinks(p:MRunGroup,l:Seq[LinkDef]) = {}
   def calcLinks(s:MSaturn):Seq[MAbstractLink] = Nil
 }
-
-//object DefaultLinkContext extends ActiveLinkContext
 
 case object ActiveLinkContext extends LinkContext {
   override def addLinks(p:MRunGroup,l:Seq[LinkDef]):Unit = linkMap.put(p,l)
@@ -117,25 +103,25 @@ case object ActiveLinkContext extends LinkContext {
   }
 }
 
-case class LinkDef(source:String,target:String,link:MAbstractLink)
+case class LinkDef(source: String, target: String, link: MAbstractLink)
 
 object OnPass {
-  def apply(f:String,t:String):LinkDef = LinkDef(f,t,SaturnFactory.eINSTANCE.createOnPassLink())
-  def unapply(l:MOnPassLink):Option[(MAbstractRunGroup,MAbstractRunGroup)] = Some(l.getSource(),l.getTarget())
+  def apply(f: String, t: String): LinkDef = LinkDef(f, t, SaturnFactory.eINSTANCE.createOnPassLink)
+  def unapply(l: MOnPassLink): Option[(MAbstractRunGroup, MAbstractRunGroup)] = Some((l.getSource, l.getTarget))
 }
 
 object OnFail {
-  def apply(f:String,t:String):LinkDef = LinkDef(f,t,SaturnFactory.eINSTANCE.createOnFailLink())
-  def unapply(l:MOnFailLink):Option[(MAbstractRunGroup,MAbstractRunGroup)] = Some(l.getSource(),l.getTarget())
+  def apply(f: String, t: String): LinkDef = LinkDef(f, t, SaturnFactory.eINSTANCE.createOnFailLink)
+  def unapply(l: MOnFailLink): Option[(MAbstractRunGroup, MAbstractRunGroup)] = Some((l.getSource, l.getTarget))
 }
 
 object OnFinish {
-  def apply(f:String,t:String):LinkDef = LinkDef(f,t,SaturnFactory.eINSTANCE.createOnFinishLink())
-  def unapply(l:MOnFinishLink):Option[(MAbstractRunGroup,MAbstractRunGroup)] = Some(l.getSource(),l.getTarget())
+  def apply(f: String, t: String): LinkDef = LinkDef(f, t, SaturnFactory.eINSTANCE.createOnFinishLink)
+  def unapply(l: MOnFinishLink): Option[(MAbstractRunGroup, MAbstractRunGroup)] = Some((l.getSource, l.getTarget))
 }
 
 object OnCustom {
-    def unapply(l:MCustomLink):Option[(MAbstractRunGroup,MAbstractRunGroup,MComplexValue)] = Some(l.getSource(),l.getTarget(),l.getCode())
+    def unapply(l: MCustomLink): Option[(MAbstractRunGroup, MAbstractRunGroup, MComplexValue)] = Some((l.getSource, l.getTarget, l.getCode))
 }
 
 object ComplexValue {
@@ -235,8 +221,6 @@ object ResRef {
  * s1.getRunGroups().add(c0)
  *
  */
-
-
 object Saturn {
   def apply():MSaturn = SaturnFactory.eINSTANCE.createSaturn()
   def apply(name:String,
@@ -549,11 +533,6 @@ object XmlManipAdd {
   }
 }
 
-/*
- * ToDo: ?
- * Object XmlManipCleanNamespaces
- */
-
 object XmlManipCleanNS {
   def apply() = XmlManipModuleFactory.eINSTANCE.createCleanNamespacesOperation()
   def apply(enabled:Boolean=true):MXmlManipCleanNamespacesOperation = {
@@ -622,11 +601,6 @@ object XmlManipReplace {
     c
   }
 }
-
-/*
- *
- * Need to find out remain and remove default value
- */
 
 object XmlManipShift {
   def apply() = XmlManipModuleFactory.eINSTANCE.createShiftOperation()

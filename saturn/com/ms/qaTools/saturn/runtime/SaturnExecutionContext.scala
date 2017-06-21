@@ -1,7 +1,6 @@
 package com.ms.qaTools.saturn.runtime
 
 import java.io.Closeable
-
 import java.io.OutputStream
 import java.net.InetAddress
 import java.net.URL
@@ -13,6 +12,11 @@ import scala.concurrent.ExecutionContext
 
 import com.ms.qaTools.saturn.cmdLine.SaturnCmdLine
 import com.ms.qaTools.saturn.kronus.runtime.{IConstellationClient, ConstellationClient, NopConstellationClient}
+import com.ms.qaTools.saturn.kronus.runtime.KronusCmdLine
+import com.ms.qaTools.saturn.kronus.runtime.KronusModuleInjector
+import com.ms.qaTools.saturn.kronus.runtime.KronusRunParameters
+import com.ms.qaTools.saturn.kronus.runtime.ReferenceCounter
+import com.typesafe.config.ConfigFactory
 
 import akka.actor.ActorSystem
 import ch.qos.logback.classic.Level
@@ -71,7 +75,7 @@ object VerbosityLevel {
       case _               => NORMAL()
     }
   }
-  
+
   def max(a: VerbosityLevel, b: VerbosityLevel) = if(a.level > b.level) a else b
 }
 object LoggerLevel {
@@ -95,70 +99,57 @@ case class SaturnRunInfo(
     workingDirectory: String,
     host: String)
 
-class SaturnExecutionContext(
-  val executionContext:ExecutionContext with ExecutorService,
-  val cmdLine:SaturnCmdLine,
-  val runInfo:SaturnRunInfo,
-  val noLogging:Boolean,
-  val logFileName:String,
-  val appendToLogFile:Boolean,    
-  val noOutput: Boolean,
-  val noOutputColor:Boolean,
-  val outputVerbosity:VerbosityLevel,
-  val outputStream:OutputStream,
-  val actorSystem:ActorSystem,
-  val logger: SaturnLogger,
-  val constellationClient: IConstellationClient
-) extends Closeable {
-  lazy val envVars = System.getenv().toMap ++ cmdLine.resolveEnvVars.filter{_._2 != null}
-  def copy(executionContext: ExecutionContext with ExecutorService = executionContext,
-           cmdLine: SaturnCmdLine = cmdLine,
-           runInfo: SaturnRunInfo = runInfo,
-           noLogging: Boolean = noLogging,
-           logFileName: String = logFileName,
-           appendToLogFile: Boolean = appendToLogFile,
-           noOutput: Boolean = noOutput,
-           noOutputColor: Boolean = noOutputColor,
-           outputVerbosity: VerbosityLevel = outputVerbosity,
-           outputStream: OutputStream = outputStream,
-           logger: SaturnLogger = logger,
-           constellationClient: IConstellationClient = constellationClient) =
-                                  new SaturnExecutionContext(executionContext,
-                                                             cmdLine,
-                                                             runInfo,
-                                                             noLogging,
-                                                             logFileName,
-                                                             appendToLogFile,
-                                                             noOutput,
-                                                             noOutputColor,
-                                                             outputVerbosity,
-                                                             outputStream,
-                                                             actorSystem,
-                                                             logger,
-                                                             constellationClient)
+case class SaturnExecutionContext( executionContext: ExecutionContext with ExecutorService
+                                 , cmdLine: SaturnCmdLine
+                                 , runInfo: SaturnRunInfo
+                                 , noLogging: Boolean
+                                 , logFileName: String
+                                 , appendToLogFile: Boolean
+                                 , noOutput: Boolean
+                                 , noOutputColor: Boolean
+                                 , outputVerbosity: VerbosityLevel
+                                 , outputStream: OutputStream
+                                 , actorSystem: ActorSystem
+                                 , logger: SaturnLogger
+                                 , constellationClient: IConstellationClient
+                                 , kronusModules: KronusModuleInjector
+                                 , referenceCounter: ReferenceCounter
+                                 ) extends Closeable {
+  lazy val envVars = System.getenv().toMap ++ cmdLine.resolveEnvVars.filter{_._2 != null} ++ Option(cmdLine.scenarioReport).map("SATURNWEB_REPORT_PATH" -> _)
 
   def close() = {
     constellationClient.close()
     executionContext.shutdown()
-    actorSystem.shutdown()
+    concurrent.Await.result(actorSystem.terminate, concurrent.duration.Duration.Inf)
+    logger.close()
   }
+
+  def toKronusRunParameters = KronusRunParameters(executionContext, java.util.Locale.US, referenceCounter,
+                                                  constellationClient, new KronusCmdLine(Nil),
+                                                  akka.stream.ActorMaterializer()(actorSystem),
+                                                  kronusModules, Nil)
 }
 
 object SaturnExecutionContext {
-  val SATURN_VERSION = "2017.4.5"
-  val UTIL_VERSION = "2.1.0"  
+  val SATURN_VERSION = "2017.6.21"
+  val UTIL_VERSION = "2.1.0"
   def apply(command:String,
             cmdLine:SaturnCmdLine,
             outputStream: OutputStream = System.out) = {
-    val logger = SaturnLogger(getClass, VerbosityLevel(if (cmdLine.noOutput) "QUIET" else cmdLine.verbosity), cmdLine.logFileName, cmdLine.appendToLogFile)
+    val logger = new SaturnLogger(VerbosityLevel(if (cmdLine.noOutput) "QUIET" else cmdLine.verbosity), cmdLine.logFileName, cmdLine.appendToLogFile)
     val pool = Executors.newCachedThreadPool()
-    val ec = ExecutionContext.fromExecutorService(pool)    
-    val constellationClient = sys.props.get("qaTools.saturn.constellation.url").map { url =>
-      ConstellationClient(new URL(url))
-    }.getOrElse(new NopConstellationClient)
+    val ec = ExecutionContext.fromExecutorService(pool)
+    val constellationClient = {
+      val conf = ConfigFactory.load().getConfig("qaTools.saturn.constellation")
+      if (conf.hasPath("url"))
+        ConstellationClient(new URL(conf.getString("url")), logger.debug("Uploading Constellation result failed", _))
+      else
+        new NopConstellationClient
+    }
+//    val constellationClient = new com.ms.qaTools.saturn.kronus.runtime.PrintStreamConstellationClient(Console.out)
     val sc = new SaturnExecutionContext(ec,
                                         cmdLine,
-                                        SaturnRunInfo(System.currentTimeMillis(),          
+                                        SaturnRunInfo(System.currentTimeMillis(),
                                                       System.currentTimeMillis(),
                                                       command,
                                                       SATURN_VERSION,
@@ -169,16 +160,18 @@ object SaturnExecutionContext {
                                                       InetAddress.getLocalHost().getHostName()),
                                         cmdLine.noLogging,
                                         cmdLine.logFileName,
-                                        cmdLine.appendToLogFile,    
+                                        cmdLine.appendToLogFile,
                                         cmdLine.noOutput,
                                         cmdLine.noOutputColor,
                                         VerbosityLevel(if (cmdLine.noOutput) "QUIET" else cmdLine.verbosity),
                                         outputStream,
-                                        ActorSystem(), 
+                                        ActorSystem(),
                                         logger,
-                                        constellationClient)
+                                        constellationClient,
+                                        new KronusModuleInjector,
+                                        new ReferenceCounter)
     sc
-  }  
+  }
 }
 /*
 Copyright 2017 Morgan Stanley

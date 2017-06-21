@@ -1,12 +1,7 @@
 package com.ms.qaTools.toolkit.cmdLine
-
+import com.ms.qaTools.io.rowWriter.ByteArrayRowWriter
 import java.io.FileOutputStream
-
 import org.kohsuke.args4j.Option
-
-import com.ms.qaTools.io.rowWriter.file.ByteArrayRowWriter
-
-
 
 trait OutputTCPBufFile {
   @Option(name = "-o", aliases = Array("--outFileName"), usage = "Specify an output fileName", required = true)

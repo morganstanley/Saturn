@@ -1,7 +1,6 @@
 package com.ms.qaTools.io.rowSource
-import scala.Array.canBuildFrom
 
-class SimpleColumnDefinitionAdapter(override val colDefs: Seq[ColumnDefinition], skipRows: Int)
+class SimpleColumnDefinitionAdapter(val colDefs: Seq[ColumnDefinition], skipRows: Int)
 extends ColumnDefinitionAdapter {
   def extractColDefs[X <% Seq[String]](rowIterator: Iterator[X]): Seq[ColumnDefinition] = {
     rowIterator.drop(skipRows)

@@ -2,16 +2,12 @@ package com.ms.qaTools.protobuf
 
 import com.google.protobuf.Message
 import com.google.protobuf.GeneratedMessage
-import com.ms.qaTools.io.DelimitedRow
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
-import com.ms.qaTools.io.rowSource.protobuf.ProtoBufPathRowSource
-import com.ms.qaTools.io.rowSource.protobuf.ProtoBufRowSource
-
-
+import com.ms.qaTools.io.rowSource.ProtoBufPathRowSource
+import com.ms.qaTools.io.rowSource.ProtoBufRowSource
 
 class PBExtractor(protoBufRowSource: ProtoBufRowSource[GeneratedMessage], pbMappings: Seq[(String, String)])
-  extends Iterator[DelimitedRow] with ColumnDefinitions {
-
+extends Iterator[Seq[String]] with ColumnDefinitions {
   protected val pbPathRowSource = ProtoBufPathRowSource(pbMappings, protoBufRowSource)
 
   def colDefs = pbPathRowSource.colDefs
@@ -20,9 +16,8 @@ class PBExtractor(protoBufRowSource: ProtoBufRowSource[GeneratedMessage], pbMapp
 }
 
 object PBExtractor {
-  def apply(protoBufRowSource: ProtoBufRowSource[GeneratedMessage], pbMappings: Seq[(String, String)]) = {
+  def apply(protoBufRowSource: ProtoBufRowSource[GeneratedMessage], pbMappings: Seq[(String, String)]) =
     new PBExtractor(protoBufRowSource, pbMappings)
-  }
 }
 /*
 Copyright 2017 Morgan Stanley

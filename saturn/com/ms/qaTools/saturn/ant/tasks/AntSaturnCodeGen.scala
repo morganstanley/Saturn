@@ -12,6 +12,7 @@ import com.ms.qaTools.saturn.ant.ClassPath
 import com.ms.qaTools.saturn.codeGen.SaturnCodeGenUtil
 import com.ms.qaTools.saturn.codeGen.SaturnMonolithicFileGenerator
 import com.ms.qaTools.saturn.codeGen.SaturnMultiFileGenerator
+import com.ms.qaTools.saturn.kronus.codeGen.KronusGenerator
 import com.ms.qaTools.saturn.lint.SaturnLintResult
 import com.ms.qaTools.saturn.lint.{SaturnLintRuleResult, ResultOK, ResultWarning, ResultError}
 import com.ms.qaTools.saturn.lint.SaturnLintRunner
@@ -37,14 +38,21 @@ class AntSaturnCodeGen( /* default constructor */ ) extends KronusCodeGenTask wi
     }.getOrElse(Nil) ++ backport
 
     withCurrentThreadContextClassLoader {
-      ExtractKronusSource.ExtraKronusClassLoader(Thread.currentThread.getContextClassLoader, extraKronuss)
+      ExtractKronusSource.ExtraKronusClassLoader(classLoader, extraKronuss)
     } {
       syncOutput { outDir =>
+        val generator = KronusGenerator()
+        for ((uri, k) <- (extraKronuss, com.ms.qaTools.saturn.kronus.deserialize(extraKronuss)).zipped) {
+          log(s"Compiling: $uri")
+          val r = generator.generateFile(k, outDir)
+          log(s"Writing: ${r.output}")
+        }
+
         val outputDirectory = outDir.toString
         val scriptFiles = for {
           codeGenUtil <- SaturnCodeGenUtil.createFromFileName(saturnFileName)
           entryPoint <- Try{ s"${genPackage}.${codeGenUtil.saturn.getName()}App" }
-          saturnLintResult <- if (noSaturnLint) { Try { SaturnLintResult(NotRun(), Nil) } } else { SaturnLintRunner(codeGenUtil).run }
+          saturnLintResult <- if (noSaturnLint) { Try { SaturnLintResult(NotRun, Nil) } } else { SaturnLintRunner(codeGenUtil).run }
         } yield {
           saturnLintResult.validationResults.foreach(logLint)
           lintFailLevel.foreach { failLevel =>
@@ -69,7 +77,7 @@ class AntSaturnCodeGen( /* default constructor */ ) extends KronusCodeGenTask wi
             for (fileMap <- fileMaps) yield {
               fileMap match {
                 case (fileIO, Success(f)) => {
-                  println(s"Writing: ${fileIO.file.get.getPath()}")
+                  println(s"Writing: ${fileIO.file. get.getPath}")
                   fileIO.mkParentDirs
                   val writer = fileIO.writer
                   writer.map { w => w.write(f); w.close; true }

@@ -2,8 +2,6 @@ package com.ms.qaTools.tree.generator
 
 import scala.util.matching.Regex
 
-
-
 trait ColQueryPart {
   def name: String
 }
@@ -35,13 +33,13 @@ trait ColQuery[PartType <: ColQueryPart] {
   def queryString: String = parts.mkString(".")
 
   override def equals(o: Any) = o match {
-    case q: ColQueryType => this.queryString == q.queryString
+    case q: ColQuery[_] => parts == q.parts
     case _ => false
   }
   override def hashCode = queryString.hashCode
 }
 
-class UnresolvedColQuery(override val parts: Seq[ColQueryPart]) extends ColQuery[ColQueryPart] {
+class UnresolvedColQuery(val parts: Seq[ColQueryPart]) extends ColQuery[ColQueryPart] {
   type ColQueryType = UnresolvedColQuery
   def buildColQuery(newParts: Seq[ColQueryPart]): ColQueryType = new UnresolvedColQuery(newParts)
 
@@ -64,7 +62,7 @@ class UnresolvedColQuery(override val parts: Seq[ColQueryPart]) extends ColQuery
   override def toString: String = "UnresolvedColQuery(" + queryString + ")"
 }
 
-class ResolvedColQuery(override val parts: Seq[ResolvedColQueryPart]) extends ColQuery[ResolvedColQueryPart] {
+class ResolvedColQuery(val parts: Seq[ResolvedColQueryPart]) extends ColQuery[ResolvedColQueryPart] {
   type ColQueryType = ResolvedColQuery
   def buildColQuery(newParts: Seq[ResolvedColQueryPart]): ColQueryType = new ResolvedColQuery(newParts)
 

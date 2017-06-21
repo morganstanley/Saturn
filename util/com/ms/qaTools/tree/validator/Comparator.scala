@@ -1,11 +1,11 @@
 package com.ms.qaTools.tree.validator
 
-import scala.annotation.tailrec
+import scala.collection.immutable.HashMap
+
 import com.ms.qaTools.collections.zipWithCondition
 import com.ms.qaTools.compare.Explainer
 import com.ms.qaTools.compare.StringExplainer
 import com.ms.qaTools.tree.TreeNode
-import scalaz.syntax.std.boolean.ToBooleanOpsFromBoolean
 
 case class TreeDiffExplainer[NodeType](explain: ExplainableTreeNodeDiff[NodeType] => ExplainableTreeNodeDiff[NodeType]) extends Explainer[ExplainableTreeNodeDiff[NodeType]]
 
@@ -39,85 +39,88 @@ class Comparator[NodeType](
   def foldMatchers =
     foldRulesOnBoth[Matcher[NodeType]](
       (e: TreeNode[NodeType], a: TreeNode[NodeType], r: TreeResult[NodeType], matchers: Iterable[Matcher[NodeType]], m: Matcher[NodeType]) =>
-        r ++ m.matchAndCompare(e, a, r, matchers.filter { _.global }.toSet)) _
+        m.matchAndCompare(e, a, r, matchers.filter { _.global }.toSet)) _
   def foldIgnores =
     foldRulesOnBoth[Lookup[NodeType]](
       (e: TreeNode[NodeType], a: TreeNode[NodeType], r: TreeResult[NodeType], ignores: Iterable[Lookup[NodeType]], i: Lookup[NodeType]) =>
-        r ++ i.getNodes(e).foldLeft(r) { (r, n) => r #+ Result[NodeType](n, ignored = true) } ++ i.getNodes(a).foldLeft(r) { (r, n) => r +# Result[NodeType](n, ignored = true) }) _
+        i.getNodes(a).foldLeft {
+          i.getNodes(e).foldLeft(r) { (r, n) =>
+            r #+ Result[NodeType](n, ignored = true)
+          }
+        } { (r, n) =>
+          r +# Result[NodeType](n, ignored = true)
+        }) _
   def foldValidators =
     foldRulesOnActual[Validator[NodeType]](
-      (a: TreeNode[NodeType], r: TreeResult[NodeType], validators: Iterable[Validator[NodeType]], v: Validator[NodeType]) => r ++ v.validate(a)) _
+      (a: TreeNode[NodeType], r: TreeResult[NodeType], validators: Iterable[Validator[NodeType]], v: Validator[NodeType]) => v.validate(a, r)) _
 
   def explain(diff: ExplainableTreeNodeDiff[NodeType]): ExplainableTreeNodeDiff[NodeType] = explainer.fold(diff) { _.explain(diff) }
 
   def compare(e: Option[TreeNode[NodeType]], a: Option[TreeNode[NodeType]], result: TreeResult[NodeType] = TreeResult[NodeType](), globalMatchers: Iterable[Matcher[NodeType]] = Set.empty[Matcher[NodeType]]): TreeResult[NodeType] =
-    compare(List((e, a)), result, validators, ignores, matchers ++ globalMatchers)
-    
-  @tailrec private def compare(
-    tuples: List[(Option[TreeNode[NodeType]], Option[TreeNode[NodeType]])], 
-    result: TreeResult[NodeType],
-    validators: Iterable[Validator[NodeType]],
-    ignores: Iterable[Lookup[NodeType]],
-    matchers: Iterable[Matcher[NodeType]]): TreeResult[NodeType] =
-    tuples match {
-      case Nil => result
-      case (None, None) :: xs =>
-        throw new Error("Cannot compare, no expected and no actual.")
-      case (None, Some(a)) :: xs if (!ignoreInRightOnly) =>
-        compare(xs, result ++ foldValidators(a, result, validators) +# (Result(a, Option(explain(InRightTreeNodeDiff(a, DiffMetaData(name)))), compared = true)), Nil, Nil, matchers.filter {_.global})
-      case (Some(e), None) :: xs if (!ignoreInLeftOnly) =>
-        compare(xs, result #+ (Result(e, Option(explain(InLeftTreeNodeDiff(e, DiffMetaData(name)))), compared = true)), Nil, Nil, matchers.filter {_.global})
-      case (Some(e), Some(a)) :: xs => {
-        val subTreeResults = foldMatchers(e, a, foldValidators(a, foldIgnores(e, a, result, ignores), validators), matchers)
-        val (expected, actual) = (subTreeResults.expected, subTreeResults.actual)
+    processTuple((e, a), result, validators, ignores, matchers ++ globalMatchers)
 
-        def sortedNodesThatShouldBeCompared(matchAgainst: Map[String, Result[NodeType]])(nodes: Seq[TreeNode[NodeType]]) =
-          nodes sortWith { (a, b) => a.path < b.path } filter { x =>
-            val result = matchAgainst.getOrElse(x.path, Result[NodeType](x))
+  private def diff(e: TreeNode[NodeType], a: TreeNode[NodeType], actual: Map[String, Result[NodeType]]) = {
+    val diff =
+      if (e.hasValue || a.hasValue) Some {
+        actual.get(e.path(true)) match {
+          case Some(r) if (r.ignored) =>
+            explain(ValidationPassedTreeNodeDiff(a, DiffMetaData("Ignore(" + r.node.path(true) + ")"), Option("Ignore Validation Present.")))
+          case Some(r) if (r.isValidated) =>
+            explain {
+              if (r.validation.filter(!_.result).isEmpty)
+                ValidationPassedTreeNodeDiff(a, DiffMetaData(r.validation.map { _.meta.name }.mkString(", ")))
+              else
+                ValidationFailedTreeNodeDiff(a, DiffMetaData(r.validation.map { _.meta.name }.mkString(", ")))
+            }
+          case _ => {
+            (e.value, a.value) match {
+              case (Some(ev), Some(av)) if (ev == av) => IdenticalTreeNodeDiff(e, a, DiffMetaData(name))
+              case (Some(_), Some(_)) | (None, Some(_)) | (Some(_), None) => explain(DifferentTreeNodeDiff(e, a, DiffMetaData(name)))
+              case (None, None) => IdenticalTreeNodeDiff(e, a, DiffMetaData(name))
+            }
+          }
+        }
+      } else None
+    val previous = actual.getOrElse(a.path(true), Result[NodeType](a))
+    TreeResult(HashMap(e.path(true) -> Result(e, diff, compared = true, ignored = previous.ignored)),
+               HashMap(a.path(true) -> (Result(a, diff, compared = true) + previous)))
+  }
+    
+  private def processTuple(tuple: Tuple2[Option[TreeNode[NodeType]], Option[TreeNode[NodeType]]],
+                           result: TreeResult[NodeType],
+                           validators: Iterable[Validator[NodeType]],
+                           ignores: Iterable[Lookup[NodeType]],
+                           matchers: Iterable[Matcher[NodeType]]): TreeResult[NodeType] =
+    tuple match {
+      case (None, None) =>
+        throw new Error("Cannot compare, no expected and no actual.")
+      case (None, Some(a)) if (!ignoreInRightOnly) =>
+        foldValidators(a, result, validators) +# (Result(a, Option(explain(InRightTreeNodeDiff(a, DiffMetaData(name)))), compared = true))
+      case (Some(e), None) if (!ignoreInLeftOnly) =>
+        result #+ (Result(e, Option(explain(InLeftTreeNodeDiff(e, DiffMetaData(name)))), compared = true))
+      case (Some(e), Some(a)) => {
+        val subTreeResults = foldMatchers(e, a, foldValidators(a, foldIgnores(e, a, result, ignores), validators), matchers)
+        
+        def sortNodes(matchAgainst: Map[String, Result[NodeType]], nodes: Seq[TreeNode[NodeType]]) =
+          nodes sortWith { (a, b) => a.path(false) < b.path(false) } filter { x =>
+            val result = matchAgainst.getOrElse(x.path(true), Result[NodeType](x))
             !result.usedAsKey && !result.compared && !result.ignored
           }
-        def eSortedNodes = sortedNodesThatShouldBeCompared(expected) _
-        def aSortedNodes = sortedNodesThatShouldBeCompared(actual) _
-
-        val pairedChildren = zipWithCondition(eSortedNodes(e.children()), aSortedNodes(a.children())) { (e, a) => e.name.compare(a.name) }
-
-        def compareNodes0(eNode: TreeNode[NodeType], aNode: TreeNode[NodeType]): TreeResult[NodeType] = {
-          val diff =
-            (eNode.hasValue || aNode.hasValue) option {
-              actual.get(eNode.path) match {
-                case Some(r) if (r.ignored) =>
-                  explain(ValidationPassedTreeNodeDiff(aNode, DiffMetaData("Ignore(" + r.node.path + ")"), Option("Ignore Validation Present.")))
-                case Some(r) if (r.isValidated) =>
-                  explain {
-                    if (r.validation.filter(!_.result).isEmpty)
-                      ValidationPassedTreeNodeDiff(aNode, DiffMetaData(r.validation.map { _.meta.name }.mkString(", ")))
-                    else
-                      ValidationFailedTreeNodeDiff(aNode, DiffMetaData(r.validation.map { _.meta.name }.mkString(", ")))
-                  }
-                case _ => {
-                  (eNode.value, aNode.value) match {
-                    case (Some(ev: Comparable[Any]), Some(av: Comparable[Any])) =>
-                      ev.compareTo(av) match {
-                        case 0 => IdenticalTreeNodeDiff(eNode, aNode, DiffMetaData(name))
-                        case _ => explain(DifferentTreeNodeDiff(eNode, aNode, DiffMetaData(name)))
-                      }
-                    case (None, Some(_)) | (Some(_), None) => explain(DifferentTreeNodeDiff(eNode, aNode, DiffMetaData(name)))
-                    case (None, None)                      => IdenticalTreeNodeDiff(eNode, aNode, DiffMetaData(name))
-                    case _                                 => throw new Error("Cannot compare uncomparables.")
-                  }
-                }
-              }
-            }
-          val previous = actual.getOrElse(aNode.path, Result[NodeType](aNode))
-          TreeResult(
-            Map(eNode.path -> Result(eNode, diff, compared = true, ignored = previous.ignored)),
-            Map(aNode.path -> (Result(aNode, diff, compared = true) + previous)))
+        
+        val (leafNodes,nonLeafNodes) = 
+          zipWithCondition(sortNodes(subTreeResults.expected, e.children()), sortNodes(subTreeResults.actual, a.children())) { (e, a) => e.name.compare(a.name) }
+            .partition {case (Some(e), Some(a)) if e.children().isEmpty && a.children().isEmpty => true; case _ => false }
+            
+        val leafNodesResult = (Iterator.single((Some(e), Some(a))) ++ leafNodes).foldLeft(subTreeResults) {
+          case (t, (Some(e), Some(a))) => t ++ diff(e, a, subTreeResults.actual)
         }
-        compare(xs ++ pairedChildren, subTreeResults ++ compareNodes0(e, a), Nil, Nil, matchers.filter {_.global})
+        val globalMatchers = matchers.filter(_.global)
+        nonLeafNodes.foldLeft(leafNodesResult)((res, tuple) => processTuple(tuple, res, Nil, Nil, globalMatchers))
       }
-      case _ :: xs => compare(xs, result, Nil, Nil, matchers.filter {_.global})
+      case _ => result
     }
 }
+
 /*
 Copyright 2017 Morgan Stanley
 

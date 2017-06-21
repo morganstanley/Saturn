@@ -4,6 +4,7 @@ import java.util.Collection
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
+import scala.language.reflectiveCalls
 
 import org.eclipse.emf.ecore.EObject
 

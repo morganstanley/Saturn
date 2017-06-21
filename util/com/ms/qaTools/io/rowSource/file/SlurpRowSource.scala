@@ -1,30 +1,23 @@
 package com.ms.qaTools.io.rowSource.file
 
-import java.io.{File => JFile}
-import java.io.{FileReader => JFileReader}
-import java.io.{Reader => JReader}
-import java.io.{StringReader => JStringReader}
-
 import org.apache.commons.io.IOUtils
+import com.ms.qaTools.IteratorProxy
 
-
-
-class SlurpRowSource(private val reader: JReader) extends Iterator[String] {
-  private val i = Iterator.single(IOUtils.toString(reader))  
-  override def hasNext = i.hasNext
-  override def next(): String = i.next
+class SlurpRowSource(private val reader: java.io.Reader) extends IteratorProxy[String] {
+  val self = Iterator.single(IOUtils.toString(reader))
+  override def close() = reader.close
 }
 
 object SlurpRowSource {
-  def apply(reader: JReader) = new SlurpRowSource(reader)
+  def apply(reader: java.io.Reader) = new SlurpRowSource(reader)
 }
 
 object SlurpBufferRowSource {
-  def apply(buffer: String) = new SlurpRowSource(new JStringReader(buffer))
+  def apply(buffer: String) = new SlurpRowSource(new java.io.StringReader(buffer))
 }
 
 object SlurpFileRowSource {
-  def apply(file: JFile) = new SlurpRowSource(new JFileReader(file))
+  def apply(file: java.io.File) = new SlurpRowSource(new java.io.FileReader(file))
 }
 /*
 Copyright 2017 Morgan Stanley

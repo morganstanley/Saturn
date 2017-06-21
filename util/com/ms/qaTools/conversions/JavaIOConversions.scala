@@ -13,8 +13,7 @@ import java.io.StringWriter
 import java.io.{ Writer => JWriter }
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
-
-
+import scala.language.implicitConversions
 
 object JavaIOConversions {
   implicit def fileFromFileName(fileName: String): File = new File(fileName)

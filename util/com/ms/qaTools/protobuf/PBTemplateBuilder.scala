@@ -4,15 +4,11 @@ import java.io.Reader
 import java.io.FileReader
 import com.google.protobuf.DynamicMessage
 import com.google.protobuf.ExtensionRegistry
-import com.ms.qaTools.io.rowSource.protobuf.TextDynamicProtoBufRowSource
-
-
+import com.ms.qaTools.io.rowSource.TextDynamicProtoBufRowSource
 
 object PBTemplateBuilder {
-
-  def apply(pbTemplateFileName: String, descFileName: String, pbMessageType: String): DynamicMessage = {
+  def apply(pbTemplateFileName: String, descFileName: String, pbMessageType: String): DynamicMessage =
     apply(new FileReader(pbTemplateFileName), descFileName, pbMessageType)
-  }
 
   def apply(pbTemplateFileReader: Reader, descFileName: String, pbMessageType: String): DynamicMessage = {
     implicit val extensionRegistry: ExtensionRegistry = null

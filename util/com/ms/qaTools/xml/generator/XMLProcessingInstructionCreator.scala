@@ -1,20 +1,17 @@
 package com.ms.qaTools.xml.generator
 
-import com.ms.qaTools.io._
 import org.w3c.dom.Document
 import org.w3c.dom.ProcessingInstruction
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.ParameterizedText
 
-
-
-class XmlProcessingInstructionCreator(procInstruction: ProcessingInstruction, override val isLegacyMode: Boolean) extends XmlLeafNodeCreator with ParameterizedText {
+class XmlProcessingInstructionCreator(procInstruction: ProcessingInstruction, val isLegacyMode: Boolean) extends XmlLeafNodeCreator with ParameterizedText {
   require(procInstruction != null, "text node must not be null")
-  override val isLocal: Boolean = true
+  val isLocal = true
   lazy val value: String = procInstruction.getData()
   val target: String = procInstruction.getTarget()
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: Document): ProcessingInstruction = {
+  def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: Document): ProcessingInstruction = {
     doc.createProcessingInstruction(target, resolveValue(data))
   }
 

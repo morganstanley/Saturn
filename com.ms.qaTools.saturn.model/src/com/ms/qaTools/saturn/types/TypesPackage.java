@@ -207,6 +207,52 @@ public interface TypesPackage extends EPackage
   int          ABSTRACT_RUN_GROUP_MODIFIER_FEATURE_COUNT               = 1;
 
   /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.types.impl.AlmIdImpl <em>Alm Id</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.types.impl.AlmIdImpl
+   * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getAlmId()
+   * @generated
+   */
+  int ALM_ID = 5;
+
+  /**
+   * The feature id for the '<em><b>Domain</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ALM_ID__DOMAIN = 0;
+
+  /**
+   * The feature id for the '<em><b>Project</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ALM_ID__PROJECT = 1;
+
+  /**
+   * The feature id for the '<em><b>Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ALM_ID__ID = 2;
+
+  /**
+   * The number of structural features of the '<em>Alm Id</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ALM_ID_FEATURE_COUNT = 3;
+
+  /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.types.impl.ColumnImpl <em>Column</em>}' class. <!--
    * begin-user-doc --> <!-- end-user-doc -->
    * 
@@ -214,7 +260,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getColumn()
    * @generated
    */
-  int          COLUMN                                                  = 5;
+  int          COLUMN                                                  = 6;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -272,7 +318,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getComment()
    * @generated
    */
-  int          COMMENT                                                 = 6;
+  int          COMMENT                                                 = 7;
 
   /**
    * The number of structural features of the '<em>Comment</em>' class.
@@ -289,7 +335,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getComplexValueMap()
    * @generated
    */
-  int          COMPLEX_VALUE_MAP                                       = 7;
+  int          COMPLEX_VALUE_MAP                                       = 8;
 
   /**
    * The feature id for the '<em><b>Source</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc
@@ -333,7 +379,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getComplexValuePair()
    * @generated
    */
-  int          COMPLEX_VALUE_PAIR                                      = 8;
+  int          COMPLEX_VALUE_PAIR                                      = 9;
 
   /**
    * The feature id for the '<em><b>First</b></em>' containment reference.
@@ -369,7 +415,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getDataSet()
    * @generated
    */
-  int          DATA_SET                                                = 10;
+  int          DATA_SET                                                = 11;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.types.impl.DataSetInstanceImpl <em>Data Set Instance</em>}' class.
@@ -378,7 +424,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getDataSetInstance()
    * @generated
    */
-  int          DATA_SET_INSTANCE                                       = 11;
+  int          DATA_SET_INSTANCE                                       = 12;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.types.impl.ResourceDefinitionImpl <em>Resource Definition</em>}' class.
@@ -387,7 +433,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getResourceDefinition()
    * @generated
    */
-  int          RESOURCE_DEFINITION                                     = 19;
+  int          RESOURCE_DEFINITION                                     = 20;
 
   /**
    * The feature id for the '<em><b>Enabled</b></em>' attribute.
@@ -430,7 +476,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getNamedResourceDefinition()
    * @generated
    */
-  int          NAMED_RESOURCE_DEFINITION                               = 18;
+  int          NAMED_RESOURCE_DEFINITION                               = 19;
 
   /**
    * The feature id for the '<em><b>Enabled</b></em>' attribute.
@@ -482,7 +528,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getDatabaseResourceDefinition()
    * @generated
    */
-  int DATABASE_RESOURCE_DEFINITION = 9;
+  int DATABASE_RESOURCE_DEFINITION = 10;
 
   /**
    * The feature id for the '<em><b>Enabled</b></em>' attribute.
@@ -604,7 +650,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getDataSetResourceDefinition()
    * @generated
    */
-  int          DATA_SET_RESOURCE_DEFINITION                            = 12;
+  int          DATA_SET_RESOURCE_DEFINITION                            = 13;
 
   /**
    * The feature id for the '<em><b>Enabled</b></em>' attribute.
@@ -681,7 +727,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getDeviceResourceDefinition()
    * @generated
    */
-  int          DEVICE_RESOURCE_DEFINITION                              = 13;
+  int          DEVICE_RESOURCE_DEFINITION                              = 14;
 
   /**
    * The feature id for the '<em><b>Enabled</b></em>' attribute.
@@ -749,7 +795,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getEmpty()
    * @generated
    */
-  int          EMPTY                                                   = 14;
+  int          EMPTY                                                   = 15;
 
   /**
    * The number of structural features of the '<em>Empty</em>' class.
@@ -766,7 +812,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getInlineDeviceResourceDefinition()
    * @generated
    */
-  int          INLINE_DEVICE_RESOURCE_DEFINITION                       = 15;
+  int          INLINE_DEVICE_RESOURCE_DEFINITION                       = 16;
 
   /**
    * The feature id for the '<em><b>Enabled</b></em>' attribute.
@@ -841,7 +887,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getInlineNamespaceUriDefinition()
    * @generated
    */
-  int          INLINE_NAMESPACE_URI_DEFINITION                         = 16;
+  int          INLINE_NAMESPACE_URI_DEFINITION                         = 17;
 
   /**
    * The feature id for the '<em><b>Enabled</b></em>' attribute.
@@ -918,7 +964,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getKronusResource()
    * @generated
    */
-  int KRONUS_RESOURCE = 17;
+  int KRONUS_RESOURCE = 18;
 
   /**
    * The feature id for the '<em><b>Enabled</b></em>' attribute.
@@ -981,7 +1027,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getRowInstance()
    * @generated
    */
-  int          ROW_INSTANCE                                            = 20;
+  int          ROW_INSTANCE                                            = 21;
 
   /**
    * The feature id for the '<em><b>Columns</b></em>' containment reference list.
@@ -1008,7 +1054,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getXmlNamespaceDefinition()
    * @generated
    */
-  int          XML_NAMESPACE_DEFINITION                                = 21;
+  int          XML_NAMESPACE_DEFINITION                                = 22;
 
   /**
    * The feature id for the '<em><b>Enabled</b></em>' attribute.
@@ -1085,7 +1131,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getXmlUriDefinition()
    * @generated
    */
-  int          XML_URI_DEFINITION                                      = 22;
+  int          XML_URI_DEFINITION                                      = 23;
 
   /**
    * The feature id for the '<em><b>Prefix</b></em>' containment reference. <!-- begin-user-doc --> <!-- end-user-doc
@@ -1128,7 +1174,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getColumnTrimEnum()
    * @generated
    */
-  int          COLUMN_TRIM_ENUM                                        = 23;
+  int          COLUMN_TRIM_ENUM                                        = 24;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.types.ColumnTypeEnum <em>Column Type Enum</em>}' enum.
@@ -1137,7 +1183,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getColumnTypeEnum()
    * @generated
    */
-  int          COLUMN_TYPE_ENUM                                        = 24;
+  int          COLUMN_TYPE_ENUM                                        = 25;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.types.InterpretersEnum <em>Interpreters Enum</em>}' enum.
@@ -1146,7 +1192,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getInterpretersEnum()
    * @generated
    */
-  int          INTERPRETERS_ENUM                                       = 25;
+  int          INTERPRETERS_ENUM                                       = 26;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.types.ModulesEnum <em>Modules Enum</em>}' enum. <!--
@@ -1156,7 +1202,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getModulesEnum()
    * @generated
    */
-  int          MODULES_ENUM                                            = 26;
+  int          MODULES_ENUM                                            = 27;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.types.RepetitionActionsEnum <em>Repetition Actions Enum</em>}' enum.
@@ -1165,7 +1211,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getRepetitionActionsEnum()
    * @generated
    */
-  int          REPETITION_ACTIONS_ENUM                                 = 27;
+  int          REPETITION_ACTIONS_ENUM                                 = 28;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.types.ResourcesEnum <em>Resources Enum</em>}' enum. <!--
@@ -1175,7 +1221,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getResourcesEnum()
    * @generated
    */
-  int          RESOURCES_ENUM                                          = 28;
+  int          RESOURCES_ENUM                                          = 29;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.types.SaturnStatusConditionEnum <em>Saturn Status Condition Enum</em>}' enum.
@@ -1184,7 +1230,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getSaturnStatusConditionEnum()
    * @generated
    */
-  int          SATURN_STATUS_CONDITION_ENUM                            = 29;
+  int          SATURN_STATUS_CONDITION_ENUM                            = 30;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.types.SaturnStatusEnum <em>Saturn Status Enum</em>}' enum.
@@ -1193,7 +1239,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getSaturnStatusEnum()
    * @generated
    */
-  int          SATURN_STATUS_ENUM                                      = 30;
+  int          SATURN_STATUS_ENUM                                      = 31;
 
   /**
    * The meta object id for the '<em>Column Trim Enum Object</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc
@@ -1203,7 +1249,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getColumnTrimEnumObject()
    * @generated
    */
-  int          COLUMN_TRIM_ENUM_OBJECT                                 = 31;
+  int          COLUMN_TRIM_ENUM_OBJECT                                 = 32;
 
   /**
    * The meta object id for the '<em>Column Type Enum Object</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc
@@ -1213,7 +1259,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getColumnTypeEnumObject()
    * @generated
    */
-  int          COLUMN_TYPE_ENUM_OBJECT                                 = 32;
+  int          COLUMN_TYPE_ENUM_OBJECT                                 = 33;
 
   /**
    * The meta object id for the '<em>Interpreters Enum Object</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc
@@ -1223,7 +1269,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getInterpretersEnumObject()
    * @generated
    */
-  int          INTERPRETERS_ENUM_OBJECT                                = 33;
+  int          INTERPRETERS_ENUM_OBJECT                                = 34;
 
   /**
    * The meta object id for the '<em>Modules Enum Object</em>' data type.
@@ -1232,7 +1278,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getModulesEnumObject()
    * @generated
    */
-  int          MODULES_ENUM_OBJECT                                     = 34;
+  int          MODULES_ENUM_OBJECT                                     = 35;
 
   /**
    * The meta object id for the '<em>Object Id</em>' data type.
@@ -1241,7 +1287,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getObjectId()
    * @generated
    */
-  int          OBJECT_ID                                               = 35;
+  int          OBJECT_ID                                               = 36;
 
   /**
    * The meta object id for the '<em>Object Name</em>' data type.
@@ -1250,7 +1296,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getObjectName()
    * @generated
    */
-  int          OBJECT_NAME                                             = 36;
+  int          OBJECT_NAME                                             = 37;
 
   /**
    * The meta object id for the '<em>Repetition Actions Enum Object</em>' data type.
@@ -1260,7 +1306,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getRepetitionActionsEnumObject()
    * @generated
    */
-  int          REPETITION_ACTIONS_ENUM_OBJECT                          = 37;
+  int          REPETITION_ACTIONS_ENUM_OBJECT                          = 38;
 
   /**
    * The meta object id for the '<em>Resources Enum Object</em>' data type. <!-- begin-user-doc --> <!-- end-user-doc
@@ -1270,7 +1316,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getResourcesEnumObject()
    * @generated
    */
-  int          RESOURCES_ENUM_OBJECT                                   = 38;
+  int          RESOURCES_ENUM_OBJECT                                   = 39;
 
   /**
    * The meta object id for the '<em>Saturn Status Condition Enum Object</em>' data type.
@@ -1280,7 +1326,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getSaturnStatusConditionEnumObject()
    * @generated
    */
-  int          SATURN_STATUS_CONDITION_ENUM_OBJECT                     = 39;
+  int          SATURN_STATUS_CONDITION_ENUM_OBJECT                     = 40;
 
   /**
    * The meta object id for the '<em>Saturn Status Enum Object</em>' data type.
@@ -1290,7 +1336,7 @@ public interface TypesPackage extends EPackage
    * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getSaturnStatusEnumObject()
    * @generated
    */
-  int          SATURN_STATUS_ENUM_OBJECT                               = 40;
+  int          SATURN_STATUS_ENUM_OBJECT                               = 41;
 
   /**
    * Returns the meta object for class '{@link com.ms.qaTools.saturn.types.AbstractAnnotation <em>Abstract Annotation</em>}'.
@@ -1400,6 +1446,49 @@ public interface TypesPackage extends EPackage
    * @generated
    */
   EAttribute getAbstractRunGroupModifier_Enabled();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.types.AlmId <em>Alm Id</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Alm Id</em>'.
+   * @see com.ms.qaTools.saturn.types.AlmId
+   * @generated
+   */
+  EClass getAlmId();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.types.AlmId#getDomain <em>Domain</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Domain</em>'.
+   * @see com.ms.qaTools.saturn.types.AlmId#getDomain()
+   * @see #getAlmId()
+   * @generated
+   */
+  EReference getAlmId_Domain();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.types.AlmId#getProject <em>Project</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Project</em>'.
+   * @see com.ms.qaTools.saturn.types.AlmId#getProject()
+   * @see #getAlmId()
+   * @generated
+   */
+  EReference getAlmId_Project();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.types.AlmId#getId <em>Id</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Id</em>'.
+   * @see com.ms.qaTools.saturn.types.AlmId#getId()
+   * @see #getAlmId()
+   * @generated
+   */
+  EReference getAlmId_Id();
 
   /**
    * Returns the meta object for class '{@link com.ms.qaTools.saturn.types.Column <em>Column</em>}'.
@@ -2213,6 +2302,40 @@ public interface TypesPackage extends EPackage
      * @generated
      */
     EAttribute ABSTRACT_RUN_GROUP_MODIFIER__ENABLED             = eINSTANCE.getAbstractRunGroupModifier_Enabled();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.types.impl.AlmIdImpl <em>Alm Id</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.types.impl.AlmIdImpl
+     * @see com.ms.qaTools.saturn.types.impl.TypesPackageImpl#getAlmId()
+     * @generated
+     */
+    EClass ALM_ID = eINSTANCE.getAlmId();
+
+    /**
+     * The meta object literal for the '<em><b>Domain</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ALM_ID__DOMAIN = eINSTANCE.getAlmId_Domain();
+
+    /**
+     * The meta object literal for the '<em><b>Project</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ALM_ID__PROJECT = eINSTANCE.getAlmId_Project();
+
+    /**
+     * The meta object literal for the '<em><b>Id</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ALM_ID__ID = eINSTANCE.getAlmId_Id();
 
     /**
      * The meta object literal for the '{@link com.ms.qaTools.saturn.types.impl.ColumnImpl <em>Column</em>}' class. <!--

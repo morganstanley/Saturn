@@ -1,13 +1,11 @@
 package com.ms.qaTools.io.rowSource.delimited
 
-import java.io.StringReader
-import java.io.{ Reader => JReader }
-import scala.annotation.tailrec
 import java.io.Reader
-import java.io.PushbackReader
-import scala.util.matching.Regex
-import scala.util.parsing.input.{Position, NoPosition}
-import java.io.Closeable
+
+import scala.annotation.tailrec
+import scala.collection.mutable.Builder
+import scala.util.parsing.input.{ Position, NoPosition }
+
 import com.ms.qaTools.io.rowSource.internal.StreamingReader
 
 /**
@@ -111,26 +109,30 @@ class DelimitedParser(
     }
   }
 
-  def readNext: Seq[Option[String]] = parseLine(streamingReader, true).map {_.reverse}.orNull
+  def readNext: Seq[Option[String]] = parseLine(streamingReader, true).orNull
 
   @tailrec
-  private final def parseLine(buffer: StreamingReader, atHead: Boolean, accu: Seq[Option[String]] = Seq()): Option[Seq[Option[String]]] = {
-    def processEnd0(onEmpty: Option[Seq[Option[String]]]) =
-      if (accu.isEmpty) onEmpty
-      else Some(accu)
+  private final def parseLine(buffer: StreamingReader, atHead: Boolean,
+                              accu: Builder[Option[String], IndexedSeq[Option[String]]] = IndexedSeq.newBuilder): Option[IndexedSeq[Option[String]]] = {
+    def processEnd0(onEmpty: Option[IndexedSeq[Option[String]]]) = accu.result() match {
+      case Seq() => onEmpty
+      case xs    => Some(xs)
+    }
     if (buffer.atEnd) processEnd0(None)
     else {
       buffer.first(newline.length) match {
         case `newline` => {
           buffer.drop(newline.length)
-          processEnd0(Some(Seq(None)))
+          processEnd0(Some(IndexedSeq(None)))
         }
         case _ => {
-          parseLine(buffer, false, parseCell(buffer, atHead) +: accu)
+          parseLine(buffer, false, accu += parseCell(buffer, atHead))
         }
       }
     }
   }
+
+  def close() = reader.close()
 }
 
 object DelimitedParser {

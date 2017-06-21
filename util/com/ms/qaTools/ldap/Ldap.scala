@@ -1,36 +1,80 @@
 package com.ms.qaTools.ldap
-
-import java.util.Hashtable
+import com.ms.qaTools.AnyUtil
 import javax.naming.Context
-import javax.naming.directory.DirContext
-import javax.naming.directory.InitialDirContext
-import java.io.Closeable
+import javax.naming.{directory => d}
+import scala.collection.JavaConverters._
 
+class Ldap(authentication: String, providerURL: String, securityPrincipal: String, securityCredentials: String) extends java.io.Closeable {
+  val dirContext: d.DirContext = new d.InitialDirContext((new java.util.Hashtable[String, String]).withSideEffect{t =>
+    t.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
+    t.put(Context.SECURITY_AUTHENTICATION, authentication)
+    t.put(Context.PROVIDER_URL, providerURL)
+    t.put(Context.SECURITY_PRINCIPAL, securityPrincipal)
+    t.put(Context.SECURITY_CREDENTIALS, securityCredentials)})
 
+  def manipulate(manipulators: TraversableOnce[LdapContentManipulator]): Unit =
+    manipulators.foreach(_.apply(dirContext))
 
-class Ldap(ctx: DirContext) extends Closeable {
-  val dirContext: DirContext = ctx
-
-  override def close() = {
-    dirContext.close()
-  }
+  def close() = dirContext.close
 }
 
-object Ldap {
-  def apply(authentication: String, providerURL: String, securityPrincipal: String, securityCredentials: String): Ldap = {
-    def initializeContext(): DirContext = {
-      val env = new Hashtable[String, String]
-      env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
-      env.put(Context.SECURITY_AUTHENTICATION, authentication)
-      env.put(Context.PROVIDER_URL, providerURL)
-      env.put(Context.SECURITY_PRINCIPAL, securityPrincipal)
-      env.put(Context.SECURITY_CREDENTIALS, securityCredentials)
-      val ctx: InitialDirContext = new InitialDirContext(env)
-      ctx
+sealed trait LdapContentManipulator extends Function1[d.DirContext, Unit] {
+  def getSearchControls(timeLimit: Int, scope: String) =
+    (new d.SearchControls).withSideEffect{c =>
+      c.setSearchScope(scope match {
+        case "OBJECT_SCOPE"   => d.SearchControls.OBJECT_SCOPE
+        case "ONELEVEL_SCOPE" => d.SearchControls.ONELEVEL_SCOPE
+        case "SUBTREE_SCOPE"  => d.SearchControls.SUBTREE_SCOPE
+        case _                => d.SearchControls.SUBTREE_SCOPE})
+      c.setTimeLimit(timeLimit)}
+
+  def modifyAttribute(ctx: d.DirContext, modOperation: Int, fullBindingName: String, name: String, value: String = null) =
+    ctx.modifyAttributes(fullBindingName, Array(
+      new d.ModificationItem(modOperation, if(value != null) new d.BasicAttribute(name, value) else new d.BasicAttribute(name))))
+
+  def iterate[A](e: javax.naming.NamingEnumeration[A]) =
+    Iterator.continually(if (e.hasMore) Some(e.next) else None).takeWhile(_.nonEmpty).flatten
+}
+
+case class LdapAddAttributeMapper(contextName: String, distinctName: String, attributeName: String, attributeValue: String, timeLimit: Int, scope: String) extends LdapContentManipulator {
+  def apply(ctx: d.DirContext) =
+    iterate(ctx.search(contextName, "(objectClass=*)", getSearchControls(timeLimit, scope))).filter(_.getName.nonEmpty).foreach{result =>
+      if (Seq("*", result.getName).contains(distinctName))
+        modifyAttribute(ctx, d.DirContext.ADD_ATTRIBUTE, result.getNameInNamespace, attributeName, attributeValue)}
+}
+
+case class LdapAddSubContextMapper(contextName: String, distinctName: String, attributeNamesValues: java.util.List[String], separator: String) extends LdapContentManipulator {
+  def apply(ctx: d.DirContext) = ctx.createSubcontext(
+    distinctName + "," + contextName,
+    (new d.BasicAttributes()).withSideEffect(attributes =>
+      attributeNamesValues.asScala.foreach(attr => attr.split(separator) match {
+        case Array(k, v) => attributes.put(k, v)
+        case _ => require(false, s"Wrong format for attribute: expected `key${separator}value` got `$attr`")})))
+}
+
+case class LdapDeleteSubContextMapper(contextName: String, distinctName: String) extends LdapContentManipulator {
+  def apply(ctx: d.DirContext) = util.Try(ctx.destroySubcontext(distinctName + "," + contextName))
+}
+
+case class LdapReplaceAttributeMapper(contextName: String, distinctName: String, attributeName: String, attributeValue: String, timeLimit: Int, scope: String) extends LdapContentManipulator {
+  def apply(ctx: d.DirContext) =
+    iterate(ctx.search(contextName, "(objectClass=*)", getSearchControls(timeLimit, scope))).filter(_.getName.nonEmpty).foreach{result =>
+      if (Seq("*", result.getName).contains(distinctName))
+        if (result.getName.split("=").head == attributeName && distinctName != "*")
+          ctx.rename(result.getNameInNamespace, attributeName + "=" + attributeValue + "," + contextName)
+        else
+          modifyAttribute(ctx, d.DirContext.REPLACE_ATTRIBUTE, result.getNameInNamespace, attributeName, attributeValue)}
+}
+
+case class LdapRemoveAttributeMapper(contextName: String, distinctName: String, attributeName: String, attributeValue: String, timeLimit: Int, scope: String) extends LdapContentManipulator {
+  def apply(ctx: d.DirContext) =
+    iterate(ctx.search(contextName, "(objectClass=*)", getSearchControls(timeLimit, scope))).filter(_.getName.nonEmpty).foreach{result =>
+      if (distinctName == "*" || (distinctName == result.getName && attributeValue == null))
+        modifyAttribute(ctx, d.DirContext.REMOVE_ATTRIBUTE, result.getNameInNamespace, attributeName)
+      else if(distinctName == result.getName)
+        iterate(result.getAttributes.get(attributeName).getAll).foreach{v =>
+          if (attributeValue == v) modifyAttribute(ctx, d.DirContext.REMOVE_ATTRIBUTE, result.getNameInNamespace, attributeName, attributeValue)}
     }
-    val ctx: DirContext = initializeContext()
-    new Ldap(ctx)
-  }
 }
 /*
 Copyright 2017 Morgan Stanley

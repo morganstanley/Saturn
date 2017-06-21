@@ -1,13 +1,9 @@
 package com.ms.qaTools.toolkit.cmdLine
 
-import java.io.File
-
 import org.kohsuke.args4j.Option
 import org.w3c.dom.Document
 
 import com.ms.qaTools.io.rowSource.file.XmlFileRowSource
-
-
 
 trait InputXmlTemplateFile {
   @Option(name = "--template", usage = "specify an xml template fileName", required = true)

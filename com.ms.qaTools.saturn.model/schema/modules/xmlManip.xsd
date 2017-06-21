@@ -40,13 +40,23 @@
           <xs:element name="NodeName"       type="value:complexValue" minOccurs="0" />
           <xs:element name="Uri"            type="value:complexValue" minOccurs="0" />
           <xs:element name="Value"          type="value:complexValue" minOccurs="0" />
+          <xs:element name="PositionXpath"  type="value:complexValue" minOccurs="0" />
         </xs:sequence>
         <xs:attribute name="isAttribute" type="xs:boolean" default="false" />
         <xs:attribute name="isXml" type="xs:boolean" default="false" />
         <xs:attribute name="isCData" type="xs:boolean" default="false" />
+        <xs:attribute name="addPosition" type="xManipModule:AddPositionTypeEnum" default="NONE" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+
+  <xs:simpleType name="AddPositionTypeEnum" ecore:name="AddPositionTypeEnum" >
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="NONE" />
+      <xs:enumeration value="BEFORE" />
+      <xs:enumeration value="AFTER" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:complexType name="CleanNamespacesOperation" ecore:name="CleanNamespacesOperation" >
     <xs:complexContent>

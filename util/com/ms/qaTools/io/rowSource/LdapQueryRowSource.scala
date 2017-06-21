@@ -1,30 +1,27 @@
 package com.ms.qaTools.io.rowSource
 
-import java.io.Closeable
-import javax.naming.directory.SearchControls
-import javax.naming.directory.SearchResult
-
-import scala.collection.JavaConversions._
-
-import com.ms.qaTools._
+import javax.naming.directory
+import scala.collection.JavaConversions.enumerationAsScalaIterator
+import com.ms.qaTools.AnyUtil
+import com.ms.qaTools.IteratorProxy
 import com.ms.qaTools.ldap.Ldap
 
-class LdapQueryRowSource protected (ldap: Ldap, config: LdapQueryRowSource.Config)
-    extends IteratorProxy[SearchResult] with Closeable {
+class LdapQueryRowSource (ldap: Ldap, config: LdapQueryRowSource.Config)
+extends IteratorProxy[directory.SearchResult] with java.io.Closeable {
   lazy val results = ldap.dirContext.search(config.name, config.filterExpr, config.filterArgs, config.controls)
   lazy val self = enumerationAsScalaIterator(results)
-  def close() = results.close()
+  override def close() = results.close()
 }
 
 object LdapQueryRowSource {
-  case class Config(name: String,
-                    filterExpr: String,
-                    filterArgs: Array[AnyRef] = Array.empty,
-                    controls: SearchControls = defaultSearchControls)
+  case class Config(
+    name: String,
+    filterExpr: String,
+    filterArgs: Array[AnyRef] = Array.empty,
+    controls: directory.SearchControls = defaultSearchControls)
 
-  def defaultSearchControls = new SearchControls withSideEffect (_.setSearchScope(SearchControls.SUBTREE_SCOPE))
-
-  def apply(ldap: Ldap, config: Config): LdapQueryRowSource = new LdapQueryRowSource(ldap, config)
+  def defaultSearchControls = (new directory.SearchControls).withSideEffect(
+    _.setSearchScope(directory.SearchControls.SUBTREE_SCOPE))
 }
 /*
 Copyright 2017 Morgan Stanley

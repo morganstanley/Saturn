@@ -1,178 +1,235 @@
 package com.ms.qaTools.compare
 
-import com.ms.qaTools._
-import com.ms.qaTools.SeqUtil
-import com.ms.qaTools.io._
 import com.ms.qaTools.io.rowSource.ColumnDefinition
+import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.io.rowSource.ColumnOrdering
 import com.ms.qaTools.io.rowSource.ColumnType
-import com.ms.qaTools.io.rowSource.StringColumnType
-import com.ms.qaTools.io.rowSource.NumericColumnDefinition
-import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.NumericColumnType
-import com.ms.qaTools.io.rowSource.ColumnDefinitions
-import com.ms.qaTools.io.rowSource.Utils._
-import scala.collection.mutable.Buffer
-import scala.util.Try
+import com.ms.qaTools.io.rowSource.StringColumnType
+import com.ms.qaTools.io.rowSource.Utils.StringSeqIteratorWithColumnDefinitionsUtil
+import com.ms.qaTools.SeqUtil
+import java.util.Locale
+import scala.util.control.NonFatal
 
-class CompareColDef(val nameOpt: Option[String], keyOrder: Option[Int], val indexOpt: Option[Int], colType: ColumnType,
-  val isIgnored: Boolean, val mappedName: Option[String], val mappedIndex: Option[Int])
-extends ColumnDefinition(nameOpt.orElse(mappedName).getOrElse(throw new Error("Supply at least a name or a mapped-name.")), keyOrder, indexOpt.orElse(mappedIndex).getOrElse(throw new Error("Supply at least an index or a mapped-index.")), colType) {
-  val isMapped = mappedIndex != None
-  val leftName = nameOpt orElse(mappedName) getOrElse(throw new Error("No left-name defined"))
-  val rightName = mappedName orElse(nameOpt) getOrElse(throw new Error("No right-name defined"))
-  val leftIndex = indexOpt orElse(mappedIndex) getOrElse(throw new Error("No left-index defined."))
-  val rightIndex = mappedIndex orElse(indexOpt) getOrElse(throw new Error("No right-index defined."))
-
-  def copy(nameOpt: Option[String] = this.nameOpt,
-           keyOrder: Option[Int] = this.keyOrder,
-           indexOpt: Option[Int] = this.indexOpt,
-           colType: ColumnType = this.colType,
-           isIgnored: Boolean = this.isIgnored,
-           mappedName: Option[String] = this.mappedName,
-           mappedIndex: Option[Int] = this.mappedIndex): CompareColDef =
-    new CompareColDef(nameOpt, keyOrder, indexOpt, colType, isIgnored, mappedName, mappedIndex)
-
-  lazy val leftColumnDefinition: ColumnDefinition = ColumnDefinition(leftName, keyOrder, leftIndex, colType)
-  lazy val rightColumnDefinition: ColumnDefinition = ColumnDefinition(rightName, keyOrder, rightIndex, colType)
-
-  override def compare(leftRow: Seq[String], rightRow: Seq[String]): Int = {
-    Try {
-      colType.compare(leftRow(leftIndex), rightRow(rightIndex))
-    }.recover{
-      case t: ArrayIndexOutOfBoundsException => {
-        if (!leftRow.isDefinedAt(leftIndex)) throw new Error("Can't compare left row. Undefined value at index " + leftIndex + " in left row: " + leftRow.mkString(","), t)
-        else if (!rightRow.isDefinedAt(rightIndex)) throw new Error("Can't compare right row. Undefined value at index " + rightIndex + " in right row: " + rightRow.mkString(","), t)
-        else throw new Error("Can't compare rows: Left(" + leftRow.mkString(",") + "), Right(" + rightRow.mkString(",") + ")", t)
-      }
-      case t: Throwable =>
-        throw new Error("Can't compare rows: Left(" + leftRow.mkString(",") + "), Right(" + rightRow.mkString(",") + ")", t)
-    }.get
+object NWayCompareColDef {
+  case class Config(matching: Boolean, names: Seq[Option[String]], colType: Option[ColumnType], keyOrder: Option[Int]) {
+    if (matching) require(names.forall(_.nonEmpty), s"Matching column must exist in all sources")
   }
 
-  override def toString = {
-    val format = "CompareColDef(name = %s, keyOrder = %s, index = %s, colType = %s, isIgnored = %s, mappedName = %s, mappedIndex = %s)"
-    format.format(name, keyOrder, index, colType.getClass.getName, isIgnored, mappedName, mappedIndex)
+  object Config {
+    implicit def jsonFormat(implicit locale: Locale) = {
+      import spray.json.DefaultJsonProtocol._
+      jsonFormat4(apply)
+    }
+  }
+
+  def fromConfigs(configs: Seq[Config], columnss: Seq[Seq[ColumnDefinition]]): Seq[NWayCompareColDef] = {
+    val colss = columnss.map(_.toMapBy(_.name))
+    configs.map { c =>
+      if (c.matching) {
+        require(c.names.flatten.length == colss.length, "number of names in column config does not match number of sources")
+        val cols = for ((m, name) <- (colss, c.names.flatten).zipped.toIndexedSeq) yield m(name)
+        NWayCompareColDefMatching(
+          cols.map(c => c.name -> c.index),
+          c.colType.getOrElse(StringColumnType),
+          c.keyOrder.filter(_ > 0))
+      } else {
+        require(c.names.length == colss.length, "number of names in column config does not match number of sources")
+        val cols = for ((m, name) <- (colss, c.names).zipped.toIndexedSeq) yield name.map(m)
+        NWayCompareColDefIgnored(cols.map(_.map(c => c.name -> c.index)))
+      }
+    }
   }
 }
 
-class CompareColDefs(val cols: Seq[CompareColDef], val missing: Seq[String], val extra: Seq[String])
-extends ColumnDefinitions {
-  def compareColDefs = cols
-  def colDefs = cols
+sealed trait NWayCompareColDef {
+  def nameAndIndexOptions: IndexedSeq[Option[(String, Int)]]
+
+  /** Number of the sources get compared */
+  def count: Int = nameAndIndexOptions.length
+
+  def cellIndices: Iterator[(Int, Int)] =
+    for (i <- Iterator.range(0, count); (_, j) <- nameAndIndexOptions(i)) yield (i, j)
+}
+
+case class NWayCompareColDefMatching(nameAndIndices: IndexedSeq[(String, Int)],
+                                     colType: ColumnType,
+                                     keyOrder: Option[Int]) extends NWayCompareColDef {
+  require(keyOrder.forall(_ > 0), s"key order must be positive: $this")
+  val nameAndIndexOptions = nameAndIndices.map(Some(_))
+}
+
+case class NWayCompareColDefIgnored(nameAndIndexOptions: IndexedSeq[Option[(String, Int)]]) extends NWayCompareColDef {
+  require(nameAndIndexOptions.exists(_.nonEmpty))
+}
+
+trait LegacyCompareColDef { _: CompareColDef =>
+  @deprecated("Use `.left.name` instead",          "qaTools/util/2.1.53") def nameOpt: Option[String]
+  @deprecated("Use `.left.index` instead",         "qaTools/util/2.1.53") def indexOpt: Option[Int]
+  @deprecated("Use `.right.name` instead",         "qaTools/util/2.1.53") def mappedName: Option[String]
+  @deprecated("Use `.right.index` instead",        "qaTools/util/2.1.53") def mappedIndex: Option[Int]
+
+  @deprecated("Use `.{left,right}.name` instead",  "qaTools/util/2.1.53") def name: String
+  @deprecated("Use `.{left,right}.index` instead", "qaTools/util/2.1.53") def index: Int
+
+  @deprecated("Use `.{left,right}.name` instead",  "qaTools/util/2.1.53") def leftName: String = nameOpt orElse(mappedName) getOrElse(throw new Error("No left-name defined"))
+  @deprecated("Use `.{left,right}.name` instead",  "qaTools/util/2.1.53") def rightName: String = mappedName orElse(nameOpt) getOrElse(throw new Error("No right-name defined"))
+  @deprecated("Use `.{left,right}.index` instead", "qaTools/util/2.1.53") def leftIndex: Int = indexOpt orElse(mappedIndex) getOrElse(throw new Error("No left-index defined."))
+  @deprecated("Use `.{left,right}.index` instead", "qaTools/util/2.1.53") def rightIndex: Int = mappedIndex orElse(indexOpt) getOrElse(throw new Error("No right-index defined."))
+}
+
+sealed abstract class CompareColDef extends LegacyCompareColDef {
+  def left: ColumnDefinition
+  def right: ColumnDefinition
+  def ignored: Boolean
+  def keyOrder: Option[Int]
+  def colType: ColumnType
+  def isMapped: Boolean
+
+  def isKey: Boolean = keyOrder.isDefined
+  def isIgnored: Boolean = ignored
+
+  def compare(leftRow: Seq[String], rightRow: Seq[String]): Int = try {
+    left.colType.compare(leftRow(left.index), rightRow(right.index))
+  } catch {
+    case t: ArrayIndexOutOfBoundsException =>
+      if (!leftRow.isDefinedAt(left.index)) throw new Error("Can't compare left row. Undefined value at index " + left.index + " in left row: " + leftRow.mkString(","), t)
+      else if (!rightRow.isDefinedAt(right.index)) throw new Error("Can't compare right row. Undefined value at index " + right.index + " in right row: " + rightRow.mkString(","), t)
+      else throw new Error("Can't compare rows: Left(" + leftRow.mkString(",") + "), Right(" + rightRow.mkString(",") + ")", t)
+    case NonFatal(t) =>
+      throw new Error("Can't compare rows: Left(" + leftRow.mkString(",") + "), Right(" + rightRow.mkString(",") + ")", t)
+  }
 }
 
 object CompareColDef {
-  def apply(name: String = null, keyOrder: Option[Int] = None, index: Int = -1, colType: ColumnType = StringColumnType(),
-            isIgnored: Boolean = false, mappedName: Option[String] = None, mappedIndex: Option[Int] = None): CompareColDef =
-    new CompareColDef(Option(name), keyOrder, Option(index).filter(_ != -1), colType, isIgnored, mappedName, mappedIndex)
+  def apply(left: ColumnDefinition, right: ColumnDefinition, ignored: Boolean): MatchedCompareColDef =
+    MatchedCompareColDef(left, right, ignored)
 
-  def apply(l: ColumnDefinition): CompareColDef = CompareColDef(l.name, l.keyOrder, l.index, l.colType)
+  def unapply(x: CompareColDef): Option[(ColumnDefinition, ColumnDefinition, Boolean)] = x match {
+    case x: MatchedCompareColDef => MatchedCompareColDef.unapply(x)
+    case _                       => None
+  }
+}
 
-  def apply(leftColDef: ColumnDefinition, rightColDef: Option[ColumnDefinition], compareColDef: Option[CompareColDef]): CompareColDef =
-    (leftColDef, rightColDef, compareColDef) match {
-      case (l, None, None) => CompareColDef(l.name, l.keyOrder, l.index, l.colType)
-      case (l, Some(r), None) => CompareColDef(l.name, l.keyOrder, l.index, l.colType, mappedIndex = Option(r.index), mappedName = Option(r.name))
-      case (l, None, Some(c)) => CompareColDef(l.name, c.keyOrder, l.index, c.colType, isIgnored = c.isIgnored)
-      case (l, Some(r), Some(c)) => CompareColDef(l.name, c.keyOrder, l.index, c.colType, isIgnored = c.isIgnored, mappedName = Option(r.name), mappedIndex = Option(r.index))
-      case dunno => throw new Exception("Cannot create Compare Column Definition from: " + dunno)
-    }
+case class MatchedCompareColDef(left: ColumnDefinition, right: ColumnDefinition, ignored: Boolean) extends CompareColDef {
+  require(left.keyOrder == right.keyOrder, s"Incompatible key order: Left.${left.name}: Key(${left.keyOrder}) != Right.${right.name}: Key(${right.keyOrder})")
+  require(left.colType == right.colType, s"Incompatible column type: Left.${left.name}: ${left.colType} != Right.${right.name}: ${right.colType}")
 
-  def missing(c: ColumnDefinition) = apply(c.name, None, c.index, c.colType, true, None, None)
-  def extra(c: ColumnDefinition) = apply(null, None, -1, c.colType, true, Option(c.name), Option(c.index))
+  def keyOrder = left.keyOrder
+  def colType = left.colType
+  def isMapped = true
 
-  def colNameExists(colName: String, colDefs: Seq[CompareColDef]) =
-    colDefs.exists(_.rightName == colName)
+  def nameOpt = Some(left.name)
+  def indexOpt = Some(left.index)
+  def mappedName = Some(right.name)
+  def mappedIndex = Some(right.index)
+  def name = left.name
+  def index = left.index
+}
+
+sealed abstract class UnmatchedCompareColDef extends CompareColDef {
+  def column: ColumnDefinition
+
+  def ignored = true
+  def keyOrder = column.keyOrder
+  def colType = column.colType
+
+  def name = column.name
+  def index = column.index
+}
+
+case class MissingCompareColDef(left: ColumnDefinition) extends UnmatchedCompareColDef {
+  def column = left
+  def right = throw new NoSuchElementException("this column exists in left data only: " + left)
+  def isMapped = false
+
+  def nameOpt = Some(left.name)
+  def indexOpt = Some(left.index)
+  def mappedName = None
+  def mappedIndex = None
+}
+
+case class ExtraCompareColDef(right: ColumnDefinition) extends UnmatchedCompareColDef {
+  def column = right
+  def left = throw new NoSuchElementException("this column exists in right data only: " + right)
+  def isMapped = true
+
+  def nameOpt = None
+  def indexOpt = None
+  def mappedName = Some(right.name)
+  def mappedIndex = Some(right.index)
+}
+
+case class CompareColDefs(cols: Seq[MatchedCompareColDef], missing: Seq[ColumnDefinition], extra: Seq[ColumnDefinition]) {
+  def allColumns: Seq[CompareColDef] = cols ++ missing.map(MissingCompareColDef(_)) ++ extra.map(ExtraCompareColDef(_))
 }
 
 object CompareColDefs {
-  def apply(l: Seq[ColumnDefinition], r: Seq[ColumnDefinition], keys: Map[String, Int] = Map(),
-            ignore: Seq[String] = Nil, map: Map[String, String] = Map(), typ: Map[String, ColumnType] = Map()) = {
+  def apply(
+    l: Seq[ColumnDefinition], r: Seq[ColumnDefinition], keys: Map[String, Int] = Map(),
+    ignore: Seq[String] = Nil, map: Map[String, String] = Map(), typ: Map[String, ColumnType] = Map(),
+    ignoreMissing: Boolean = false, ignoreExtra: Boolean = true
+  ): CompareColDefs = {
     val lMap = l.toMapBy(_.name)
     val rMap = r.toMapBy(_.name)
 
     def requireEmpty(l: Seq[String], message: String) =
       require(l.isEmpty, message + l.mkString("[", ", ", "]"))
 
-    requireEmpty(map.keys.toList.diff(lMap.keys.toList), "Mapped source column(s) not found in left dataset: ")
-    requireEmpty(map.values.toList.diff(rMap.keys.toList), "Mapped target column(s) not found in right dataset: ")
+    requireEmpty(map.keys.toList.distinct.diff(lMap.keys.toList), "Mapped source column(s) not found in left dataset: ")
+    requireEmpty(map.values.toList.distinct.diff(rMap.keys.toList), "Mapped target column(s) not found in right dataset: ")
     requireEmpty(ignore.diff(lMap.keys.toList), "Ignored column(s) not found in left dataset: ")
     requireEmpty(keys.keys.toList.diff(lMap.keys.toList), "Key column(s) not found in left dataset: ")
     requireEmpty(keys.keys.toList.map(k => map.getOrElse(k, k)).diff(rMap.keys.toList), "Key column(s) not found in right dataset: ")
     requireEmpty(typ.keys.toList.diff(lMap.keys.toList), "Typed column(s) not found in left dataset: ")
 
-    val keyCols = keys.keys.toList.map(k => CompareColDef(k, keys.get(k), lMap(k).index, typ.getOrElse(k, lMap(k).colType), ignore.contains(k), map.get(k), rMap.get(map.getOrElse(k, k)).map(_.index)))
+    val keyCols = keys.keys.toList.map{k =>
+      val l = lMap(k).copy(keyOrder = keys.get(k), colType = typ.getOrElse(k, lMap(k).colType))
+      val rk = map.getOrElse(k, k)
+      val r = rMap(rk).copy(keyOrder = keys.get(k), colType = typ.getOrElse(k, rMap(rk).colType))
+      CompareColDef(l, r, ignore.contains(k))}
+
     val matchedCols = for {
       lCol <- l
-        if (! keys.contains(lCol.name) && ! ignore.contains(lCol.name))
+      if (! keys.contains(lCol.name) && ! ignore.contains(lCol.name))
       rCol <- rMap.get(map.getOrElse(lCol.name, lCol.name)).toList
-    } yield CompareColDef(CompareColDef(lCol).copy(colType = typ.getOrElse(lCol.name, lCol.colType)), Option(rCol), None)
-    val keyOrMatchedCols = keys.keys ++: matchedCols.map(_.name)
-    val missingCols = lMap.filterKeys(! keyOrMatchedCols.contains(_)).values.toList.map(CompareColDef.missing)
-    val extraCols = rMap.filterKeys(! keyOrMatchedCols.map(k => map.getOrElse(k, k)).contains(_)).values.toList.map(CompareColDef.extra)
-    new CompareColDefs(keyCols ++ matchedCols ++ missingCols ++ extraCols, missingCols.map(_.name).diff(ignore), extraCols.map(_.name))
+    } yield CompareColDef(
+      lCol.copy(colType = typ.getOrElse(lCol.name, lCol.colType), keyOrder = None),
+      rCol.copy(colType = typ.getOrElse(lCol.name, rCol.colType), keyOrder = None),
+      ignore.contains(lCol.name))
+    val skip = (keys.keys ++ matchedCols.map(_.left.name)).toList
+    val missing = lMap.filterKeys(! skip.contains(_)).values.toList.sortBy(_.index)
+    val extra = rMap.filterKeys(! skip.map(k => map.getOrElse(k, k)).contains(_)).values.toList.sortBy(_.index)
+
+    if (! ignoreExtra)
+      requireEmpty(extra.map(_.name).filterNot(ignore.contains), "The following columns were extra and/or could not be mapped: ")
+    if (! ignoreMissing)
+      requireEmpty(missing.map(_.name).filterNot(ignore.contains), "The following columns were missing and/or could not be mapped: ")
+
+    CompareColDefs(keyCols ++ matchedCols, missing, extra)
   }
 
-  def fromData(compareColDefs: Iterator[Seq[String]] with ColumnDefinitions,
-               left: Seq[ColumnDefinition],
-               right: Seq[ColumnDefinition]): CompareColDefs = {
-    import scala.collection.mutable.Map
-    val lmap     = Map() ++= left.map(c => c.name -> c)
-    val rmap     = Map() ++= right.map(c => c.name -> c)
-    val cols     = Buffer[CompareColDef]()
-    val missing  = Buffer[String]()
-    val extra    = Buffer[String]()
-    compareColDefs.toRowMaps foreach { m =>
-      val name       = m("COLUMN").get
-      val mappedName = m.get("MAPPING").flatten
-      val rname      = mappedName.getOrElse(name)
-      val isIgnored  = m.get("IGNORED").flatten.map(_.toBoolean).getOrElse(false)
-      val l          = lmap.remove(name).getOrElse(throw new CompareColDefException(s"No column `$name' in left"))
-      val r          = rmap.remove(rname)
-      if (isIgnored) {
-        cols += CompareColDef.missing(l)
-        r.foreach(cols += CompareColDef.extra(_))
-      } else {
-        if (r.isEmpty) throw new CompareColDefException(s"No column `$rname' in right")
-        cols += CompareColDef(name = name,
-                              index = l.index,
-                              mappedName = mappedName,
-                              mappedIndex = r.map(_.index),
-                              isIgnored = isIgnored)
-      }
+  def fromData(compareColDefs: Iterator[Seq[String]] with ColumnDefinitions, left: Seq[ColumnDefinition], right: Seq[ColumnDefinition]): CompareColDefs = {
+    val (ignored, mapped) = compareColDefs.toRowMaps.foldLeft(Seq[String](), Map[String, String]()){
+      case ((i, m), row) =>
+        val lName = row("COLUMN").getOrElse(sys.error(s"Could not get column name out of `$row`"))
+        val newM = row.get("MAPPING").flatten match {
+          case Some(rName) if rName != lName => m.updated(lName, rName)
+          case _ => m}
+        val newI = if(row.get("IGNORED").flatten.map(_.toBoolean) == Some(true)) lName +: i else i
+        (newI, newM)
     }
-    for ((name, l) <- lmap) rmap.get(name) match {
-      case Some(r) =>
-        cols += CompareColDef(l).copy(mappedIndex = Option(r.index), mappedName = Option(r.name))
-        rmap -= name
-      case None =>
-        cols += CompareColDef.missing(l)
-        missing += name
-    }
-    for ((name, r) <- rmap) {
-      cols += CompareColDef.extra(r)
-      extra += name
-    }
-    new CompareColDefs(cols, missing, extra)
+    apply(left, right, ignore = ignored, map = mapped)
   }
 
   def getLeftDsOrdering(c: Seq[CompareColDef])  = genericOrdering(c, false)
   def getRightDsOrdering(c: Seq[CompareColDef]) = genericOrdering(c, true)
 
   // This Ordering is to sort the rows of the *SAME* source by either the colDef index or right index
-  def genericOrdering(cs: Seq[CompareColDef], useRightIdx: Boolean) = {
-    val colIdxTyps = cs.filter(_.isKey).sortBy(_.keyOrder) map { c =>
-      val i = if (useRightIdx) c.mappedIndex.getOrElse(c.index) else c.index
-      val t = c.colType
-      (i, t)
-    }
-    new ColumnOrdering(colIdxTyps)
-  }
+  def genericOrdering(cs: Seq[CompareColDef], useRightIdx: Boolean) =
+    new ColumnOrdering(cs.filter(_.isKey).sortBy(_.keyOrder).map { c =>
+      (if (useRightIdx) c.right.index else c.left.index, c.left.colType)})
 }
-
-class CompareColDefException(val message: String) extends Throwable(message)
-class CompareColDefMissingColException(message: String, val colDef: ColumnDefinition) extends CompareColDefException(message)
-class CompareColDefExtraColException(message: String, val colDef: ColumnDefinition) extends CompareColDefException(message)
 /*
 Copyright 2017 Morgan Stanley
 

@@ -2,18 +2,24 @@ package com.ms.qaTools.saturn.serializer;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.ms.qaTools.saturn.kronus.AnnotatedDef;
 import com.ms.qaTools.saturn.kronus.AnnotationCall;
 import com.ms.qaTools.saturn.kronus.AnnotationDef;
+import com.ms.qaTools.saturn.kronus.Assignment;
 import com.ms.qaTools.saturn.kronus.BinaryOperation;
 import com.ms.qaTools.saturn.kronus.BooleanLiteral;
 import com.ms.qaTools.saturn.kronus.DoubleLiteral;
+import com.ms.qaTools.saturn.kronus.ExportAll;
+import com.ms.qaTools.saturn.kronus.ExportClause;
+import com.ms.qaTools.saturn.kronus.ExportDef;
+import com.ms.qaTools.saturn.kronus.ExportHashtag;
+import com.ms.qaTools.saturn.kronus.ExportRuntimeName;
 import com.ms.qaTools.saturn.kronus.FunctionCall;
 import com.ms.qaTools.saturn.kronus.FunctionDef;
 import com.ms.qaTools.saturn.kronus.HashtagCall;
 import com.ms.qaTools.saturn.kronus.HashtagDef;
 import com.ms.qaTools.saturn.kronus.ImportDef;
 import com.ms.qaTools.saturn.kronus.IncludeDef;
-import com.ms.qaTools.saturn.kronus.IncludeRef;
 import com.ms.qaTools.saturn.kronus.IntegerLiteral;
 import com.ms.qaTools.saturn.kronus.KeywordParameterValue;
 import com.ms.qaTools.saturn.kronus.Kronus;
@@ -56,6 +62,12 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	public void createSequence(EObject context, EObject semanticObject) {
 		if(semanticObject.eClass().getEPackage() == KronusPackage.eINSTANCE) switch(semanticObject.eClass().getClassifierID()) {
+			case KronusPackage.ANNOTATED_DEF:
+				if(context == grammarAccess.getAnnotatedDefRule()) {
+					sequence_AnnotatedDef(context, (AnnotatedDef) semanticObject); 
+					return; 
+				}
+				else break;
 			case KronusPackage.ANNOTATION_CALL:
 				if(context == grammarAccess.getAnnotationCallRule()) {
 					sequence_AnnotationCall(context, (AnnotationCall) semanticObject); 
@@ -64,8 +76,17 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 				else break;
 			case KronusPackage.ANNOTATION_DEF:
 				if(context == grammarAccess.getAbstractDefRule() ||
-				   context == grammarAccess.getAnnotationDefRule()) {
+				   context == grammarAccess.getAnnotationDefRule() ||
+				   context == grammarAccess.getNamedAbstractDefRule() ||
+				   context == grammarAccess.getNamedRuntimeDefRule()) {
 					sequence_AnnotationDef(context, (AnnotationDef) semanticObject); 
+					return; 
+				}
+				else break;
+			case KronusPackage.ASSIGNMENT:
+				if(context == grammarAccess.getAbstractDefRule() ||
+				   context == grammarAccess.getAssignmentRule()) {
+					sequence_Assignment(context, (Assignment) semanticObject); 
 					return; 
 				}
 				else break;
@@ -130,6 +151,39 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 					return; 
 				}
 				else break;
+			case KronusPackage.EXPORT_ALL:
+				if(context == grammarAccess.getExportAllRule() ||
+				   context == grammarAccess.getExportSymbolRule()) {
+					sequence_ExportAll(context, (ExportAll) semanticObject); 
+					return; 
+				}
+				else break;
+			case KronusPackage.EXPORT_CLAUSE:
+				if(context == grammarAccess.getExportClauseRule()) {
+					sequence_ExportClause(context, (ExportClause) semanticObject); 
+					return; 
+				}
+				else break;
+			case KronusPackage.EXPORT_DEF:
+				if(context == grammarAccess.getExportDefRule()) {
+					sequence_ExportDef(context, (ExportDef) semanticObject); 
+					return; 
+				}
+				else break;
+			case KronusPackage.EXPORT_HASHTAG:
+				if(context == grammarAccess.getExportHashtagRule() ||
+				   context == grammarAccess.getExportSymbolRule()) {
+					sequence_ExportHashtag(context, (ExportHashtag) semanticObject); 
+					return; 
+				}
+				else break;
+			case KronusPackage.EXPORT_RUNTIME_NAME:
+				if(context == grammarAccess.getExportRuntimeNameRule() ||
+				   context == grammarAccess.getExportSymbolRule()) {
+					sequence_ExportRuntimeName(context, (ExportRuntimeName) semanticObject); 
+					return; 
+				}
+				else break;
 			case KronusPackage.FUNCTION_CALL:
 				if(context == grammarAccess.getBinaryOperation1Rule() ||
 				   context == grammarAccess.getBinaryOperation1Access().getBinaryOperationLeftAction_1_0() ||
@@ -154,6 +208,8 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 			case KronusPackage.FUNCTION_DEF:
 				if(context == grammarAccess.getAbstractDefRule() ||
 				   context == grammarAccess.getFunctionDefRule() ||
+				   context == grammarAccess.getNamedAbstractDefRule() ||
+				   context == grammarAccess.getNamedRuntimeDefRule() ||
 				   context == grammarAccess.getReferenceableDefsRule()) {
 					sequence_FunctionDef(context, (FunctionDef) semanticObject); 
 					return; 
@@ -167,41 +223,23 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 				else break;
 			case KronusPackage.HASHTAG_DEF:
 				if(context == grammarAccess.getAbstractDefRule() ||
-				   context == grammarAccess.getHashtagDefRule()) {
+				   context == grammarAccess.getHashtagDefRule() ||
+				   context == grammarAccess.getNamedAbstractDefRule()) {
 					sequence_HashtagDef(context, (HashtagDef) semanticObject); 
 					return; 
 				}
 				else break;
 			case KronusPackage.IMPORT_DEF:
-				if(context == grammarAccess.getImportDefRule()) {
+				if(context == grammarAccess.getAbstractDefRule() ||
+				   context == grammarAccess.getImportDefRule()) {
 					sequence_ImportDef(context, (ImportDef) semanticObject); 
 					return; 
 				}
 				else break;
 			case KronusPackage.INCLUDE_DEF:
-				if(context == grammarAccess.getIncludeDefRule()) {
+				if(context == grammarAccess.getAbstractDefRule() ||
+				   context == grammarAccess.getIncludeDefRule()) {
 					sequence_IncludeDef(context, (IncludeDef) semanticObject); 
-					return; 
-				}
-				else break;
-			case KronusPackage.INCLUDE_REF:
-				if(context == grammarAccess.getBinaryOperation1Rule() ||
-				   context == grammarAccess.getBinaryOperation1Access().getBinaryOperationLeftAction_1_0() ||
-				   context == grammarAccess.getBinaryOperation2Rule() ||
-				   context == grammarAccess.getBinaryOperation2Access().getBinaryOperationLeftAction_1_0() ||
-				   context == grammarAccess.getBinaryOperation3Rule() ||
-				   context == grammarAccess.getBinaryOperation3Access().getBinaryOperationLeftAction_1_0() ||
-				   context == grammarAccess.getBinaryOperation4Rule() ||
-				   context == grammarAccess.getBinaryOperation4Access().getBinaryOperationLeftAction_1_0() ||
-				   context == grammarAccess.getBinaryOperation5Rule() ||
-				   context == grammarAccess.getBinaryOperation5Access().getBinaryOperationLeftAction_1_0() ||
-				   context == grammarAccess.getIncludeRefRule() ||
-				   context == grammarAccess.getPrimaryRule() ||
-				   context == grammarAccess.getUnaryOrPrimaryRule() ||
-				   context == grammarAccess.getValueRule() ||
-				   context == grammarAccess.getValueOperationRule() ||
-				   context == grammarAccess.getValueOperationAccess().getBinaryOperationLeftAction_1_0()) {
-					sequence_IncludeRef(context, (IncludeRef) semanticObject); 
 					return; 
 				}
 				else break;
@@ -361,6 +399,8 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 				else break;
 			case KronusPackage.TYPE_DEF:
 				if(context == grammarAccess.getAbstractDefRule() ||
+				   context == grammarAccess.getNamedAbstractDefRule() ||
+				   context == grammarAccess.getNamedRuntimeDefRule() ||
 				   context == grammarAccess.getTypeDefRule()) {
 					sequence_TypeDef(context, (TypeDef) semanticObject); 
 					return; 
@@ -422,6 +462,8 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 				else break;
 			case KronusPackage.VAL_DEF:
 				if(context == grammarAccess.getAbstractDefRule() ||
+				   context == grammarAccess.getNamedAbstractDefRule() ||
+				   context == grammarAccess.getNamedRuntimeDefRule() ||
 				   context == grammarAccess.getReferenceableDefsRule() ||
 				   context == grammarAccess.getValDefRule()) {
 					sequence_ValDef(context, (ValDef) semanticObject); 
@@ -455,7 +497,16 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	/**
 	 * Constraint:
-	 *     (method=[AnnotationDef|ID] (parameterValues+=ParameterValue parameterValues+=ParameterValue*)?)
+	 *     (hashtags+=HashtagCall* annotations+=AnnotationCall* def=AbstractDef)
+	 */
+	protected void sequence_AnnotatedDef(EObject context, AnnotatedDef semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (method=[AnnotationDef|QN] (parameterValues+=ParameterValue parameterValues+=ParameterValue*)?)
 	 */
 	protected void sequence_AnnotationCall(EObject context, AnnotationCall semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -467,6 +518,15 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	 *     (name=CAPITALIZED_ID (parameterDefs+=ParameterDef parameterDefs+=ParameterDef*)?)
 	 */
 	protected void sequence_AnnotationDef(EObject context, AnnotationDef semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     ((lhs=[ValDef|QN] lhsParameter=ID? rhs=[ValDef|QN] rhsParameter=ID?) | (rhs=[ValDef|QN] rhsParameter=ID? lhs=[ValDef|QN] lhsParameter=ID?))
+	 */
+	protected void sequence_Assignment(EObject context, Assignment semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -521,7 +581,66 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	/**
 	 * Constraint:
-	 *     (method=[FunctionDef|ID] (parameterValues+=ParameterValue parameterValues+=ParameterValue*)?)
+	 *     {ExportAll}
+	 */
+	protected void sequence_ExportAll(EObject context, ExportAll semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (unexport?='!'? symbol=ExportSymbol)
+	 */
+	protected void sequence_ExportClause(EObject context, ExportClause semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (symbols+=ExportClause symbols+=ExportClause*)
+	 */
+	protected void sequence_ExportDef(EObject context, ExportDef semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     ref=[HashtagDef|QN]
+	 */
+	protected void sequence_ExportHashtag(EObject context, ExportHashtag semanticObject) {
+		if(errorAcceptor != null) {
+			if(transientValues.isValueTransient(semanticObject, KronusPackage.Literals.EXPORT_HASHTAG__REF) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, KronusPackage.Literals.EXPORT_HASHTAG__REF));
+		}
+		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
+		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
+		feeder.accept(grammarAccess.getExportHashtagAccess().getRefHashtagDefQNParserRuleCall_1_0_1(), semanticObject.getRef());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     ref=[NamedRuntimeDef|QN]
+	 */
+	protected void sequence_ExportRuntimeName(EObject context, ExportRuntimeName semanticObject) {
+		if(errorAcceptor != null) {
+			if(transientValues.isValueTransient(semanticObject, KronusPackage.Literals.EXPORT_RUNTIME_NAME__REF) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, KronusPackage.Literals.EXPORT_RUNTIME_NAME__REF));
+		}
+		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
+		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
+		feeder.accept(grammarAccess.getExportRuntimeNameAccess().getRefNamedRuntimeDefQNParserRuleCall_0_1(), semanticObject.getRef());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (method=[FunctionDef|QN] (parameterValues+=ParameterValue parameterValues+=ParameterValue*)?)
 	 */
 	protected void sequence_FunctionCall(EObject context, FunctionCall semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -531,7 +650,6 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	/**
 	 * Constraint:
 	 *     (
-	 *         hashtags+=HashtagCall* 
 	 *         name=CAPITALIZED_ID 
 	 *         (typeParameters+=TypeParameter typeParameters+=TypeParameter*)? 
 	 *         (parameterDefs+=ParameterDef parameterDefs+=ParameterDef*)? 
@@ -546,7 +664,7 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	/**
 	 * Constraint:
-	 *     (method=[HashtagDef|ID] (parameterValues+=SimpleParameterValue parameterValues+=SimpleParameterValue*)?)
+	 *     (method=[HashtagDef|QN] (parameterValues+=SimpleParameterValue parameterValues+=SimpleParameterValue*)?)
 	 */
 	protected void sequence_HashtagCall(EObject context, HashtagCall semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -580,18 +698,9 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	/**
 	 * Constraint:
-	 *     (module=ModuleDef name=CAPITALIZED_ID?)
+	 *     (module=[TopLevelKronus|ModuleParts] name=CAPITALIZED_ID? reexport?=EXPORT?)
 	 */
 	protected void sequence_IncludeDef(EObject context, IncludeDef semanticObject) {
-		genericSequencer.createSequence(context, semanticObject);
-	}
-	
-	
-	/**
-	 * Constraint:
-	 *     (include=[IncludeDef|ID] (ref=ValRef | ref=FunctionCall))
-	 */
-	protected void sequence_IncludeRef(EObject context, IncludeRef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -642,7 +751,7 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	/**
 	 * Constraint:
-	 *     (imports+=ImportDef* includes+=IncludeDef* defs+=AbstractDef* return=ValueOperation?)
+	 *     (defs+=AnnotatedDef* return=ValueOperation?)
 	 */
 	protected void sequence_Kronus(EObject context, Kronus semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -667,7 +776,15 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	/**
 	 * Constraint:
-	 *     (name=ID byName?='=>'? type=TypeInstance list?='*'? defaultValue=ValueOperation?)
+	 *     (
+	 *         hashtags+=HashtagCall* 
+	 *         annotations+=AnnotationCall* 
+	 *         name=ID 
+	 *         byName?='=>'? 
+	 *         type=TypeInstance 
+	 *         list?='*'? 
+	 *         defaultValue=ValueOperation?
+	 *     )
 	 */
 	protected void sequence_ParameterDef(EObject context, ParameterDef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -755,20 +872,10 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	/**
 	 * Constraint:
-	 *     (package=PackageDef kronus=Kronus)
+	 *     (package=PackageDef exports+=ExportDef* kronus=Kronus)
 	 */
 	protected void sequence_TopLevelKronus(EObject context, TopLevelKronus semanticObject) {
-		if(errorAcceptor != null) {
-			if(transientValues.isValueTransient(semanticObject, KronusPackage.Literals.TOP_LEVEL_KRONUS__PACKAGE) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, KronusPackage.Literals.TOP_LEVEL_KRONUS__PACKAGE));
-			if(transientValues.isValueTransient(semanticObject, KronusPackage.Literals.TOP_LEVEL_KRONUS__KRONUS) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, KronusPackage.Literals.TOP_LEVEL_KRONUS__KRONUS));
-		}
-		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
-		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
-		feeder.accept(grammarAccess.getTopLevelKronusAccess().getPackagePackageDefParserRuleCall_0_0(), semanticObject.getPackage());
-		feeder.accept(grammarAccess.getTopLevelKronusAccess().getKronusKronusParserRuleCall_1_0(), semanticObject.getKronus());
-		feeder.finish();
+		genericSequencer.createSequence(context, semanticObject);
 	}
 	
 	
@@ -783,7 +890,7 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	/**
 	 * Constraint:
-	 *     (name=[TypeDef|ID] (typeParameters+=TypeInstance typeParameters+=TypeInstance*)?)
+	 *     (name=[TypeDef|QN] (typeParameters+=TypeInstance typeParameters+=TypeInstance*)?)
 	 */
 	protected void sequence_TypeInstance(EObject context, TypeInstance semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -817,7 +924,7 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	/**
 	 * Constraint:
-	 *     typeRef=[TypeDef|ID]
+	 *     typeRef=[TypeDef|QN]
 	 */
 	protected void sequence_TypeRef(EObject context, TypeRef semanticObject) {
 		if(errorAcceptor != null) {
@@ -826,7 +933,7 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 		}
 		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
 		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
-		feeder.accept(grammarAccess.getTypeRefAccess().getTypeRefTypeDefIDParserRuleCall_1_0_1(), semanticObject.getTypeRef());
+		feeder.accept(grammarAccess.getTypeRefAccess().getTypeRefTypeDefQNParserRuleCall_1_0_1(), semanticObject.getTypeRef());
 		feeder.finish();
 	}
 	
@@ -870,16 +977,26 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 	
 	/**
 	 * Constraint:
-	 *     (hashtags+=HashtagCall* annotations+=AnnotationCall* name=CAPITALIZED_ID value=ValueOperation)
+	 *     (name=CAPITALIZED_ID value=ValueOperation)
 	 */
 	protected void sequence_ValDef(EObject context, ValDef semanticObject) {
-		genericSequencer.createSequence(context, semanticObject);
+		if(errorAcceptor != null) {
+			if(transientValues.isValueTransient(semanticObject, KronusPackage.Literals.NAMED_ABSTRACT_DEF__NAME) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, KronusPackage.Literals.NAMED_ABSTRACT_DEF__NAME));
+			if(transientValues.isValueTransient(semanticObject, KronusPackage.Literals.VAL_DEF__VALUE) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, KronusPackage.Literals.VAL_DEF__VALUE));
+		}
+		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
+		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
+		feeder.accept(grammarAccess.getValDefAccess().getNameCAPITALIZED_IDTerminalRuleCall_1_0(), semanticObject.getName());
+		feeder.accept(grammarAccess.getValDefAccess().getValueValueOperationParserRuleCall_3_0(), semanticObject.getValue());
+		feeder.finish();
 	}
 	
 	
 	/**
 	 * Constraint:
-	 *     ref=[ReferenceableDefs|ID]
+	 *     ref=[ReferenceableDefs|QN]
 	 */
 	protected void sequence_ValRef(EObject context, ValRef semanticObject) {
 		if(errorAcceptor != null) {
@@ -888,7 +1005,7 @@ public class KronusSemanticSequencer extends AbstractDelegatingSemanticSequencer
 		}
 		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
 		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
-		feeder.accept(grammarAccess.getValRefAccess().getRefReferenceableDefsIDParserRuleCall_0_1(), semanticObject.getRef());
+		feeder.accept(grammarAccess.getValRefAccess().getRefReferenceableDefsQNParserRuleCall_0_1(), semanticObject.getRef());
 		feeder.finish();
 	}
 }

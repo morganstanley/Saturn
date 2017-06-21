@@ -6,7 +6,7 @@ import java.io.Closeable
 import scala.collection.mutable.PriorityQueue
 
 import com.ms.qaTools.io.rowSource.file.CsvRowSource
-import com.ms.qaTools.io.rowWriter.file.CsvRowWriter
+import com.ms.qaTools.io.rowWriter.CsvRowWriter
 
 abstract class ExternalSort[A: Ordering](unsorted: Iterator[A], config: ExternalSort.Config) extends Iterator[A] {
   import ExternalSort.Chunk

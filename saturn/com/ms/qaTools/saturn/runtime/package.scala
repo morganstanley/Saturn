@@ -4,18 +4,18 @@ import com.ms.qaTools.interpreter.ShellInterpreter
 import com.ms.qaTools.interpreter.ShellInterpreterResult
 import com.ms.qaTools.interpreter.GroovyInterpreterResult
 import com.ms.qaTools.saturn.codeGen.Context
-import com.ms.qaTools.toolkit.runCmds.RunCmdsResult
+import com.ms.qaTools.toolkit.RunCmdsResult
 import com.ms.qaTools.toolkit.Runnable
-import com.ms.qaTools.toolkit.runCmds.RunCmds
-import scala.util.Try
+import com.ms.qaTools.toolkit.RunCmds
+import scala.util.{Try, Success}
 
-package object runtime {    
+package object runtime {
   type RunCmdsShellResult    = RunCmdsResult[ShellInterpreterResult]
   type RunCmdsShellRunnable  = Runnable[RunGroupIterationResult[RunCmdsShellResult]]
   type ScalarRunCmdsShell    = ScalarRunGroupIterator[RunCmdsShellResult]
   type RowSourceRunCmdsShell = RowSourceRunGroupIterator[RunCmdsShellResult]
 
-  implicit class Fallible(strTry: Try[String]) {
+  implicit class Fallible(val strTry: Try[String]) extends AnyVal {
     def warnWith(context: Context, name: String, default: => Try[String]): Try[String] =
       strTry.recoverWith {
         PartialFunction { t =>
@@ -23,6 +23,8 @@ package object runtime {
           default
         }
       }
+
+    def orEmpty(): Try[String] = strTry.orElse(Success(""))
   }
 }
 /*

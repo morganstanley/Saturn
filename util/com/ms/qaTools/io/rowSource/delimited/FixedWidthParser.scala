@@ -3,11 +3,12 @@ package com.ms.qaTools.io.rowSource.delimited
 import java.io.Reader
 
 import scala.annotation.tailrec
-import scala.collection.JavaConversions._
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 
+import com.ms.qaTools.io.rowSource.ColumnDefinition
+import com.ms.qaTools.io.rowSource.FixedWidth
 import com.ms.qaTools.io.rowSource.internal.StreamingReader
 
 import groovy.lang.Binding
@@ -15,14 +16,14 @@ import groovy.lang.GroovyShell
 
 class FixedWidthParser(
   reader: Reader,
-  colDefs: Seq[FixedWidthColDef],
+  colDefs: Seq[ColumnDefinition with FixedWidth],
   bufSize: Int,
   skipLine: Int) extends Parser {
 
   val newline = '\n'
   val streamingReader = new StreamingReader(reader, bufSize)
 
-  private def parseCell(buffer: StreamingReader, colDef: FixedWidthColDef, cellAccu: Seq[String]): Option[String] = {
+  private def parseCell(buffer: StreamingReader, colDef: ColumnDefinition with FixedWidth, cellAccu: Seq[String]): Option[String] = {
     val validColDef = colDef.caseCondition match {
       case Some(c) => {
         val binding = new Binding
@@ -52,7 +53,7 @@ class FixedWidthParser(
   }
 
   @tailrec
-  private def parseLine(buffer: StreamingReader, colDefs: Seq[FixedWidthColDef], accu: Seq[Option[String]] = Seq()): Option[Seq[Option[String]]] = {
+  private def parseLine(buffer: StreamingReader, colDefs: Seq[ColumnDefinition with FixedWidth], accu: Seq[Option[String]] = Seq()): Option[Seq[Option[String]]] = {
     def processEnd0(onEmpty: Option[Seq[Option[String]]]) =
       if (accu.isEmpty) onEmpty
       else if (accu.forall { _.isEmpty }) Some(None +: accu)
@@ -79,11 +80,12 @@ class FixedWidthParser(
       case None                            => null
     }
 
+  def close() = reader.close()
 }
 
 object FixedWidthParser {
   def apply(reader: Reader,
-            colDefs: Seq[FixedWidthColDef],
+            colDefs: Seq[ColumnDefinition with FixedWidth],
             bufSize: Int = 4 * 1024,
             skipLine: Int = 0): FixedWidthParser = new FixedWidthParser(reader, colDefs, bufSize, skipLine)
 }

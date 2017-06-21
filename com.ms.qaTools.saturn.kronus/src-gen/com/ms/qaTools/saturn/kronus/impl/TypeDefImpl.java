@@ -38,7 +38,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *
  * @generated
  */
-public class TypeDefImpl extends AbstractDefImpl implements TypeDef
+public class TypeDefImpl extends NamedRuntimeDefImpl implements TypeDef
 {
   /**
    * The default value of the '{@link #getVariance() <em>Variance</em>}' attribute.

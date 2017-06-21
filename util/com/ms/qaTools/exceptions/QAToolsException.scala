@@ -1,6 +1,5 @@
 package com.ms.qaTools.exceptions
-
-
+import com.ms.qaTools.ThrowableUtil
 
 class QAToolsException(reason: String, cause: Throwable) extends Exception(reason, cause) {
   def this(reason: String) = this(reason, null)
@@ -12,6 +11,25 @@ case class UnknownCPSProtocolException(protocol: String) extends QAToolsExceptio
 case class ExhaustedResourceException() extends QAToolsException("Calling next on a resource that is exhausted.")
 
 case class JdbcException(reason: String, cause: Throwable = null) extends QAToolsException(reason, cause)
+
+class AggregateException(val message: String, val exceptions: Seq[Throwable], val cause: Throwable = null)
+extends Throwable(message, cause) {
+  override def getMessage: String = s"\n$message\n${exceptions map (_.getCauseStackString) mkString("\n")}"
+
+  // If we only override printStackTrace, when the exception gets printed as cause, it will use non-overridable method(s)
+  // and omit all the children.
+  override def toString = {
+    val buf = new java.io.StringWriter
+    val w = new java.io.PrintWriter(buf)
+    w.println(super.toString)
+    w.println()
+    exceptions.foreach { e =>
+      w.print("Child exception: ")
+      e.printStackTrace(w)
+    }
+    buf.toString
+  }
+}
 /*
 Copyright 2017 Morgan Stanley
 

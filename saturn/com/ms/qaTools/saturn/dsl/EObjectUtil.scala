@@ -7,6 +7,7 @@ import com.ms.qaTools.saturn.{Attribute    => MAttribute}
 import com.ms.qaTools.saturn.types.{NamedResourceDefinition => MNamedResourceDefinition}
 import org.eclipse.emf.ecore.EObject
 import com.ms.qaTools.io.rowSource.jdbc.ResultSetRowSource
+import scala.language.implicitConversions
 
 class EObjectUtil(e:EObject) {
     def name:String = e match {

@@ -1,40 +1,33 @@
 package com.ms.qaTools.toolkit.cmdLine
 
-import groovy.lang.Closure
-import org.kohsuke.args4j.{Option => A4JOption}
 import com.ms.qaTools.interpreter.{Interpreter, GroovyInterpreter, ScalaInterpreter}
 import com.ms.qaTools.interpreter.{InterpreterResult, GroovyInterpreterResult, ScalaInterpreterResult}
-import com.ms.qaTools.io.rowSource.delimited.DelimitedParser
-import com.ms.qaTools.io.SortedDelimitedIterator
-import com.ms.qaTools.io.rowSource.file.CsvRowSource
-import com.ms.qaTools.conversions.JavaIOConversions._
-import com.ms.qaTools.io._
-import com.ms.qaTools.io.rowSource.SimpleColumnDefinitionAdapter
 import com.ms.qaTools.io.rowSource.ColumnDefinition
-import com.ms.qaTools.io.rowSource.StreamingColumnDefinitionAdapter
-import com.ms.qaTools.io.rowSource.file.ExcelRowSource
-import com.ms.qaTools.io.rowSource.file.DataRowSource
-import com.ms.qaTools.io.rowSource.file.TsvRowSource
-import com.ms.qaTools.io.rowSource.file.PsvRowSource
-import com.ms.qaTools.io.rowSource.DsRowSourceCreator
-import com.ms.qaTools.toolkit.{Passed, Failed}
-import java.util.{List => JList}
-import scala.collection.JavaConversions._
-import com.ms.qaTools.io.rowSource.file.DelimitedRowSource
-import com.ms.qaTools.io.rowSource.file.DelimitedIterator
 import com.ms.qaTools.io.rowSource.ColumnDefinitionAdapter
+import com.ms.qaTools.io.rowSource.ColumnDefinitions
+import com.ms.qaTools.io.rowSource.delimited.DelimitedParser
+import com.ms.qaTools.io.rowSource.DsRowSourceCreator
+import com.ms.qaTools.io.rowSource.file.CsvRowSource
+import com.ms.qaTools.io.rowSource.file.DataRowSource
+import com.ms.qaTools.io.rowSource.file.DelimitedIterator
+import com.ms.qaTools.io.rowSource.file.DelimitedRowSource
+import com.ms.qaTools.io.rowSource.file.ExcelRowSource
+import com.ms.qaTools.io.rowSource.file.PsvRowSource
+import com.ms.qaTools.io.rowSource.file.TsvRowSource
+import com.ms.qaTools.io.rowSource.SimpleColumnDefinitionAdapter
+import com.ms.qaTools.io.rowSource.StreamingColumnDefinitionAdapter
+import com.ms.qaTools.toolkit.{Passed, Failed}
+import groovy.lang.Closure
 import java.io.StringReader
-import com.ms.qaTools.io.rowSource.ColumnDefinitions
-import com.ms.qaTools.io.rowSource.ColumnDefinitions
-import com.ms.qaTools.io.rowSource.ColumnDefinitions
+import java.util.{List => JList}
+import org.kohsuke.args4j.{Option => A4JOption}
+import scala.collection.JavaConversions._
 
-
-
-trait InputDelimitedFile {
+trait InputDelimitedFile extends InputDatabase {
   @A4JOption(name = "--inFmt", usage = "specify input format: CSV (default) | EXCEL | PSV | TSV | DATA | CUSTOM")
   val inFmt: String = "CSV"
 
-  @A4JOption(name = "-i", aliases = Array("--inFileName"), usage = "specify an input fileName", required = true)
+  @A4JOption(name = "-i", aliases = Array("--inFileName"), usage = "specify an input fileName. Defaults to standard input.")
   val inFileName: String = null
 
   @A4JOption(name = "--inWsName", usage = "specify the input worksheet name")
@@ -42,9 +35,9 @@ trait InputDelimitedFile {
 
   @A4JOption(name = "--inColNames", usage = "specify the input column names")
   val inColNames: String = null
-    
+
   @A4JOption(name = "--inColNameRow", usage = "Specify the column names row")
-  val inColNameRow: Int = 1  
+  val inColNameRow: Int = 1
 
   @A4JOption(name = "--inFirstRow", usage = "Number of the row to use as the col header (default 1)")
   val inFirstRow: Int = 0
@@ -57,10 +50,10 @@ trait InputDelimitedFile {
 
   @A4JOption(name = "--inEscapeChar", usage = "specify the escape character (default: '\"')")
   val inEscapeChar: Char = DelimitedParser.DEFAULT_ESCAPE_CHARACTER
-  
+
   @A4JOption(name = "--inMultiPartColNameSeparator", usage = "Specify the multi part separator for columns. Default: \".\"")
   val inMultiPartColNameSeparator = "."
-    
+
   @A4JOption(name = "--inHeaderless", usage = "set if the file is headerless")
   val inHeaderless: Boolean = false
 
@@ -83,24 +76,24 @@ trait InputDelimitedFile {
     Option(code) match {
       case Some(code) =>
         interpreter run code match {
-          case GroovyInterpreterResult(Passed(), _, Some(closure), _) =>
+          case GroovyInterpreterResult(Passed, _, Some(closure), _) =>
             (colDefs: Seq[ColumnDefinition]) => {
               val jColDefs: JList[ColumnDefinition] = colDefs
               closure.asInstanceOf[Closure[JList[ColumnDefinition]]] call jColDefs
             }
-          case ScalaInterpreterResult(Passed(), _, Some(function), _, _) =>
+          case ScalaInterpreterResult(Passed, _, Some(function), _, _) =>
             function.asInstanceOf[(Seq[ColumnDefinition]) => Seq[ColumnDefinition]]
           case res @ _ =>
             throw new Exception(res.toString)
         }
       case None => identity[Seq[ColumnDefinition]] _
-    }                      
-                       
+    }
+
   def inColDefs: Seq[ColumnDefinition] = Option(inColNames).map {c => ColumnDefinition.fromColumnNames(DelimitedIterator(new StringReader(c),inSeparatorChar, Some(inQuoteChar), Some(inEscapeChar)).next)}.getOrElse(Nil)
-                       
+
   def inRowSource = {
     val dsRowSourceCreator = DsRowSourceCreator(inFileName,
-                                                Option(inWsName),                                                
+                                                Option(inWsName),
                                                 inFirstRow,
                                                 inSeparatorChar,
                                                 inQuoteChar,
@@ -110,14 +103,12 @@ trait InputDelimitedFile {
                                                 inHeaderless,
                                                 inColDefs,
                                                 transformColDefs(transformColDefsStr, stringToInterpreter(transformColDefsInterpreterStr)) )
-    
+
     try { dsRowSourceCreator.createRowSource(inFmt) }
     catch {
       case t: Throwable => throw new Exception("Couldn't create input dataset for format: " + inFmt, t)
     }
   }
-  
-
 }
 /*
 Copyright 2017 Morgan Stanley

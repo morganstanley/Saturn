@@ -2,6 +2,7 @@ package com.ms.qaTools.kronus.repository
 
 import java.io.InputStream
 import java.net.URL
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.{ List => JList, Map => JMap }
@@ -22,8 +23,15 @@ object Config {
   def fromYAML(in: InputStream): Config =
     new FromMap(new Yaml(new SafeConstructor).load(in).asInstanceOf[JMap[String, Any]].asScala).toConfig
 
+  def filePath(custom: Option[Path], dir: Option[Path]): Path = {
+    val resolve = { p: Path => dir.fold(p)(_.resolve(p)) }
+    custom.fold {
+      val candidates = Array("kronus.yaml", "kronus.yml", "kronusRepo.yml").map(f => resolve(Paths.get(f)))
+      candidates.find(Files.exists(_)).getOrElse(candidates(0))
+    } (resolve)
+  }
+
   object Default {
-    val fileName = "kronusRepo.yml"
     val repository = IClient.defaultURL
     val publishInfo = Release("qaTools", "default-saturn-project", "1.0.0")
     val componentName = "kronus"

@@ -1,13 +1,17 @@
 package com.ms.qaTools.saturn.runtime
+import com.ms.qaTools.Injector
+import com.ms.qaTools.dml.DmlEval
 import com.ms.qaTools.interpreter.ShellInterpreter
 import com.ms.qaTools.interpreter.GroovyInterpreter
+import com.ms.qaTools.interpreter.GroovyInterpreterResult
+import com.ms.qaTools.toolkit.Passed
 
 object Shell {
   def apply(code: String): String = {
     val result = ShellInterpreter().run(code)
-    result.stdout match {
-      case Some(m) if result.passed => m
-      case _                        => throw new Exception(s"Code does not pass: $code")
+    (result.status, result.stdout) match {
+      case (Passed, Some(m)) => m
+      case _ => throw new Exception(s"Code does not pass: $code")
     }
   }
 }
@@ -29,14 +33,14 @@ object File {
 }
 
 object Groovy{
-  def apply(code:String):String = {
-    val groovy = GroovyInterpreter()
-    val result = groovy.run(code)
-    result.resultObj match {
-      case Some(x) if result.passed => x.toString
-      case _                        => throw new Exception(s"Code does not pass: $code")
-    }
+  def apply(code: String): String = GroovyInterpreter().run(code) match {
+    case GroovyInterpreterResult(Passed, _, Some(x), _) => x.toString
+    case GroovyInterpreterResult(_, code, _, e) => throw new Exception(s"Code does not pass: $code", e.orNull)
   }
+}
+
+object Dml {
+  def apply(code: String): String = Injector.getInstance[DmlEval].parse(code).toString
 }
 /*
 Copyright 2017 Morgan Stanley

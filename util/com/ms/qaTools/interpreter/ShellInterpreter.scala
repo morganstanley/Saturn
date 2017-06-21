@@ -1,13 +1,8 @@
 package com.ms.qaTools.interpreter
 
-import java.io.File
-import java.io.FileWriter
-
 import scala.io.Source
 import scala.sys.process._
-import scala.util.{Try, Success, Failure}
-
-import com.ms.qaTools.toolkit.{Status, Passed, Failed}
+import com.ms.qaTools.{toolkit => tk}
 
 /**
  * TODO: Run process concurrently
@@ -15,32 +10,33 @@ import com.ms.qaTools.toolkit.{Status, Passed, Failed}
  *       ResultValidator for !errorMessage.toString.isEmpty
  */
 
-case class ShellInterpreterResult(override val status: Status,
+case class ShellInterpreterResult(
+  status: tk.Status,
   command: String,
   exitCode: Option[Int] = None,
   stdout: Option[String] = None,
   stderr: Option[String] = None,
-  override val exception: Option[Throwable] = None) extends InterpreterResult {
+  exception: Option[Throwable] = None
+) extends InterpreterResult {
   lazy val stdoutStr = stdout.getOrElse("")
   lazy val stderrStr = stderr.getOrElse("")
-  lazy val exitCodeStr = exitCode.getOrElse("N/A")
 }
 
 abstract class AbstractShellInterpreter extends Interpreter[String, ShellInterpreterResult] {
   def extraEnv: Seq[(String, String)]
-  val tee = false
+  val tee: Boolean
   val shell = "/bin/sh"
 
-  protected def createTempScript(command: String): File = {
-    val cmdFileTemp = File.createTempFile("runCmds", ".tmp")
+  protected def createTempScript(command: String): java.io.File = {
+    val cmdFileTemp = java.io.File.createTempFile("runCmds", ".tmp")
     cmdFileTemp.deleteOnExit()
-    val writer = new FileWriter(cmdFileTemp)
+    val writer = new java.io.FileWriter(cmdFileTemp)
     writer.write(command.replaceAll("\r\n", "\n"))
     writer.close()
     cmdFileTemp
   }
 
-  override def run(command: String): ShellInterpreterResult = {
+  def run(command: String): ShellInterpreterResult = {
     val message: StringBuilder = new StringBuilder
     val errorMessage: StringBuilder = new StringBuilder
 
@@ -63,27 +59,27 @@ abstract class AbstractShellInterpreter extends Interpreter[String, ShellInterpr
         stderr.close()
       })
 
-    Try {
+    util.Try {
       Process(List(shell, createTempScript(command).getAbsolutePath), None, extraEnv: _*).run(pIO).exitValue
     } match {
-      case Success(exitCode) =>
-        val status = if (exitCode == 0 && errorMessage.toString.isEmpty) Passed() else Failed()
-        ShellInterpreterResult(status, command,
-                               Option(exitCode), Option(message.toString), Option(errorMessage.toString))
-      case Failure(t) =>
-        ShellInterpreterResult(Failed(), command, exception = Option(t))
+      case util.Success(exitCode) =>
+        ShellInterpreterResult(
+          if (exitCode == 0 && errorMessage.toString.isEmpty) tk.Passed else tk.Failed,
+          command,
+          Option(exitCode),
+          Option(message.toString),
+          Option(errorMessage.toString).filter{_.nonEmpty})
+      case util.Failure(t) =>
+        ShellInterpreterResult(tk.Failed, command, exception = Option(t))
     }
   }
 }
 
-case class ShellInterpreter(override val tee: Boolean = false,
-                            override val extraEnv: Seq[(String, String)] = Seq.empty) extends AbstractShellInterpreter
+case class ShellInterpreter(tee: Boolean = false, extraEnv: Seq[(String, String)] = Seq.empty) extends AbstractShellInterpreter
 
-case class WindowsShellInterpreter(override val tee: Boolean = false,
-                                   override val extraEnv: Seq[(String, String)] = Seq.empty) extends AbstractShellInterpreter {
-  override def run(command: String) = {
+case class WindowsShellInterpreter(tee: Boolean = false, extraEnv: Seq[(String, String)] = Seq.empty) extends AbstractShellInterpreter {
+  override def run(command: String) =
     super.run(System.getenv("WINDIR") + "\\system32\\cmd.exe /c " + command)
-  }
 }
 /*
 Copyright 2017 Morgan Stanley

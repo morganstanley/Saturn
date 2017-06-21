@@ -1,7 +1,6 @@
 package com.ms.qaTools.saturn.lint
 
 import scala.util.Try
-
 import com.ms.qaTools.saturn.{Saturn => MSaturn}
 import com.ms.qaTools.saturn.codeGen.SaturnCodeGenUtil
 import com.ms.qaTools.saturn.lint.validators.DeprecatedValidator
@@ -14,6 +13,12 @@ import com.ms.qaTools.saturn.lint.validators.SaturnValidator
 import com.ms.qaTools.toolkit.Failed
 import com.ms.qaTools.toolkit.Passed
 import com.ms.qaTools.toolkit.Runnable
+import com.ms.qaTools.saturn.lint.validators.CVNonEmptyForAllValidator
+import com.ms.qaTools.saturn.lint.validators.TitleNoPostIterAttributesValidator
+import com.ms.qaTools.saturn.lint.validators.NonNegativeIntegerTimeoutValidator
+import com.ms.qaTools.saturn.lint.validators.NonEmptyCustomLinkValidator
+import com.ms.qaTools.saturn.lint.validators.ConfigurationValidator
+import com.ms.qaTools.saturn.lint.validators.SoapTCPConnectionDuplicateValidator
 
 
 
@@ -22,9 +27,9 @@ import com.ms.qaTools.toolkit.Runnable
  * Object names must be unique within a given scope
  * Object names must be well formed
  *  Attributes, Resources, RunGroups, ColumnMappings, ForIterators, ProcedureParameters
- *  
+ *
  * Deprecated features and deprecated classes
- * 
+ *
  * Device resources may only be used in the following places:
  *  AbstractRunGroup Resources
  *  Procedure Call Parameters
@@ -34,20 +39,20 @@ import com.ms.qaTools.toolkit.Runnable
  *  MQModule
  *  CPSModule
  *  SoapIOModule
- * 
+ *
  * Procedures
  *   Non-mandatory arguments must have a default value
- * 
+ *
  * ProcedureCall
  *  The runGroup parameter of a procedure call, although a complexValue, must be non-empty and must contain only text elements
  *  Arguments must match the called procedure's parameters
- *  
+ *
  * Module specific resource type checking
- * 
+ *
  * Steps with no configuration objects should warn and be converted to NOOPS
- * 
+ *
  * Optimizations
- *   Non-reference resource duplication of resources should be referenced. 
+ *   Non-reference resource duplication of resources should be referenced.
  */
 
 // SAT-{OBJECT}-{CATEGORY}-{NUMBER}
@@ -58,13 +63,19 @@ object SaturnLintDefaults {
                               RepetitionValidator,
                               SaturnValidator,
                               ReferenceValidator,
-                              ProcedureCallValidator)
+                              ProcedureCallValidator,
+                              CVNonEmptyForAllValidator,
+                              TitleNoPostIterAttributesValidator,
+                              NonNegativeIntegerTimeoutValidator,
+                              NonEmptyCustomLinkValidator,
+                              ConfigurationValidator,
+                              SoapTCPConnectionDuplicateValidator)
 }
 
 class SaturnLintRunner(val saturn: MSaturn, val validators: Seq[LintValidator]) extends Runnable[SaturnLintResult] {
-  override def run: Try[SaturnLintResult] = Try {
+  def run: Try[SaturnLintResult] = Try {
     val validationResults = validators.flatMap{validator => validator.validate(saturn)}
-    val status = if(validationResults.exists{r => r.isError}) Failed() else Passed()
+    val status = if(validationResults.exists{r => r.isError}) Failed else Passed
     SaturnLintResult(status, validationResults)
   }
 }
@@ -80,7 +91,8 @@ object SaturnLintRunner {
     new SaturnLintRunner(saturn, validators)
 
   def apply(saturn: MSaturn): SaturnLintRunner = apply(saturn, SaturnLintDefaults.defaultValidators)
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

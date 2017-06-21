@@ -1,20 +1,13 @@
 package com.ms.qaTools.tree.extraction
 
-import com.ms.qaTools.io.rowSource.ColumnDefinition
-import com.ms.qaTools.tree.TreeNode
-
-
-
 trait Index {
   val index: Int
 }
 
-case class ColumnIndex(val index: Int) extends Index {
-  override def equals(that: Any): Boolean = {
-    that match {
-      case i: Index => index == i.index
-      case _ => super.equals(that)
-    }
+case class ColumnIndex(index: Int) extends Index {
+  override def equals(that: Any): Boolean = that match {
+    case i: Index => index == i.index
+    case _ => super.equals(that)
   }
 }
 /*

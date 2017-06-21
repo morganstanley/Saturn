@@ -1,31 +1,24 @@
 package com.ms.qaTools.compare.writer
-import com.ms.qaTools.compare.AbstractDiff
-import com.ms.qaTools.compare.CompareColDef
+import com.ms.qaTools.compare.Diff
+import com.ms.qaTools.compare.CompareColDefs
+import com.ms.qaTools.compare.DelimitedComparatorCounter
 import com.ms.qaTools.compare.DelimitedDifferent
 import com.ms.qaTools.compare.DelimitedIdentical
 import com.ms.qaTools.compare.DelimitedInLeftOnly
 import com.ms.qaTools.compare.DelimitedInRightOnly
-import com.ms.qaTools.compare.DiffCounter
 import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.SeqRowSource
 import com.ms.qaTools.io.rowSource.DatabaseConnection
 import com.ms.qaTools.io.rowSource.jdbc.ExecuteSupport
-import com.ms.qaTools.io.rowWriter.jdbc.JdbcRowWriter
+import com.ms.qaTools.io.rowWriter.JdbcRowWriter
 
-abstract class DataBaseDiffSetWriter(dbConnection: DatabaseConnection with ExecuteSupport, colDefs: Seq[CompareColDef], tblPrefix: String)
-extends DiffSetWriter {
+abstract class DataBaseDiffSetWriter(dbConnection: DatabaseConnection with ExecuteSupport, val colDefs: CompareColDefs, tblPrefix: String)
+extends DelimitedDiffSetWriter with SortedColumns {
   val STATUS_IDENTICAL: Int = 0
   val STATUS_DIFFERENT: Int = 1
   val STATUS_INLEFT: Int = 2
   val STATUS_INRIGHT: Int = 3
   val STATUS_EXPLAINED: Int = 4
-
-  def writeDiff(diff: AbstractDiff) = diff match {
-    case d: DelimitedIdentical   => createIdenticalTable(d)
-    case d: DelimitedDifferent   => createDifferenceTable(d)
-    case d: DelimitedInLeftOnly  => createInLeftOnlyTable(d)
-    case d: DelimitedInRightOnly => createInRightOnlyTable(d)
-  }
 
   // Definition of valid index for columns
   var leftIndex: Int = 0
@@ -53,23 +46,10 @@ extends DiffSetWriter {
     cellDiffsIndex
   }
 
-  val orderedColDefs: Map[DataSet, List[CompareColDef]] = Map(
-    LEFT -> colDefs.toList.filter(_.indexOpt.isDefined).sortBy(_.indexOpt),
-    RIGHT -> colDefs.toList.filter(_.mappedIndex.isDefined).sortBy(_.mappedIndex),
-    BOTH -> {
-      val keyCols = colDefs.toList.filter(_.isKey).sortBy(_.keyOrder)
-      val (ignoredCols, matchedCols) = colDefs.toList.filterNot(_.isKey).partition(_.isIgnored)
-      keyCols ++ matchedCols ++ ignoredCols
-    }
-  )
-
-  val leftColNames = orderedColDefs(LEFT).map(_.leftName)
-  val rightColNames = orderedColDefs(RIGHT).map(_.rightName)
-
-  override def write(source: Iterator[AbstractDiff]): Int = 0
+  override def write(source: Iterator[Diff[Seq[String]]]): Int = ???
   def writeNotes(notes: Seq[String] = Nil) = ()
-  def writeSummary(counter: DiffCounter) = createViews
-  def close {}
+  def writeSummary(counter: DelimitedComparatorCounter) = createViews
+  def close() = ()
 
   private def writer(s: String): JdbcRowWriter =
     JdbcRowWriter(dbConnection, tblPrefix + s)
@@ -77,13 +57,13 @@ extends DiffSetWriter {
   /**
    * Method to insert the identical data into the different tables using the STATUS_IDENTICAL status
    */
-  private def createIdenticalTable(d: DelimitedIdentical) = {
-    val l = List(leftIndexNextGenId.toString :: orderedColDefs(LEFT).map(c => d.left(c.leftIndex)))
-    val r = List(rightIndexNextGenId.toString :: orderedColDefs(RIGHT).map(c => d.right(c.rightIndex)))
+  def writeIdentical(d: DelimitedIdentical) = {
+    val l = List(leftIndexNextGenId.toString :: sortedLeftColumns.map(c => d.left(c._1.index)))
+    val r = List(rightIndexNextGenId.toString :: sortedRightColumns.map(c => d.right(c._1.index)))
     val di = List(List(diffIndexNextGenId.toString, leftIndex.toString, rightIndex.toString, STATUS_IDENTICAL.toString, d.explanation.map(_.toString).getOrElse("")))
     val c = List(List(cellDiffsIntexNextGenId, diffIndex, leftIndex, rightIndex, STATUS_IDENTICAL).map(_.toString) :+ d.explanation.map(_.toString).getOrElse(""))
-    writer("leftTable").write(SeqRowSource(l, ColumnDefinition.fromColumnNames("rowId" :: leftColNames)))
-    writer("rightTable").write(SeqRowSource(r, ColumnDefinition.fromColumnNames("rowId" :: rightColNames)))
+    writer("leftTable").write(SeqRowSource(l, ColumnDefinition.fromColumnNames("rowId" :: sortedLeftColumns.map(_._1.name))))
+    writer("rightTable").write(SeqRowSource(r, ColumnDefinition.fromColumnNames("rowId" :: sortedRightColumns.map(_._1.name))))
     writer("diffs").write(SeqRowSource(di, ColumnDefinition.fromColumnNames(List("diffId", "leftId", "rightId", "statusId", "reason"))))
     writer("cellDiffs").write(SeqRowSource(c, ColumnDefinition.fromColumnNames(List("cellDiffId", "diffId", "leftIdx", "rightIdx", "statusId", "reason"))))
   }
@@ -91,25 +71,25 @@ extends DiffSetWriter {
   /**
    * Method to insert the different data into the different tables using the STATUS_DIFFERENT status
    */
-  private def createDifferenceTable(d: DelimitedDifferent) = {
-    val explainedDetails = orderedColDefs(BOTH).map(c =>
-      d.explainedColumns.find {case (ec, _) => ec.leftName == c.leftName} match {
+  def writeDifferent(d: DelimitedDifferent) = {
+    val explainedDetails = sortedCompareColumns.map{case (l, _, _) =>
+      d.explainedColumns.find {case (ec, _) => Some(ec.left.name) == l.map(_.name)} match {
         case None    => (STATUS_DIFFERENT, d.explanation.getOrElse(""))
         case Some(c) => (STATUS_EXPLAINED, c._2)
       }
-    ).distinct
+    }.distinct
     val columnsProcessed =
       if (explainedDetails.exists(_._1 == STATUS_EXPLAINED))
         List(STATUS_EXPLAINED.toString, explainedDetails.collect{case (STATUS_EXPLAINED, e) => e}.mkString("-"))
       else
         List(STATUS_DIFFERENT.toString, explainedDetails.collect{case (STATUS_DIFFERENT, e) => e}.mkString("-"))
 
-    val l = List(leftIndexNextGenId.toString :: orderedColDefs(LEFT).map(c => d.left(c.leftIndex)))
-    val r = List(rightIndexNextGenId.toString :: orderedColDefs(RIGHT).map(c => d.right(c.rightIndex)))
+    val l = List(leftIndexNextGenId.toString :: sortedLeftColumns.map(c => d.left(c._1.index)))
+    val r = List(rightIndexNextGenId.toString :: sortedRightColumns.map(c => d.right(c._1.index)))
     val di = List(List(diffIndexNextGenId.toString, leftIndex.toString, rightIndex.toString) ::: columnsProcessed)
     val c = List(List(cellDiffsIntexNextGenId.toString, diffIndex.toString, leftIndex.toString, rightIndex.toString) ::: columnsProcessed)
-    writer("leftTable").write(SeqRowSource(l, ColumnDefinition.fromColumnNames("rowId" :: leftColNames)))
-    writer("rightTable").write(SeqRowSource(r, ColumnDefinition.fromColumnNames("rowId" :: rightColNames)))
+    writer("leftTable").write(SeqRowSource(l, ColumnDefinition.fromColumnNames("rowId" :: sortedLeftColumns.map(_._1.name))))
+    writer("rightTable").write(SeqRowSource(r, ColumnDefinition.fromColumnNames("rowId" :: sortedRightColumns.map(_._1.name))))
     writer("diffs").write(SeqRowSource(di, ColumnDefinition.fromColumnNames(List("diffId", "leftId", "rightId", "statusId", "reason"))))
     writer("cellDiffs").write(SeqRowSource(c, ColumnDefinition.fromColumnNames(List("cellDiffId", "diffId", "leftIdx", "rightIdx", "statusId", "reason"))))
   }
@@ -117,11 +97,11 @@ extends DiffSetWriter {
   /**
    * Method to insert the in left only data into the different tables using the STATUS_INLEFT status
    */
-  private def createInLeftOnlyTable(d: DelimitedInLeftOnly) = {
-    val l = List(leftIndexNextGenId.toString :: orderedColDefs(LEFT).map(c => d.left(c.leftIndex)))
+  def writeInLeftOnly(d: DelimitedInLeftOnly) = {
+    val l = List(leftIndexNextGenId.toString :: sortedLeftColumns.map(c => d.left(c._1.index)))
     val di = List(List(diffIndexNextGenId.toString, leftIndex.toString, STATUS_INLEFT.toString, d.explanation.map(_.toString).getOrElse("")))
     val c = List(List(cellDiffsIntexNextGenId.toString, diffIndex.toString, leftIndex.toString, STATUS_INLEFT.toString, d.explanation.map(_.toString).getOrElse("")))
-    writer("leftTable").write(SeqRowSource(l, ColumnDefinition.fromColumnNames("rowId" :: leftColNames)))
+    writer("leftTable").write(SeqRowSource(l, ColumnDefinition.fromColumnNames("rowId" :: sortedLeftColumns.map(_._1.name))))
     writer("diffs").write(SeqRowSource(di, ColumnDefinition.fromColumnNames(List("diffId", "leftId", "statusId", "reason"))))
     writer("cellDiffs").write(SeqRowSource(c, ColumnDefinition.fromColumnNames(List("cellDiffId", "diffId", "leftIdx", "statusId", "reason"))))
   }
@@ -129,11 +109,11 @@ extends DiffSetWriter {
   /**
    * Method to insert the in left only data into the different tables using the STATUS_INRIGHT status
    */
-  private def createInRightOnlyTable(d: DelimitedInRightOnly) = {
-    val r = List(rightIndexNextGenId.toString :: orderedColDefs(RIGHT).map(c => d.right(c.rightIndex)))
+  def writeInRightOnly(d: DelimitedInRightOnly) = {
+    val r = List(rightIndexNextGenId.toString :: sortedRightColumns.map(c => d.right(c._1.index)))
     val di = List(List(diffIndexNextGenId.toString, rightIndex.toString, STATUS_INRIGHT.toString, d.explanation.map(_.toString).getOrElse("")))
     val c = List(List(cellDiffsIntexNextGenId.toString, diffIndex.toString, rightIndex.toString, STATUS_INRIGHT.toString, d.explanation.map(_.toString).getOrElse("")))
-    writer("rightTable").write(SeqRowSource(r, ColumnDefinition.fromColumnNames("rowId" :: rightColNames)))
+    writer("rightTable").write(SeqRowSource(r, ColumnDefinition.fromColumnNames("rowId" :: sortedRightColumns.map(_._1.name))))
     writer("diffs").write(SeqRowSource(di, ColumnDefinition.fromColumnNames(List("diffId", "rightId", "statusId", "reason"))))
     writer("cellDiffs").write(SeqRowSource(c, ColumnDefinition.fromColumnNames(List("cellDiffId", "diffId", "rightIdx", "statusId", "reason"))))
   }
@@ -141,8 +121,8 @@ extends DiffSetWriter {
   /**
    * Method to create the views used in the data compare process
    */
-  def createViews {
-    val genericColumns = (leftColNames.zipWithIndex.map{case (column, index) =>
+  def createViews(): Unit = {
+    val genericColumns = (sortedLeftColumns.map(_._1.name).zipWithIndex.map{case (column, index) =>
       tblPrefix + "leftTable." + column + " AS " + column + "_leftVal," +
       tblPrefix + "rightTable." + column + " AS " + column + "_rightVal," +
       "CASE WHEN (" + tblPrefix + "leftTable." + column + " IS NULL) THEN 3 WHEN (" + tblPrefix + "rightTable." + column + " IS NULL) THEN 2" +
@@ -178,7 +158,7 @@ extends DiffSetWriter {
   /**
    * Method to populate the valid compare status
    */
-  def createValidStatus = {
+  def createValidStatus() = {
     val s = List(Seq("0", "I"), Seq("1", "D"), Seq("2", "IL"), Seq("3", "IR"), Seq("4", "E"), Seq("5", "VP"), Seq("6", "VF"))
     writer("status").write(SeqRowSource(s, ColumnDefinition.fromColumnNames(List("statusId", "status"))))
   }
@@ -187,7 +167,7 @@ extends DiffSetWriter {
    * Abstract method used by the different classes to set up the environment that is going to be
    * used to insert the data
    */
-  def setupDataBaseEnvironment
+  def setupDataBaseEnvironment(): Unit
 }
 /*
 Copyright 2017 Morgan Stanley

@@ -1,13 +1,7 @@
 package com.ms.qaTools.toolkit.cmdLine
 
 import org.kohsuke.args4j.Option
-import java.io.File
-import java.net.URLClassLoader
-import java.io.FileInputStream
-import java.io.BufferedInputStream
-import com.ms.qaTools.io.rowSource.protobuf.ProtoBufRowSource
-
-
+import com.ms.qaTools.io.rowSource.ProtoBufRowSource
 
 trait PBComparisonFiles {
   @Option(name = "-a", aliases = Array("--actualFileName"), usage = "Specify actual buffer message fileName", required = true)
@@ -28,19 +22,14 @@ trait PBComparisonFiles {
   @Option(name = "-r", aliases = Array("--readEncoded"), usage = "Is Protocol buffer data in Encoded format.")
   val readEncoded: Boolean = false
 
-  def actualRowSource = {
-    if (readEncoded)
-      ProtoBufRowSource(actualInFileName, inClass, new java.net.URLClassLoader(Array(new File(inJarName).toURI.toURL)), readDelimited, readEncoded)
-    else
-      ProtoBufRowSource(new BufferedInputStream(new FileInputStream(actualInFileName)), inClass, new java.net.URLClassLoader(Array(new File(inJarName).toURI.toURL)), readDelimited)
-  }
+  def classLoader = new java.net.URLClassLoader(Array(new java.io.File(inJarName).toURI.toURL))
 
-  def expectedRowSource = {
-    if (readEncoded)
-      ProtoBufRowSource(expectedInFileName, inClass, new java.net.URLClassLoader(Array(new File(inJarName).toURI.toURL)), readDelimited, readEncoded)
-    else
-      ProtoBufRowSource(new BufferedInputStream(new FileInputStream(expectedInFileName)), inClass, new java.net.URLClassLoader(Array(new File(inJarName).toURI.toURL)), readDelimited)
-  }
+  def rowSource(file: String) =
+    if (readEncoded) ProtoBufRowSource(file, inClass, classLoader, readDelimited, readEncoded)
+    else             ProtoBufRowSource(new java.io.BufferedInputStream(new java.io.FileInputStream(file)), inClass, classLoader, readDelimited)
+
+  def actualRowSource   = rowSource(actualInFileName)
+  def expectedRowSource = rowSource(expectedInFileName)
 }
 /*
 Copyright 2017 Morgan Stanley

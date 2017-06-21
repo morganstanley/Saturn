@@ -11,21 +11,24 @@ import com.ms.qaTools.io.rowSource.internal.FixedWidthDeserializer
 import com.ms.qaTools.io.rowSource.Resizable
 import com.ms.qaTools.io.rowSource.SimpleColumnDefinitionAdapter
 import com.ms.qaTools.io.rowSource.StreamingColumnDefinitionAdapter
-import com.ms.qaTools.io.rowWriter.file.CsvRowWriter
+import com.ms.qaTools.io.rowWriter.CsvRowWriter
 import java.io.BufferedReader
 import java.io.PushbackReader
 import java.io.Reader
 import java.io.StringWriter
 import org.w3c.dom.Document
+import scala.collection.AbstractIterator
+import scala.slick.util.CloseableIterator
 import scala.util.Try
 
-class DelimitedIterator(csvReader: Parser) extends Iterator[Seq[String]] {
+class DelimitedIterator(csvReader: Parser) extends AbstractIterator[Seq[String]] with CloseableIterator[Seq[String]] {
   private def getRow: Option[Seq[String]] =
     Option(csvReader.readNext).map(_.map(_.orNull)) // TODO bury null's deeper, they're dangerous
 
   private[this] var currentRow = getRow
-  def next = currentRow.get.withSideEffect(_ => currentRow = getRow)
+  def next = currentRow.getOrElse(Iterator.empty.next).withSideEffect(_ => currentRow = getRow)
   def hasNext = currentRow.nonEmpty
+  def close() = csvReader.close()
 }
 
 class DelimitedRowSource(csvReader: Parser, val columnDefinitionAdapter: ColumnDefinitionAdapter)
@@ -82,7 +85,7 @@ trait StreamingColumnDefinitionAdapterCreator {
     val parser = DelimitedParser(reader, separator = separator, quoteChar = quoteChar, escapeChar = escape, bufSize = 1)
     val firstRow = parser.readNext
     val w = new StringWriter()
-    CsvRowWriter(w, separator = separator.head, quoteChar = quoteChar.getOrElse('\0'), escapeChar = escape.getOrElse('\0')).write(Iterator.single(firstRow.map {_.map {_.toString}.orNull}))
+    CsvRowWriter(w, separator = separator.head, quoteChar = quoteChar.getOrElse('\u0000'), escapeChar = escape.getOrElse('\u0000')).write(Iterator.single(firstRow.map {_.map {_.toString}.orNull}))
     val rewrittenFirstRowCharArray = w.toString.toCharArray
     val pb = new PushbackReader(reader, rewrittenFirstRowCharArray.size)
     pb.unread(rewrittenFirstRowCharArray)
@@ -225,7 +228,7 @@ object FixedWidthRowSource {
   }
 
   def apply(reader: Reader, config: Document, line: Int): FixedWidthRowSource =
-    FixedWidthRowSource(reader, FixedWidthDeserializer.deserialize(config).get, line)
+    FixedWidthRowSource(reader, FixedWidthDeserializer.deserialize(config), line)
 }
 /*
 Copyright 2017 Morgan Stanley

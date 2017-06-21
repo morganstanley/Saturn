@@ -2,26 +2,20 @@
  */
 package com.ms.qaTools.saturn.kronus.impl;
 
-import com.ms.qaTools.saturn.kronus.AnnotationCall;
+import com.ms.qaTools.saturn.kronus.AbstractDef;
 import com.ms.qaTools.saturn.kronus.Expression;
-import com.ms.qaTools.saturn.kronus.HashtagCall;
 import com.ms.qaTools.saturn.kronus.KronusPackage;
+import com.ms.qaTools.saturn.kronus.NamedAbstractDef;
+import com.ms.qaTools.saturn.kronus.NamedRuntimeDef;
 import com.ms.qaTools.saturn.kronus.ValDef;
-
-import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
-import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
-import org.eclipse.emf.ecore.util.InternalEList;
 
 /**
  * <!-- begin-user-doc -->
@@ -30,35 +24,34 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link com.ms.qaTools.saturn.kronus.impl.ValDefImpl#getHashtags <em>Hashtags</em>}</li>
- *   <li>{@link com.ms.qaTools.saturn.kronus.impl.ValDefImpl#getAnnotations <em>Annotations</em>}</li>
+ *   <li>{@link com.ms.qaTools.saturn.kronus.impl.ValDefImpl#getName <em>Name</em>}</li>
  *   <li>{@link com.ms.qaTools.saturn.kronus.impl.ValDefImpl#getValue <em>Value</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class ValDefImpl extends AbstractDefImpl implements ValDef
+public class ValDefImpl extends ReferenceableDefsImpl implements ValDef
 {
   /**
-   * The cached value of the '{@link #getHashtags() <em>Hashtags</em>}' containment reference list.
+   * The default value of the '{@link #getName() <em>Name</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getHashtags()
+   * @see #getName()
    * @generated
    * @ordered
    */
-  protected EList<HashtagCall> hashtags;
+  protected static final String NAME_EDEFAULT = null;
 
   /**
-   * The cached value of the '{@link #getAnnotations() <em>Annotations</em>}' containment reference list.
+   * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getAnnotations()
+   * @see #getName()
    * @generated
    * @ordered
    */
-  protected EList<AnnotationCall> annotations;
+  protected String name = NAME_EDEFAULT;
 
   /**
    * The cached value of the '{@link #getValue() <em>Value</em>}' containment reference.
@@ -96,13 +89,9 @@ public class ValDefImpl extends AbstractDefImpl implements ValDef
    * <!-- end-user-doc -->
    * @generated
    */
-  public EList<HashtagCall> getHashtags()
+  public String getName()
   {
-    if (hashtags == null)
-    {
-      hashtags = new EObjectContainmentEList<HashtagCall>(HashtagCall.class, this, KronusPackage.VAL_DEF__HASHTAGS);
-    }
-    return hashtags;
+    return name;
   }
 
   /**
@@ -110,13 +99,12 @@ public class ValDefImpl extends AbstractDefImpl implements ValDef
    * <!-- end-user-doc -->
    * @generated
    */
-  public EList<AnnotationCall> getAnnotations()
+  public void setName(String newName)
   {
-    if (annotations == null)
-    {
-      annotations = new EObjectContainmentEList<AnnotationCall>(AnnotationCall.class, this, KronusPackage.VAL_DEF__ANNOTATIONS);
-    }
-    return annotations;
+    String oldName = name;
+    name = newName;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, KronusPackage.VAL_DEF__NAME, oldName, name));
   }
 
   /**
@@ -177,10 +165,6 @@ public class ValDefImpl extends AbstractDefImpl implements ValDef
   {
     switch (featureID)
     {
-      case KronusPackage.VAL_DEF__HASHTAGS:
-        return ((InternalEList<?>)getHashtags()).basicRemove(otherEnd, msgs);
-      case KronusPackage.VAL_DEF__ANNOTATIONS:
-        return ((InternalEList<?>)getAnnotations()).basicRemove(otherEnd, msgs);
       case KronusPackage.VAL_DEF__VALUE:
         return basicSetValue(null, msgs);
     }
@@ -197,10 +181,8 @@ public class ValDefImpl extends AbstractDefImpl implements ValDef
   {
     switch (featureID)
     {
-      case KronusPackage.VAL_DEF__HASHTAGS:
-        return getHashtags();
-      case KronusPackage.VAL_DEF__ANNOTATIONS:
-        return getAnnotations();
+      case KronusPackage.VAL_DEF__NAME:
+        return getName();
       case KronusPackage.VAL_DEF__VALUE:
         return getValue();
     }
@@ -212,19 +194,13 @@ public class ValDefImpl extends AbstractDefImpl implements ValDef
    * <!-- end-user-doc -->
    * @generated
    */
-  @SuppressWarnings("unchecked")
   @Override
   public void eSet(int featureID, Object newValue)
   {
     switch (featureID)
     {
-      case KronusPackage.VAL_DEF__HASHTAGS:
-        getHashtags().clear();
-        getHashtags().addAll((Collection<? extends HashtagCall>)newValue);
-        return;
-      case KronusPackage.VAL_DEF__ANNOTATIONS:
-        getAnnotations().clear();
-        getAnnotations().addAll((Collection<? extends AnnotationCall>)newValue);
+      case KronusPackage.VAL_DEF__NAME:
+        setName((String)newValue);
         return;
       case KronusPackage.VAL_DEF__VALUE:
         setValue((Expression)newValue);
@@ -243,11 +219,8 @@ public class ValDefImpl extends AbstractDefImpl implements ValDef
   {
     switch (featureID)
     {
-      case KronusPackage.VAL_DEF__HASHTAGS:
-        getHashtags().clear();
-        return;
-      case KronusPackage.VAL_DEF__ANNOTATIONS:
-        getAnnotations().clear();
+      case KronusPackage.VAL_DEF__NAME:
+        setName(NAME_EDEFAULT);
         return;
       case KronusPackage.VAL_DEF__VALUE:
         setValue((Expression)null);
@@ -266,14 +239,95 @@ public class ValDefImpl extends AbstractDefImpl implements ValDef
   {
     switch (featureID)
     {
-      case KronusPackage.VAL_DEF__HASHTAGS:
-        return hashtags != null && !hashtags.isEmpty();
-      case KronusPackage.VAL_DEF__ANNOTATIONS:
-        return annotations != null && !annotations.isEmpty();
+      case KronusPackage.VAL_DEF__NAME:
+        return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
       case KronusPackage.VAL_DEF__VALUE:
         return value != null;
     }
     return super.eIsSet(featureID);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public int eBaseStructuralFeatureID(int derivedFeatureID, Class<?> baseClass)
+  {
+    if (baseClass == AbstractDef.class)
+    {
+      switch (derivedFeatureID)
+      {
+        default: return -1;
+      }
+    }
+    if (baseClass == NamedAbstractDef.class)
+    {
+      switch (derivedFeatureID)
+      {
+        case KronusPackage.VAL_DEF__NAME: return KronusPackage.NAMED_ABSTRACT_DEF__NAME;
+        default: return -1;
+      }
+    }
+    if (baseClass == NamedRuntimeDef.class)
+    {
+      switch (derivedFeatureID)
+      {
+        default: return -1;
+      }
+    }
+    return super.eBaseStructuralFeatureID(derivedFeatureID, baseClass);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public int eDerivedStructuralFeatureID(int baseFeatureID, Class<?> baseClass)
+  {
+    if (baseClass == AbstractDef.class)
+    {
+      switch (baseFeatureID)
+      {
+        default: return -1;
+      }
+    }
+    if (baseClass == NamedAbstractDef.class)
+    {
+      switch (baseFeatureID)
+      {
+        case KronusPackage.NAMED_ABSTRACT_DEF__NAME: return KronusPackage.VAL_DEF__NAME;
+        default: return -1;
+      }
+    }
+    if (baseClass == NamedRuntimeDef.class)
+    {
+      switch (baseFeatureID)
+      {
+        default: return -1;
+      }
+    }
+    return super.eDerivedStructuralFeatureID(baseFeatureID, baseClass);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public String toString()
+  {
+    if (eIsProxy()) return super.toString();
+
+    StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (name: ");
+    result.append(name);
+    result.append(')');
+    return result.toString();
   }
 
 } //ValDefImpl

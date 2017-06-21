@@ -1,7 +1,6 @@
 package com.ms.qaTools.tree.validator
 
 import com.ms.qaTools.collections._
-import com.ms.qaTools._
 import com.ms.qaTools.tree._
 import org.slf4j.{ LoggerFactory }
 
@@ -22,7 +21,7 @@ trait Matcher[NodeType] {
     }
 
   def matchAndCompare(expected: TreeNode[NodeType], actual: TreeNode[NodeType], result: TreeResult[NodeType], globalMatchers: Set[Matcher[NodeType]]): TreeResult[NodeType] =
-    matchNodes(expected, actual).foldLeft(result) { case (r, (e, a)) => r ++ comparator.compare(e, a, r, globalMatchers) }
+    matchNodes(expected, actual).foldLeft(result) { case (r, (e, a)) => comparator.compare(e, a, r, globalMatchers) }
 
   def matchNodes(pair: (TreeNode[NodeType], TreeNode[NodeType])): Seq[(Option[TreeNode[NodeType]], Option[TreeNode[NodeType]])] = matchNodes(pair._1, pair._2)
 
@@ -67,22 +66,22 @@ class KeyedMatcher[NodeType](
   }
 
   override def matchAndCompare(expected: TreeNode[NodeType], actual: TreeNode[NodeType], result: TreeResult[NodeType], globalMatchers: Set[Matcher[NodeType]]): TreeResult[NodeType] = {
-    def foldKeyNodes0(f: (TreeResult[NodeType], Result[NodeType]) => TreeResult[NodeType])(keyNodes: Iterable[TreeNode[NodeType]], result: TreeResult[NodeType]) = 
+    def foldKeyNodes0(f: (TreeResult[NodeType], Result[NodeType]) => TreeResult[NodeType])(keyNodes: Iterable[TreeNode[NodeType]], result: TreeResult[NodeType]) =
         keyNodes.foldLeft(result) { (r, k) => f(r,Result(k, usedAsKey = true)) }
-    def foldExpected0 = foldKeyNodes0((r: TreeResult[NodeType], keyResult: Result[NodeType]) => r #+ keyResult) _ 
+    def foldExpected0 = foldKeyNodes0((r: TreeResult[NodeType], keyResult: Result[NodeType]) => r #+ keyResult) _
     def foldActual0 = foldKeyNodes0((r: TreeResult[NodeType], keyResult: Result[NodeType]) => r +# keyResult) _
 
     val matched = matchNodes(expected, actual)
     val matchedAndKeyedResult = matched.foldLeft(result) {
       (r, pair) =>
         pair match {
-          case (Some(e), Some(a)) => foldExpected0(e.keyNodes, r) ++ foldActual0(a.keyNodes, r)
+          case (Some(e), Some(a)) => foldActual0(a.keyNodes, foldExpected0(e.keyNodes, r))
           case (Some(e), None)    => foldExpected0(e.keyNodes, r)
           case (None, Some(a))    => foldActual0(a.keyNodes, r)
           case (None, None)       => throw new Error("Unhandled exception.")
         }
     }
-    matched.foldLeft(matchedAndKeyedResult) { case (r, (e, a)) => r ++ comparator.compare(e, a, r, globalMatchers) }
+    matched.foldLeft(matchedAndKeyedResult) { case (r, (e, a)) => comparator.compare(e, a, r, globalMatchers) }
   }
 
   def matchNodes(expected: TreeNode[NodeType], actual: TreeNode[NodeType]): Seq[(Option[TreeNode[NodeType] with Indexed], Option[TreeNode[NodeType] with Indexed])] = {

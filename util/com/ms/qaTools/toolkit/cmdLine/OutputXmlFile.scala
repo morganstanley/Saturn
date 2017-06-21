@@ -1,22 +1,7 @@
 package com.ms.qaTools.toolkit.cmdLine
 
-import org.kohsuke.args4j.Option
-import com.ms.qaTools.io.rowWriter.file.XmlRowWriter
-import java.io.OutputStream
-import java.io.{ FileWriter => JFileWriter }
-
-
-
-trait OutputXmlFile {
-  @Option(name = "-o", aliases = Array("--outFileName"), usage = "specify an output xml fileName", required = true)
-  val outFileName: String = null
-
-  def xmlRowWriter = XmlRowWriter(new JFileWriter(outFileName))
-}
-
-trait OptionalOutputXmlFile extends OutputXmlFile {
-  @Option(name = "-o", aliases = Array("--outFileName"), usage = "specify an output xml fileName", required = false)
-  override val outFileName: String = null
+trait OutputXmlFile extends OutputFile {
+  def xmlRowWriter = com.ms.qaTools.io.rowWriter.XmlRowWriter(writer)
 }
 /*
 Copyright 2017 Morgan Stanley

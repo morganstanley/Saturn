@@ -2,6 +2,7 @@ package com.ms.qaTools.saturn.modules.xmlManipModule.impl;
 
 import com.ms.qaTools.saturn.modules.xmlManipModule.*;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
@@ -93,6 +94,44 @@ public class XmlManipModuleFactoryImpl extends EFactoryImpl implements XmlManipM
       case XmlManipModulePackage.XPATH: return createXPath();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+    }
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public Object createFromString(EDataType eDataType, String initialValue)
+  {
+    switch (eDataType.getClassifierID())
+    {
+      case XmlManipModulePackage.ADD_POSITION_TYPE_ENUM:
+        return createAddPositionTypeEnumFromString(eDataType, initialValue);
+      case XmlManipModulePackage.ADD_POSITION_TYPE_ENUM_OBJECT:
+        return createAddPositionTypeEnumObjectFromString(eDataType, initialValue);
+      default:
+        throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+    }
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public String convertToString(EDataType eDataType, Object instanceValue)
+  {
+    switch (eDataType.getClassifierID())
+    {
+      case XmlManipModulePackage.ADD_POSITION_TYPE_ENUM:
+        return convertAddPositionTypeEnumToString(eDataType, instanceValue);
+      case XmlManipModulePackage.ADD_POSITION_TYPE_ENUM_OBJECT:
+        return convertAddPositionTypeEnumObjectToString(eDataType, instanceValue);
+      default:
+        throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
     }
   }
 
@@ -264,6 +303,48 @@ public class XmlManipModuleFactoryImpl extends EFactoryImpl implements XmlManipM
   {
     XPathImpl xPath = new XPathImpl();
     return xPath;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public AddPositionTypeEnum createAddPositionTypeEnumFromString(EDataType eDataType, String initialValue)
+  {
+    AddPositionTypeEnum result = AddPositionTypeEnum.get(initialValue);
+    if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    return result;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public String convertAddPositionTypeEnumToString(EDataType eDataType, Object instanceValue)
+  {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public AddPositionTypeEnum createAddPositionTypeEnumObjectFromString(EDataType eDataType, String initialValue)
+  {
+    return createAddPositionTypeEnumFromString(XmlManipModulePackage.Literals.ADD_POSITION_TYPE_ENUM, initialValue);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public String convertAddPositionTypeEnumObjectToString(EDataType eDataType, Object instanceValue)
+  {
+    return convertAddPositionTypeEnumToString(XmlManipModulePackage.Literals.ADD_POSITION_TYPE_ENUM, instanceValue);
   }
 
   /**

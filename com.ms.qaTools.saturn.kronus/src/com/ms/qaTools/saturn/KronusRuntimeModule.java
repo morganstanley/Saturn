@@ -4,14 +4,14 @@
 package com.ms.qaTools.saturn;
 
 import org.eclipse.xtext.conversion.impl.AbstractIDValueConverter;
+import org.eclipse.xtext.linking.ILinkingService;
 import org.eclipse.xtext.naming.IQualifiedNameProvider;
+import org.eclipse.xtext.resource.IDefaultResourceDescriptionStrategy;
 import org.eclipse.xtext.scoping.IScopeProvider;
-import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
 
-import com.google.inject.Binder;
-import com.google.inject.name.Names;
+import com.ms.qaTools.saturn.linking.KronusLinkingService;
+import com.ms.qaTools.saturn.resource.KronusDefaultResourceDescriptionStrategy;
 import com.ms.qaTools.saturn.scoping.KronusLocalScopeProvider;
-import com.ms.qaTools.saturn.scoping.KronusScopeProvider;
 import com.ms.qaTools.saturn.services.KronusIDValueConverter;
 import com.ms.qaTools.saturn.services.KronusQualifiedNameProvider;
 
@@ -25,19 +25,21 @@ public class KronusRuntimeModule extends com.ms.qaTools.saturn.AbstractKronusRun
 
     @Override
     public Class<? extends IScopeProvider> bindIScopeProvider() {
-        return KronusScopeProvider.class;
-    }
-
-    @Override
-    public void configureIScopeProviderDelegate(Binder binder) {
-        binder.bind(IScopeProvider.class)
-              .annotatedWith(Names.named(AbstractDeclarativeScopeProvider.NAMED_DELEGATE))
-              .to(KronusLocalScopeProvider.class);
+        return KronusLocalScopeProvider.class;
     }
 
     @Override
     public Class<? extends IQualifiedNameProvider> bindIQualifiedNameProvider() {
         return KronusQualifiedNameProvider.class;
+    }
+
+    public Class<? extends IDefaultResourceDescriptionStrategy> bindIDefaultResourceDescriptionStrategy() {
+        return KronusDefaultResourceDescriptionStrategy.class;
+    }
+
+    @Override
+    public Class<? extends ILinkingService> bindILinkingService() {
+        return KronusLinkingService.class;
     }
 }
 /*

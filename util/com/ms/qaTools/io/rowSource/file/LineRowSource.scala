@@ -1,43 +1,23 @@
 package com.ms.qaTools.io.rowSource.file
 
-import java.io.Reader
-import java.io.BufferedReader
-import scala.io.Source
-import java.io.PushbackReader
-import java.io.FileReader
-import java.io.StringReader
-import java.io.File
+import com.ms.qaTools.io.rowSource.CachingIterator
+import scala.slick.util.CloseableIterator
 
-
-
-class LineRowSource(private val reader: Reader) extends Iterator[String] {
-  private val bufReader: BufferedReader = new BufferedReader(reader)
-  var nextLine: String = null
-
-  override def hasNext = {
-    if (nextLine == null) nextLine = bufReader.readLine
-    nextLine != null
-  }
-  override def next(): String = {
-    val result = {
-      if (nextLine == null) bufReader.readLine
-      else try nextLine finally nextLine = null
-    }
-    if (result == null) Iterator.empty.next
-    else result
-  }
+class LineRowSource(private val reader: java.io.Reader, private val buffer: java.io.BufferedReader)
+extends CachingIterator(buffer.readLine) with CloseableIterator[String] {
+  def close() = reader.close
 }
 
 object LineRowSource {
-  def apply(reader: Reader) = new LineRowSource(reader)
+  def apply(reader: java.io.Reader) = new LineRowSource(reader, new java.io.BufferedReader(reader))
 }
 
 object LineBufferRowSource {
-  def apply(buffer: String) = new LineRowSource(new StringReader(buffer))
+  def apply(buffer: String) = LineRowSource(new java.io.StringReader(buffer))
 }
 
 object LineFileRowSource {
-  def apply(file: File) = new LineRowSource(new FileReader(file))
+  def apply(file: java.io.File) = LineRowSource(new java.io.FileReader(file))
 }
 /*
 Copyright 2017 Morgan Stanley

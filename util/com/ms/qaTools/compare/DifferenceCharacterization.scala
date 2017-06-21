@@ -1,30 +1,28 @@
 package com.ms.qaTools.compare
 
-
-
 class DifferenceCharacterization(val name: String, val isAcceptable: Boolean, val order: Int) {
+  def goNoGo: String = if (isAcceptable) "PASS" else "FAIL"
 
-  def goNoGo: String = {
-    if (isAcceptable) "PASS" else "FAIL"
-  }
-  override def toString = List(name, if (isAcceptable) "PASS" else "FAIL", order).toString
+  override def toString = List(name, if (isAcceptable) "PASS" else "FAIL", order.toString).toString
 
   override def equals(that: Any) = that match {
     case other: DifferenceCharacterization => name.equals(other.name)
     case _ => false
   }
 }
+
 object DifferenceCharacterization {
-  val UNCHARACTERIZED = new DifferenceCharacterization("uncharacterized", false, 0)
-  val SHOWSTOPPER = new DifferenceCharacterization("showstopper", false, 1)
-  val MAJORBLOCKER = new DifferenceCharacterization("major", false, 2)
-  val MINORBLOCKER = new DifferenceCharacterization("minor", false, 3)
+  val UNCHARACTERIZED  = new DifferenceCharacterization("uncharacterized", false, 0)
+  val SHOWSTOPPER      = new DifferenceCharacterization("showstopper", false, 1)
+  val MAJORBLOCKER     = new DifferenceCharacterization("major", false, 2)
+  val MINORBLOCKER     = new DifferenceCharacterization("minor", false, 3)
   val MAJORIMPROVEMENT = new DifferenceCharacterization("major improvement", true, 4)
   val MINORIMPROVEMENT = new DifferenceCharacterization("minor improvement", true, 5)
-  val EXPECTED = new DifferenceCharacterization("expected", true, 6)
-  val DERIVED = new DifferenceCharacterization("derived", false, 7)
-  val INSIGNIFICANT = new DifferenceCharacterization("insignificant", true, 8)
-  val ALL = Seq(UNCHARACTERIZED,
+  val EXPECTED         = new DifferenceCharacterization("expected", true, 6)
+  val DERIVED          = new DifferenceCharacterization("derived", false, 7)
+  val INSIGNIFICANT    = new DifferenceCharacterization("insignificant", true, 8)
+  val ALL = Seq(
+    UNCHARACTERIZED,
     SHOWSTOPPER,
     MAJORBLOCKER,
     MINORBLOCKER,
@@ -33,9 +31,10 @@ object DifferenceCharacterization {
     EXPECTED,
     DERIVED,
     INSIGNIFICANT)
-  def apply(name: String): DifferenceCharacterization = {
-    ALL.find(_.name.equalsIgnoreCase(name)).get
-  }
+
+  def apply(name: String): DifferenceCharacterization =
+    ALL.find(_.name.equalsIgnoreCase(name)).getOrElse(
+      sys.error(s"Could not parse $name as a DifferenceCharacterization, valid alternatives are: " + ALL.map(_.name).mkString(", ")))
 }
 /*
 Copyright 2017 Morgan Stanley

@@ -1,26 +1,17 @@
 package com.ms.qaTools.interpreter
-import com.ms.qaTools.toolkit.Status
-import com.ms.qaTools.toolkit.Failed
-import com.ms.qaTools.toolkit.Passed
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
+import com.ms.qaTools.{toolkit => tk}
 
-case class CommandExecutorResult[T](override val status: Status, command: String, resultObj: Option[T] = None,
-  override val exception: Option[Throwable] = None,
-  override val errorMessage: Option[String] = None)
+case class CommandExecutorResult[T](status: tk.Status, command: String, resultObj: Option[T], exception: Option[Throwable])
 extends InterpreterResult
 
 trait Command[T] {
-  def execute: Try[T]
+  def execute: util.Try[T]
 }
-  
+
 case object CommandExecutor extends Interpreter[Command[_], CommandExecutorResult[_]] {
-  def run(command: Command[_]) =
-    command.execute match {
-      case Success(r) => CommandExecutorResult(Passed(), command.toString, Some(r))
-      case Failure(t) => CommandExecutorResult(Failed(), command.toString, None, Some(t))
-    }
+  def run(command: Command[_]) = {
+    val r = command.execute
+    CommandExecutorResult(if (r.isSuccess) tk.Passed else tk.Failed, command.toString, r.toOption, r.failed.toOption)}
 }
 /*
 Copyright 2017 Morgan Stanley

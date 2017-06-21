@@ -10,6 +10,7 @@ import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
 import com.mongodb.util.JSON.parse
 import com.ms.qaTools.AnyUtil
+import scala.language.implicitConversions
 
 object MongoDB {
   implicit def stringToDBObject(query: String): DBObject = try {
@@ -20,28 +21,29 @@ object MongoDB {
 
   implicit def dbObjectToSeqString(dbObject: DBObject): Seq[String] = dbObject.keySet.asScala.toSeq.map(k => dbObject.get(k).toString)
   implicit def dbObjectToStringMap(dbObject: DBObject): Map[String, String] = dbObject.keySet.asScala.map(k => k -> dbObject.get(k).toString).toMap
-  implicit def dbObjectToMap(dbObject: DBObject): Map[String, Any] = 
+  implicit def dbObjectToMap(dbObject: DBObject): Map[String, Any] =
     dbObject.keySet.asScala.foldLeft(Map[String,Any]()) {
-      (m,k) =>
+      (m, k) =>
         Option(dbObject.get(k)) match {
           case Some(d: DBObject) => m ++ Map(k -> dbObjectToMap(d))
           case Some(o: Any) => m ++ Map(k -> o.toString)
+          case None => m
         }
     }
   implicit def jsonToDBObject(o: JSONObject): DBObject = new BasicDBObject(o.obj)
 
   implicit def mapToDBObject(m: Map[String, Any]): DBObject = {
     def valueOf(a: Any): Any = a match {
-      case m: Map[String, Any] => mapToDBObject(m)
-      case s: Traversable[_] => s.map {valueOf(_)}.toList :java.util.List[Any]
+      case m: Map[_, _] => mapToDBObject(m.asInstanceOf[Map[String, Any]])
+      case s: Traversable[_] => s.map{valueOf(_)}.toList: java.util.List[Any]
       case _ => a
     }
     m.foldLeft(new BasicDBObject){case (o, (key, value)) => o.put(key, valueOf(value)); o}
   }
-  
+
   implicit class AugmentedBuilder(builder: BasicDBObjectBuilder) {
     def addOption[X](name: String, o: Option[X]) = builder.withSideEffect { b => o.foreach {b.add(name, _)} }
-  }  
+  }
 }
 /*
 Copyright 2017 Morgan Stanley

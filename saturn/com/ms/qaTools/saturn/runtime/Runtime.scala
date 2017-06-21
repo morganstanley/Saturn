@@ -5,237 +5,125 @@ import com.ms.qaTools.toolkit.Failed
 import com.ms.qaTools.toolkit.NotRun
 import com.ms.qaTools.toolkit.Passed
 import com.ms.qaTools.toolkit.Result
-import com.ms.qaTools.toolkit.Status
-import com.ms.qaTools.toolkit.Timings
 import com.ms.qaTools.Logger
 import com.ms.qaTools.saturn.runtime.SaturnExecutionContext._
 import com.ms.qaTools.saturn.dsl.annotation.Annotation
 import com.ms.qaTools.saturn.runtime.notifier.html.HTMLGenerator
-import com.ms.qaTools.saturn.dsl.annotation.ScenarioAnnotation
-import scala.concurrent.{future, promise}
 import scala.concurrent.Future
-import scala.util.Try
-
-//********************************************************************************************
-//*** Saturn Runnable classes ***
- 
- trait AbstractRunGroup[+ResultType <: Result] extends Runnable[ResultType] {
-  implicit val sc: SaturnExecutionContext  
-}
-
-abstract class Terminal extends AbstractRunGroup[Result] {
-  override def run:Try[Result] = Try{ new Result() { override val status = Passed() } } 
-}
-
-case class NoopTerminal(implicit override val sc: SaturnExecutionContext) extends Terminal
-case class PassTerminal(implicit override val sc: SaturnExecutionContext) extends Terminal 
-case class FailTerminal(implicit override val sc: SaturnExecutionContext) extends Terminal {
-  override def run:Try[Result] = Try { new Result() { override val status = Failed() } } 
-}
-
-trait RunGroupStatusAggregator {
-  def apply(results:Seq[RunGroupIteratorResult]):Status
-}
-
-case object PassIfAllPass extends RunGroupStatusAggregator {
-  def apply(results:Seq[RunGroupIteratorResult]):Status = if(results.forall {r => !r.failed}) Passed() else Failed()  
-}
-
-case object FailIfAllPass extends RunGroupStatusAggregator {
-  def apply(results:Seq[RunGroupIteratorResult]):Status = if(results.forall {r => !r.failed}) Failed() else Passed() 
-}
-
-case object PassIfAllFail extends RunGroupStatusAggregator {
-  def apply(results:Seq[RunGroupIteratorResult]):Status = if(results.forall {r => !r.passed}) Passed() else Failed() 
-}
-
-case object FailIfAllFail extends RunGroupStatusAggregator {
-  def apply(results:Seq[RunGroupIteratorResult]):Status = if(results.forall {r => !r.passed}) Failed() else Passed() 
-}
-
-case object PassIfPassTerminal extends RunGroupStatusAggregator {
-  def apply(results:Seq[RunGroupIteratorResult]):Status = if(results.forall {r => !r.passed}) Failed() else Passed() 
-} 
-
-abstract class RunGroup(implicit val sc: SaturnExecutionContext) extends AbstractRunGroup[RunGroupResult] {
-  implicit val ec = sc.executionContext
-  
-  val runGroups: Seq[RunGroupIterator[RunGroupIteratorResult]]
-  val aggregateResults:RunGroupStatusAggregator
-  
-  override def run:Try[RunGroupResult] = Try{
-    val t0 = Timings().start
-    val runGroupFuture = Future.sequence(runGroups.map { _.run })
-    val results: Seq[RunGroupIteratorResult] = RuntimeUtils.waitForEver(runGroupFuture)
-    val t1 = t0.stop
-    new RunGroupResult(aggregateResults(results), results)
-  }
-}
-
-abstract class Saturn(implicit override val sc: SaturnExecutionContext) extends RunGroup {  
-  override def run:Try[SaturnResult] = Try{
-    val t0 = Timings().start
-    val runGroupFuture = Future.sequence(runGroups.map { _.run })
-    val results: Seq[RunGroupIteratorResult] = RuntimeUtils.waitForEver(runGroupFuture)
-    val t1 = t0.stop
-    new SaturnResult(aggregateResults(results), results)
-  }
-}
-
-//*********************************************************************************************************************
-//*********************************************************************************************************************
-//*********************************************************************************************************************
+import scala.util.{Failure, Success, Try}
 
 abstract class RunGroupIterator[+ResultType <: Result](implicit sc: SaturnExecutionContext) {
-  val name:String
-  val parentName:Option[String] = None  
+  val name: String
+  val parentName: Option[String] = None
   lazy val fullName = parentName match {
     case Some(p) => p + "." + name
     case None => name
   }
-  implicit val logger:Logger = Logger(this.getClass())
+  implicit val logger = Logger(getClass)
   implicit val ec = sc.executionContext
   val annotations: Seq[Annotation] = Seq()
   def htmlGenerator: IteratorResultContext => HTMLGenerator[_, _] = null
-  
-  lazy val canRun:Future[Boolean] = future{true}   
-  
-  val run:Future[ResultType]
 
-  lazy val result = RuntimeUtils.waitForEver(run)  
-  def cleanUp = Unit  
-  val configType: String = "UNKNOWN"
-  
-  def checkAll(resultFutures:Seq[RunGroupIterator[Result]], fn:Seq[Result] => Boolean):Future[Boolean] = {
-    if(resultFutures.isEmpty) 
-      future(true)
-    else {
-      val resultsFuture:Future[Seq[Result]] = Future.sequence(resultFutures.toSeq.map{_.run})
-      val result = for { r <- resultsFuture } yield fn(r)    
-      result
-    } 
-  }    
-  def allPass(resultFutures:RunGroupIterator[Result]*):Future[Boolean]     = checkAll(resultFutures,(r:Seq[Result]) => r.forall(res => res.passed))
-  def allFail(resultFutures:RunGroupIterator[Result]*):Future[Boolean]     = checkAll(resultFutures,(r:Seq[Result]) => r.forall(res => res.failed))
-  def allFinish(resultFutures:RunGroupIterator[Result]*):Future[Boolean]   = checkAll(resultFutures,(r:Seq[Result]) => r.forall(res => !res.notRun))
-  def anyPass(resultFutures:Seq[RunGroupIterator[Result]]):Future[Boolean] = checkAll(resultFutures,(r:Seq[Result]) => !r.forall(res => res.failed))
+  lazy val canRun: Future[Boolean] = Future{true}
+  val run: Future[ResultType]
+  lazy val result = RuntimeUtils.waitForEver(run)
+  def cleanUp = Unit
+  val configType = "UNKNOWN"
+
+  def checkAll(resultFutures:Seq[RunGroupIterator[Result]], fn: Seq[Result] => Boolean): Future[Boolean] =
+    if(resultFutures.isEmpty)
+      Future{true}
+    else
+      Future.sequence(resultFutures.toSeq.map{_.run}).map(fn)
+
+  def evalAndLogOnError(t: => Unit, method: String) =
+    Try(t).recover{case e =>
+      logger.error(s"An exception occurred while calling method: '$method'.", e)}
+
+  def allPass(resultFutures:RunGroupIterator[Result]*):Future[Boolean]     = checkAll(resultFutures,(r:Seq[Result]) => r.forall(_.status == Passed))
+  def allFail(resultFutures:RunGroupIterator[Result]*):Future[Boolean]     = checkAll(resultFutures,(r:Seq[Result]) => r.forall(_.status == Failed))
+  def allFinish(resultFutures:RunGroupIterator[Result]*):Future[Boolean]   = checkAll(resultFutures,(r:Seq[Result]) => r.forall(_.status != NotRun))
+  def anyPass(resultFutures:Seq[RunGroupIterator[Result]]):Future[Boolean] = checkAll(resultFutures,(r:Seq[Result]) => !r.forall(_.status == Failed))
 }
 
 abstract class ScalarRunGroupIterator[ResultType <: Result](implicit sc:SaturnExecutionContext) extends RunGroupIterator[ScalarRunGroupIteratorResult[ResultType]] {
-  implicit val rc:IteratorResultContext
-  
-  val notifiers:Seq[Option[Notifier[ResultType, ScalarRunGroupIteratorResult[ResultType], ScalarRunGroupIterator[ResultType]]]] = Nil
+  implicit val rc: IteratorResultContext
+
+  val notifiers: Seq[Option[Notifier[ResultType, ScalarRunGroupIteratorResult[ResultType], ScalarRunGroupIterator[ResultType]]]] = Nil
   override def htmlGenerator: IteratorResultContext => HTMLGenerator[ScalarRunGroupIteratorResult[ResultType], ResultType] = null
-  
-  val step:Runnable[RunGroupIterationResult[ResultType]]  
-  lazy val run:Future[ScalarRunGroupIteratorResult[ResultType]] = Future {    
-    val canRunResult = RuntimeUtils.waitForEver(canRun)    
-    val stepResult:ScalarRunGroupIteratorResult[ResultType] = 
-      if(canRunResult) {     
-          val startTime = Option(System.currentTimeMillis)
-          try { 
-            try { notifiers.flatten.foreach(_.notifyBeforeIterator(this)) } catch { case t:Throwable => logger.error("An exception occurred while calling method: 'notifyBeforeIterator'.", t)}
-            try { notifiers.flatten.foreach(_.notifyBeforeIteration(this, 0)) } catch { case t:Throwable => logger.error("An exception occurred while calling method: 'notifyBeforeIterator'.", t)}
-            
-            
-            val stepResult = step.run.get       
-            val endTime = Option(System.currentTimeMillis)
-            
-            try { notifiers.flatten.foreach(_.notifyAfterIteration(this, stepResult, 0)) } catch { case t:Throwable => logger.error("An exception occurred while calling method: 'notifyAfterIteration'.", t)}
-            val iterationResult:ScalarRunGroupIteratorResult[ResultType] = ScalarRunGroupIteratorResult(name, stepResult.status, stepResult, this, startTime, endTime)
-            iterationResult
-          }
-          catch {
-            case e: Throwable => {
-              val r = FailedScalarRunGroupIteratorResult[ResultType](name, e, this, startTime, Option(System.currentTimeMillis))
-              try { notifiers.flatten.foreach(_.notifyAfterIteration(this, FailedRunGroupIterationResult(name,e, startTime, Option(System.currentTimeMillis)), 0)) } catch { case t:Throwable => logger.error("An exception occurred while calling method: 'notifyAfterIteration'.", t)}
-              r
-            }
-          }
-          finally {
-            try { cleanUp }
-          }
+
+  val step: Runnable[RunGroupIterationResult[ResultType]]
+  lazy val run = Future {
+    val stepResult = if(RuntimeUtils.waitForEver(canRun)) {
+      val startTime = Option(System.currentTimeMillis)
+      evalAndLogOnError(notifiers.flatten.foreach(_.notifyBeforeIterator(this)), "notifyBeforeIterator")
+      evalAndLogOnError(notifiers.flatten.foreach(_.notifyBeforeIteration(this, 0)), "notifyBeforeIterator")
+
+      val r = step.run match {
+        case Success(stepResult) => {
+          val endTime = Option(System.currentTimeMillis)
+          evalAndLogOnError(notifiers.flatten.foreach(_.notifyAfterIteration(this, stepResult, 0)), "notifyAfterIteration")
+          ScalarRunGroupIteratorResult(name, stepResult.status, stepResult, this, startTime, endTime)
+        }
+        case Failure(e) => {
+          val r = FailedScalarRunGroupIteratorResult[ResultType](name, e, this, startTime, Option(System.currentTimeMillis))
+          evalAndLogOnError(notifiers.flatten.foreach(_.notifyAfterIteration(this, FailedRunGroupIterationResult(name, e, startTime, Option(System.currentTimeMillis)), 0)), "notifyAfterIteration")
+          r
+        }
       }
-      else NotRunScalarRunGroupIteratorResult[ResultType](name, this)
-      try { notifiers.flatten.foreach(_.notifyAfterIterator(this,stepResult)) } catch { case t:Throwable => logger.error("An exception occurred while calling method: 'notifyAfterIterator'.", t)}
-      stepResult
-  }  
-}
-
-case class DisabledRunGroupIterator(override val name:String,status:Status)(implicit sc: SaturnExecutionContext, rc: SaturnResultContext)extends RunGroupIterator[DisabledRunGroupIteratorResult] {
-  NotRunRunGroupIterator =>
-  lazy val run:Future[DisabledRunGroupIteratorResult] = Future {    
-    val canRunResult = RuntimeUtils.waitForEver(canRun)
-    new DisabledRunGroupIteratorResult() {
-      override val name = NotRunRunGroupIterator.name
-      override val status = if(canRunResult) NotRunRunGroupIterator.status else NotRun() 
-      override val resultContext = rc
-    }
-  }  
-}
-
-case class FailScalarRunGroupIterator[ResultType <: Result](override val name:String, exception:Throwable)(implicit sc: SaturnExecutionContext) extends ScalarRunGroupIterator[ResultType] {
-  override implicit val rc:IteratorResultContext = null
-  val step = null
-  override lazy val run:Future[ScalarRunGroupIteratorResult[ResultType]] = future(FailedScalarRunGroupIteratorResult[ResultType](name, exception, this))
-}
-
-case class PassScalarRunGroupIterator[ResultType <: Result](override val name:String)(implicit sc: SaturnExecutionContext) extends ScalarRunGroupIterator[ResultType] {
-  override implicit val rc:IteratorResultContext = null
-  override val step = new Runnable[RunGroupIterationResult[ResultType]]() {
-    override def run = Try { RunGroupIterationResult(name, None) }
+      cleanUp
+      r
+    } else NotRunScalarRunGroupIteratorResult[ResultType](name, this)
+    evalAndLogOnError(notifiers.flatten.foreach(_.notifyAfterIterator(this, stepResult)), "notifyAfterIterator")
+    stepResult
   }
 }
 
 abstract class RowSourceRunGroupIterator[ResultType <: Result](implicit sc: SaturnExecutionContext) extends RunGroupIterator[RowSourceRunGroupIteratorResult[ResultType]] {
-  implicit val rc:IteratorResultContext=null
-  val notifiers:Seq[Option[Notifier[ResultType,RowSourceRunGroupIteratorResult[ResultType], RowSourceRunGroupIterator[ResultType]]]] = Nil
+  implicit val rc: IteratorResultContext = null
+  val notifiers: Seq[Option[Notifier[ResultType,RowSourceRunGroupIteratorResult[ResultType], RowSourceRunGroupIterator[ResultType]]]] = Nil
   override def htmlGenerator: IteratorResultContext => HTMLGenerator[RowSourceRunGroupIteratorResult[ResultType], ResultType] = null
-  
+
   val iterations: Iterator[Runnable[RunGroupIterationResult[ResultType]]]
-  val canMultiplex:Boolean = false
-  
-  lazy val run: Future[RowSourceRunGroupIteratorResult[ResultType]] = Future {    
-    try { notifiers.flatten.foreach(_.notifyBeforeIterator(this)) } catch { case t:Throwable => logger.error(t.getMessage, t)}
-    
+  val canMultiplex: Boolean = false
+
+  lazy val run: Future[RowSourceRunGroupIteratorResult[ResultType]] = Future {
+    evalAndLogOnError(notifiers.flatten.foreach(_.notifyBeforeIterator(this)), "notifyBeforeIterator")
+
     val canRunResult = RuntimeUtils.waitForEver(canRun)
     val startTime = Option(System.currentTimeMillis)
-    
-    val iterationResults: Seq[RunGroupIterationResult[ResultType]] =
-      {
-        if (!canRunResult) Nil
-        else if (canMultiplex) {
-          val iterationResultIterator =
-            for ((runner, index) <- iterations.zipWithIndex.toList) yield Future {
-              try { notifiers.flatten.foreach(_.notifyBeforeIteration(this, index)) } catch { case t: Throwable => logger.error("An exception occurred while calling method: 'notifyBeforeIteration'.", t) }
-              
-              val iterationResult: RunGroupIterationResult[ResultType] = runner.run.get
-              
-              try { notifiers.flatten.foreach(_.notifyAfterIteration(this, iterationResult, index)) } catch { case t: Throwable => logger.error("An exception occurred while calling method: 'notifyAfterIteration'.", t) }
-              iterationResult
-            }
-          val iterationResultFutures = iterationResultIterator.toList
-          val iterationResultsFuture = Future.sequence(iterationResultFutures)
-          val iterationResults = RuntimeUtils.waitForEver(iterationResultsFuture)
-          iterationResults
-        } else {
-          val iterationResultIterator =
-            for ((runner, index) <- iterations.zipWithIndex) yield {
-              try { notifiers.flatten.foreach(_.notifyBeforeIteration(this, index)) } catch { case t: Throwable => logger.error("An exception occurred while calling method: 'notifyBeforeIteration'.", t) }
-              val iterationResult: RunGroupIterationResult[ResultType] = runner.run.get
-              try { notifiers.flatten.foreach(_.notifyAfterIteration(this, iterationResult, index)) } catch { case t: Throwable => logger.error("An exception occurred while calling method: 'notifyAfterIteration'.", t) }
-              iterationResult
-            }
-          val iterationResults = iterationResultIterator.toList
-          iterationResults
-        }
-      }
-    val endTime = Option(System.currentTimeMillis)
-    val allPassed = iterationResults.forall(_.passed)
-    val status = if(canRunResult) { if(allPassed) Passed() else Failed() } else NotRun()
 
+    val iterationResults: Seq[RunGroupIterationResult[ResultType]] = {
+      if (!canRunResult) Nil
+      else if (canMultiplex) {
+        val iterationResultIterator =
+          for ((runner, index) <- iterations.zipWithIndex.toList) yield Future {
+            evalAndLogOnError(notifiers.flatten.foreach(_.notifyBeforeIteration(this, index)), "notifyBeforeIteration")
+
+            runner.run match {
+              case Success(iterationResult) => {
+                evalAndLogOnError(notifiers.flatten.foreach(_.notifyAfterIteration(this, iterationResult, index)), "notifyAfterIteration")
+                iterationResult
+              }
+              case Failure(e) => throw e
+            }
+          }
+        RuntimeUtils.waitForEver(Future.sequence(iterationResultIterator.toList))
+      } else
+        iterations.zipWithIndex.map{case (runner, index) =>
+          evalAndLogOnError(notifiers.flatten.foreach(_.notifyBeforeIteration(this, index)), "notifyBeforeIteration")
+          runner.run match {
+            case Success(iterationResult) =>
+              evalAndLogOnError(notifiers.flatten.foreach(_.notifyAfterIteration(this, iterationResult, index)), "notifyAfterIteration")
+              iterationResult
+            case Failure(e) => throw e
+          }
+        }.toList
+    }
+    val endTime = Option(System.currentTimeMillis)
+    val status = if(canRunResult) { if(iterationResults.forall(_.status == Passed)) Passed else Failed } else NotRun
     val iteratorResult = RowSourceRunGroupIteratorResult[ResultType](name, status, iterationResults, this, startTime, endTime)
-    try { notifiers.flatten.foreach(_.notifyAfterIterator(this, iteratorResult)) } catch { case t:Throwable => logger.error("An exception occurred while calling method: 'notifyAfterIterator'.", t)}
+    evalAndLogOnError(notifiers.flatten.foreach(_.notifyAfterIterator(this, iteratorResult)), "notifyAfterIterator")
     iteratorResult
   }
 }

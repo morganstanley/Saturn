@@ -26,11 +26,11 @@ object DataCompareLogicGenerator {
     (for(c <- columns; k <- Option(c.getKeyOrder); if k.intValue > 0) yield c.getName -> k.intValue).toMap,
     columns.filter(_.isIgnored).flatMap(c => Option(c.getName)),
     (for(c <- columns; r <- Option(c.getMappingColumn); if r.length > 0) yield c.getName -> r).toMap,
-    columns.map(c => (c.getName, colTypeMap.getOrElse(c.getType, "StringColumnType()"))).toMap
+    columns.map(c => (c.getName, colTypeMap.getOrElse(c.getType, "StringColumnType"))).toMap
   )
 
   def thresholds(columns: Seq[MMappedColumn]) =
-    for(c <- columns; t <- Option(c.getThreshold); n <- Option(c.getName))
+    for(c <- columns; t <- Option(c.getThreshold) if t != ""; n <- Option(c.getName))
       yield (s""""$n"""", t.toDouble)
 
   protected sealed trait DataSourcePosition
@@ -43,7 +43,7 @@ object DataCompareLogicGenerator {
         for {
           generator <- ComplexValueCodeGenerator(e.getDiffCode)
           code <- generator.generate
-        } yield s"Option(CodedExplainer[AbstractDiff]{expl => val diff = expl \n ${code}.get})"
+        } yield s"""Option(CodedExplainer[Diff[Seq[String]]]{expl => val diff = expl \n ${code} match {case Success(v) => v case Failure(e) => throw new Exception("Exception occured in explainer code", e)}})"""
       case None => Try{"None"}
       case _ => throw new Error("Unsupported explainer type")
     }
@@ -101,7 +101,7 @@ object DataCompareLogicGenerator {
             case other => throw new IllegalArgumentException(s"Invalid sort stype '$other'.")
           }
         }
-      } yield s"""DataCompareRunner(context, 
+      } yield s"""DataCompareRunner(context,
                                     $leftDsStr,
                                     $rightDsStr,
                                     $keysStr,

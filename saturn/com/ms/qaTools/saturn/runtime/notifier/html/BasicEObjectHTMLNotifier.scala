@@ -56,7 +56,7 @@ case class ScalarRunGroupIteratorEObjectHTMLNotifier[IterationResultType <: Resu
 
   override def notifyBeforeIterator(iter: ScalarRunGroupIterator[IterationResultType]) = {}
   override def notifyAfterIterator(iter: ScalarRunGroupIterator[IterationResultType], result: ScalarRunGroupIteratorResult[IterationResultType]) = {
-    if (result.finished) {
+    if (result.status != NotRun) {
       val doc = createHTMLDocument(result)
       val htmlGenerator = iter.htmlGenerator(iter.rc)
       val annotations = iter.rc.iterationContexts.map(_.scenarioAnnotations).flatten
@@ -84,7 +84,7 @@ case class RowSourceRunGroupIteratorEObjectHTMLNotifier[IterationResultType <: R
 
   override def notifyBeforeIterator(iter: RowSourceRunGroupIterator[IterationResultType]) = {}
   override def notifyAfterIterator(iter: RowSourceRunGroupIterator[IterationResultType], result: RowSourceRunGroupIteratorResult[IterationResultType]) = {
-    if (result.finished) {
+    if (result.status != NotRun) {
       val doc = createHTMLDocument(result)
       val htmlGenerator = iter.htmlGenerator(iter.rc)
       val annotations = iter.rc.iterationContexts.map(_.scenarioAnnotations).flatten
@@ -117,7 +117,7 @@ case class ScalarSaturnIteratorEObjectHTMLNotifier(eObject: EObject, var outputS
 
   override def notifyBeforeIterator(iter: ScalarRunGroupIterator[SaturnResult]) = {}
   override def notifyAfterIterator(iter: ScalarRunGroupIterator[SaturnResult], result: ScalarRunGroupIteratorResult[SaturnResult]) = {
-    if (result.finished) {
+    if (result.status != NotRun) {
       val htmlGenerator = iter.htmlGenerator(iter.rc)
       val annotations = iter.rc.iterationContexts.map(_.scenarioAnnotations).flatten
       val annotationApplied = htmlGenerator.getAnnotationByResult(annotations, result.status)
@@ -167,7 +167,7 @@ case class RowSourceSaturnIteratorEObjectHTMLNotifier(eObject: EObject, var outp
 
   override def notifyBeforeIterator(iter: RowSourceRunGroupIterator[SaturnResult]) = {}
   override def notifyAfterIterator(iter: RowSourceRunGroupIterator[SaturnResult], result: RowSourceRunGroupIteratorResult[SaturnResult]) = {
-    if (result.finished) {
+    if (result.status != NotRun) {
       val htmlGenerator = iter.htmlGenerator(iter.rc)
       val annotations = iter.rc.iterationContexts.map(_.scenarioAnnotations).flatten
       val annotationApplied = htmlGenerator.getAnnotationByResult(annotations, result.status)

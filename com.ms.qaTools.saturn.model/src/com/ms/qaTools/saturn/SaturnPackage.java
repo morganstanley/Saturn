@@ -251,12 +251,21 @@ public interface SaturnPackage extends EPackage
   int           ABSTRACT_RUN_GROUP__INCLUDE_FILES                      = 8;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ABSTRACT_RUN_GROUP__ALM_ID = 9;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__NAME                               = 9;
+  int           ABSTRACT_RUN_GROUP__NAME                               = 10;
 
   /**
    * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -264,7 +273,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__ID                                 = 10;
+  int           ABSTRACT_RUN_GROUP__ID                                 = 11;
 
   /**
    * The feature id for the '<em><b>Enabled</b></em>' attribute.
@@ -272,7 +281,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__ENABLED                            = 11;
+  int           ABSTRACT_RUN_GROUP__ENABLED                            = 12;
 
   /**
    * The feature id for the '<em><b>Warn On Failure</b></em>' attribute.
@@ -280,7 +289,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__WARN_ON_FAILURE                    = 12;
+  int           ABSTRACT_RUN_GROUP__WARN_ON_FAILURE                    = 13;
 
   /**
    * The feature id for the '<em><b>Wait Before</b></em>' attribute.
@@ -288,7 +297,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__WAIT_BEFORE                        = 13;
+  int           ABSTRACT_RUN_GROUP__WAIT_BEFORE                        = 14;
 
   /**
    * The feature id for the '<em><b>Wait After</b></em>' attribute.
@@ -296,7 +305,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__WAIT_AFTER                         = 14;
+  int           ABSTRACT_RUN_GROUP__WAIT_AFTER                         = 15;
 
   /**
    * The feature id for the '<em><b>Default Status</b></em>' attribute.
@@ -304,7 +313,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__DEFAULT_STATUS                     = 15;
+  int           ABSTRACT_RUN_GROUP__DEFAULT_STATUS                     = 16;
 
   /**
    * The feature id for the '<em><b>Status Condition</b></em>' attribute.
@@ -312,7 +321,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__STATUS_CONDITION                   = 16;
+  int           ABSTRACT_RUN_GROUP__STATUS_CONDITION                   = 17;
 
   /**
    * The feature id for the '<em><b>Procedure</b></em>' attribute.
@@ -320,7 +329,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__PROCEDURE                          = 17;
+  int           ABSTRACT_RUN_GROUP__PROCEDURE                          = 18;
 
   /**
    * The feature id for the '<em><b>Can Multiplex</b></em>' attribute.
@@ -328,7 +337,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__CAN_MULTIPLEX                      = 18;
+  int           ABSTRACT_RUN_GROUP__CAN_MULTIPLEX                      = 19;
 
   /**
    * The feature id for the '<em><b>Max Simultaneous Iterations</b></em>' attribute.
@@ -337,7 +346,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP__MAX_SIMULTANEOUS_ITERATIONS        = 19;
+  int           ABSTRACT_RUN_GROUP__MAX_SIMULTANEOUS_ITERATIONS        = 20;
 
   /**
    * The number of structural features of the '<em>Abstract Run Group</em>' class.
@@ -346,7 +355,7 @@ public interface SaturnPackage extends EPackage
    * @generated
    * @ordered
    */
-  int           ABSTRACT_RUN_GROUP_FEATURE_COUNT                       = 20;
+  int           ABSTRACT_RUN_GROUP_FEATURE_COUNT                       = 21;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.impl.AbstractStepImpl <em>Abstract Step</em>}' class. <!--
@@ -438,6 +447,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           ABSTRACT_STEP__INCLUDE_FILES                           = ABSTRACT_RUN_GROUP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ABSTRACT_STEP__ALM_ID = ABSTRACT_RUN_GROUP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -626,6 +644,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           ABSTRACT_TERMINAL__INCLUDE_FILES                       = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ABSTRACT_TERMINAL__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1051,6 +1078,15 @@ public interface SaturnPackage extends EPackage
   int           COMET_STEP__INCLUDE_FILES                              = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int COMET_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -1289,6 +1325,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           CPS_STEP__INCLUDE_FILES                                = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CPS_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1538,6 +1583,15 @@ public interface SaturnPackage extends EPackage
   int           DATA_COMPARE_STEP__INCLUDE_FILES                       = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int DATA_COMPARE_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -1733,6 +1787,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           DATA_COMPARE_SUMMARY_STEP__INCLUDE_FILES               = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int DATA_COMPARE_SUMMARY_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1975,6 +2038,15 @@ public interface SaturnPackage extends EPackage
   int           DOCUMENTUM_STEP__INCLUDE_FILES                         = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int DOCUMENTUM_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -2170,6 +2242,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           DS_CONVERT_STEP__INCLUDE_FILES                         = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int DS_CONVERT_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -2369,6 +2450,15 @@ public interface SaturnPackage extends EPackage
   int           DS_VALIDATOR_STEP__INCLUDE_FILES                       = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int DS_VALIDATOR_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -2564,6 +2654,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           ENV_VALIDATOR_STEP__INCLUDE_FILES                      = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ENV_VALIDATOR_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -2763,6 +2862,15 @@ public interface SaturnPackage extends EPackage
   int           EXTRACT_DDL_STEP__INCLUDE_FILES                        = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXTRACT_DDL_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -2959,6 +3067,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           FAIL_TERMINAL__INCLUDE_FILES                           = ABSTRACT_TERMINAL__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int FAIL_TERMINAL__ALM_ID = ABSTRACT_TERMINAL__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -3164,6 +3281,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           FIX_MANIP_STEP__INCLUDE_FILES                          = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int FIX_MANIP_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -3539,6 +3665,15 @@ public interface SaturnPackage extends EPackage
   int           JIRA_STEP__INCLUDE_FILES                               = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int JIRA_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -3725,6 +3860,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int KRONUS_STEP__INCLUDE_FILES = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int KRONUS_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -3935,6 +4079,15 @@ public interface SaturnPackage extends EPackage
   int           MAIL_STEP__INCLUDE_FILES                               = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MAIL_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -4132,6 +4285,15 @@ public interface SaturnPackage extends EPackage
   int           MQ_STEP__INCLUDE_FILES                                 = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MQ_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -4327,6 +4489,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           NOOP_TERMINAL__INCLUDE_FILES                           = ABSTRACT_TERMINAL__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int NOOP_TERMINAL__ALM_ID = ABSTRACT_TERMINAL__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -4639,6 +4810,15 @@ public interface SaturnPackage extends EPackage
   int           P4_STEP__INCLUDE_FILES                                 = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int P4_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -4825,6 +5005,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           PASS_TERMINAL__INCLUDE_FILES                           = ABSTRACT_TERMINAL__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int PASS_TERMINAL__ALM_ID = ABSTRACT_TERMINAL__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -5067,6 +5256,15 @@ public interface SaturnPackage extends EPackage
   int           PROCEDURE_CALL_STEP__INCLUDE_FILES                     = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int PROCEDURE_CALL_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -5262,6 +5460,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           PS_MANAGER_STEP__INCLUDE_FILES                         = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int PS_MANAGER_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -5501,6 +5708,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           REFERENCE_STEP__INCLUDE_FILES                          = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int REFERENCE_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -5882,6 +6098,15 @@ public interface SaturnPackage extends EPackage
   int           RUN_CMDS_STEP__INCLUDE_FILES                           = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int RUN_CMDS_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -6078,6 +6303,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           RUN_GROUP__INCLUDE_FILES                               = ABSTRACT_RUN_GROUP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int RUN_GROUP__ALM_ID = ABSTRACT_RUN_GROUP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -6333,6 +6567,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           SATURN__INCLUDE_FILES                                  = RUN_GROUP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SATURN__ALM_ID = RUN_GROUP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -6611,6 +6854,15 @@ public interface SaturnPackage extends EPackage
   int           SINGULARITY_STEP__INCLUDE_FILES                        = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SINGULARITY_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -6807,6 +7059,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           SOAP_IO_STEP__INCLUDE_FILES                            = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SOAP_IO_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -7007,6 +7268,15 @@ public interface SaturnPackage extends EPackage
   int           SQL_STEP__INCLUDE_FILES                                = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SQL_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -7204,6 +7474,15 @@ public interface SaturnPackage extends EPackage
   int           VMS_STEP__INCLUDE_FILES                                = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int VMS_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -7390,6 +7669,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           XML2_CSV_STEP__INCLUDE_FILES                           = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int XML2_CSV_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -7590,6 +7878,15 @@ public interface SaturnPackage extends EPackage
   int           XML_DIFF_STEP__INCLUDE_FILES                           = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int XML_DIFF_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -7786,6 +8083,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           XML_GEN_STEP__INCLUDE_FILES                            = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int XML_GEN_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -7985,6 +8291,15 @@ public interface SaturnPackage extends EPackage
   int           XML_MANIP_STEP__INCLUDE_FILES                          = ABSTRACT_STEP__INCLUDE_FILES;
 
   /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int XML_MANIP_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
@@ -8180,6 +8495,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           XML_VALIDATOR_STEP__INCLUDE_FILES                      = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int XML_VALIDATOR_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -8378,6 +8702,15 @@ public interface SaturnPackage extends EPackage
    * @ordered
    */
   int           XSPLIT_STEP__INCLUDE_FILES                             = ABSTRACT_STEP__INCLUDE_FILES;
+
+  /**
+   * The feature id for the '<em><b>Alm Id</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int XSPLIT_STEP__ALM_ID = ABSTRACT_STEP__ALM_ID;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -8704,6 +9037,17 @@ public interface SaturnPackage extends EPackage
    * @generated
    */
   EReference getAbstractRunGroup_IncludeFiles();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.AbstractRunGroup#getAlmId <em>Alm Id</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Alm Id</em>'.
+   * @see com.ms.qaTools.saturn.AbstractRunGroup#getAlmId()
+   * @see #getAbstractRunGroup()
+   * @generated
+   */
+  EReference getAbstractRunGroup_AlmId();
 
   /**
    * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.AbstractRunGroup#isCanMultiplex <em>Can Multiplex</em>}'.
@@ -10212,6 +10556,14 @@ public interface SaturnPackage extends EPackage
      * @generated
      */
     EReference ABSTRACT_RUN_GROUP__INCLUDE_FILES                 = eINSTANCE.getAbstractRunGroup_IncludeFiles();
+
+    /**
+     * The meta object literal for the '<em><b>Alm Id</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ABSTRACT_RUN_GROUP__ALM_ID = eINSTANCE.getAbstractRunGroup_AlmId();
 
     /**
      * The meta object literal for the '<em><b>Can Multiplex</b></em>' attribute feature.

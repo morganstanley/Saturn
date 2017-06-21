@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.util.FeatureMapUtil
 
 import com.ms.qaTools.saturn.SaturnPackage
 import com.ms.qaTools.saturn.values.ComplexValue
+import com.ms.qaTools.saturn.values.TextComplexValue
 import com.ms.qaTools.saturn.values.ValuesFactory
 import com.ms.qaTools.saturn.values.ValuesPackage
 
@@ -37,6 +38,11 @@ object Util {
     t.setText(s)
     v.getMixed.add(FeatureMapUtil.createEntry(ValuesPackage.eINSTANCE.getComplexValue_Text, t))
     v
+  }
+
+  def isEmpty(cv: ComplexValue): Boolean = cv.getMixed.isEmpty || cv.getMixed.forall {
+    case v: TextComplexValue => v.getText.isEmpty
+    case _                   => false
   }
 
   def descriptionOf(x: ENamedElement): String = Option(x.getEAnnotation(SaturnPackage.eNS_URI)).map {
@@ -84,12 +90,6 @@ object Util {
   def updateMarkers(file: IFile, diagnostics: Collection[Diagnostic]) {
     file.deleteMarkers(EValidator.MARKER, true, IResource.DEPTH_ZERO)
     diagnostics.foreach(createMarkers(file, _))
-  }
-
-  protected val RunGroupIDRegex = """(\w*)/(\w*):(\w*)\s?.*""".r
-  def parseRunGroupID(runGroupID: String): Option[(String, String, String)] = runGroupID match {
-    case RunGroupIDRegex(domain, project, id) => Some((domain, project, id))
-    case _                                    => None
   }
 }
 

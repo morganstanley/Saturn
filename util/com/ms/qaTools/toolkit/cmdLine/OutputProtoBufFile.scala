@@ -1,11 +1,7 @@
 package com.ms.qaTools.toolkit.cmdLine
 
 import org.kohsuke.args4j.Option
-import java.io.FileOutputStream
-import com.ms.qaTools.io.rowWriter.protobuf.ProtoBufRowWriter
-import java.io.BufferedOutputStream
-
-
+import com.ms.qaTools.io.rowWriter.ProtoBufRowWriter
 
 trait OutputProtoBufFile {
   @Option(name = "-o", aliases = Array("--outFileName"), usage = "Specify an output protobuf fileName", required = true)
@@ -14,7 +10,7 @@ trait OutputProtoBufFile {
   @Option(name = "-d", aliases = Array("--writeDelimited"), usage = "Write the data in delimited format")
   val writeDelimited: Boolean = false
 
-  def pbRowWriter = ProtoBufRowWriter(new BufferedOutputStream(new FileOutputStream(outFileName)), writeDelimited)
+  def pbRowWriter = ProtoBufRowWriter(new java.io.BufferedOutputStream(new java.io.FileOutputStream(outFileName)), writeDelimited)
 }
 /*
 Copyright 2017 Morgan Stanley

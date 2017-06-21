@@ -1,18 +1,15 @@
 package com.ms.qaTools.compare.writer
-import com.ms.qaTools.compare.CompareColDef
+import com.ms.qaTools.compare.CompareColDefs
 import com.ms.qaTools.io.rowSource.DatabaseConnection
 import com.ms.qaTools.io.rowSource.jdbc.ExecuteSupport
 
-case class SQLiteDiffSetWriter(dbConnection: DatabaseConnection with ExecuteSupport, colDefs: Seq[CompareColDef], tblPrefix: String)
+class SQLiteDiffSetWriter(dbConnection: DatabaseConnection with ExecuteSupport, colDefs: CompareColDefs, tblPrefix: String)
 extends DataBaseDiffSetWriter(dbConnection, colDefs, tblPrefix) {
   setupDataBaseEnvironment
 
-  /**
-   * Method to create the tables used to insert the info from the DiffSet
-   */
-  private def createTables {
-    create("table", "leftTable (rowId integer primary key, " + orderedColDefs(LEFT).map{_.leftColumnDefinition.name + " text " }.toList.mkString(",") + ")")
-    create("table", "rightTable (rowId integer primary key, " + orderedColDefs(RIGHT).map{_.rightColumnDefinition.name + " text "}.toList.mkString(",") + ")")
+  private def createTables() = {
+    create("table", "leftTable (rowId integer primary key, " + sortedLeftColumns.map{_._1.name + " text " }.toList.mkString(",") + ")")
+    create("table", "rightTable (rowId integer primary key, " + sortedRightColumns.map{_._1.name + " text "}.toList.mkString(",") + ")")
     create("table", "diffs (diffId integer primary key, leftId integer, rightId integer, statusId integer, reason text)")
     create("index", "diffs_leftId on " + tblPrefix + "diffs (leftId)")
     create("index", "diffs_rightId on " + tblPrefix + "diffs (rightId)")
@@ -26,13 +23,7 @@ extends DataBaseDiffSetWriter(dbConnection, colDefs, tblPrefix) {
   private def create(typ: String, statement: String) =
     dbConnection.execute(s"create $typ if not exists " + tblPrefix + statement)
 
-  /**
-   * Method to set up the environment
-   */
-  override def setupDataBaseEnvironment {
-    createTables
-    createValidStatus
-  }
+  def setupDataBaseEnvironment() = {createTables; createValidStatus}
 }
 /*
 Copyright 2017 Morgan Stanley

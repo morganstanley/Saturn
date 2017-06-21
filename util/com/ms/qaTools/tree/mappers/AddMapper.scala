@@ -23,90 +23,82 @@ case class XmlNodeAddMapper(
   uri: String = null,
   isCDATA: Boolean = false,
   isXml:Boolean = false)
-  extends XmlNodeMapper {
-
+extends XmlNodeMapper {
   val logger = LoggerFactory.getLogger(getClass)
 
-  private def insertNewNode(node: Node, newNode: Node, nsContext: NamespaceContext) = {
-    if (before != null && !before.isEmpty) {
-      val childNode = XPath(before)(nsContext).asNodes(node).headOption
-      if (childNode.isDefined) {
-        logger.debug("Before path: " + before)
-        logger.debug(nodeToString(childNode.get))
-        logger.debug(nodeToString(newNode))
-
-      }
-
-      if (childNode.isDefined) childNode.get.getParentNode.insertBefore(newNode, childNode.get)
-      else node.appendChild(newNode)
-    } else if (after != null && !after.isEmpty) {
-      val childNode = XPath(after)(nsContext).asNodes(node).headOption
-      if (childNode.isDefined) {
-        logger.debug("After path: " + after)
-        logger.debug(nodeToString(childNode.get))
-        logger.debug(nodeToString(newNode))
-      }
-
-      if (childNode.isDefined && childNode.get.getNextSibling != null) childNode.get.getParentNode().insertBefore(newNode, childNode.get.getNextSibling())
-      else node.appendChild(newNode)
-    } else node.appendChild(newNode)
-  }
-
-  override def apply(optionNode: Option[XmlNode]): Option[XmlNode] = {
-    optionNode match {
-      case None => optionNode
-      case Some(node) => {
-        val ownerDocument = node.node.getOwnerDocument
-        val retrievedNodes = {
-          if (parent == null) Seq(node) // by default add new node to the root
-          else {
-            val xPathLookup = XPathNodeLookup(parent)(node.nsContext)
-            xPathLookup.getNodes(node)
-          }
+  private def insertNewNode(node: Node, newNode: Node, nsContext: NamespaceContext) =
+    if (before != null && !before.isEmpty)
+      XPath(before)(nsContext).asNodes(node).headOption match {
+        case Some(childNode) => {
+          logger.debug("Before path: " + before)
+          logger.debug(nodeToString(childNode))
+          logger.debug(nodeToString(newNode))
+          childNode.getParentNode.insertBefore(newNode, childNode)
         }
-        logger.debug("Adding: name = %s, value = %s, parent = %s, before = %s, after = %s".format(name, value, parent, before, after))
+        case _ => node.appendChild(newNode)
+      }
+    else if (after != null && !after.isEmpty)
+      XPath(after)(nsContext).asNodes(node).headOption match {
+        case Some(childNode) if childNode.getNextSibling != null => {
+          logger.debug("After path: " + after)
+          logger.debug(nodeToString(childNode))
+          logger.debug(nodeToString(newNode))
+          childNode.getParentNode().insertBefore(newNode, childNode.getNextSibling())
+        }
+        case _ => node.appendChild(newNode)
+      }
+    else node.appendChild(newNode)
 
-        retrievedNodes.map(n => {
-          val parentNode = n.node
-          if (isAttribute) {
-            parentNode match {
-              case e: Element => {
-                if (uri == null) e.setAttribute(name, value)
-                else {
-                  val prefix = node.nsContext.getPrefix(uri)
-                  e.setAttributeNS(uri, prefix + ":" + name, value)
-                }
-              }
-            }
-          }
-          else if (isCDATA) {
-            val cdata = ownerDocument.createCDATASection(value)
-            insertNewNode(parentNode, cdata, node.nsContext)
-          }
-          else if (isXml) {
-            val newElem = value.toDocument.getDocumentElement()
-            // if we do not traverse the document once prior to re-parenting it, it throws an NPE when nodeToString is called post add
-            nodeToString(newElem)
-            val parentDoc = node.getOwnerDocument()
-            parentDoc.adoptNode(newElem)
+  def apply(optionNode: Option[XmlNode]): Option[XmlNode] = optionNode match {
+    case None => optionNode
+    case Some(node) =>
+      val ownerDocument = node.node.getOwnerDocument
+      val retrievedNodes = {
+        if (parent == null) Seq(node) // by default add new node to the root
+        else {
+          val xPathLookup = XPathNodeLookup(parent)(node.nsContext)
+          xPathLookup.getNodes(node)
+        }
+      }
+      logger.debug("Adding: name = %s, value = %s, parent = %s, before = %s, after = %s".format(name, value, parent, before, after))
 
-            insertNewNode(parentNode, newElem, node.nsContext)
-          }
-          else {
-            val newNode = {
-              if (uri == null) ownerDocument.createElement(name) //parentNode.createElement(name)//
+      retrievedNodes.map{n =>
+        val parentNode = n.node
+        if (isAttribute) {
+          parentNode match {
+            case e: Element =>
+              if (uri == null) e.setAttribute(name, value)
               else {
                 val prefix = node.nsContext.getPrefix(uri)
-                ownerDocument.createElementNS(uri, prefix + ":" + name)
+                e.setAttributeNS(uri, prefix + ":" + name, value)
               }
-            }
-            newNode.appendChild(ownerDocument.createTextNode(value))
-            insertNewNode(parentNode, newNode, node.nsContext)
           }
-        })
-        Option(node)
+        }
+        else if (isCDATA) {
+          val cdata = ownerDocument.createCDATASection(value)
+          insertNewNode(parentNode, cdata, node.nsContext)
+        }
+        else if (isXml) {
+          val newElem = value.toDocument.getDocumentElement()
+          // if we do not traverse the document once prior to re-parenting it, it throws an NPE when nodeToString is called post add
+          nodeToString(newElem)
+          val parentDoc = node.getOwnerDocument()
+          parentDoc.adoptNode(newElem)
+
+          insertNewNode(parentNode, newElem, node.nsContext)
+        }
+        else {
+          val newNode =
+            if (uri == null) ownerDocument.createElement(name) //parentNode.createElement(name)//
+            else {
+              val prefix = node.nsContext.getPrefix(uri)
+              ownerDocument.createElementNS(uri, prefix + ":" + name)
+            }
+          newNode.appendChild(ownerDocument.createTextNode(value))
+          insertNewNode(parentNode, newNode, node.nsContext)
+        }
       }
-    }
+      Option(node)
   }
 }
 /*

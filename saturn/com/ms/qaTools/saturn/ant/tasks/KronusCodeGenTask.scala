@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.tools.ant.BuildException
 import org.apache.tools.ant.Project
 import org.apache.tools.ant.Task
+import com.ms.qaTools.kronus.repository.ExtractKronusSource
 import com.ms.qaTools.saturn.kronus._
 import com.ms.qaTools.saturn.kronus.codeGen.KronusGenerator
 import com.ms.qaTools.saturn.ant.PropertyAccessor
@@ -21,7 +22,7 @@ class KronusCodeGenTask extends Task with PropertyAccessor {
   @BeanProperty var projectName: String = "prototype"
 
   val extraKronusProp = "qaTools.saturn.kronus.extra"
-  val backport = Backport.resources.map(getClass.getClassLoader.getResource(_).toURI)
+  val backport = ExtractKronusSource(getClass.getClassLoader)
 
   def useIvy      = getProperty(s"msde.$projectName.saturn.kronus.ivy") exists {_.toBoolean}
   def ivyConfigs  = getProperty(s"msde.$projectName.saturn.kronus.ivy.configs") getOrElse {"kronus"}
@@ -75,7 +76,7 @@ class KronusCodeGenTask extends Task with PropertyAccessor {
         (uris, deserialize(uris)).zipped.collect {
           case NeedCompile((uri, topLevel)) =>
             log(s"Compiling: $uri")
-            val r = generator.generateFile(topLevel, outDir).get
+            val r = generator.generateFile(topLevel, outDir)
             log(s"Writing: ${r.output}")
             r.appObject
         }.head

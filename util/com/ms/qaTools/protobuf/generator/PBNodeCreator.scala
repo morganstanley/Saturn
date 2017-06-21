@@ -14,8 +14,6 @@ import com.google.protobuf.Descriptors.EnumValueDescriptor
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType
 import org.apache.commons.codec.binary.Base64
 
-
-
 trait PBNodeCreator extends NodeCreator[Builder, Builder]
 trait PBLeafNodeCreator extends LeafNodeCreator[Builder, Builder]
 trait PBInnerNodeCreator extends InnerNodeCreator[Builder, Builder] {
@@ -23,13 +21,11 @@ trait PBInnerNodeCreator extends InnerNodeCreator[Builder, Builder] {
 }
 
 case class String2EnumFunction(e: EnumDescriptor) extends Function1[String, EnumValueDescriptor] {
-  def apply(s: String): EnumValueDescriptor = {
+  def apply(s: String): EnumValueDescriptor =
     e.findValueByName(s)
-  }
 }
 
 object PBNodeCreator {
-
   def apply(template: Message, descriptor: Descriptor) = {
     val tobool: Function1[String, Boolean] = new Function1[String, Boolean] { def apply(s: String) = { s == "true" } }
     val tobytestring: Function1[String, ByteString] = new Function1[String, ByteString] { def apply(s: String) = { ByteString.copyFrom(Base64.decodeBase64(s.getBytes())) } }

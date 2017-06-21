@@ -1,6 +1,6 @@
 package com.ms.qaTools
 
-import scala.reflect.macros.Context
+import scala.reflect.macros.blackbox.Context
 
 object Macros {
   import scala.language.experimental.macros
@@ -8,7 +8,7 @@ object Macros {
   def sourceFile: String = macro sourceFileImpl
   def sourceFileImpl(c: Context) = {
     import c.universe._
-    q"${c.enclosingUnit.source.path.toString}"
+    q"${c.enclosingPosition.source.path}"
   }
 }
 /*

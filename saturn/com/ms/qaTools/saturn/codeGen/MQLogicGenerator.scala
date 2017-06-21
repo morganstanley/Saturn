@@ -82,7 +82,7 @@ object MQLogicGenerator {
           case invalid                 => throw new Exception(s"Input type '$invalid' is not a valid message type.")
         })
         val putStrs = (queuesStr, inputsStr, messageTypes).zipped.toSeq.zipWithIndex.map {
-          case ((queueStr, inputStr, inputType), i) => s"""MQPutRunner.put$inputType(context, mqResource, $queueStr, $inputStr, $i)"""
+          case ((queueStr, inputStr, inputType), i) => s"""MQPutRunner.put$inputType(context, mqResource, $queueStr, ($inputStr).map(io => new Input[Iterator[$inputType]] {def input = io.input.map(_.map(_.to$inputType(mqResource.session)))}), $i)"""
         }
         s"""MQPutRunner(context, ${putStrs.mkString("Seq(", ",", ")")})"""
       }
@@ -105,7 +105,7 @@ object MQLogicGenerator {
         val getStrs = queuesStr.zip(outputsStr).zipWithIndex.map {
           case ((queueStr, outputStr), i) => s"""MQGetRunner.get(context, mqResource, $queueStr, $outputStr, $i)"""
         }
-        s"""MQGetRunner(context, 
+        s"""MQGetRunner(context,
                         ${getStrs.mkString("Seq(", ",", ")")})"""
       }
     }
@@ -139,7 +139,7 @@ object MQLogicGenerator {
     } yield new TryGen {
       override def generate(): Try[String] = for {
         queuesStr <- queuesGen.generate
-      } yield s"""MQWaitRunner(context, 
+      } yield s"""MQWaitRunner(context,
                                mqResource,
                                $queuesStr,
                                "${operator.getLiteral()}",

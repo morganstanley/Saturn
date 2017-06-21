@@ -1,23 +1,19 @@
 package com.ms.qaTools.xml.generator
-
-
-
 import org.w3c.dom.Attr
 import org.w3c.dom.Document
-import com.ms.qaTools.io._
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.ParameterizedText
 
-class XmlAttributeCreator(attr: Attr, override val isLegacyMode: Boolean) extends XmlLeafNodeCreator with ParameterizedText {
-  override val isLocal: Boolean = true
+class XmlAttributeCreator(attr: Attr, val isLegacyMode: Boolean) extends XmlLeafNodeCreator with ParameterizedText {
+  def isLocal = true
 
-  val name = attr.getName()
-  val nsUri = attr.getNamespaceURI()
-  lazy val value: String = attr.getValue()
+  val name = attr.getName
+  val nsUri = attr.getNamespaceURI
+  lazy val value: String = attr.getValue
 
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: Document): Attr = {
-    val newAttr = if (nsUri == null) { doc.createAttribute(name) } else { doc.createAttributeNS(nsUri, name) }
+  override def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: Document): Attr = {
+    val newAttr = if (nsUri == null) doc.createAttribute(name) else doc.createAttributeNS(nsUri, name)
     newAttr.setValue(resolveValue(data))
     newAttr
   }

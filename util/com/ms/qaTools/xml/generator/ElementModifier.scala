@@ -1,77 +1,78 @@
 package com.ms.qaTools.xml.generator
 
 import java.io.File
-import scala.collection.JavaConversions.asScalaBuffer
-import scala.collection.JavaConversions.mapAsJavaMap
-import org.slf4j.LoggerFactory
+
+import scala.collection.JavaConversions._
+import scala.util.Try
+
 import org.w3c.dom.Document
 import org.w3c.dom.Node
+
+import com.ms.qaTools.Injector
+import com.ms.qaTools.dml.DmlEval
 import com.ms.qaTools.interpreter.GroovyInterpreter
-import com.ms.qaTools.io.DelimitedRow
+import com.ms.qaTools.interpreter.GroovyInterpreterResult
+import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.ColumnDefinitions
+import com.ms.qaTools.io.rowSource.DsRowSourceCreator
+import com.ms.qaTools.io.rowSource.delimited.DelimitedParser
 import com.ms.qaTools.io.rowSource.file.XmlFileRowSource
-import com.ms.qaTools.io.sortedDelimitedIteratorToDelimitedIterator
+import com.ms.qaTools.toolkit.Passed
 import com.ms.qaTools.tree.generator.ColContext
-import com.ms.qaTools.tree.generator.Lookupable
-import com.ms.qaTools.xml.getLocalName
-import groovy.lang.Binding
+import com.ms.qaTools.tree.generator.ColDef
 import com.ms.qaTools.tree.generator.ColMap
 import com.ms.qaTools.tree.generator.EmptyMap
-import com.ms.qaTools.io.rowSource.ColumnDefinition
-import com.ms.qaTools.tree.generator.ColDef
-import scala.annotation.tailrec
-import com.ms.qaTools.io.rowSource.delimited.DelimitedParser
-import com.ms.qaTools.io.rowSource.DsRowSourceCreator
-import com.ms.qaTools.io.rowSource.ColumnDefinitionAdapter
+import com.ms.qaTools.tree.generator.Lookupable
+import com.ms.qaTools.xml.getLocalName
 
+import groovy.lang.Binding
 
-
-trait ElementModifier extends Function4[Node, DelimitedRow, ColContext, Lookupable, Option[Node]]
+trait ElementModifier extends Function4[Node, Seq[String], ColContext, Lookupable, Option[Node]]
 
 class GroovyElementModifier(code: String) extends ElementModifier {
-  private val logger = LoggerFactory.getLogger(this.getClass())
-
-  def apply(n: Node, row: DelimitedRow, colContext: ColContext, colMap: Lookupable): Option[Node] = {
+  def apply(n: Node, row: Seq[String], colContext: ColContext, colMap: Lookupable): Option[Node] = {
     val document = n.getOwnerDocument()
-    val interpreter = GroovyInterpreter(new Binding(Map("node" -> n, "document" -> document, "row" -> row, "colContext" -> colContext, "colMap" -> colMap)))
-    val result = interpreter.run(code)
-    if (result.passed) {
-      result.resultObj.map {
-        case n: Node => n
-        case nodes: java.util.List[_] => {
-          val f = document.createDocumentFragment()
-          for (node @ (n: Node) <- nodes) { f.appendChild(node) }
-          f
+    GroovyInterpreter(new Binding(Map("node" -> n, "document" -> document, "row" -> row, "colContext" -> colContext, "colMap" -> colMap))).run(code) match {
+      case GroovyInterpreterResult(Passed, _, resultObj, _) =>
+        resultObj.map {
+          case n: Node => n
+          case nodes: java.util.List[_] => {
+            val f = document.createDocumentFragment()
+            for (node @ (n: Node) <- nodes) { f.appendChild(node) }
+            f
+          }
         }
-      }
-    }
-    else {
-      result.exception.map { e => logger.error("Could not interpret Groovy code: %s".format(e)) }
-      None
+      case GroovyInterpreterResult(_, _, _, exception) =>
+        exception.map(throw _)
     }
   }
 }
 
-class XmlGenElementModifier(template: Document, rowSourceCreator: Function0[Iterator[DelimitedRow] with ColumnDefinitions], isLegacyMode: Boolean, useCurrentRow: Boolean) extends ElementModifier {
-  private val logger = LoggerFactory.getLogger(this.getClass())
+class DMLElementModifier(code: String) extends ElementModifier {
+  def apply(n: Node, row: Seq[String], colContext: ColContext, colMap: Lookupable): Option[Node] = Try {
+    n.appendChild(n.getOwnerDocument.createTextNode(Injector.getInstance[DmlEval].parse(code).toString))
+    n
+  }.toOption
+}
 
-  def apply(n: Node, row: DelimitedRow, colContext: ColContext, lookupable: Lookupable): Option[Node] = {
-    def createMergedRowSource(): Iterator[DelimitedRow] with ColumnDefinitions = {
+class XmlGenElementModifier(template: Document, rowSourceCreator: Function0[Iterator[Seq[String]] with ColumnDefinitions], isLegacyMode: Boolean, useCurrentRow: Boolean) extends ElementModifier {
+  def apply(n: Node, row: Seq[String], colContext: ColContext, lookupable: Lookupable): Option[Node] = {
+    def createMergedRowSource(): Iterator[Seq[String]] with ColumnDefinitions = {
       def getColDefs() = {
         def getColDefs0(colDefs: Seq[ColDef], parentStack: List[String] = Nil): Seq[ColumnDefinition] = {
-          (for (c <- colDefs.filter { _.noIterations }) yield {
+          (for (c <- colDefs.filter{_.iterationCount == 0}) yield {
             c.children match {
-              case EmptyMap()     => Seq(ColumnDefinition(name = (c.name :: parentStack).reverse.mkString("."), index = c.index))
+              case EmptyMap       => Seq(ColumnDefinition(name = (c.name :: parentStack).reverse.mkString("."), index = c.index))
               case ColMap(colMap) => getColDefs0(colMap.values.toSeq.sortBy(_.index), c.name :: parentStack)
             }
           }).flatten
         }
         lookupable match {
           case ColMap(colMap) => getColDefs0(colMap.values.toSeq.sortBy(_.index))
-          case EmptyMap()     => Nil
+          case EmptyMap       => Nil
         }
       }
-      new Iterator[DelimitedRow] with ColumnDefinitions {
+      new Iterator[Seq[String]] with ColumnDefinitions {
         val nested = rowSourceCreator()
         def next() = row ++ nested.next
         def colDefs = (getColDefs().sortBy(_.index) ++ nested.colDefs).zipWithIndex.map { c => ColumnDefinition(name = c._1.name, index = c._2) }
@@ -89,13 +90,12 @@ class XmlGenElementModifier(template: Document, rowSourceCreator: Function0[Iter
 }
 
 object ElementModifier {
- 
   private implicit class AttGetter(n: Node) {def apply(a: String) = Option(n.getAttributes().getNamedItem(a)).map {_.getNodeValue()}}
 
   def isExpandableRefs(n: Node) = n("expandableRefs").isDefined && n("expandableRefs").forall {_.toLowerCase() == "true"}
 
-  def createNestedXmlGenRowSource(n: Node): Function0[Iterator[DelimitedRow] with ColumnDefinitions] = {
-    new Function0[Iterator[DelimitedRow] with ColumnDefinitions] {
+  def createNestedXmlGenRowSource(n: Node): Function0[Iterator[Seq[String]] with ColumnDefinitions] = {
+    new Function0[Iterator[Seq[String]] with ColumnDefinitions] {
       def apply() = {
         val dsRowSourceCreator = DsRowSourceCreator(n("fileName").getOrElse(throw new Error("Must specify a filename")),
           n("wsName"),
@@ -108,12 +108,12 @@ object ElementModifier {
           headerless = n("headerless").getOrElse("false").toBoolean,
           transformColDefs = identity[Seq[ColumnDefinition]]
         )
-          
+
         try {
           dsRowSourceCreator.createRowSource(n("format").getOrElse("CSV").toUpperCase)
         }
         catch {
-          case t => throw new Exception("Can't create a XmlGen row source for format: " + n("format").getOrElse("CSV").toUpperCase, t)
+          case t: Throwable => throw new Exception("Can't create a XmlGen row source for format: " + n("format").getOrElse("CSV").toUpperCase, t)
         }
       }
     }
@@ -125,8 +125,7 @@ object ElementModifier {
   def apply(n: Node): ElementModifier = {
     getLocalName(n) match {
       case "Groovy" => new GroovyElementModifier(n.getTextContent())
-      case "DML" => Class.forName(
-        "com.ms.qaTools.xml.generator.DMLElementModifier").getConstructor(classOf[String]).newInstance(n.getTextContent).asInstanceOf[ElementModifier]
+      case "DML" => new DMLElementModifier(n.getTextContent)
       case "XmlGen" => new XmlGenElementModifier(
         createXmlGenTemplate(n),
         createNestedXmlGenRowSource(n),

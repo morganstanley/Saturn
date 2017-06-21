@@ -3,38 +3,40 @@ package com.ms.qaTools.tree
 import org.w3c.dom.Attr
 import org.w3c.dom.Node
 import org.w3c.dom.Text
-import com.ms.qaTools.xml.getLocalName
-import com.ms.qaTools.xml.nodeList2List
-import com.ms.qaTools.xml.nodeMap2List
-import com.ms.qaTools.xml.nodePath
+import com.ms.qaTools.xml._
 import javax.xml.XMLConstants
 import javax.xml.namespace.NamespaceContext
 import org.w3c.dom.Comment
 import scala.annotation.tailrec
 
-
-
 class XmlNode(val node: Node)(implicit val nsContext: NamespaceContext) extends TreeNode[Node] {
-  val namespaceURI = node.getNamespaceURI()
-  val prefix = Option(namespaceURI).map(nsContext.getPrefix(_))
-  val name: String = prefix.map(p => s"$p:").getOrElse("") + getLocalName(node)
-  lazy val path: String = nodePath(node)
-  private def notNs0(n: Node): Boolean = getLocalName(n) == XMLConstants.XMLNS_ATTRIBUTE || (Option(n.getNamespaceURI()).exists(_ == XMLConstants.XMLNS_ATTRIBUTE_NS_URI))
-  lazy private val attributes: Iterable[Attr] = node.getAttributes().filterNot { a => notNs0(a) }.asInstanceOf[Iterable[Attr]]
+  def namespaceURI = node.getNamespaceURI()
+  def prefix = Option(namespaceURI).map(nsContext.getPrefix(_))
+  def name: String = prefix.map(p => s"$p:").getOrElse("") + getLocalName(node)
 
+  protected lazy val canonicalPath = PathCache(node, true)
+  protected lazy val nonCanonicalPath = PathCache(node, false)
+  def path(canonical: Boolean): String = if (canonical) canonicalPath else nonCanonicalPath
+  
+  private lazy val attributes: Iterable[Attr] = 
+    node.getAttributes().filterNot { a => 
+      getLocalName(a) == XMLConstants.XMLNS_ATTRIBUTE || (Option(a.getNamespaceURI()).exists(_ == XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) 
+    }.asInstanceOf[Iterable[Attr]]
   private lazy val (childrenTextNodes, childrenNonTextNodes) = node.getChildNodes().partition(_.isInstanceOf[Text])
-  def children(filterOut: (Node) => Boolean = (n: Node) => n.isInstanceOf[Comment]) =
-    attributes.toSeq.filterNot{filterOut}.map(XmlAttr(_)) ++ childrenNonTextNodes.filterNot{filterOut}.map(XmlNode(_))
+  
+  def children(filterOut: (Node) => Boolean = (n: Node) => n.isInstanceOf[Comment]): Seq[XmlNode] =
+    (attributes.iterator.filterNot{filterOut}.map(new XmlAttr(_)) ++
+     childrenNonTextNodes.iterator.filterNot{filterOut}.map(new XmlNode(_))).toBuffer
 
   lazy val value = {
-    val textValue = childrenTextNodes.map { _.getTextContent() }.mkString.trim
+    val textValue = childrenTextNodes.iterator.map { _.getTextContent() }.mkString.trim
     if (textValue.isEmpty()) None else Some(textValue)
   }
-  override def toString: String = path
+  override def toString: String = path(true)
   override def detach: TreeNode[Node] = {
-    val pn = node.getParentNode()    
+    val pn = node.getParentNode()
     if (pn != null) pn.synchronized {XmlNode(pn.removeChild(node))} else this
-  }  
+  }
 }
 
 class XmlAttr(override val node: Attr)(implicit nsContext: NamespaceContext) extends XmlNode(node) {
@@ -42,6 +44,7 @@ class XmlAttr(override val node: Attr)(implicit nsContext: NamespaceContext) ext
     val textValue = node.getValue()
     if (textValue.isEmpty()) None else Some(textValue)
   }
+  override def children(filterOut: (Node) => Boolean = (n: Node) => n.isInstanceOf[Comment]) = Nil    
 }
 
 class XmlText(override val node: Text)(implicit nsContext: NamespaceContext) extends XmlNode(node) {
@@ -49,19 +52,21 @@ class XmlText(override val node: Text)(implicit nsContext: NamespaceContext) ext
     val textValue = node.getWholeText()
     if (textValue.isEmpty()) None else Some(textValue)
   }
+  override def children(filterOut: (Node) => Boolean = (n: Node) => n.isInstanceOf[Comment]) = Nil
 }
 
 object XmlNode {
   def apply(node: Node)(implicit nsContext: NamespaceContext): XmlNode = node match {
     case a: Attr => new XmlAttr(a)
     case t: Text => new XmlText(t)
-    case n: Node => new XmlNode(n)    
+    case n: Node => new XmlNode(n)
   }
 }
 
 object XmlAttr {
   def apply(node: Attr)(implicit nsContext: NamespaceContext): XmlAttr = new XmlAttr(node)
 }
+
 /*
 Copyright 2017 Morgan Stanley
 

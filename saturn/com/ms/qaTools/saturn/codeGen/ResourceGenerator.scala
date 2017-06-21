@@ -93,7 +93,7 @@ import com.ms.qaTools.saturn.types.TypesPackage
 import com.ms.qaTools.saturn.values.ComplexValue
 import com.ms.qaTools.saturn.resources.soapIOResource.PTCPTransport
 import com.ms.qaTools.saturn.resources.fileResource.FIXFile
-import com.ms.qaTools.saturn.runtime.runner.FIXFileResource
+import com.ms.qaTools.saturn.runtime.runner.FixFileResource
 
 trait ContextAppendOptions {
   val appendAsMetaData: Boolean = false
@@ -159,9 +159,9 @@ object ResourceGenerator {
         }
     ).capitalize
   }
-  
+
   def getResourceDescription(res: EObject) = '"' + res.eClass.getName + '"'
-  
+
   def getParentResrouceContextName(depth: Int) = if (depth == 0) "context" else s"context_${depth - 1}"
 
   def appendResourceToContext(res: EObject, gen: Try[ScalaGen])(implicit depth: Int, appendOptions: ContextAppendOptions): Try[TryGen] = {
@@ -175,8 +175,8 @@ object ResourceGenerator {
     }
   }
 
-  def apply(resource: MResourceDefinition, 
-            withConnectTry: Boolean = true, 
+  def apply(resource: MResourceDefinition,
+            withConnectTry: Boolean = true,
             name: Option[String] = None)
            (implicit depth: Int = 0, appendOptions: ContextAppendOptions = ContextAppendOptions()): Try[TryGen] = {
     // Keep the case clauses in alphabetic order according to the names of resources they handle (except generic ones
@@ -212,12 +212,15 @@ object ResourceGenerator {
             filterFor          <- (Option(cpsTransport.getFilter).map(f => ComplexValueStringGenerator(f)).getOrElse(Try{TryExpr("null")})).map(g => ForAssignment("filter", g.withMap(OptionExpr(ScalaExpr("_")))))
           } yield {
             val pbMessageClass = cpsTransport.getCpsMessageType match {
-              case CpsMessageTypes.GPB =>
-                ", pbMessageClass = Some(Class.forName(className, true, new java.net.URLClassLoader(Array(new java.io.File(jarLocation).toURI.toURL))))"
-              case _ =>
-                ""
+              case CpsMessageTypes.GPB  => ", pbMessageClass = CPSIO.pbMessageClass(className, jarLocation)"
+              case _                    => ""
             }
-            val conf = new StringBuilder(s"CPSIO.Config(Option(topic), filter, sow, protocol = CPSProtocol.$cpsMessageType$pbMessageClass, namespaces = namespaces)")
+            val prefix = cpsTransport.getCpsMessageType match {
+              case CpsMessageTypes.CPS0 => "Cps0"
+              case CpsMessageTypes.SOAP => "Soap"
+              case CpsMessageTypes.GPB  => "Gpb"
+            }
+            val conf = new StringBuilder(s"CPSIO.${prefix}Config(Option(topic), filter, sow$pbMessageClass, namespaces = namespaces)")
             cpsTransport.getTransport match {
               case _: MQTransport => conf ++= ".copy(subscriptionID = Some(java.util.UUID.randomUUID().toString))" // TODO Take this from GUI
               case _              =>
@@ -265,19 +268,19 @@ object ResourceGenerator {
                     s"ExcelWorkBookResource(fileName, $isXlsx)")
       }
       case Some(excelWSResource: ExcelWorkSheet)      => genResource(resource,
-												                                             Seq(TypesPackage.eINSTANCE.getDataSetResourceDefinition_DeviceResource(),
-												                                             FileResourcePackage.eINSTANCE.getExcelWorkSheet_WorkSheet()),
-												                                             "ExcelWorkSheetResource(deviceResource, workSheet)")
+                                                                     Seq(TypesPackage.eINSTANCE.getDataSetResourceDefinition_DeviceResource(),
+                                                                     FileResourcePackage.eINSTANCE.getExcelWorkSheet_WorkSheet()),
+                                                                     "ExcelWorkSheetResource(deviceResource, workSheet)")
       case Some(extractorResource: ExtractorResource) => genResource(resource,
-												                     Seq(MapperResourcePackage.eINSTANCE.getExtractorResource_InputResource(),
-												                         MapperResourcePackage.eINSTANCE.getExtractorResource_Configuration()),
-												                     "ExtractorResource(inputResource, configuration)")
+                                             Seq(MapperResourcePackage.eINSTANCE.getExtractorResource_InputResource(),
+                                                 MapperResourcePackage.eINSTANCE.getExtractorResource_Configuration()),
+                                             "ExtractorResource(inputResource, configuration)")
       case Some(fixFileResource: FIXFile)   => {
         val dictionaryFeature = Option(fixFileResource.getDictionary).map(d => Seq(FileResourcePackage.eINSTANCE.getFIXFile_Dictionary())).getOrElse(Seq())
         val separatorFeature = Option(fixFileResource.getSeparator).map(d => Seq(FileResourcePackage.eINSTANCE.getFIXFile_Separator())).getOrElse(Seq())
         genResource(resource, Seq(TypesPackage.eINSTANCE.getDataSetResourceDefinition_DeviceResource(),
-                                  FileResourcePackage.eINSTANCE.getFIXFile_DoValidation()) ++ dictionaryFeature ++ separatorFeature, 
-                                  s"FIXFileResource(deviceResource, ${if(dictionaryFeature.isEmpty) "None" else "Option(dictionary)"}, doValidation, ${if(separatorFeature.isEmpty) "None" else "Option(separator)"})")
+                                  FileResourcePackage.eINSTANCE.getFIXFile_DoValidation()) ++ dictionaryFeature ++ separatorFeature,
+                                  s"FixFileResource(deviceResource, ${if(dictionaryFeature.isEmpty) "None" else "Option(dictionary)"}, doValidation, ${if(separatorFeature.isEmpty) "None" else "Option(separator)"})")
       }
       case Some(fixedWidthResource: FixedWidthFile)   =>
         genResource(resource, Seq(
@@ -285,26 +288,26 @@ object ResourceGenerator {
           FileResourcePackage.eINSTANCE.getFixedWidthFile_ConfigFile()
         ), "FixedWidthFileResource(deviceResource, configFile)")
       case Some(generatorResource: GeneratorResource) => genResource(resource,
-												                     Seq(MapperResourcePackage.eINSTANCE.getGeneratorResource_TemplateResource(),
-												                         MapperResourcePackage.eINSTANCE.getGeneratorResource_InputResource()),
-												                     "GeneratorResource(templateResource, inputResource)")
+                                             Seq(MapperResourcePackage.eINSTANCE.getGeneratorResource_TemplateResource(),
+                                                 MapperResourcePackage.eINSTANCE.getGeneratorResource_InputResource()),
+                                             "GeneratorResource(templateResource, inputResource)")
       case Some(pbResource: GoogleProtoBufFile)       => genResource(resource,
                                                                      Seq(TypesPackage.eINSTANCE.getDataSetResourceDefinition_DeviceResource(),
                                                                          FileResourcePackage.eINSTANCE.getGoogleProtoBufFile_Classname(),
                                                                          FileResourcePackage.eINSTANCE.getGoogleProtoBufFile_JarLocation(),
                                                                          FileResourcePackage.eINSTANCE.getGoogleProtoBufFile_ReadDelimited(),
-                                                                         FileResourcePackage.eINSTANCE.getGoogleProtoBufFile_ReadEncoded()), 
+                                                                         FileResourcePackage.eINSTANCE.getGoogleProtoBufFile_ReadEncoded()),
                                                                      "GoogleProtoBufFile(deviceResource, classname, jarLocation, readDelimited, readEncoded)")
       case Some(h2Resource: H2Resource) => {
         val ddlFeature = Option(h2Resource.getDDLResource).map(ddlResource => Seq(H2ResourcePackage.eINSTANCE.getH2Resource_DDLResource())).getOrElse(Seq())
         Option(h2Resource.getDatabase()) match {
           case Some(mem: H2MemoryDatabase) => genResource(resource,
-												          Seq(TypesPackage.eINSTANCE.getDatabaseResourceDefinition_Persistent()) ++ ddlFeature,
-												          s"H2Resource(None, ${if(ddlFeature.isEmpty) "None" else "Option(dDLResource)"}, persistent)")
+                                  Seq(TypesPackage.eINSTANCE.getDatabaseResourceDefinition_Persistent()) ++ ddlFeature,
+                                  s"H2Resource(None, ${if(ddlFeature.isEmpty) "None" else "Option(dDLResource)"}, persistent)")
           case Some(file: FileDatabase)    => genResource(resource,
-												          Seq(TypesPackage.eINSTANCE.getDatabaseResourceDefinition_Persistent(),
-												              H2ResourcePackage.eINSTANCE.getH2Resource_Database()) ++ ddlFeature,
-												          s"H2Resource(Option(database), ${if(ddlFeature.isEmpty) "None" else "Option(dDLResource)"}, persistent)")
+                                  Seq(TypesPackage.eINSTANCE.getDatabaseResourceDefinition_Persistent(),
+                                      H2ResourcePackage.eINSTANCE.getH2Resource_Database()) ++ ddlFeature,
+                                  s"H2Resource(Option(database), ${if(ddlFeature.isEmpty) "None" else "Option(dDLResource)"}, persistent)")
           case Some(unsupported) => throw new Exception(s"H2 resource, unsupported database: $unsupported.")
           case None              => throw new Exception("No database provided for H2 resource.")
         }
@@ -366,20 +369,20 @@ object ResourceGenerator {
       case Some(soapIOResource: SoapIOResource)             => genResource(resource,
                                                                            Seq(SoapIOResourcePackage.eINSTANCE.getSoapIOResource_Transport()),
                                                                            soapIOResource.getTransport match {
-																             case t: TCPTransport  => "SoapIOResource.TCP(transport)"
-																             case t: PTCPTransport  => "SoapIOResource.PTCP(transport)"
-																             case t: HTTPTransport => "SoapIOResource.HTTP(transport)"
-																             case t: MQTransport   => "SoapIOResource.MQ(transport)"})
+                                             case t: TCPTransport  => "SoapIOResource.TCP(transport)"
+                                             case t: PTCPTransport  => "SoapIOResource.PTCP(transport)"
+                                             case t: HTTPTransport => "SoapIOResource.HTTP(transport)"
+                                             case t: MQTransport   => "SoapIOResource.MQ(transport)"})
       case Some(sqliteResource: SQLiteResource) => {
         val ddlFeature = Option(sqliteResource.getDDLResource).map(ddlResource => Seq(SqliteResourcePackage.eINSTANCE.getSQLiteResource_DDLResource())).getOrElse(Seq())
         Option(sqliteResource.getDatabase()) match {
           case Some(mem: SQLiteMemoryDatabase)  => genResource(resource,
-												               Seq(TypesPackage.eINSTANCE.getDatabaseResourceDefinition_Persistent()) ++ ddlFeature,
-												               s"SQLiteResource(None, ${if(ddlFeature.isEmpty) "None" else "Option(dDLResource)"}, persistent)")
+                                       Seq(TypesPackage.eINSTANCE.getDatabaseResourceDefinition_Persistent()) ++ ddlFeature,
+                                       s"SQLiteResource(None, ${if(ddlFeature.isEmpty) "None" else "Option(dDLResource)"}, persistent)")
           case Some(file: SQLiteDatabase)       => genResource(resource,
-												               Seq(TypesPackage.eINSTANCE.getDatabaseResourceDefinition_Persistent(),
-												                   SqliteResourcePackage.eINSTANCE.getSQLiteResource_Database()) ++ ddlFeature,
-												               s"SQLiteResource(Option(database), ${if(ddlFeature.isEmpty) "None" else "Option(dDLResource)"}, persistent)")
+                                       Seq(TypesPackage.eINSTANCE.getDatabaseResourceDefinition_Persistent(),
+                                           SqliteResourcePackage.eINSTANCE.getSQLiteResource_Database()) ++ ddlFeature,
+                                       s"SQLiteResource(Option(database), ${if(ddlFeature.isEmpty) "None" else "Option(dDLResource)"}, persistent)")
           case Some(unsupported) => throw new Exception(s"SQLite resource, unsupported database: $unsupported.")
           case None              => throw new Exception("No database provided for SQLite resource.")
         }
@@ -533,7 +536,9 @@ object ResourceGenerator {
       case Some(lineResource: LineFile)                          => Some(ResourceMetaData("LineIO", stringIO, Some(stringDsType)))
       case Some(markitWireResource: MarkitWireResource)          => None
       case Some(mongoDbResource: MongoDbResource)                => Some(ResourceMetaData("MongoDBConnection", "MongoDBConnection"))
-      case Some(mqResource: MQResource)                          => Some(ResourceMetaData("MQResource", "MQResource"))
+      case Some(mqResource: MQResource)                          =>
+        val t = classOf[com.ms.qaTools.saturn.dsl.MqResource].getName
+        Some(ResourceMetaData(t, t))
       case Some(msSqlResource: MSSQLResource)                    => None
       case Some(nullResource: NullDevice)                        => Some(ResourceMetaData("NullIO", "DeviceIO with Input[ByteArrayRowSource] with Output[ByteArrayRowWriter] with DiffWriter"))
       case Some(ooCalcWBResource: OOCalcWorkBook)                => None //Some(ResourceMetaData("OOCalcIO", "OOCalcIO"))

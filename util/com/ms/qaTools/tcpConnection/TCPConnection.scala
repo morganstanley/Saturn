@@ -8,15 +8,11 @@ import java.net.InetSocketAddress
 import java.nio.channels.SocketChannel
 
 class TCPConnection(connection: NIOConnectionImpl, socketChannel: SocketChannel, isKerberos: Boolean, krb5Filter: Krb5Filter) {
+  def send(sendByteArray: Array[Byte]): Unit =
+    if (isKerberos) krb5Filter.filterOut(sendByteArray) else connection.send(sendByteArray, socketChannel)
 
-  def send(sendByteArray: Array[Byte]): Unit = {
-    val responseData = if (isKerberos) krb5Filter.filterOut(sendByteArray) else connection.send(sendByteArray, socketChannel)
-  }
-
-  def receive(): Array[Byte] = {
-    val responseData: Array[Byte] = if (isKerberos) krb5Filter.filterIn() else connection.receive(socketChannel)
-    responseData
-  }
+  def receive(): Array[Byte] =
+    if (isKerberos) krb5Filter.filterIn() else connection.receive(socketChannel)
 
   def close() = {
     if (isKerberos) krb5Filter.uninitialise()
@@ -26,21 +22,20 @@ class TCPConnection(connection: NIOConnectionImpl, socketChannel: SocketChannel,
 
 object TCPConnection {
   def apply(host: String, port: Int, serviceName: String, isKerberos: Boolean, kOid: String, bufferLength: Int, soTimeOut: Int): TCPConnection = {
-
     def initializeKrbFilter(conn: NIOConnectionImpl, sChannel: SocketChannel): Krb5Filter = {
       val serverInstance = new InetSocketAddress(host, port)
       val krb5SvcName = serviceName + InetAddress.getByName((new InetSocketAddress(host, port)).getHostName()).getCanonicalHostName()
-      val filter: Krb5Filter = Krb5Filter(conn, sChannel, krb5SvcName, kOid, true)
-      filter
+      Krb5Filter(conn, sChannel, krb5SvcName, kOid, true)
     }
 
     (for {
-      connection <- Try { ConnectionFactory.apply(bufferLength, true, true, soTimeOut) }.rethrow("An exception occurred while creating connection factory.")
+      connection <- Try { new NIOConnectionImpl(bufferLength, true, true, soTimeOut) }.rethrow("An exception occurred while creating connection factory.")
       socketChannel <- Try { connection.connect(new InetSocketAddress(host, port)) }.rethrow("An exception occurred while establishing socket connection.")
       krb5Filter <- Try { if (isKerberos) initializeKrbFilter(connection, socketChannel) else null }.rethrow("An exception occurred while initializing krb filter.")
-    } yield new TCPConnection(connection, socketChannel, isKerberos, krb5Filter)).get
+    } yield new TCPConnection(connection, socketChannel, isKerberos, krb5Filter)). get
   }
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

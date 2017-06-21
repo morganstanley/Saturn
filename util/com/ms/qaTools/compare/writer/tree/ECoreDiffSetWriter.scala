@@ -1,41 +1,41 @@
 package com.ms.qaTools.compare.writer.tree
-import com.ms.qaTools.compare.AbstractDiff
-import com.ms.qaTools.compare.DiffCounter
-import com.ms.qaTools.compare.HasLeft
-import com.ms.qaTools.compare.HasResult
-import com.ms.qaTools.compare.HasRight
-import com.ms.qaTools.generated.diffSet.{AbstractTreeDiff => JAbstractTreeDiff}
-import com.ms.qaTools.generated.diffSet.{DiffSet => JDiffSet}
-import com.ms.qaTools.generated.diffSet.{DiffSetFactory => JDiffSetFactory}
-import com.ms.qaTools.generated.diffSet.util.{DiffSetResourceImpl => JDiffSetResourceImpl}
-import com.ms.qaTools.generated.diffSet.{ValidationTreeDiff => JValidationTreeDiff}
-import com.ms.qaTools.io.rowSource.IndexedRepresentation
-import com.ms.qaTools.io.rowSource.Utils.StringUtil
-import com.ms.qaTools.io.rowSource.Utils.W3CDocumentUtil
-import com.ms.qaTools.tree.validator._
+
 import java.io.File
 import java.io.FileOutputStream
 import java.io.FileWriter
 import java.io.StringWriter
-import java.lang.Boolean
+import java.math.BigInteger
+import java.util.Collections
+
+import scala.collection.JavaConverters._
+
 import org.apache.commons.io.IOUtils
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.xmi.XMLResource
-import scala.collection.JavaConversions.mapAsJavaMap
-import scala.collection.JavaConversions.seqAsJavaList
-import scala.Option.option2Iterable
 
-class ECoreDiffSetWriter[D](file: File, val serializer: D => String) extends TreeDiffSetWriter[D] {
+import com.ms.qaTools.compare.AbstractDiff
+import com.ms.qaTools.compare.HasResult
+import com.ms.qaTools.compare.Identical
+import com.ms.qaTools.generated.diffSet.{AbstractTreeDiff => JAbstractTreeDiff}
+import com.ms.qaTools.generated.diffSet.{DiffSetFactory => JDiffSetFactory}
+import com.ms.qaTools.generated.diffSet.{ValidationTreeDiff => JValidationTreeDiff}
+import com.ms.qaTools.generated.diffSet.util.{DiffSetResourceImpl => JDiffSetResourceImpl}
+import com.ms.qaTools.io.rowSource.Utils.StringUtil
+import com.ms.qaTools.io.rowSource.Utils.W3CDocumentUtil
+import com.ms.qaTools.tree.validator._
+
+class ECoreDiffSetWriter[D](file: File, omitIdentical: Boolean) extends TreeDiffSetWriter[D] {
   val resourceName = "treeValidate"
   val xslResource = resourceName + ".xsl"
   val cssResource = resourceName + ".css"
+  val diffSet = JDiffSetFactory.eINSTANCE.createDiffSet
   val diffSetResource = new JDiffSetResourceImpl(URI.createFileURI(file.getAbsolutePath))
-  diffSetResource.getContents.add(JDiffSetFactory.eINSTANCE.createDiffSet)
+  diffSetResource.getContents.add(diffSet)
 
   def close = {
     diffSetResource.setEncoding("UTF-8")
     val s = new StringWriter
-    diffSetResource.save(s, Map(XMLResource.OPTION_EXTENDED_META_DATA -> Boolean.TRUE))
+    diffSetResource.save(s, Collections.singletonMap(XMLResource.OPTION_EXTENDED_META_DATA, true))
 
     val doc = s.toString.toDocument
     doc.insertBefore(doc.createProcessingInstruction("xml-stylesheet", "href=\"" + xslResource + "\" type=\"text/xsl\""), doc.getFirstChild)
@@ -49,34 +49,28 @@ class ECoreDiffSetWriter[D](file: File, val serializer: D => String) extends Tre
     }
   }
 
-  def writeDiff(diff: AbstractDiff) = {
+  def writeDiff(diff: AbstractDiff) = if (!(omitIdentical && diff.isInstanceOf[Identical[_]])) {
     val rowDiff = JDiffSetFactory.eINSTANCE.createTreeDiff
-    val status = getStatus(diff)
-    rowDiff.setStatus(status)
-    diff match {
-      case i: HasLeft[IndexedRepresentation[D]] => rowDiff.setLeftRow(serializer(i.left.representation))
-      case _                                    =>
+    rowDiff.setStatus(getStatus(diff))
+    leftIndexedRepresentation(diff).foreach { l =>
+      rowDiff.setLeftRow(l.prettyPrint)
+      rowDiff.getLeftKeyColumns.addAll(l.colDefs.sortBy(_.index).map(_.name).asJava)
+      rowDiff.getLeftKeyValues.addAll(l.indexed.asJava)
     }
-    diff match {
-      case r: HasRight[IndexedRepresentation[D]] => rowDiff.setRightRow(serializer(r.right.representation))
-      case _                                     =>
+    rightIndexedRepresentation(diff).foreach { r =>
+      rowDiff.setRightRow(r.prettyPrint)
+      rowDiff.getRightKeyColumns.addAll(r.colDefs.sortBy(_.index).map(_.name).asJava)
+      rowDiff.getRightKeyValues.addAll(r.indexed.asJava)
     }
     val diffDetails = rowDiff.getDiffDetails()
     diff match {
-      case h: HasResult[D] => diffDetails.addAll(createDiffDetails(h.result))
-      case _               =>
+      case h: HasResult[D] => createDiffDetails(h.result).foreach(diffDetails.add)
+      case _ => ()
     }
-    diffSetResource.getContents.get(0).asInstanceOf[JDiffSet].getRows.add(rowDiff)
+    diffSet.getRows.add(rowDiff)
   }
 
-  def createDiffDetails(result: TreeResult[D]): Seq[JAbstractTreeDiff] = {
-    val stats = result.statistics
-    val expectedDiffs = stats.expectedDiffs
-    val actualDiffs = stats.actualDiffs
-    val validation = stats.validation
-    val distinct = (expectedDiffs ++ actualDiffs).filter(_ != null).toSeq.distinct
-    val (d, il, ir, vp, vf) = buildLists(distinct)
-
+  def createDiffDetails(result: TreeResult[D]): Iterator[JAbstractTreeDiff] = {
     def asValidationTreeDiff0(v: ValidationResult[_]): Option[JValidationTreeDiff] = {
       val atd = v match {
         case p: PatternValidationResult[_]   => Some(JDiffSetFactory.eINSTANCE.createPatternTreeDiff())
@@ -87,7 +81,7 @@ class ECoreDiffSetWriter[D](file: File, val serializer: D => String) extends Tre
 
       for (a <- atd) yield {
         a.setName(v.meta.name)
-        a.setRightPath(v.node.path)
+        a.setRightPath(v.node.path(true))
         a.setStatus(if (v.result) "VP" else "VF")
         a.setResult(v.result)
         a.setValue(v.node.valueAsString)
@@ -95,31 +89,42 @@ class ECoreDiffSetWriter[D](file: File, val serializer: D => String) extends Tre
       }
     }
 
-    def asCompareTreeDiff0(d: AbstractTreeNodeDiff, status: String): JAbstractTreeDiff = {
+    def asCompareTreeDiff0(d: AbstractTreeNodeDiff): JAbstractTreeDiff = {
       val ctd = JDiffSetFactory.eINSTANCE.createCompareTreeDiff()
       ctd.setName(d.meta.name)
       d match {
         case a: HasActual[D] =>
           ctd.setActualNode(a.actual.valueAsString)
-          ctd.setRightPath(a.actual.path)
+          ctd.setRightPath(a.actual.path(true))
         case _ =>
       }
       d match {
         case e: HasExpected[D] =>
           ctd.setExpectedNode(e.expected.valueAsString)
-          ctd.setLeftPath(e.expected.path)
+          ctd.setLeftPath(e.expected.path(true))
         case _ =>
       }
-      ctd.setStatus(status)
+      ctd.setStatus(d.status)
       ctd
     }
-    d.sortWith(sort).map { asCompareTreeDiff0(_, "D") } ++
-      il.sortWith(sort).map { asCompareTreeDiff0(_, "IL") } ++
-      ir.sortWith(sort).map { asCompareTreeDiff0(_, "IR") } ++
-      validation.flatMap { asValidationTreeDiff0 }
+
+    val stats = result.statistics
+    (stats.different.toSeq.sorted.iterator ++
+     stats.inLeftOnly.toSeq.sorted ++ stats.inRightOnly.toSeq.sorted).map(asCompareTreeDiff0) ++
+    stats.validations.iterator.flatMap(asValidationTreeDiff0)
   }
 
-  def writeSummary(counter: DiffCounter) = ()
+  def writeSummary(counter: TreeNodeCounter) = {
+    diffSet.setDifferent(BigInteger.valueOf(counter.different))
+    diffSet.setExplained(BigInteger.valueOf(counter.explained))
+    diffSet.setIdentical(BigInteger.valueOf(counter.identical))
+    diffSet.setInLeft(BigInteger.valueOf(counter.inLeftOnly))
+    diffSet.setInRight(BigInteger.valueOf(counter.inRightOnly))
+    diffSet.setLeft(BigInteger.valueOf(counter.left))
+    diffSet.setRight(BigInteger.valueOf(counter.right))
+    diffSet.setValidatedFail(BigInteger.valueOf(counter.validatedFail))
+    diffSet.setValidatedPass(BigInteger.valueOf(counter.validatedPass))
+  }
   def writeNotes(notes: Seq[String] = Nil) = ()
 }
 /*

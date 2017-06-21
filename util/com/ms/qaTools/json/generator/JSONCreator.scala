@@ -1,39 +1,34 @@
 package com.ms.qaTools.json.generator
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.ms.qaTools.io.DelimitedIterator
-import com.ms.qaTools.io.DelimitedRow
+import com.ms.qaTools.io.rowSource.ColumnDefinitions
 import com.ms.qaTools.tree.generator.ColContext
 import com.ms.qaTools.tree.generator.ColMap
 import com.ms.qaTools.tree.generator.Lookupable
 import com.ms.qaTools.tree.generator.NodeCreator
 import com.ms.qaTools.tree.generator.UnresolvedColQuery
 
-
 case class JSONCreator(creator: NodeCreator[JsonNode, JsonNode]) extends NodeCreator[JsonNode, JsonNode] {
-
-  override val isLocal: Boolean = true
+  val isLocal = true
   protected val anything = null
 
-  override def create(data: DelimitedRow)(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): JsonNode = {
+  def create(data: Seq[String])(implicit colMap: Lookupable, context: ColContext, doc: JsonNode = null): JsonNode =
     creator.create(data)(colMap, context, doc)
-  }
 
   def extractColQueries: Set[UnresolvedColQuery] = creator.extractColQueries.flatMap { _.hierarchy }
   override def toString: String = "JSONCreator(" + creator + ")"
 }
 
 object JSONCreator {
-  def apply(jsonNode: JsonNode): JSONCreator = {
+  def apply(jsonNode: JsonNode): JSONCreator =
     new JSONCreator(JSONNodeCreator(jsonNode))
-  }
 }
 
 object JSONCreatorObj {
-  def apply(jsonNode: JsonNode, rowSource: DelimitedIterator): JsonNode = {
+  def apply(jsonNode: JsonNode, rowSource: Iterator[Seq[String]] with ColumnDefinitions): JsonNode = {
     val creator = JSONCreator(jsonNode)
     implicit val colContext = ColContext(creator.extractColQueries)
-    implicit val colMap = ColMap(rowSource.colNames)
+    implicit val colMap = ColMap(rowSource.colDefs.map(_.name))
     val data = rowSource.next
     creator.create(data)(colMap, colContext, null)
   }

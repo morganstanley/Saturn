@@ -10,6 +10,7 @@ import javax.xml.namespace.QName
 import javax.xml.xpath.XPathConstants
 import org.eclipse.emf.ecore.util.FeatureMapUtil
 import org.w3c.dom.Document
+import scala.language.implicitConversions
 
 package object complexValues {
   type Text = com.ms.qaTools.generated.complexValues.TextComplexValue

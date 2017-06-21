@@ -1,8 +1,11 @@
 package com.ms.qaTools.io.rowSource.delimited
 
-trait Parser {
+import java.io.Closeable
+
+trait Parser extends Closeable {
   def readNext(): Seq[Option[String]]
-}/*
+}
+/*
 Copyright 2017 Morgan Stanley
 
 Licensed under the GNU Lesser General Public License Version 3 (the "License");

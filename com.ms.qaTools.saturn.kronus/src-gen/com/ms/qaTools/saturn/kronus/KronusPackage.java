@@ -76,13 +76,22 @@ public interface KronusPackage extends EPackage
   int TOP_LEVEL_KRONUS__PACKAGE = 0;
 
   /**
+   * The feature id for the '<em><b>Exports</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TOP_LEVEL_KRONUS__EXPORTS = 1;
+
+  /**
    * The feature id for the '<em><b>Kronus</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TOP_LEVEL_KRONUS__KRONUS = 1;
+  int TOP_LEVEL_KRONUS__KRONUS = 2;
 
   /**
    * The number of structural features of the '<em>Top Level Kronus</em>' class.
@@ -91,7 +100,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TOP_LEVEL_KRONUS_FEATURE_COUNT = 2;
+  int TOP_LEVEL_KRONUS_FEATURE_COUNT = 3;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.KronusImpl <em>Kronus</em>}' class.
@@ -104,31 +113,13 @@ public interface KronusPackage extends EPackage
   int KRONUS = 1;
 
   /**
-   * The feature id for the '<em><b>Imports</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int KRONUS__IMPORTS = 0;
-
-  /**
-   * The feature id for the '<em><b>Includes</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int KRONUS__INCLUDES = 1;
-
-  /**
    * The feature id for the '<em><b>Defs</b></em>' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int KRONUS__DEFS = 2;
+  int KRONUS__DEFS = 0;
 
   /**
    * The feature id for the '<em><b>Return</b></em>' containment reference.
@@ -137,7 +128,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int KRONUS__RETURN = 3;
+  int KRONUS__RETURN = 1;
 
   /**
    * The number of structural features of the '<em>Kronus</em>' class.
@@ -146,7 +137,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int KRONUS_FEATURE_COUNT = 4;
+  int KRONUS_FEATURE_COUNT = 2;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.AbstractDefImpl <em>Abstract Def</em>}' class.
@@ -156,16 +147,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getAbstractDef()
    * @generated
    */
-  int ABSTRACT_DEF = 2;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ABSTRACT_DEF__NAME = 0;
+  int ABSTRACT_DEF = 4;
 
   /**
    * The number of structural features of the '<em>Abstract Def</em>' class.
@@ -174,7 +156,108 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ABSTRACT_DEF_FEATURE_COUNT = 1;
+  int ABSTRACT_DEF_FEATURE_COUNT = 0;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.AssignmentImpl <em>Assignment</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.AssignmentImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getAssignment()
+   * @generated
+   */
+  int ASSIGNMENT = 2;
+
+  /**
+   * The feature id for the '<em><b>Lhs</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ASSIGNMENT__LHS = ABSTRACT_DEF_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Lhs Parameter</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ASSIGNMENT__LHS_PARAMETER = ABSTRACT_DEF_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>Rhs</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ASSIGNMENT__RHS = ABSTRACT_DEF_FEATURE_COUNT + 2;
+
+  /**
+   * The feature id for the '<em><b>Rhs Parameter</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ASSIGNMENT__RHS_PARAMETER = ABSTRACT_DEF_FEATURE_COUNT + 3;
+
+  /**
+   * The number of structural features of the '<em>Assignment</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ASSIGNMENT_FEATURE_COUNT = ABSTRACT_DEF_FEATURE_COUNT + 4;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.AnnotatedDefImpl <em>Annotated Def</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.AnnotatedDefImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getAnnotatedDef()
+   * @generated
+   */
+  int ANNOTATED_DEF = 3;
+
+  /**
+   * The feature id for the '<em><b>Hashtags</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ANNOTATED_DEF__HASHTAGS = 0;
+
+  /**
+   * The feature id for the '<em><b>Annotations</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ANNOTATED_DEF__ANNOTATIONS = 1;
+
+  /**
+   * The feature id for the '<em><b>Def</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ANNOTATED_DEF__DEF = 2;
+
+  /**
+   * The number of structural features of the '<em>Annotated Def</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ANNOTATED_DEF_FEATURE_COUNT = 3;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.ReferenceableDefsImpl <em>Referenceable Defs</em>}' class.
@@ -184,7 +267,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getReferenceableDefs()
    * @generated
    */
-  int REFERENCEABLE_DEFS = 3;
+  int REFERENCEABLE_DEFS = 5;
 
   /**
    * The number of structural features of the '<em>Referenceable Defs</em>' class.
@@ -196,14 +279,14 @@ public interface KronusPackage extends EPackage
   int REFERENCEABLE_DEFS_FEATURE_COUNT = 0;
 
   /**
-   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.ValDefImpl <em>Val Def</em>}' class.
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.NamedAbstractDefImpl <em>Named Abstract Def</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see com.ms.qaTools.saturn.kronus.impl.ValDefImpl
-   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getValDef()
+   * @see com.ms.qaTools.saturn.kronus.impl.NamedAbstractDefImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getNamedAbstractDef()
    * @generated
    */
-  int VAL_DEF = 4;
+  int NAMED_ABSTRACT_DEF = 6;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -212,25 +295,127 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int VAL_DEF__NAME = ABSTRACT_DEF__NAME;
+  int NAMED_ABSTRACT_DEF__NAME = ABSTRACT_DEF_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Hashtags</b></em>' containment reference list.
+   * The number of structural features of the '<em>Named Abstract Def</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int VAL_DEF__HASHTAGS = ABSTRACT_DEF_FEATURE_COUNT + 0;
+  int NAMED_ABSTRACT_DEF_FEATURE_COUNT = ABSTRACT_DEF_FEATURE_COUNT + 1;
 
   /**
-   * The feature id for the '<em><b>Annotations</b></em>' containment reference list.
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.NamedRuntimeDefImpl <em>Named Runtime Def</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.NamedRuntimeDefImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getNamedRuntimeDef()
+   * @generated
+   */
+  int NAMED_RUNTIME_DEF = 7;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int VAL_DEF__ANNOTATIONS = ABSTRACT_DEF_FEATURE_COUNT + 1;
+  int NAMED_RUNTIME_DEF__NAME = NAMED_ABSTRACT_DEF__NAME;
+
+  /**
+   * The number of structural features of the '<em>Named Runtime Def</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int NAMED_RUNTIME_DEF_FEATURE_COUNT = NAMED_ABSTRACT_DEF_FEATURE_COUNT + 0;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.TypeInstanceImpl <em>Type Instance</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.TypeInstanceImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getTypeInstance()
+   * @generated
+   */
+  int TYPE_INSTANCE = 8;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TYPE_INSTANCE__NAME = 0;
+
+  /**
+   * The feature id for the '<em><b>Type Parameters</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TYPE_INSTANCE__TYPE_PARAMETERS = 1;
+
+  /**
+   * The number of structural features of the '<em>Type Instance</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TYPE_INSTANCE_FEATURE_COUNT = 2;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl <em>Function Def</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getFunctionDef()
+   * @generated
+   */
+  int FUNCTION_DEF = 9;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int FUNCTION_DEF__NAME = REFERENCEABLE_DEFS_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Type Parameters</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int FUNCTION_DEF__TYPE_PARAMETERS = REFERENCEABLE_DEFS_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>Parameter Defs</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int FUNCTION_DEF__PARAMETER_DEFS = REFERENCEABLE_DEFS_FEATURE_COUNT + 2;
+
+  /**
+   * The feature id for the '<em><b>Return Type</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int FUNCTION_DEF__RETURN_TYPE = REFERENCEABLE_DEFS_FEATURE_COUNT + 3;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' containment reference.
@@ -239,7 +424,118 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int VAL_DEF__VALUE = ABSTRACT_DEF_FEATURE_COUNT + 2;
+  int FUNCTION_DEF__VALUE = REFERENCEABLE_DEFS_FEATURE_COUNT + 4;
+
+  /**
+   * The number of structural features of the '<em>Function Def</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int FUNCTION_DEF_FEATURE_COUNT = REFERENCEABLE_DEFS_FEATURE_COUNT + 5;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.AnnotationDefImpl <em>Annotation Def</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.AnnotationDefImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getAnnotationDef()
+   * @generated
+   */
+  int ANNOTATION_DEF = 10;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ANNOTATION_DEF__NAME = NAMED_RUNTIME_DEF__NAME;
+
+  /**
+   * The feature id for the '<em><b>Parameter Defs</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ANNOTATION_DEF__PARAMETER_DEFS = NAMED_RUNTIME_DEF_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>Annotation Def</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ANNOTATION_DEF_FEATURE_COUNT = NAMED_RUNTIME_DEF_FEATURE_COUNT + 1;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.HashtagDefImpl <em>Hashtag Def</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.HashtagDefImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getHashtagDef()
+   * @generated
+   */
+  int HASHTAG_DEF = 11;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HASHTAG_DEF__NAME = NAMED_ABSTRACT_DEF__NAME;
+
+  /**
+   * The feature id for the '<em><b>Parameter Defs</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HASHTAG_DEF__PARAMETER_DEFS = NAMED_ABSTRACT_DEF_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>Hashtag Def</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HASHTAG_DEF_FEATURE_COUNT = NAMED_ABSTRACT_DEF_FEATURE_COUNT + 1;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.ValDefImpl <em>Val Def</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.ValDefImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getValDef()
+   * @generated
+   */
+  int VAL_DEF = 12;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int VAL_DEF__NAME = REFERENCEABLE_DEFS_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Value</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int VAL_DEF__VALUE = REFERENCEABLE_DEFS_FEATURE_COUNT + 1;
 
   /**
    * The number of structural features of the '<em>Val Def</em>' class.
@@ -248,7 +544,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int VAL_DEF_FEATURE_COUNT = ABSTRACT_DEF_FEATURE_COUNT + 3;
+  int VAL_DEF_FEATURE_COUNT = REFERENCEABLE_DEFS_FEATURE_COUNT + 2;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.PackageDefImpl <em>Package Def</em>}' class.
@@ -258,7 +554,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getPackageDef()
    * @generated
    */
-  int PACKAGE_DEF = 5;
+  int PACKAGE_DEF = 13;
 
   /**
    * The feature id for the '<em><b>Module</b></em>' attribute.
@@ -286,7 +582,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getImportDef()
    * @generated
    */
-  int IMPORT_DEF = 6;
+  int IMPORT_DEF = 14;
 
   /**
    * The feature id for the '<em><b>Module</b></em>' attribute.
@@ -295,7 +591,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int IMPORT_DEF__MODULE = 0;
+  int IMPORT_DEF__MODULE = ABSTRACT_DEF_FEATURE_COUNT + 0;
 
   /**
    * The number of structural features of the '<em>Import Def</em>' class.
@@ -304,7 +600,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int IMPORT_DEF_FEATURE_COUNT = 1;
+  int IMPORT_DEF_FEATURE_COUNT = ABSTRACT_DEF_FEATURE_COUNT + 1;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.IncludeDefImpl <em>Include Def</em>}' class.
@@ -314,16 +610,16 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getIncludeDef()
    * @generated
    */
-  int INCLUDE_DEF = 7;
+  int INCLUDE_DEF = 15;
 
   /**
-   * The feature id for the '<em><b>Module</b></em>' attribute.
+   * The feature id for the '<em><b>Module</b></em>' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int INCLUDE_DEF__MODULE = 0;
+  int INCLUDE_DEF__MODULE = ABSTRACT_DEF_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -332,7 +628,16 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int INCLUDE_DEF__NAME = 1;
+  int INCLUDE_DEF__NAME = ABSTRACT_DEF_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>Reexport</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int INCLUDE_DEF__REEXPORT = ABSTRACT_DEF_FEATURE_COUNT + 2;
 
   /**
    * The number of structural features of the '<em>Include Def</em>' class.
@@ -341,7 +646,166 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int INCLUDE_DEF_FEATURE_COUNT = 2;
+  int INCLUDE_DEF_FEATURE_COUNT = ABSTRACT_DEF_FEATURE_COUNT + 3;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportDefImpl <em>Export Def</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.ExportDefImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportDef()
+   * @generated
+   */
+  int EXPORT_DEF = 16;
+
+  /**
+   * The feature id for the '<em><b>Symbols</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_DEF__SYMBOLS = 0;
+
+  /**
+   * The number of structural features of the '<em>Export Def</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_DEF_FEATURE_COUNT = 1;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportClauseImpl <em>Export Clause</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.ExportClauseImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportClause()
+   * @generated
+   */
+  int EXPORT_CLAUSE = 17;
+
+  /**
+   * The feature id for the '<em><b>Unexport</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_CLAUSE__UNEXPORT = 0;
+
+  /**
+   * The feature id for the '<em><b>Symbol</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_CLAUSE__SYMBOL = 1;
+
+  /**
+   * The number of structural features of the '<em>Export Clause</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_CLAUSE_FEATURE_COUNT = 2;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportSymbolImpl <em>Export Symbol</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.ExportSymbolImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportSymbol()
+   * @generated
+   */
+  int EXPORT_SYMBOL = 18;
+
+  /**
+   * The number of structural features of the '<em>Export Symbol</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_SYMBOL_FEATURE_COUNT = 0;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportAllImpl <em>Export All</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.ExportAllImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportAll()
+   * @generated
+   */
+  int EXPORT_ALL = 19;
+
+  /**
+   * The number of structural features of the '<em>Export All</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_ALL_FEATURE_COUNT = EXPORT_SYMBOL_FEATURE_COUNT + 0;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportHashtagImpl <em>Export Hashtag</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.ExportHashtagImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportHashtag()
+   * @generated
+   */
+  int EXPORT_HASHTAG = 20;
+
+  /**
+   * The feature id for the '<em><b>Ref</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_HASHTAG__REF = EXPORT_SYMBOL_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>Export Hashtag</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_HASHTAG_FEATURE_COUNT = EXPORT_SYMBOL_FEATURE_COUNT + 1;
+
+  /**
+   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportRuntimeNameImpl <em>Export Runtime Name</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ms.qaTools.saturn.kronus.impl.ExportRuntimeNameImpl
+   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportRuntimeName()
+   * @generated
+   */
+  int EXPORT_RUNTIME_NAME = 21;
+
+  /**
+   * The feature id for the '<em><b>Ref</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_RUNTIME_NAME__REF = EXPORT_SYMBOL_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>Export Runtime Name</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPORT_RUNTIME_NAME_FEATURE_COUNT = EXPORT_SYMBOL_FEATURE_COUNT + 1;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.TypeDefImpl <em>Type Def</em>}' class.
@@ -351,7 +815,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getTypeDef()
    * @generated
    */
-  int TYPE_DEF = 8;
+  int TYPE_DEF = 22;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -360,7 +824,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TYPE_DEF__NAME = ABSTRACT_DEF__NAME;
+  int TYPE_DEF__NAME = NAMED_RUNTIME_DEF__NAME;
 
   /**
    * The feature id for the '<em><b>Variance</b></em>' attribute.
@@ -369,7 +833,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TYPE_DEF__VARIANCE = ABSTRACT_DEF_FEATURE_COUNT + 0;
+  int TYPE_DEF__VARIANCE = NAMED_RUNTIME_DEF_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Bounds Hi</b></em>' containment reference.
@@ -378,7 +842,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TYPE_DEF__BOUNDS_HI = ABSTRACT_DEF_FEATURE_COUNT + 1;
+  int TYPE_DEF__BOUNDS_HI = NAMED_RUNTIME_DEF_FEATURE_COUNT + 1;
 
   /**
    * The feature id for the '<em><b>Type Parameters</b></em>' containment reference list.
@@ -387,7 +851,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TYPE_DEF__TYPE_PARAMETERS = ABSTRACT_DEF_FEATURE_COUNT + 2;
+  int TYPE_DEF__TYPE_PARAMETERS = NAMED_RUNTIME_DEF_FEATURE_COUNT + 2;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' containment reference.
@@ -396,7 +860,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TYPE_DEF__VALUE = ABSTRACT_DEF_FEATURE_COUNT + 3;
+  int TYPE_DEF__VALUE = NAMED_RUNTIME_DEF_FEATURE_COUNT + 3;
 
   /**
    * The number of structural features of the '<em>Type Def</em>' class.
@@ -405,7 +869,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TYPE_DEF_FEATURE_COUNT = ABSTRACT_DEF_FEATURE_COUNT + 4;
+  int TYPE_DEF_FEATURE_COUNT = NAMED_RUNTIME_DEF_FEATURE_COUNT + 4;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.TypeValueImpl <em>Type Value</em>}' class.
@@ -415,7 +879,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getTypeValue()
    * @generated
    */
-  int TYPE_VALUE = 9;
+  int TYPE_VALUE = 23;
 
   /**
    * The feature id for the '<em><b>Extensions</b></em>' containment reference list.
@@ -461,7 +925,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getTypeId()
    * @generated
    */
-  int TYPE_ID = 12;
+  int TYPE_ID = 26;
 
   /**
    * The number of structural features of the '<em>Type Id</em>' class.
@@ -480,7 +944,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getTypeName()
    * @generated
    */
-  int TYPE_NAME = 10;
+  int TYPE_NAME = 24;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -508,7 +972,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getTypeRef()
    * @generated
    */
-  int TYPE_REF = 11;
+  int TYPE_REF = 25;
 
   /**
    * The feature id for the '<em><b>Type Ref</b></em>' reference.
@@ -529,190 +993,6 @@ public interface KronusPackage extends EPackage
   int TYPE_REF_FEATURE_COUNT = TYPE_ID_FEATURE_COUNT + 1;
 
   /**
-   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.TypeInstanceImpl <em>Type Instance</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.ms.qaTools.saturn.kronus.impl.TypeInstanceImpl
-   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getTypeInstance()
-   * @generated
-   */
-  int TYPE_INSTANCE = 13;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int TYPE_INSTANCE__NAME = 0;
-
-  /**
-   * The feature id for the '<em><b>Type Parameters</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int TYPE_INSTANCE__TYPE_PARAMETERS = 1;
-
-  /**
-   * The number of structural features of the '<em>Type Instance</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int TYPE_INSTANCE_FEATURE_COUNT = 2;
-
-  /**
-   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl <em>Function Def</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl
-   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getFunctionDef()
-   * @generated
-   */
-  int FUNCTION_DEF = 14;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int FUNCTION_DEF__NAME = ABSTRACT_DEF__NAME;
-
-  /**
-   * The feature id for the '<em><b>Hashtags</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int FUNCTION_DEF__HASHTAGS = ABSTRACT_DEF_FEATURE_COUNT + 0;
-
-  /**
-   * The feature id for the '<em><b>Type Parameters</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int FUNCTION_DEF__TYPE_PARAMETERS = ABSTRACT_DEF_FEATURE_COUNT + 1;
-
-  /**
-   * The feature id for the '<em><b>Parameter Defs</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int FUNCTION_DEF__PARAMETER_DEFS = ABSTRACT_DEF_FEATURE_COUNT + 2;
-
-  /**
-   * The feature id for the '<em><b>Return Type</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int FUNCTION_DEF__RETURN_TYPE = ABSTRACT_DEF_FEATURE_COUNT + 3;
-
-  /**
-   * The feature id for the '<em><b>Value</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int FUNCTION_DEF__VALUE = ABSTRACT_DEF_FEATURE_COUNT + 4;
-
-  /**
-   * The number of structural features of the '<em>Function Def</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int FUNCTION_DEF_FEATURE_COUNT = ABSTRACT_DEF_FEATURE_COUNT + 5;
-
-  /**
-   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.AnnotationDefImpl <em>Annotation Def</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.ms.qaTools.saturn.kronus.impl.AnnotationDefImpl
-   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getAnnotationDef()
-   * @generated
-   */
-  int ANNOTATION_DEF = 15;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ANNOTATION_DEF__NAME = ABSTRACT_DEF__NAME;
-
-  /**
-   * The feature id for the '<em><b>Parameter Defs</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ANNOTATION_DEF__PARAMETER_DEFS = ABSTRACT_DEF_FEATURE_COUNT + 0;
-
-  /**
-   * The number of structural features of the '<em>Annotation Def</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ANNOTATION_DEF_FEATURE_COUNT = ABSTRACT_DEF_FEATURE_COUNT + 1;
-
-  /**
-   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.HashtagDefImpl <em>Hashtag Def</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.ms.qaTools.saturn.kronus.impl.HashtagDefImpl
-   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getHashtagDef()
-   * @generated
-   */
-  int HASHTAG_DEF = 16;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int HASHTAG_DEF__NAME = ABSTRACT_DEF__NAME;
-
-  /**
-   * The feature id for the '<em><b>Parameter Defs</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int HASHTAG_DEF__PARAMETER_DEFS = ABSTRACT_DEF_FEATURE_COUNT + 0;
-
-  /**
-   * The number of structural features of the '<em>Hashtag Def</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int HASHTAG_DEF_FEATURE_COUNT = ABSTRACT_DEF_FEATURE_COUNT + 1;
-
-  /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.CodeAssignmentImpl <em>Code Assignment</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -720,7 +1000,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getCodeAssignment()
    * @generated
    */
-  int CODE_ASSIGNMENT = 17;
+  int CODE_ASSIGNMENT = 27;
 
   /**
    * The number of structural features of the '<em>Code Assignment</em>' class.
@@ -739,7 +1019,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getCodeBlock()
    * @generated
    */
-  int CODE_BLOCK = 18;
+  int CODE_BLOCK = 28;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute.
@@ -767,7 +1047,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getScalaCodeBlock()
    * @generated
    */
-  int SCALA_CODE_BLOCK = 19;
+  int SCALA_CODE_BLOCK = 29;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute.
@@ -804,7 +1084,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getKronusCodeBlock()
    * @generated
    */
-  int KRONUS_CODE_BLOCK = 20;
+  int KRONUS_CODE_BLOCK = 30;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute.
@@ -841,7 +1121,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getSimpleParameterValue()
    * @generated
    */
-  int SIMPLE_PARAMETER_VALUE = 21;
+  int SIMPLE_PARAMETER_VALUE = 31;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -878,7 +1158,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getHashtagCall()
    * @generated
    */
-  int HASHTAG_CALL = 22;
+  int HASHTAG_CALL = 32;
 
   /**
    * The feature id for the '<em><b>Method</b></em>' reference.
@@ -915,7 +1195,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getAnnotationCall()
    * @generated
    */
-  int ANNOTATION_CALL = 23;
+  int ANNOTATION_CALL = 33;
 
   /**
    * The feature id for the '<em><b>Method</b></em>' reference.
@@ -952,7 +1232,25 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getParameterDef()
    * @generated
    */
-  int PARAMETER_DEF = 24;
+  int PARAMETER_DEF = 34;
+
+  /**
+   * The feature id for the '<em><b>Hashtags</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int PARAMETER_DEF__HASHTAGS = REFERENCEABLE_DEFS_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Annotations</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int PARAMETER_DEF__ANNOTATIONS = REFERENCEABLE_DEFS_FEATURE_COUNT + 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -961,7 +1259,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int PARAMETER_DEF__NAME = REFERENCEABLE_DEFS_FEATURE_COUNT + 0;
+  int PARAMETER_DEF__NAME = REFERENCEABLE_DEFS_FEATURE_COUNT + 2;
 
   /**
    * The feature id for the '<em><b>By Name</b></em>' attribute.
@@ -970,7 +1268,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int PARAMETER_DEF__BY_NAME = REFERENCEABLE_DEFS_FEATURE_COUNT + 1;
+  int PARAMETER_DEF__BY_NAME = REFERENCEABLE_DEFS_FEATURE_COUNT + 3;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' containment reference.
@@ -979,7 +1277,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int PARAMETER_DEF__TYPE = REFERENCEABLE_DEFS_FEATURE_COUNT + 2;
+  int PARAMETER_DEF__TYPE = REFERENCEABLE_DEFS_FEATURE_COUNT + 4;
 
   /**
    * The feature id for the '<em><b>List</b></em>' attribute.
@@ -988,7 +1286,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int PARAMETER_DEF__LIST = REFERENCEABLE_DEFS_FEATURE_COUNT + 3;
+  int PARAMETER_DEF__LIST = REFERENCEABLE_DEFS_FEATURE_COUNT + 5;
 
   /**
    * The feature id for the '<em><b>Default Value</b></em>' containment reference.
@@ -997,7 +1295,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int PARAMETER_DEF__DEFAULT_VALUE = REFERENCEABLE_DEFS_FEATURE_COUNT + 4;
+  int PARAMETER_DEF__DEFAULT_VALUE = REFERENCEABLE_DEFS_FEATURE_COUNT + 6;
 
   /**
    * The number of structural features of the '<em>Parameter Def</em>' class.
@@ -1006,7 +1304,7 @@ public interface KronusPackage extends EPackage
    * @generated
    * @ordered
    */
-  int PARAMETER_DEF_FEATURE_COUNT = REFERENCEABLE_DEFS_FEATURE_COUNT + 5;
+  int PARAMETER_DEF_FEATURE_COUNT = REFERENCEABLE_DEFS_FEATURE_COUNT + 7;
 
   /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.ParameterValueImpl <em>Parameter Value</em>}' class.
@@ -1016,7 +1314,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getParameterValue()
    * @generated
    */
-  int PARAMETER_VALUE = 25;
+  int PARAMETER_VALUE = 35;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' containment reference.
@@ -1044,7 +1342,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getKeywordParameterValue()
    * @generated
    */
-  int KEYWORD_PARAMETER_VALUE = 26;
+  int KEYWORD_PARAMETER_VALUE = 36;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' containment reference.
@@ -1081,7 +1379,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getPositionParameterValue()
    * @generated
    */
-  int POSITION_PARAMETER_VALUE = 27;
+  int POSITION_PARAMETER_VALUE = 37;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' containment reference.
@@ -1109,7 +1407,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExpression()
    * @generated
    */
-  int EXPRESSION = 28;
+  int EXPRESSION = 38;
 
   /**
    * The number of structural features of the '<em>Expression</em>' class.
@@ -1128,7 +1426,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getValue()
    * @generated
    */
-  int VALUE = 29;
+  int VALUE = 39;
 
   /**
    * The number of structural features of the '<em>Value</em>' class.
@@ -1147,7 +1445,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getSequence()
    * @generated
    */
-  int SEQUENCE = 30;
+  int SEQUENCE = 40;
 
   /**
    * The feature id for the '<em><b>Values</b></em>' containment reference list.
@@ -1175,7 +1473,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getValRef()
    * @generated
    */
-  int VAL_REF = 31;
+  int VAL_REF = 41;
 
   /**
    * The feature id for the '<em><b>Ref</b></em>' reference.
@@ -1203,7 +1501,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getFunctionCall()
    * @generated
    */
-  int FUNCTION_CALL = 32;
+  int FUNCTION_CALL = 42;
 
   /**
    * The feature id for the '<em><b>Method</b></em>' reference.
@@ -1233,43 +1531,6 @@ public interface KronusPackage extends EPackage
   int FUNCTION_CALL_FEATURE_COUNT = VALUE_FEATURE_COUNT + 2;
 
   /**
-   * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.IncludeRefImpl <em>Include Ref</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see com.ms.qaTools.saturn.kronus.impl.IncludeRefImpl
-   * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getIncludeRef()
-   * @generated
-   */
-  int INCLUDE_REF = 33;
-
-  /**
-   * The feature id for the '<em><b>Include</b></em>' reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int INCLUDE_REF__INCLUDE = VALUE_FEATURE_COUNT + 0;
-
-  /**
-   * The feature id for the '<em><b>Ref</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int INCLUDE_REF__REF = VALUE_FEATURE_COUNT + 1;
-
-  /**
-   * The number of structural features of the '<em>Include Ref</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int INCLUDE_REF_FEATURE_COUNT = VALUE_FEATURE_COUNT + 2;
-
-  /**
    * The meta object id for the '{@link com.ms.qaTools.saturn.kronus.impl.StringLiteralImpl <em>String Literal</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1277,7 +1538,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getStringLiteral()
    * @generated
    */
-  int STRING_LITERAL = 34;
+  int STRING_LITERAL = 43;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -1305,7 +1566,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getDoubleLiteral()
    * @generated
    */
-  int DOUBLE_LITERAL = 35;
+  int DOUBLE_LITERAL = 44;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -1333,7 +1594,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getIntegerLiteral()
    * @generated
    */
-  int INTEGER_LITERAL = 36;
+  int INTEGER_LITERAL = 45;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -1361,7 +1622,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getBooleanLiteral()
    * @generated
    */
-  int BOOLEAN_LITERAL = 37;
+  int BOOLEAN_LITERAL = 46;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -1389,7 +1650,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getUnaryOperation()
    * @generated
    */
-  int UNARY_OPERATION = 38;
+  int UNARY_OPERATION = 47;
 
   /**
    * The feature id for the '<em><b>Op</b></em>' attribute.
@@ -1426,7 +1687,7 @@ public interface KronusPackage extends EPackage
    * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getBinaryOperation()
    * @generated
    */
-  int BINARY_OPERATION = 39;
+  int BINARY_OPERATION = 48;
 
   /**
    * The feature id for the '<em><b>Left</b></em>' containment reference.
@@ -1487,6 +1748,17 @@ public interface KronusPackage extends EPackage
   EReference getTopLevelKronus_Package();
 
   /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.TopLevelKronus#getExports <em>Exports</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Exports</em>'.
+   * @see com.ms.qaTools.saturn.kronus.TopLevelKronus#getExports()
+   * @see #getTopLevelKronus()
+   * @generated
+   */
+  EReference getTopLevelKronus_Exports();
+
+  /**
    * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.kronus.TopLevelKronus#getKronus <em>Kronus</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1506,28 +1778,6 @@ public interface KronusPackage extends EPackage
    * @generated
    */
   EClass getKronus();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.Kronus#getImports <em>Imports</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Imports</em>'.
-   * @see com.ms.qaTools.saturn.kronus.Kronus#getImports()
-   * @see #getKronus()
-   * @generated
-   */
-  EReference getKronus_Imports();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.Kronus#getIncludes <em>Includes</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Includes</em>'.
-   * @see com.ms.qaTools.saturn.kronus.Kronus#getIncludes()
-   * @see #getKronus()
-   * @generated
-   */
-  EReference getKronus_Includes();
 
   /**
    * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.Kronus#getDefs <em>Defs</em>}'.
@@ -1552,6 +1802,103 @@ public interface KronusPackage extends EPackage
   EReference getKronus_Return();
 
   /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.Assignment <em>Assignment</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Assignment</em>'.
+   * @see com.ms.qaTools.saturn.kronus.Assignment
+   * @generated
+   */
+  EClass getAssignment();
+
+  /**
+   * Returns the meta object for the reference '{@link com.ms.qaTools.saturn.kronus.Assignment#getLhs <em>Lhs</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>Lhs</em>'.
+   * @see com.ms.qaTools.saturn.kronus.Assignment#getLhs()
+   * @see #getAssignment()
+   * @generated
+   */
+  EReference getAssignment_Lhs();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.kronus.Assignment#getLhsParameter <em>Lhs Parameter</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Lhs Parameter</em>'.
+   * @see com.ms.qaTools.saturn.kronus.Assignment#getLhsParameter()
+   * @see #getAssignment()
+   * @generated
+   */
+  EAttribute getAssignment_LhsParameter();
+
+  /**
+   * Returns the meta object for the reference '{@link com.ms.qaTools.saturn.kronus.Assignment#getRhs <em>Rhs</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>Rhs</em>'.
+   * @see com.ms.qaTools.saturn.kronus.Assignment#getRhs()
+   * @see #getAssignment()
+   * @generated
+   */
+  EReference getAssignment_Rhs();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.kronus.Assignment#getRhsParameter <em>Rhs Parameter</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Rhs Parameter</em>'.
+   * @see com.ms.qaTools.saturn.kronus.Assignment#getRhsParameter()
+   * @see #getAssignment()
+   * @generated
+   */
+  EAttribute getAssignment_RhsParameter();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.AnnotatedDef <em>Annotated Def</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Annotated Def</em>'.
+   * @see com.ms.qaTools.saturn.kronus.AnnotatedDef
+   * @generated
+   */
+  EClass getAnnotatedDef();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.AnnotatedDef#getHashtags <em>Hashtags</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Hashtags</em>'.
+   * @see com.ms.qaTools.saturn.kronus.AnnotatedDef#getHashtags()
+   * @see #getAnnotatedDef()
+   * @generated
+   */
+  EReference getAnnotatedDef_Hashtags();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.AnnotatedDef#getAnnotations <em>Annotations</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Annotations</em>'.
+   * @see com.ms.qaTools.saturn.kronus.AnnotatedDef#getAnnotations()
+   * @see #getAnnotatedDef()
+   * @generated
+   */
+  EReference getAnnotatedDef_Annotations();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.kronus.AnnotatedDef#getDef <em>Def</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Def</em>'.
+   * @see com.ms.qaTools.saturn.kronus.AnnotatedDef#getDef()
+   * @see #getAnnotatedDef()
+   * @generated
+   */
+  EReference getAnnotatedDef_Def();
+
+  /**
    * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.AbstractDef <em>Abstract Def</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1560,17 +1907,6 @@ public interface KronusPackage extends EPackage
    * @generated
    */
   EClass getAbstractDef();
-
-  /**
-   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.kronus.AbstractDef#getName <em>Name</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Name</em>'.
-   * @see com.ms.qaTools.saturn.kronus.AbstractDef#getName()
-   * @see #getAbstractDef()
-   * @generated
-   */
-  EAttribute getAbstractDef_Name();
 
   /**
    * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.ReferenceableDefs <em>Referenceable Defs</em>}'.
@@ -1583,6 +1919,165 @@ public interface KronusPackage extends EPackage
   EClass getReferenceableDefs();
 
   /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.NamedAbstractDef <em>Named Abstract Def</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Named Abstract Def</em>'.
+   * @see com.ms.qaTools.saturn.kronus.NamedAbstractDef
+   * @generated
+   */
+  EClass getNamedAbstractDef();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.kronus.NamedAbstractDef#getName <em>Name</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Name</em>'.
+   * @see com.ms.qaTools.saturn.kronus.NamedAbstractDef#getName()
+   * @see #getNamedAbstractDef()
+   * @generated
+   */
+  EAttribute getNamedAbstractDef_Name();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.NamedRuntimeDef <em>Named Runtime Def</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Named Runtime Def</em>'.
+   * @see com.ms.qaTools.saturn.kronus.NamedRuntimeDef
+   * @generated
+   */
+  EClass getNamedRuntimeDef();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.TypeInstance <em>Type Instance</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Type Instance</em>'.
+   * @see com.ms.qaTools.saturn.kronus.TypeInstance
+   * @generated
+   */
+  EClass getTypeInstance();
+
+  /**
+   * Returns the meta object for the reference '{@link com.ms.qaTools.saturn.kronus.TypeInstance#getName <em>Name</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>Name</em>'.
+   * @see com.ms.qaTools.saturn.kronus.TypeInstance#getName()
+   * @see #getTypeInstance()
+   * @generated
+   */
+  EReference getTypeInstance_Name();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.TypeInstance#getTypeParameters <em>Type Parameters</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Type Parameters</em>'.
+   * @see com.ms.qaTools.saturn.kronus.TypeInstance#getTypeParameters()
+   * @see #getTypeInstance()
+   * @generated
+   */
+  EReference getTypeInstance_TypeParameters();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.FunctionDef <em>Function Def</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Function Def</em>'.
+   * @see com.ms.qaTools.saturn.kronus.FunctionDef
+   * @generated
+   */
+  EClass getFunctionDef();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.FunctionDef#getTypeParameters <em>Type Parameters</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Type Parameters</em>'.
+   * @see com.ms.qaTools.saturn.kronus.FunctionDef#getTypeParameters()
+   * @see #getFunctionDef()
+   * @generated
+   */
+  EReference getFunctionDef_TypeParameters();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.FunctionDef#getParameterDefs <em>Parameter Defs</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Parameter Defs</em>'.
+   * @see com.ms.qaTools.saturn.kronus.FunctionDef#getParameterDefs()
+   * @see #getFunctionDef()
+   * @generated
+   */
+  EReference getFunctionDef_ParameterDefs();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.kronus.FunctionDef#getReturnType <em>Return Type</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Return Type</em>'.
+   * @see com.ms.qaTools.saturn.kronus.FunctionDef#getReturnType()
+   * @see #getFunctionDef()
+   * @generated
+   */
+  EReference getFunctionDef_ReturnType();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.kronus.FunctionDef#getValue <em>Value</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Value</em>'.
+   * @see com.ms.qaTools.saturn.kronus.FunctionDef#getValue()
+   * @see #getFunctionDef()
+   * @generated
+   */
+  EReference getFunctionDef_Value();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.AnnotationDef <em>Annotation Def</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Annotation Def</em>'.
+   * @see com.ms.qaTools.saturn.kronus.AnnotationDef
+   * @generated
+   */
+  EClass getAnnotationDef();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.AnnotationDef#getParameterDefs <em>Parameter Defs</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Parameter Defs</em>'.
+   * @see com.ms.qaTools.saturn.kronus.AnnotationDef#getParameterDefs()
+   * @see #getAnnotationDef()
+   * @generated
+   */
+  EReference getAnnotationDef_ParameterDefs();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.HashtagDef <em>Hashtag Def</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Hashtag Def</em>'.
+   * @see com.ms.qaTools.saturn.kronus.HashtagDef
+   * @generated
+   */
+  EClass getHashtagDef();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.HashtagDef#getParameterDefs <em>Parameter Defs</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Parameter Defs</em>'.
+   * @see com.ms.qaTools.saturn.kronus.HashtagDef#getParameterDefs()
+   * @see #getHashtagDef()
+   * @generated
+   */
+  EReference getHashtagDef_ParameterDefs();
+
+  /**
    * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.ValDef <em>Val Def</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1591,28 +2086,6 @@ public interface KronusPackage extends EPackage
    * @generated
    */
   EClass getValDef();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.ValDef#getHashtags <em>Hashtags</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Hashtags</em>'.
-   * @see com.ms.qaTools.saturn.kronus.ValDef#getHashtags()
-   * @see #getValDef()
-   * @generated
-   */
-  EReference getValDef_Hashtags();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.ValDef#getAnnotations <em>Annotations</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Annotations</em>'.
-   * @see com.ms.qaTools.saturn.kronus.ValDef#getAnnotations()
-   * @see #getValDef()
-   * @generated
-   */
-  EReference getValDef_Annotations();
 
   /**
    * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.kronus.ValDef#getValue <em>Value</em>}'.
@@ -1678,15 +2151,15 @@ public interface KronusPackage extends EPackage
   EClass getIncludeDef();
 
   /**
-   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.kronus.IncludeDef#getModule <em>Module</em>}'.
+   * Returns the meta object for the reference '{@link com.ms.qaTools.saturn.kronus.IncludeDef#getModule <em>Module</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Module</em>'.
+   * @return the meta object for the reference '<em>Module</em>'.
    * @see com.ms.qaTools.saturn.kronus.IncludeDef#getModule()
    * @see #getIncludeDef()
    * @generated
    */
-  EAttribute getIncludeDef_Module();
+  EReference getIncludeDef_Module();
 
   /**
    * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.kronus.IncludeDef#getName <em>Name</em>}'.
@@ -1698,6 +2171,132 @@ public interface KronusPackage extends EPackage
    * @generated
    */
   EAttribute getIncludeDef_Name();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.kronus.IncludeDef#isReexport <em>Reexport</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Reexport</em>'.
+   * @see com.ms.qaTools.saturn.kronus.IncludeDef#isReexport()
+   * @see #getIncludeDef()
+   * @generated
+   */
+  EAttribute getIncludeDef_Reexport();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.ExportDef <em>Export Def</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Export Def</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportDef
+   * @generated
+   */
+  EClass getExportDef();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.ExportDef#getSymbols <em>Symbols</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Symbols</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportDef#getSymbols()
+   * @see #getExportDef()
+   * @generated
+   */
+  EReference getExportDef_Symbols();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.ExportClause <em>Export Clause</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Export Clause</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportClause
+   * @generated
+   */
+  EClass getExportClause();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.kronus.ExportClause#isUnexport <em>Unexport</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Unexport</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportClause#isUnexport()
+   * @see #getExportClause()
+   * @generated
+   */
+  EAttribute getExportClause_Unexport();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.kronus.ExportClause#getSymbol <em>Symbol</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Symbol</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportClause#getSymbol()
+   * @see #getExportClause()
+   * @generated
+   */
+  EReference getExportClause_Symbol();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.ExportSymbol <em>Export Symbol</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Export Symbol</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportSymbol
+   * @generated
+   */
+  EClass getExportSymbol();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.ExportAll <em>Export All</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Export All</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportAll
+   * @generated
+   */
+  EClass getExportAll();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.ExportHashtag <em>Export Hashtag</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Export Hashtag</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportHashtag
+   * @generated
+   */
+  EClass getExportHashtag();
+
+  /**
+   * Returns the meta object for the reference '{@link com.ms.qaTools.saturn.kronus.ExportHashtag#getRef <em>Ref</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>Ref</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportHashtag#getRef()
+   * @see #getExportHashtag()
+   * @generated
+   */
+  EReference getExportHashtag_Ref();
+
+  /**
+   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.ExportRuntimeName <em>Export Runtime Name</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Export Runtime Name</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportRuntimeName
+   * @generated
+   */
+  EClass getExportRuntimeName();
+
+  /**
+   * Returns the meta object for the reference '{@link com.ms.qaTools.saturn.kronus.ExportRuntimeName#getRef <em>Ref</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>Ref</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ExportRuntimeName#getRef()
+   * @see #getExportRuntimeName()
+   * @generated
+   */
+  EReference getExportRuntimeName_Ref();
 
   /**
    * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.TypeDef <em>Type Def</em>}'.
@@ -1847,145 +2446,6 @@ public interface KronusPackage extends EPackage
    * @generated
    */
   EClass getTypeId();
-
-  /**
-   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.TypeInstance <em>Type Instance</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Type Instance</em>'.
-   * @see com.ms.qaTools.saturn.kronus.TypeInstance
-   * @generated
-   */
-  EClass getTypeInstance();
-
-  /**
-   * Returns the meta object for the reference '{@link com.ms.qaTools.saturn.kronus.TypeInstance#getName <em>Name</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the reference '<em>Name</em>'.
-   * @see com.ms.qaTools.saturn.kronus.TypeInstance#getName()
-   * @see #getTypeInstance()
-   * @generated
-   */
-  EReference getTypeInstance_Name();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.TypeInstance#getTypeParameters <em>Type Parameters</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Type Parameters</em>'.
-   * @see com.ms.qaTools.saturn.kronus.TypeInstance#getTypeParameters()
-   * @see #getTypeInstance()
-   * @generated
-   */
-  EReference getTypeInstance_TypeParameters();
-
-  /**
-   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.FunctionDef <em>Function Def</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Function Def</em>'.
-   * @see com.ms.qaTools.saturn.kronus.FunctionDef
-   * @generated
-   */
-  EClass getFunctionDef();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.FunctionDef#getHashtags <em>Hashtags</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Hashtags</em>'.
-   * @see com.ms.qaTools.saturn.kronus.FunctionDef#getHashtags()
-   * @see #getFunctionDef()
-   * @generated
-   */
-  EReference getFunctionDef_Hashtags();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.FunctionDef#getTypeParameters <em>Type Parameters</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Type Parameters</em>'.
-   * @see com.ms.qaTools.saturn.kronus.FunctionDef#getTypeParameters()
-   * @see #getFunctionDef()
-   * @generated
-   */
-  EReference getFunctionDef_TypeParameters();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.FunctionDef#getParameterDefs <em>Parameter Defs</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Parameter Defs</em>'.
-   * @see com.ms.qaTools.saturn.kronus.FunctionDef#getParameterDefs()
-   * @see #getFunctionDef()
-   * @generated
-   */
-  EReference getFunctionDef_ParameterDefs();
-
-  /**
-   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.kronus.FunctionDef#getReturnType <em>Return Type</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Return Type</em>'.
-   * @see com.ms.qaTools.saturn.kronus.FunctionDef#getReturnType()
-   * @see #getFunctionDef()
-   * @generated
-   */
-  EReference getFunctionDef_ReturnType();
-
-  /**
-   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.kronus.FunctionDef#getValue <em>Value</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Value</em>'.
-   * @see com.ms.qaTools.saturn.kronus.FunctionDef#getValue()
-   * @see #getFunctionDef()
-   * @generated
-   */
-  EReference getFunctionDef_Value();
-
-  /**
-   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.AnnotationDef <em>Annotation Def</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Annotation Def</em>'.
-   * @see com.ms.qaTools.saturn.kronus.AnnotationDef
-   * @generated
-   */
-  EClass getAnnotationDef();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.AnnotationDef#getParameterDefs <em>Parameter Defs</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Parameter Defs</em>'.
-   * @see com.ms.qaTools.saturn.kronus.AnnotationDef#getParameterDefs()
-   * @see #getAnnotationDef()
-   * @generated
-   */
-  EReference getAnnotationDef_ParameterDefs();
-
-  /**
-   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.HashtagDef <em>Hashtag Def</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Hashtag Def</em>'.
-   * @see com.ms.qaTools.saturn.kronus.HashtagDef
-   * @generated
-   */
-  EClass getHashtagDef();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.HashtagDef#getParameterDefs <em>Parameter Defs</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Parameter Defs</em>'.
-   * @see com.ms.qaTools.saturn.kronus.HashtagDef#getParameterDefs()
-   * @see #getHashtagDef()
-   * @generated
-   */
-  EReference getHashtagDef_ParameterDefs();
 
   /**
    * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.CodeAssignment <em>Code Assignment</em>}'.
@@ -2165,6 +2625,28 @@ public interface KronusPackage extends EPackage
    * @generated
    */
   EClass getParameterDef();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.ParameterDef#getHashtags <em>Hashtags</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Hashtags</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ParameterDef#getHashtags()
+   * @see #getParameterDef()
+   * @generated
+   */
+  EReference getParameterDef_Hashtags();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link com.ms.qaTools.saturn.kronus.ParameterDef#getAnnotations <em>Annotations</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Annotations</em>'.
+   * @see com.ms.qaTools.saturn.kronus.ParameterDef#getAnnotations()
+   * @see #getParameterDef()
+   * @generated
+   */
+  EReference getParameterDef_Annotations();
 
   /**
    * Returns the meta object for the attribute '{@link com.ms.qaTools.saturn.kronus.ParameterDef#getName <em>Name</em>}'.
@@ -2368,38 +2850,6 @@ public interface KronusPackage extends EPackage
   EReference getFunctionCall_ParameterValues();
 
   /**
-   * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.IncludeRef <em>Include Ref</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Include Ref</em>'.
-   * @see com.ms.qaTools.saturn.kronus.IncludeRef
-   * @generated
-   */
-  EClass getIncludeRef();
-
-  /**
-   * Returns the meta object for the reference '{@link com.ms.qaTools.saturn.kronus.IncludeRef#getInclude <em>Include</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the reference '<em>Include</em>'.
-   * @see com.ms.qaTools.saturn.kronus.IncludeRef#getInclude()
-   * @see #getIncludeRef()
-   * @generated
-   */
-  EReference getIncludeRef_Include();
-
-  /**
-   * Returns the meta object for the containment reference '{@link com.ms.qaTools.saturn.kronus.IncludeRef#getRef <em>Ref</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Ref</em>'.
-   * @see com.ms.qaTools.saturn.kronus.IncludeRef#getRef()
-   * @see #getIncludeRef()
-   * @generated
-   */
-  EReference getIncludeRef_Ref();
-
-  /**
    * Returns the meta object for class '{@link com.ms.qaTools.saturn.kronus.StringLiteral <em>String Literal</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -2600,6 +3050,14 @@ public interface KronusPackage extends EPackage
     EReference TOP_LEVEL_KRONUS__PACKAGE = eINSTANCE.getTopLevelKronus_Package();
 
     /**
+     * The meta object literal for the '<em><b>Exports</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference TOP_LEVEL_KRONUS__EXPORTS = eINSTANCE.getTopLevelKronus_Exports();
+
+    /**
      * The meta object literal for the '<em><b>Kronus</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -2618,22 +3076,6 @@ public interface KronusPackage extends EPackage
     EClass KRONUS = eINSTANCE.getKronus();
 
     /**
-     * The meta object literal for the '<em><b>Imports</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference KRONUS__IMPORTS = eINSTANCE.getKronus_Imports();
-
-    /**
-     * The meta object literal for the '<em><b>Includes</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference KRONUS__INCLUDES = eINSTANCE.getKronus_Includes();
-
-    /**
      * The meta object literal for the '<em><b>Defs</b></em>' containment reference list feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -2650,6 +3092,82 @@ public interface KronusPackage extends EPackage
     EReference KRONUS__RETURN = eINSTANCE.getKronus_Return();
 
     /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.AssignmentImpl <em>Assignment</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.AssignmentImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getAssignment()
+     * @generated
+     */
+    EClass ASSIGNMENT = eINSTANCE.getAssignment();
+
+    /**
+     * The meta object literal for the '<em><b>Lhs</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ASSIGNMENT__LHS = eINSTANCE.getAssignment_Lhs();
+
+    /**
+     * The meta object literal for the '<em><b>Lhs Parameter</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute ASSIGNMENT__LHS_PARAMETER = eINSTANCE.getAssignment_LhsParameter();
+
+    /**
+     * The meta object literal for the '<em><b>Rhs</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ASSIGNMENT__RHS = eINSTANCE.getAssignment_Rhs();
+
+    /**
+     * The meta object literal for the '<em><b>Rhs Parameter</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute ASSIGNMENT__RHS_PARAMETER = eINSTANCE.getAssignment_RhsParameter();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.AnnotatedDefImpl <em>Annotated Def</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.AnnotatedDefImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getAnnotatedDef()
+     * @generated
+     */
+    EClass ANNOTATED_DEF = eINSTANCE.getAnnotatedDef();
+
+    /**
+     * The meta object literal for the '<em><b>Hashtags</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ANNOTATED_DEF__HASHTAGS = eINSTANCE.getAnnotatedDef_Hashtags();
+
+    /**
+     * The meta object literal for the '<em><b>Annotations</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ANNOTATED_DEF__ANNOTATIONS = eINSTANCE.getAnnotatedDef_Annotations();
+
+    /**
+     * The meta object literal for the '<em><b>Def</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ANNOTATED_DEF__DEF = eINSTANCE.getAnnotatedDef_Def();
+
+    /**
      * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.AbstractDefImpl <em>Abstract Def</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -2658,14 +3176,6 @@ public interface KronusPackage extends EPackage
      * @generated
      */
     EClass ABSTRACT_DEF = eINSTANCE.getAbstractDef();
-
-    /**
-     * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute ABSTRACT_DEF__NAME = eINSTANCE.getAbstractDef_Name();
 
     /**
      * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.ReferenceableDefsImpl <em>Referenceable Defs</em>}' class.
@@ -2678,6 +3188,138 @@ public interface KronusPackage extends EPackage
     EClass REFERENCEABLE_DEFS = eINSTANCE.getReferenceableDefs();
 
     /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.NamedAbstractDefImpl <em>Named Abstract Def</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.NamedAbstractDefImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getNamedAbstractDef()
+     * @generated
+     */
+    EClass NAMED_ABSTRACT_DEF = eINSTANCE.getNamedAbstractDef();
+
+    /**
+     * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute NAMED_ABSTRACT_DEF__NAME = eINSTANCE.getNamedAbstractDef_Name();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.NamedRuntimeDefImpl <em>Named Runtime Def</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.NamedRuntimeDefImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getNamedRuntimeDef()
+     * @generated
+     */
+    EClass NAMED_RUNTIME_DEF = eINSTANCE.getNamedRuntimeDef();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.TypeInstanceImpl <em>Type Instance</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.TypeInstanceImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getTypeInstance()
+     * @generated
+     */
+    EClass TYPE_INSTANCE = eINSTANCE.getTypeInstance();
+
+    /**
+     * The meta object literal for the '<em><b>Name</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference TYPE_INSTANCE__NAME = eINSTANCE.getTypeInstance_Name();
+
+    /**
+     * The meta object literal for the '<em><b>Type Parameters</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference TYPE_INSTANCE__TYPE_PARAMETERS = eINSTANCE.getTypeInstance_TypeParameters();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl <em>Function Def</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getFunctionDef()
+     * @generated
+     */
+    EClass FUNCTION_DEF = eINSTANCE.getFunctionDef();
+
+    /**
+     * The meta object literal for the '<em><b>Type Parameters</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference FUNCTION_DEF__TYPE_PARAMETERS = eINSTANCE.getFunctionDef_TypeParameters();
+
+    /**
+     * The meta object literal for the '<em><b>Parameter Defs</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference FUNCTION_DEF__PARAMETER_DEFS = eINSTANCE.getFunctionDef_ParameterDefs();
+
+    /**
+     * The meta object literal for the '<em><b>Return Type</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference FUNCTION_DEF__RETURN_TYPE = eINSTANCE.getFunctionDef_ReturnType();
+
+    /**
+     * The meta object literal for the '<em><b>Value</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference FUNCTION_DEF__VALUE = eINSTANCE.getFunctionDef_Value();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.AnnotationDefImpl <em>Annotation Def</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.AnnotationDefImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getAnnotationDef()
+     * @generated
+     */
+    EClass ANNOTATION_DEF = eINSTANCE.getAnnotationDef();
+
+    /**
+     * The meta object literal for the '<em><b>Parameter Defs</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ANNOTATION_DEF__PARAMETER_DEFS = eINSTANCE.getAnnotationDef_ParameterDefs();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.HashtagDefImpl <em>Hashtag Def</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.HashtagDefImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getHashtagDef()
+     * @generated
+     */
+    EClass HASHTAG_DEF = eINSTANCE.getHashtagDef();
+
+    /**
+     * The meta object literal for the '<em><b>Parameter Defs</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference HASHTAG_DEF__PARAMETER_DEFS = eINSTANCE.getHashtagDef_ParameterDefs();
+
+    /**
      * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.ValDefImpl <em>Val Def</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -2686,22 +3328,6 @@ public interface KronusPackage extends EPackage
      * @generated
      */
     EClass VAL_DEF = eINSTANCE.getValDef();
-
-    /**
-     * The meta object literal for the '<em><b>Hashtags</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference VAL_DEF__HASHTAGS = eINSTANCE.getValDef_Hashtags();
-
-    /**
-     * The meta object literal for the '<em><b>Annotations</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference VAL_DEF__ANNOTATIONS = eINSTANCE.getValDef_Annotations();
 
     /**
      * The meta object literal for the '<em><b>Value</b></em>' containment reference feature.
@@ -2758,12 +3384,12 @@ public interface KronusPackage extends EPackage
     EClass INCLUDE_DEF = eINSTANCE.getIncludeDef();
 
     /**
-     * The meta object literal for the '<em><b>Module</b></em>' attribute feature.
+     * The meta object literal for the '<em><b>Module</b></em>' reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute INCLUDE_DEF__MODULE = eINSTANCE.getIncludeDef_Module();
+    EReference INCLUDE_DEF__MODULE = eINSTANCE.getIncludeDef_Module();
 
     /**
      * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
@@ -2772,6 +3398,114 @@ public interface KronusPackage extends EPackage
      * @generated
      */
     EAttribute INCLUDE_DEF__NAME = eINSTANCE.getIncludeDef_Name();
+
+    /**
+     * The meta object literal for the '<em><b>Reexport</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute INCLUDE_DEF__REEXPORT = eINSTANCE.getIncludeDef_Reexport();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportDefImpl <em>Export Def</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.ExportDefImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportDef()
+     * @generated
+     */
+    EClass EXPORT_DEF = eINSTANCE.getExportDef();
+
+    /**
+     * The meta object literal for the '<em><b>Symbols</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference EXPORT_DEF__SYMBOLS = eINSTANCE.getExportDef_Symbols();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportClauseImpl <em>Export Clause</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.ExportClauseImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportClause()
+     * @generated
+     */
+    EClass EXPORT_CLAUSE = eINSTANCE.getExportClause();
+
+    /**
+     * The meta object literal for the '<em><b>Unexport</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute EXPORT_CLAUSE__UNEXPORT = eINSTANCE.getExportClause_Unexport();
+
+    /**
+     * The meta object literal for the '<em><b>Symbol</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference EXPORT_CLAUSE__SYMBOL = eINSTANCE.getExportClause_Symbol();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportSymbolImpl <em>Export Symbol</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.ExportSymbolImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportSymbol()
+     * @generated
+     */
+    EClass EXPORT_SYMBOL = eINSTANCE.getExportSymbol();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportAllImpl <em>Export All</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.ExportAllImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportAll()
+     * @generated
+     */
+    EClass EXPORT_ALL = eINSTANCE.getExportAll();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportHashtagImpl <em>Export Hashtag</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.ExportHashtagImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportHashtag()
+     * @generated
+     */
+    EClass EXPORT_HASHTAG = eINSTANCE.getExportHashtag();
+
+    /**
+     * The meta object literal for the '<em><b>Ref</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference EXPORT_HASHTAG__REF = eINSTANCE.getExportHashtag_Ref();
+
+    /**
+     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.ExportRuntimeNameImpl <em>Export Runtime Name</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ms.qaTools.saturn.kronus.impl.ExportRuntimeNameImpl
+     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getExportRuntimeName()
+     * @generated
+     */
+    EClass EXPORT_RUNTIME_NAME = eINSTANCE.getExportRuntimeName();
+
+    /**
+     * The meta object literal for the '<em><b>Ref</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference EXPORT_RUNTIME_NAME__REF = eINSTANCE.getExportRuntimeName_Ref();
 
     /**
      * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.TypeDefImpl <em>Type Def</em>}' class.
@@ -2894,118 +3628,6 @@ public interface KronusPackage extends EPackage
      * @generated
      */
     EClass TYPE_ID = eINSTANCE.getTypeId();
-
-    /**
-     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.TypeInstanceImpl <em>Type Instance</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see com.ms.qaTools.saturn.kronus.impl.TypeInstanceImpl
-     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getTypeInstance()
-     * @generated
-     */
-    EClass TYPE_INSTANCE = eINSTANCE.getTypeInstance();
-
-    /**
-     * The meta object literal for the '<em><b>Name</b></em>' reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference TYPE_INSTANCE__NAME = eINSTANCE.getTypeInstance_Name();
-
-    /**
-     * The meta object literal for the '<em><b>Type Parameters</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference TYPE_INSTANCE__TYPE_PARAMETERS = eINSTANCE.getTypeInstance_TypeParameters();
-
-    /**
-     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl <em>Function Def</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see com.ms.qaTools.saturn.kronus.impl.FunctionDefImpl
-     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getFunctionDef()
-     * @generated
-     */
-    EClass FUNCTION_DEF = eINSTANCE.getFunctionDef();
-
-    /**
-     * The meta object literal for the '<em><b>Hashtags</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference FUNCTION_DEF__HASHTAGS = eINSTANCE.getFunctionDef_Hashtags();
-
-    /**
-     * The meta object literal for the '<em><b>Type Parameters</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference FUNCTION_DEF__TYPE_PARAMETERS = eINSTANCE.getFunctionDef_TypeParameters();
-
-    /**
-     * The meta object literal for the '<em><b>Parameter Defs</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference FUNCTION_DEF__PARAMETER_DEFS = eINSTANCE.getFunctionDef_ParameterDefs();
-
-    /**
-     * The meta object literal for the '<em><b>Return Type</b></em>' containment reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference FUNCTION_DEF__RETURN_TYPE = eINSTANCE.getFunctionDef_ReturnType();
-
-    /**
-     * The meta object literal for the '<em><b>Value</b></em>' containment reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference FUNCTION_DEF__VALUE = eINSTANCE.getFunctionDef_Value();
-
-    /**
-     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.AnnotationDefImpl <em>Annotation Def</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see com.ms.qaTools.saturn.kronus.impl.AnnotationDefImpl
-     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getAnnotationDef()
-     * @generated
-     */
-    EClass ANNOTATION_DEF = eINSTANCE.getAnnotationDef();
-
-    /**
-     * The meta object literal for the '<em><b>Parameter Defs</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference ANNOTATION_DEF__PARAMETER_DEFS = eINSTANCE.getAnnotationDef_ParameterDefs();
-
-    /**
-     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.HashtagDefImpl <em>Hashtag Def</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see com.ms.qaTools.saturn.kronus.impl.HashtagDefImpl
-     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getHashtagDef()
-     * @generated
-     */
-    EClass HASHTAG_DEF = eINSTANCE.getHashtagDef();
-
-    /**
-     * The meta object literal for the '<em><b>Parameter Defs</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference HASHTAG_DEF__PARAMETER_DEFS = eINSTANCE.getHashtagDef_ParameterDefs();
 
     /**
      * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.CodeAssignmentImpl <em>Code Assignment</em>}' class.
@@ -3158,6 +3780,22 @@ public interface KronusPackage extends EPackage
      * @generated
      */
     EClass PARAMETER_DEF = eINSTANCE.getParameterDef();
+
+    /**
+     * The meta object literal for the '<em><b>Hashtags</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference PARAMETER_DEF__HASHTAGS = eINSTANCE.getParameterDef_Hashtags();
+
+    /**
+     * The meta object literal for the '<em><b>Annotations</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference PARAMETER_DEF__ANNOTATIONS = eINSTANCE.getParameterDef_Annotations();
 
     /**
      * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
@@ -3326,32 +3964,6 @@ public interface KronusPackage extends EPackage
      * @generated
      */
     EReference FUNCTION_CALL__PARAMETER_VALUES = eINSTANCE.getFunctionCall_ParameterValues();
-
-    /**
-     * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.IncludeRefImpl <em>Include Ref</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see com.ms.qaTools.saturn.kronus.impl.IncludeRefImpl
-     * @see com.ms.qaTools.saturn.kronus.impl.KronusPackageImpl#getIncludeRef()
-     * @generated
-     */
-    EClass INCLUDE_REF = eINSTANCE.getIncludeRef();
-
-    /**
-     * The meta object literal for the '<em><b>Include</b></em>' reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference INCLUDE_REF__INCLUDE = eINSTANCE.getIncludeRef_Include();
-
-    /**
-     * The meta object literal for the '<em><b>Ref</b></em>' containment reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference INCLUDE_REF__REF = eINSTANCE.getIncludeRef_Ref();
 
     /**
      * The meta object literal for the '{@link com.ms.qaTools.saturn.kronus.impl.StringLiteralImpl <em>String Literal</em>}' class.

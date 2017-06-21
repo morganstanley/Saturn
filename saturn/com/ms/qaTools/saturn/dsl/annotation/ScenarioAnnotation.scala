@@ -4,9 +4,9 @@ import com.ms.qaTools.saturn.kronus.runtime.ConstellationDecoration
 import com.ms.qaTools.saturn.kronus.runtime.DynamicAnnotation
 import com.ms.qaTools.saturn.runtime.WriteOnlyJsonFormat
 import com.ms.qaTools.saturn.util.Util
-import com.ms.qaTools.toolkit.Status
+import com.ms.qaTools.{toolkit => tk}
 
-import spray.json._
+import spray.json._, DefaultJsonProtocol._
 
 sealed trait OnResultStatus
 case object OnPassResultStatus extends OnResultStatus
@@ -15,7 +15,7 @@ case object OnAnyResultStatus extends OnResultStatus
 
 object OnResultStatus {
   implicit object JsonFormat extends WriteOnlyJsonFormat[OnResultStatus] {
-    def write(obj: OnResultStatus) = JsString(obj.toString)
+    def write(obj: OnResultStatus) = obj.toString.toJson
   }
 }
 
@@ -39,13 +39,13 @@ case class ScenarioAnnotation(
   ignored: Boolean                = false) extends Annotation with DynamicAnnotation {
 
   //  rc.appendScenarioAnnotation(this)
-  def expandElement(s: Status) =
+  def expandElement(s: tk.Status) =
     //to not break the model...
-    if(expandOnPass && s.passed) true
+    if(expandOnPass && s == tk.Passed) true
     else
       expandOnStatus.map{
-        case OnPassResultStatus => s.passed
-        case OnFailResultStatus => s.failed
+        case OnPassResultStatus => s == tk.Passed
+        case OnFailResultStatus => s == tk.Failed
         case OnAnyResultStatus  => true
       }.getOrElse(false)
 
@@ -58,19 +58,11 @@ object ALMMapping {
     import DefaultJsonProtocol._
     jsonFormat3(apply)
   }
-
-  protected val RunGroupIDRegex = """(\w+)/(\w+):(\w+)\s?.*""".r
-  def fromRunGroupID(s: String): Option[ALMMapping] = Util.parseRunGroupID(s).map((apply _).tupled)
 }
 
 case class ALMMapping(domain: String, project: String, id: String) extends Annotation with DynamicAnnotation {
   override def decorationType = ConstellationDecoration.Type("ALM.Mapping")
   def decorationValue = this.toJson
-
-  def toCode: String = {
-    import scala.reflect.runtime.universe._
-    s"${this.getClass.getName}(${Literal(Constant(domain))}, ${Literal(Constant(project))}, ${Literal(Constant(id))})"
-  }
 }
 /*
 Copyright 2017 Morgan Stanley

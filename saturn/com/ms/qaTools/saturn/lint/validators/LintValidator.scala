@@ -1,10 +1,17 @@
 package com.ms.qaTools.saturn.lint.validators
 
 import org.eclipse.emf.ecore.EObject
+
+import com.ms.qaTools.saturn.lint.ResultOK
 import com.ms.qaTools.saturn.lint.SaturnLintRuleResult
 
 trait LintValidator {
-  def validate(eObject:EObject):Seq[SaturnLintRuleResult]
+  val rule: String
+  val description: String
+  def validate(eObject: EObject): Seq[SaturnLintRuleResult]
+  def returnRuleResults(results: Seq[SaturnLintRuleResult]): Seq[SaturnLintRuleResult] = {
+    if (results.isEmpty) Seq(ResultOK(rule, description)) else results
+  }
 }/*
 Copyright 2017 Morgan Stanley
 

@@ -23,6 +23,7 @@ import com.ms.qaTools.saturn.exception.exception;
 import com.ms.qaTools.saturn.types.AbstractAnnotation;
 import com.ms.qaTools.saturn.types.AbstractRepetitionHandler;
 import com.ms.qaTools.saturn.types.AbstractRunGroupModifier;
+import com.ms.qaTools.saturn.types.AlmId;
 import com.ms.qaTools.saturn.types.NamedResourceDefinition;
 import com.ms.qaTools.saturn.types.SaturnStatusConditionEnum;
 import com.ms.qaTools.saturn.types.SaturnStatusEnum;
@@ -149,6 +150,16 @@ public abstract class AbstractRunGroupImpl extends EObjectImpl implements Abstra
    * @ordered
    */
   protected EList<IncludeFile>                     includeFiles;
+
+  /**
+   * The cached value of the '{@link #getAlmId() <em>Alm Id</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getAlmId()
+   * @generated
+   * @ordered
+   */
+  protected AlmId almId;
 
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
@@ -640,6 +651,54 @@ public abstract class AbstractRunGroupImpl extends EObjectImpl implements Abstra
   }
 
   /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public AlmId getAlmId()
+  {
+    return almId;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public NotificationChain basicSetAlmId(AlmId newAlmId, NotificationChain msgs)
+  {
+    AlmId oldAlmId = almId;
+    almId = newAlmId;
+    if (eNotificationRequired())
+    {
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, SaturnPackage.ABSTRACT_RUN_GROUP__ALM_ID, oldAlmId, newAlmId);
+      if (msgs == null) msgs = notification; else msgs.add(notification);
+    }
+    return msgs;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setAlmId(AlmId newAlmId)
+  {
+    if (newAlmId != almId)
+    {
+      NotificationChain msgs = null;
+      if (almId != null)
+        msgs = ((InternalEObject)almId).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - SaturnPackage.ABSTRACT_RUN_GROUP__ALM_ID, null, msgs);
+      if (newAlmId != null)
+        msgs = ((InternalEObject)newAlmId).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - SaturnPackage.ABSTRACT_RUN_GROUP__ALM_ID, null, msgs);
+      msgs = basicSetAlmId(newAlmId, msgs);
+      if (msgs != null) msgs.dispatch();
+    }
+    else if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, SaturnPackage.ABSTRACT_RUN_GROUP__ALM_ID, newAlmId, newAlmId));
+  }
+
+  /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * @generated
    */
@@ -1122,6 +1181,8 @@ public abstract class AbstractRunGroupImpl extends EObjectImpl implements Abstra
         return ((InternalEList<?>)getParameters()).basicRemove(otherEnd, msgs);
       case SaturnPackage.ABSTRACT_RUN_GROUP__INCLUDE_FILES:
         return ((InternalEList<?>)getIncludeFiles()).basicRemove(otherEnd, msgs);
+      case SaturnPackage.ABSTRACT_RUN_GROUP__ALM_ID:
+        return basicSetAlmId(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -1153,6 +1214,8 @@ public abstract class AbstractRunGroupImpl extends EObjectImpl implements Abstra
         return getParameters();
       case SaturnPackage.ABSTRACT_RUN_GROUP__INCLUDE_FILES:
         return getIncludeFiles();
+      case SaturnPackage.ABSTRACT_RUN_GROUP__ALM_ID:
+        return getAlmId();
       case SaturnPackage.ABSTRACT_RUN_GROUP__NAME:
         return getName();
       case SaturnPackage.ABSTRACT_RUN_GROUP__ID:
@@ -1222,6 +1285,9 @@ public abstract class AbstractRunGroupImpl extends EObjectImpl implements Abstra
       case SaturnPackage.ABSTRACT_RUN_GROUP__INCLUDE_FILES:
         getIncludeFiles().clear();
         getIncludeFiles().addAll((Collection<? extends IncludeFile>)newValue);
+        return;
+      case SaturnPackage.ABSTRACT_RUN_GROUP__ALM_ID:
+        setAlmId((AlmId)newValue);
         return;
       case SaturnPackage.ABSTRACT_RUN_GROUP__NAME:
         setName((String)newValue);
@@ -1296,6 +1362,9 @@ public abstract class AbstractRunGroupImpl extends EObjectImpl implements Abstra
       case SaturnPackage.ABSTRACT_RUN_GROUP__INCLUDE_FILES:
         getIncludeFiles().clear();
         return;
+      case SaturnPackage.ABSTRACT_RUN_GROUP__ALM_ID:
+        setAlmId((AlmId)null);
+        return;
       case SaturnPackage.ABSTRACT_RUN_GROUP__NAME:
         setName(NAME_EDEFAULT);
         return;
@@ -1360,6 +1429,8 @@ public abstract class AbstractRunGroupImpl extends EObjectImpl implements Abstra
         return parameters != null && !parameters.isEmpty();
       case SaturnPackage.ABSTRACT_RUN_GROUP__INCLUDE_FILES:
         return includeFiles != null && !includeFiles.isEmpty();
+      case SaturnPackage.ABSTRACT_RUN_GROUP__ALM_ID:
+        return almId != null;
       case SaturnPackage.ABSTRACT_RUN_GROUP__NAME:
         return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
       case SaturnPackage.ABSTRACT_RUN_GROUP__ID:

@@ -5,7 +5,6 @@ import java.io.File
 import java.io.InputStream
 import java.io.FileInputStream
 import scala.collection.JavaConversions._
-import scala.collection.JavaConverters._
 import org.apache.commons.codec.binary.Base64
 import com.google.protobuf.ByteString
 import com.google.protobuf.Message
@@ -20,10 +19,7 @@ import com.google.protobuf.DescriptorProtos.FileDescriptorProto
 import com.google.protobuf.DescriptorProtos.DescriptorProto
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto
 
-
-
 package object protobuf {
-
   private val repeatingFieldName = """(.*)\[([0-9]+)\]""".r
   private def parseFieldName(field: String): (String, Option[Int]) = {
     repeatingFieldName findFirstIn field match {
@@ -75,8 +71,10 @@ package object protobuf {
       val field = getField(f.head, b)
       val newv = value0(if (f.size > 1) setField0(f.tail, field._3.asInstanceOf[Message].toBuilder()) else v)
       if (field._2.isRepeated()) {
-        if (index.isDefined) b.setRepeatedField(field._2, index.get - 1, newv)
-        else b.addRepeatedField(field._2, newv)
+        index match {
+          case Some(i) => b.setRepeatedField(field._2, i - 1, newv)
+          case None    => b.addRepeatedField(field._2, newv)
+        }
       } else {
         //if (field._2.isRequired() && newv == null) throw new Exception("Can't set to null on a required field " + field._2.getName())
         b.setField(field._2, newv)
@@ -90,7 +88,7 @@ package object protobuf {
       case JavaType.MESSAGE => s
       case JavaType.BOOLEAN => s == "true"
       case JavaType.BYTE_STRING => { ByteString.copyFrom(Base64.decodeBase64(s.getBytes())) }
-      case JavaType.DOUBLE => try { s.toDouble } catch { case e => throw new NumberFormatException("Invalid Double Number Specified: " + s.toString()) }
+      case JavaType.DOUBLE => try { s.toDouble } catch { case e: Throwable => throw new NumberFormatException("Invalid Double Number Specified: " + s.toString()) }
       case JavaType.ENUM => {
         val e: EnumDescriptor = fd.getEnumType()
         e.findValueByName(s) match {
@@ -98,9 +96,9 @@ package object protobuf {
           case _ => e.findValueByName(s)
         }
       }
-      case JavaType.FLOAT => try { s.toFloat } catch { case e => throw new NumberFormatException("Invalid Float Number Specified: " + s.toString()) }
-      case JavaType.INT => try { s.toInt } catch { case e => throw new NumberFormatException("Invalid Integer Number Specified: " + s.toString()) }
-      case JavaType.LONG => try { s.toLong } catch { case e => throw new NumberFormatException("Invalid Long Number Specified: " + s.toString()) }
+      case JavaType.FLOAT => try { s.toFloat } catch { case _: Throwable => throw new NumberFormatException("Invalid Float Number Specified: " + s.toString()) }
+      case JavaType.INT   => try { s.toInt }   catch { case _: Throwable => throw new NumberFormatException("Invalid Integer Number Specified: " + s.toString()) }
+      case JavaType.LONG  => try { s.toLong }  catch { case _: Throwable => throw new NumberFormatException("Invalid Long Number Specified: " + s.toString()) }
       case JavaType.STRING => s.toString()
     }
   }
@@ -134,16 +132,14 @@ package object protobuf {
     newDescriptorBuilder.build()
   }
 
-  def getDependencyFileDescriptor(fdp: FileDescriptorProto, inputStream: InputStream, parentFolder: File): Array[FileDescriptor] = {
-    val fileDescriptors = fdp.getDependencyList().toArray().foldLeft(Array[FileDescriptor]())((fileDescriptorArray, dependency) => {
+  def getDependencyFileDescriptor(fdp: FileDescriptorProto, inputStream: InputStream, parentFolder: File): Array[FileDescriptor] =
+    fdp.getDependencyList().toArray().foldLeft(Array[FileDescriptor]())((fileDescriptorArray, dependency) => {
       val l = dependency.toString.replaceAll(".proto", ".desc")
       val fds = DescriptorProtos.FileDescriptorSet.parseFrom(new FileInputStream(parentFolder.getAbsolutePath() + "/" + l.toString))
       val fdp = fds.getFile(0)
       val fd = FileDescriptor.buildFrom(fdp, getDependencyFileDescriptor(fdp, inputStream, parentFolder))
       fileDescriptorArray ++ Array(fd)
     })
-    fileDescriptors
-  }
 }
 /*
 Copyright 2017 Morgan Stanley

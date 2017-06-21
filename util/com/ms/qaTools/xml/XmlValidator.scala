@@ -1,11 +1,13 @@
 package com.ms.qaTools.xml
 import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.file.XmlFileRowSource
+import com.ms.qaTools.io.rowSource.file.XmlRowSource
 import com.ms.qaTools.io.rowSource.file.XPathRowSource
 import com.ms.qaTools.io.rowSource.IndexedRepresentation
 import com.ms.qaTools.io.rowSource.Utils.StringUtil
 import com.ms.qaTools.io.rowSource.Utils.W3CDocumentUtil
 import com.ms.qaTools.toolkit.xmlValidate.XmlValidateComparator
+import com.ms.qaTools.tree.extraction.DetachStrategy
 import com.ms.qaTools.tree.TreeNode
 import com.ms.qaTools.tree.validator.IndexedDiffSet
 import com.ms.qaTools.tree.XmlNode
@@ -13,21 +15,35 @@ import com.ms.qaTools.Validator
 import javax.xml.namespace.NamespaceContext
 import org.w3c.dom.Document
 import org.w3c.dom.Node
+import com.ms.qaTools.IteratorProxy
 
 class XmlValidator(expected: Iterator[Document], actual: Iterator[Document], validateComparator: XmlValidateComparator)
-extends Validator[Document, Node](expected, actual, validateComparator){
-  def pathRowSourceBuilder(keys: Seq[(String, String)], rs: Iterator[Document]) =
-    XPathRowSource.apply(keys, rs, false)(validateComparator.nsContext)
+  extends Validator[Document, Node](expected, actual, validateComparator) {
 
-  def toSeqString(r: IndexedRepresentation[Document]) = r.representation.toXmlString :: r.indexed.toList
+  protected val fromSeqString = (s: Seq[String]) =>
+    new IndexedRepresentation[Document] {
+      val indexed = s.tail
+      val colDefs = ColumnDefinition.fromColumnNames(keys)
+      lazy val representation = {
+        val doc = s(0).toDocument
+        if (com.ms.qaTools.xml.isSaxon) doc.toSaxon else doc
+      }
+      def prettyPrint = representation.toXmlString
+    }
+  protected val toSeqString: IndexedRepresentation[Document] => Seq[String] = (r: IndexedRepresentation[Document]) => r.representation.toXmlString :: r.indexed.toList
+  protected def asPathRowSource(i: Iterator[Document]) =
+    XPathRowSource(keysAsCols, i, DetachStrategy.fromBool[TreeNode[Node]](false))(validateComparator.nsContext).asIndexedRepresentationIterator()
 
-  def fromSeqString(r: Seq[String]) = new IndexedRepresentation[Document] {
-    val representation: Document = r(0).toDocument
-    def colDefs = ColumnDefinition.fromColumnNames(keys)
-    val indexed = r.tail
+  protected class DocumentIndexedDiffSet extends IndexedDiffSet[Document, Node] {
+    val Seq(left, right) = for (i <- Seq(expected, actual)) yield sort(asPathRowSource(i), fromSeqString, toSeqString)
+    implicit def nsContext = validateComparator.nsContext
+    def inflate(r: Document) = Some(XmlNode(r.getDocumentElement))
+    def inflateLeft(r: Document) = inflate(r)
+    def inflateRight(r: Document) = inflate(r)
+    def comparator = validator.comparator
   }
 
-  def toNode(d: Document) = XmlNode(d.getDocumentElement)(validateComparator.nsContext)
+  lazy val self = new DocumentIndexedDiffSet
 }
 
 object XmlValidator {

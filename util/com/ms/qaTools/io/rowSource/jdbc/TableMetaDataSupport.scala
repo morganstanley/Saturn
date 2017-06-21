@@ -1,10 +1,10 @@
 package com.ms.qaTools.io.rowSource.jdbc
 import com.ms.qaTools.compare.CompareColDef
 import com.ms.qaTools.compare.CompareColDefs
+import com.ms.qaTools.io.rowSource.ColumnDefinition
 import com.ms.qaTools.io.rowSource.DatabaseConnection
 import com.ms.qaTools.io.rowSource.NumericColumnType
 import com.ms.qaTools.io.rowSource.StringColumnType
-import com.ms.qaTools.io.rowSource.Utils._
 import java.sql.Types
 import java.util.Locale
 
@@ -12,29 +12,33 @@ trait TableMetaDataSupport {self: DatabaseConnection =>
   val primaryKeyColIndex = 4
   val primaryKeyColType  = 5
 
-  def keysForATable(table: String): Seq[String] =
-    ResultSetRowSource(getConnection.getMetaData.getPrimaryKeys(null, null, table)).map(
+  def keysForATable(table: String): Seq[String] = withConnection { conn =>
+    ResultSetRowSource(conn.getMetaData.getPrimaryKeys(null, null, table)).map(
       _.getString(primaryKeyColIndex)).toList
+  }
 
-  def allColumnsForATable(table: String): Seq[(String, Int)] =
-    ResultSetRowSource(getConnection.getMetaData.getColumns(null, null, table, null)).map(
+  def allColumnsForATable(table: String): Seq[(String, Int)] = withConnection { conn =>
+    ResultSetRowSource(conn.getMetaData.getColumns(null, null, table, null)).map(
       key => (key.getString(primaryKeyColIndex), key.getInt(primaryKeyColType))).toList
+  }
 
   def asCompareColumnDefs(table: String)(implicit locale: Locale): CompareColDefs = {
     val keyList = keysForATable(table)
 
-    new CompareColDefs(for ((col, ctype) <- allColumnsForATable(table)) yield {
-      val colType = 
-        if (Set(Types.CHAR, Types.VARCHAR, Types.LONGNVARCHAR).contains(ctype)) StringColumnType()
+    CompareColDefs(allColumnsForATable(table).map{case (col, ctype) =>
+      val colType =
+        if (Set(Types.CHAR, Types.VARCHAR, Types.LONGNVARCHAR).contains(ctype)) StringColumnType
         else NumericColumnType()
-      val column = Some(col)
 
       if (keyList.contains(col)) {
-        val order = Some(keyList.indexOf(col) + 1)
-        new CompareColDef(column, order, None, colType = colType, true, column, order)
-      } else
-        CompareColDef(col, index = 0, colType = colType)
-    }, List(""), List(""))
+        val order = keyList.indexOf(col) + 1
+        val c = ColumnDefinition(col, Some(order), order, colType)
+        CompareColDef(c, c, true)
+      } else {
+        val c = ColumnDefinition(col, None, 0, colType)
+        CompareColDef(c, c, false)
+      }
+    }, Nil, Nil)
   }
 }
 /*

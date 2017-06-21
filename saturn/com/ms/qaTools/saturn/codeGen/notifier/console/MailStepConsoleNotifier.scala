@@ -2,7 +2,7 @@ package com.ms.qaTools.saturn.codeGen.notifier.console
 
 import com.ms.qaTools.saturn.codeGen.IterationResult
 import com.ms.qaTools.saturn.runtime.SaturnExecutionContext
-import com.ms.qaTools.toolkit.mail.MailResult
+import com.ms.qaTools.toolkit.MailResult
 
 case object MailStepConsoleNotifier extends ConsoleNotifier[MailResult] {
   override val runGroupType = "Mail"

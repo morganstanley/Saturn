@@ -1,5 +1,4 @@
 package com.ms.qaTools.toolkit.cmdLine
-import org.kohsuke.args4j.Option
 import org.kohsuke.args4j.CmdLineParser
 import org.kohsuke.args4j.CmdLineException
 /**
@@ -13,67 +12,39 @@ import org.kohsuke.args4j.CmdLineException
  * Classes that extend this trait have their own options and return an object
  * that represent the operation after parseOperation method is called.
  */
-trait OperationCmdLine {
-  def createOperation: Any
-  val operationName = ""
+trait OperationCmdLine[+T] {
+  def createOperation: T
+  val operationName: String
 
   def parseOperation(args: Seq[String]) = {
     val cmdLineParser = new CmdLineParser(this)
     try {
       cmdLineParser.parseArgument(args: _*)
+      createOperation
     } catch {
-      case (e: CmdLineException) => {
-        System.err.println("Can't parse arguments for " + operationName + " operation: " + e.getMessage())
+      case (e: CmdLineException) =>
+        System.err.println("Can't parse arguments for " + operationName + " operation: " + e.getMessage)
         System.err.println("Usage:")
         cmdLineParser.printUsage(System.err)
-        System.exit(-1)
-      }
-      case (e: Exception) => {
-        System.err.println("Can't parse arguments for " + operationName + " operation: " + e.getMessage())
-        System.exit(-1)
-      }
+        throw e
     }
   }
 }
 
-class ExtendedCmdLine(operationsMap: Map[String, Function1[BasicCmdLine, OperationCmdLine]]) extends BasicCmdLine {
-
-  def buildOperations(args: Iterator[String], operations: Seq[Any] = Seq()): Seq[Any] = {
-    if (!args.hasNext) operations
+class ExtendedCmdLine[T](operationsMap: Map[String, () => OperationCmdLine[T]]) extends BasicCmdLine {
+  protected def buildOperations(args: Array[String]): Seq[T] =
+    if (args.isEmpty) Nil
     else {
-      val operationArgs = args.takeWhile(arg => !arg.equals("--"))
-      val operationName = operationArgs.next
-      val cmdLine = operationsMap.get(operationName)
-      cmdLine match {
-        case None => throw new Error("Unrecognized operation: " + operationName)
-        case Some(o) => {
-          val operationCmdLine = o.apply(this)
-          operationCmdLine.parseOperation(operationArgs.toSeq)
-          buildOperations(args, operations :+ operationCmdLine.createOperation)
-        }
-      }
+      val (currentOperation, rest) = args.tail.span(_ != "--")
+      val op = currentOperation.head
+      operationsMap.getOrElse(op, sys.error("Unrecognized operation: " + op))()
+        .parseOperation(currentOperation.tail) +: buildOperations(rest)
     }
-  }
 
-  def parseOperations(args: Array[String]): Seq[Any] = {
-    val cmdLineParser = new CmdLineParser(this)
-    val argsIterator = args.toIterator
-    // remove first part which are default cmd line options
-    argsIterator.takeWhile(arg => !arg.equals("--")).toArray
-    buildOperations(argsIterator)
-  }
+  def parseOperations(args: Array[String]) = buildOperations(args.dropWhile(_ != "--"))
 
-  override def parseArguments(args: Array[String]) {
-    val argsIterator = args.toIterator
-    val cmdLineOptions = argsIterator.takeWhile(arg => !arg.equals("--"))
-    cmdLineParser.parseArgument(cmdLineOptions.toSeq: _*)
-
-    if (help) {
-      println("Usage information")
-      cmdLineParser.printUsage(System.out)
-      System.exit(0)
-    }
-  }
+  override def parseArguments(args: Array[String], app: String, version: String, buildTime: String) =
+    super.parseArguments(args.takeWhile(_ != "--"), app, version, buildTime)
 }
 /*
 Copyright 2017 Morgan Stanley
