@@ -1,6 +1,8 @@
 Saturn Toolkit -- Quality Assurance Automation
 ==============================================
 
+![Lifecycle Archived](https://badgen.net/badge/Lifecycle/Archived/grey)
+
 - Scala libraries for test data (DB, CSV, XML, FIX, JSON, ProtoBuff) creation,
   validation and manipulation.
 
